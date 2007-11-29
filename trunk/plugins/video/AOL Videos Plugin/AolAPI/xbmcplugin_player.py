@@ -37,9 +37,6 @@ class _Info:
 
 
 class Main:
-    # base paths
-    BASE_CACHE_PATH = os.path.join( "P:\\", "Thumbnails", "Video" )
-
     def __init__( self ):
         self._get_settings()
         # parse argv for our download url
@@ -60,7 +57,7 @@ class Main:
 
     def _download_video( self, url ):
         try:
-            # construct an xbox compatible filepath
+            # check for a valid extension, if none use .avi
             ext = os.path.splitext( url )[ 1 ]
             if ( len( ext ) != 4 ):
                 ext = ".avi"
