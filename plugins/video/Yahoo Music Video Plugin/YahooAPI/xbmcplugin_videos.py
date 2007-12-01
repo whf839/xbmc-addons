@@ -10,10 +10,7 @@ import xbmcgui
 import xbmcplugin
 
 from YahooAPI.YahooClient import YahooClient
-
-# TODO: get the values from the user
-ITEMS_PER_PAGE = 25
-TOTAL_PAGES = 20
+import traceback
 
 
 class _Info:
@@ -26,12 +23,21 @@ class Main:
     BASE_PRESETS_PATH = os.path.join( "P:\\", "plugin_data", sys.modules[ "__main__" ].__plugin__, "presets" )
 
     def __init__( self ):
+        self._get_settings()
         self._parse_argv()
         self.get_items()
 
     def _parse_argv( self ):
         # call _Info() with our formatted argv to create the self.args object
         exec "self.args = _Info(%s)" % ( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
+
+    def _get_settings( self ):
+        self.settings = {}
+        self.settings[ "per_page" ] = ( 10, 15, 20, 25, 30, 40, 50, 75, 100, )[ int( xbmcplugin.getSetting( "per_page" ) ) ]
+        self.settings[ "total_pages" ] = ( 5, 10, 15, 20, 25, 30, 40, 50, )[ int( xbmcplugin.getSetting( "total_pages" ) ) ]
+        self.settings[ "adult_ok" ] = xbmcplugin.getSetting( "adult_ok" ) == "true"
+        #self.settings[ "mode" ] = int( xbmcplugin.getSetting( "mode" ) )
+        #self.settings[ "download_path" ] = xbmcplugin.getSetting( "download_path" )
 
     def get_items( self ):
         # is this a search
@@ -80,17 +86,18 @@ class Main:
         try:
             # Yahoo client
             client = YahooClient( url )
-            start_index = ( self.args.page - 1 ) * ITEMS_PER_PAGE + 1
-            exec 'videos = client.get_videos( query="""%s""", start=start_index, results=ITEMS_PER_PAGE, adult_ok=%d )' % ( self.args.query + " music", self.args.adult_ok, )
+            start_index = ( self.args.page - 1 ) * self.settings[ "per_page" ] + 1
+            exec 'videos = client.get_videos( query="""%s""", start=start_index, results=%d, adult_ok=%d )' % ( self.args.query + " music", self.settings[ "per_page" ], self.settings[ "adult_ok" ], )
             pages = self._get_total_pages( int( videos[ "ResultSet" ][ "totalResultsAvailable" ] ) )
-            return self._fill_media_list( videos[ "ResultSet" ][ "Result" ], self.args.page, pages, ITEMS_PER_PAGE, int( videos[ "ResultSet" ][ "totalResultsAvailable" ] ) )
+            return self._fill_media_list( videos[ "ResultSet" ][ "Result" ], self.args.page, pages, self.settings[ "per_page" ], int( videos[ "ResultSet" ][ "totalResultsAvailable" ] ) )
         except:
+            traceback.print_exc()
             return False, 0
 
     def _get_total_pages( self, total ):
         # calculate the total number of pages
-        pages = int( total / ITEMS_PER_PAGE ) + ( total % ITEMS_PER_PAGE > 0 )
-        if ( pages > TOTAL_PAGES ): pages = TOTAL_PAGES
+        pages = int( total / self.settings[ "per_page" ] ) + ( total % self.settings[ "per_page" ] > 0 )
+        if ( pages > self.settings[ "total_pages" ] ): pages = self.settings[ "total_pages" ]
         return pages
 
     def _fill_media_list( self, videos, page, pages=1, perpage=1, total=1 ):
@@ -108,11 +115,11 @@ class Main:
                     startno = ( pageno - 1 ) * perpage + 1
                     # calculate the ending video
                     endno = pageno * perpage
-                    # if there are fewer videoss than per_page set endno to total
+                    # if there are fewer videos than per_page set endno to total
                     if ( endno > total ):
                         endno = total
                     # create the callback url
-                    url = '%s?title="""%s"""&category="""%s"""&page=%d&query="""%s"""&adult_ok=%d&download_path="""%s"""' % ( sys.argv[ 0 ], self.args.title, self.args.category, pageno, self.args.query, self.args.adult_ok, self.args.download_path, )
+                    url = '%s?title="""%s"""&category="""%s"""&page=%d&query="""%s"""' % ( sys.argv[ 0 ], self.args.title, self.args.category, pageno, self.args.query, )
                     # set the default icon
                     icon = "DefaultFolder.png"
                     # only need to add label and icon, setInfo() and addSortMethod() takes care of label2
@@ -129,7 +136,7 @@ class Main:
                     if ( title.startswith( "'" ) and title.endswith( "'" ) ):
                         title = title[ 1 : -1 ]
                     # thumbnail url
-                    thumbnail_url = video[ "Thumbnail" ][ "Url" ].replace( "\\", "" )
+                    thumbnail_url = video[ "Thumbnail" ][ "Url" ].replace( "\\/", "/" )
                     # plot
                     plot = "no summary was furnished by user"
                     if ( video[ "Summary" ] ):
@@ -149,13 +156,13 @@ class Main:
                     #elif ( "google" in video[ "ClickUrl" ] ): studio = "Google"
                     else: studio = "Other"
                     # construct our url
-                    url = '%s?title="""%s"""&url="""%s"""&category="""play_video"""&studio="""%s"""&download_path="""%s"""' % ( sys.argv[ 0 ], title, video[ "ClickUrl" ].replace( "\\", "" ).replace( "&", "-*-*-" ), studio, self.args.download_path, )
+                    url = '%s?title="""%s"""&url="""%s"""&category="""play_video"""' % ( sys.argv[ 0 ], title, video[ "ClickUrl" ].replace( "\\/", "/" ).replace( "&", "-*-*-" ), )
                     # set the default icon
                     icon = "DefaultVideo.png"
                     # only need to add label, icon and thumbnail, setInfo() and addSortMethod() takes care of label2
                     listitem=xbmcgui.ListItem( label=title, iconImage=icon, thumbnailImage=thumbnail_url )
                     # add the different infolabels we want to sort by
-                    listitem.setInfo( type="Video", infoLabels={ "Title": title, "Duration": runtime, "Plot": plot, "Studio": studio } )
+                    listitem.setInfo( type="Video", infoLabels={ "Title": title, "Duration": runtime, "Plot": plot, "PlotOutline": plot, "Studio": studio } )
                     # add the video to the media list
                     ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=url, listitem=listitem, isFolder=False, totalItems=total_items )
                     # if user cancels, call raise to exit loop
