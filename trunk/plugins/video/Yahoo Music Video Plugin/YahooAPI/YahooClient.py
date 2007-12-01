@@ -113,7 +113,9 @@ if ( __name__ == "__main__" ):
     client = YahooClient( YahooClient.BASE_SEARCH_URL )
     # use a double underscore for a hyphen in parameter name
     videos = client.get_videos( query="demon hunter music", results=5 )
-    print videos[ "ResultSet" ][ "totalResultsAvailable" ]
+    #print videos
+    #print videos[ "ResultSet" ][ "totalResultsAvailable" ]
+    #print videos[ "ResultSet" ].keys()
     #print
     for video in videos[ "ResultSet" ][ "Result" ]:
         #print video.keys()

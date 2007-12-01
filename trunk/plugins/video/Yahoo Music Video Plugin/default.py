@@ -12,7 +12,7 @@ __author__ = "nuka1195/C-Quel"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Yahoo%20Music%20Video%20Plugin"
 __credits__ = "Team XBMC"
-__version__ = "1.0"
+__version__ = "1.1"
 
 # base paths
 BASE_PATH = os.getcwd().replace( ";", "" )

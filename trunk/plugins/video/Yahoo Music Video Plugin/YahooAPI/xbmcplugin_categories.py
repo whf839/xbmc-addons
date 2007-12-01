@@ -9,9 +9,6 @@ import xbmc
 import xbmcgui
 import xbmcplugin
 
-# TODO: get this from settings
-ADULT_OK = 1
-DOWNLOAD_PATH = ""
 
 class _Info:
     def __init__( self, *args, **kwargs ):
@@ -81,7 +78,7 @@ class Main:
             # enumerate through the list of categories and add the item to the media list
             for category in categories:
                 # set the callback url
-                url = '%s?title="""%s"""&category="""%s"""&page=1&query="""%s"""&adult_ok=%d&download_path="""%s"""' % ( sys.argv[ 0 ], category.title, category.category, category.query, ADULT_OK, DOWNLOAD_PATH, )
+                url = '%s?title="""%s"""&category="""%s"""&page=1&query="""%s"""' % ( sys.argv[ 0 ], category.title, category.category, category.query, )
                 # check for a valid custom thumbnail for the current category
                 thumbnail = self._get_thumbnail( category.title )
                 # set the default icon
