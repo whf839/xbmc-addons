@@ -86,8 +86,14 @@ class Main:
                 # fetch the video
                 urllib.urlretrieve( url, filepath, self._report_hook )
         except:
-            if ( os.path.isfile( filepath ) ):
-                os.remove( filepath )
+            urllib.urlcleanup()
+            remove_tries = 3
+            while remove_tries and os.path.isfile( filepath ):
+                try:
+                    os.remove( filepath )
+                except:
+                    remove_tries -= 1
+                    xbmc.sleep( 1000 )
             filepath = ""
             pDialog.close()
         return filepath

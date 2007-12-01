@@ -109,8 +109,11 @@ class Main:
                 if ( not video_url ): continue
                 # multiply video_bitrate by 1024 to get actual streaming bitrate
                 video_bitrate *= 1024
-                # check for a valid custom thumbnail for the current category
-                thumbnail = asset[ "thumbnail" ][ -1 ][ "mediaThumb" ]
+                try:
+                    # check for a valid custom thumbnail for the current video
+                    thumbnail = asset[ "thumbnail" ][ -1 ][ "mediaThumb" ]
+                except:
+                    thumbnail = ""
                 # set the default icon
                 icon = "DefaultVideo.png"
                 # only need to add label and thumbnail, setInfo() and addSortMethod() takes care of label2
