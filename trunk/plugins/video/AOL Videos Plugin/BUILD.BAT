@@ -47,7 +47,7 @@ ECHO ----------------------------------------------------------------------
 ECHO.
 ECHO Copying required files to \Build\%PluginType%\%PluginName%\ folder . . .
 XCOPY resources "BUILD\%PluginType%\%PluginName%\resources" /E /Q /I /Y /EXCLUDE:BUILD\exclude.txt
-XCOPY aolAPI "BUILD\%PluginType%\%PluginName%\aolAPI" /E /Q /I /Y /EXCLUDE:BUILD\exclude.txt
+XCOPY aolAPI "BUILD\%PluginType%\%PluginName%\AolAPI" /E /Q /I /Y /EXCLUDE:BUILD\exclude.txt
 COPY default.py "BUILD\%PluginType%\%PluginName%\"
 COPY default.tbn "BUILD\%PluginType%\%PluginName%\"
 ECHO.
