@@ -100,6 +100,7 @@ class Main:
 
     def _fill_media_list_assets( self, assets ):
         try:
+            content = ""
             ok = False
             # enumerate through the list of categories and add the item to the media list
             for asset in assets:
@@ -120,10 +121,29 @@ class Main:
                 listitem = xbmcgui.ListItem( unicode( asset[ "titleName" ], "utf-8" ), iconImage=icon, thumbnailImage=thumbnail )
                 # plot
                 plot = unicode( asset.get( "titleDescription", "No description supplied" ), "utf-8" )
+                plot = plot.replace( "<b>", "[B]" ).replace( "</b>", "[/B]" )
                 # mpaa rating
                 mpaa_rating = unicode( asset.get( "ratingText", "" ), "utf-8" )
                 # studio
-                studio = unicode( asset.get( "franchise", "" ), "utf-8" )
+                #studio = unicode( asset.get( "franchise", "" ).split( ":" )[ -1 ].strip(), "utf-8" )
+                try:
+                    studio = unicode( asset[ "providedBy" ], "utf-8" )
+                except:
+                    try:
+                        studio = unicode( asset[ "titleSource" ], "utf-8" )
+                    except:
+                        studio = unicode( asset[ "groupName" ], "utf-8" )
+                # set our content type
+                if ( not content ):
+                    tmp_content = asset.get( "subject", "" ).lower()
+                    #tmp_content = studio.replace( " ", "" ).lower()
+                    if ( tmp_content == "music" ):
+                        content = "musicvideos"
+                    elif ( tmp_content == "movies" ):
+                        content = "movies"
+                    elif ( tmp_content == "television" ):
+                        content = "tvshows"
+                    #print asset
                 # runtime
                 t = asset.get( "duration", 0 )
                 runtime = "0"
@@ -133,7 +153,13 @@ class Main:
                     seconds = ( t - ( hours * 60 * 60 ) ) % 60
                     runtime = "%02d:%02d:%02d" % ( hours, minutes, seconds, )
                 # genre
-                genre = u"/".join( asset[ "genre" ] )
+                genre = u" ~ ".join( asset[ "genre" ] )
+                genre = genre.replace( "MUSIC:" , "" ).replace( "TV:" , "" ).replace( "MOVIES:" , "" ).replace( "and", " / ").replace( "~", " / " ).strip()
+                # year
+                try:
+                    year = int( asset[ "releaseYear" ].split( "(" )[ -1 ][ : 4 ] )
+                except:
+                    year = 0
                 # cast
                 cast = []
                 cast_list = asset.get( "titleParticipant", [] )
@@ -144,7 +170,7 @@ class Main:
                 if ( self.settings[ "mode" ] > 0 and os.path.splitext( video_url )[ 1 ] != ".wmv" ):
                     video_url = '%s?download_url="""%s"""' % ( sys.argv[ 0 ], video_url, )
                 # set the key information
-                listitem.setInfo( "video", { "Title": unicode( asset[ "titleName" ], "utf-8" ), "Size": video_bitrate, "Plot": plot, "MPAA": mpaa_rating, "Genre": genre, "Studio": studio, "Duration": runtime, "Cast": cast } )
+                listitem.setInfo( "video", { "Title": unicode( asset[ "titleName" ], "utf-8" ), "Size": video_bitrate, "Plot": plot, "PlotOutline": plot, "MPAA": mpaa_rating, "Genre": genre, "Studio": studio, "Duration": runtime, "Year": year, "Cast": cast } )
                 # add the item to the media list
                 ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=video_url, listitem=listitem, isFolder=False, totalItems=len( assets ) )
                 # if user cancels, call raise to exit loop
@@ -158,6 +184,9 @@ class Main:
             xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_SIZE )
             xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_GENRE )
             xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_STUDIO )
+            # set content
+            if ( not content ): content = "movies"
+            xbmcplugin.setContent( handle=int( sys.argv[ 1 ] ), content=content )
         return ok
 
     def _get_bitrate( self, text ):
