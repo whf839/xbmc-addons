@@ -46,7 +46,7 @@ class Main:
         self._parse_argv()
         # get our url
         filepath = self.construct_url()
-        if ( self.settings[ "mode" ] > 0 ):
+        if ( self.settings[ "mode" ] > 0 and not filepath.startswith( "mms://" ) ):
             filepath = self._download_video( filepath )
         self._play_video( filepath )
 
