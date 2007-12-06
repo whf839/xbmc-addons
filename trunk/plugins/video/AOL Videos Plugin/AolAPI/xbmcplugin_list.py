@@ -221,22 +221,29 @@ class Main:
                         bitrate = self._get_bitrate( parts[ 1 ].split( "," )[ 0 ] )
                         url = self.BASE_WMV_STREAMING_URL % ( parts[ 0 ], bitrate, )
                     except:
-                        # there are no bitrate choices in the url
-                        url = video[ "url" ][ 0 ]
-                        bitrate = 0
+                        try:
+                            # there are no bitrate choices in the url
+                            url = video[ "url" ][ 0 ]
+                            bitrate = 0
+                        except:
+                            url = ""
             else:
-                # this is .mov or .flv video file
-                url = video[ "url" ][ 0 ]
-                bitrate = self._get_bitrate( url.split( "_" )[ -2 ] )
+                try:
+                    # this is .mov or .flv video file
+                    url = video[ "url" ][ 0 ]
+                    bitrate = self._get_bitrate( url.split( "_" )[ -2 ] )
+                except:
+                    url = ""
             try:
-                # now check to see if the video quality is better than our current and is the preferred quality, if so use it
-                new_quality = vtypes.index( video[ "type" ] )
-                if ( new_quality > video_quality and bitrate >= video_bitrate ):
-                    # is it the preferred quality
-                    if ( ( self.settings[ "quality" ] == 0 and bitrate < 700 ) or ( self.settings[ "quality" ] == 1 and bitrate < 1500 ) or self.settings[ "quality" ] == 2 ):
-                        video_quality = new_quality
-                        video_url = url
-                        video_bitrate = bitrate
+                if ( url ):
+                    # now check to see if the video quality is better than our current and is the preferred quality, if so use it
+                    new_quality = vtypes.index( video[ "type" ] )
+                    if ( new_quality > video_quality and bitrate >= video_bitrate ):
+                        # is it the preferred quality
+                        if ( ( self.settings[ "quality" ] == 0 and bitrate < 700 ) or ( self.settings[ "quality" ] == 1 and bitrate < 1500 ) or self.settings[ "quality" ] == 2 ):
+                            video_quality = new_quality
+                            video_url = url
+                            video_bitrate = bitrate
             except:
                 pass
         return video_url, video_bitrate
