@@ -99,10 +99,10 @@ class Main:
                     path = path.split( "\\" )
                     path = path[ : 2 ] + path[ 3 : ]
                     path = "\\".join( path )
-                if ( not finished_path ): finished_path = path
+                if ( not finished_path ): finished_path = xbmc.translatePath( path )
                 file = items[ 1 ].replace( "%20", " " )
                 pct = int( ( float( cnt ) / len( script_files ) ) * 100 )
-                self.dialog.update( pct, "%s %s" % ( xbmc.getLocalizedString( 30005 ), url, ), "%s %s" % ( xbmc.getLocalizedString( 30006 ), path, ), "%s %s" % ( xbmc.getLocalizedString( 30007 ), file, ) )
+                self.dialog.update( pct, "%s %s" % ( xbmc.getLocalizedString( 30005 ), url, ), "%s %s" % ( xbmc.getLocalizedString( 30006 ), xbmc.translatePath( path ), ), "%s %s" % ( xbmc.getLocalizedString( 30007 ), file, ) )
                 if ( self.dialog.iscanceled() ): raise
                 if ( not os.path.isdir( path ) ): os.makedirs( path )
                 url = self.BASE_URL + url
