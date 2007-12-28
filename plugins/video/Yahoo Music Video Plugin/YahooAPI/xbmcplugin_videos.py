@@ -10,7 +10,6 @@ import xbmcgui
 import xbmcplugin
 
 from YahooAPI.YahooClient import YahooClient
-import traceback
 
 
 class _Info:
@@ -91,7 +90,8 @@ class Main:
             pages = self._get_total_pages( int( videos[ "ResultSet" ][ "totalResultsAvailable" ] ) )
             return self._fill_media_list( videos[ "ResultSet" ][ "Result" ], self.args.page, pages, self.settings[ "per_page" ], int( videos[ "ResultSet" ][ "totalResultsAvailable" ] ) )
         except:
-            traceback.print_exc()
+            # oops print error message
+            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             return False, 0
 
     def _get_total_pages( self, total ):
@@ -169,7 +169,7 @@ class Main:
                     if ( not ok ): raise
         except:
             # oops print error message
-            print sys.exc_info()[ 1 ]
+            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             ok = False
         # if successful and user did not cancel, add all the required sort methods
         if ( ok ):

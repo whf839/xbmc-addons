@@ -46,7 +46,7 @@ class YahooClient:
             return eval( jsonSource )
         except:
             # oops return an empty dictionary
-            print sys.exc_info()[ 1 ]
+            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             return {}
 
     def construct_youtube_video_url( self, url ):
@@ -66,8 +66,8 @@ class YahooClient:
             # we found a valid session id, construct the video url and return it
             return self.BASE_YOUTUBE_VIDEO_URL % ( part[ "video_id" ], part[ "t" ], )
         except:
-            # oops return an empty url
-            print sys.exc_info()[ 1 ]
+            # oops return an empty string
+            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             return ""
 
     def construct_yahoo_video_url( self, url ):
@@ -104,8 +104,8 @@ class YahooClient:
             # we found a valid session id, construct the video url and return it
             return str( return_url )
         except:
-            # oops return an empty url
-            print sys.exc_info()[ 1 ]
+            # oops print error message
+            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             return url
 
 
