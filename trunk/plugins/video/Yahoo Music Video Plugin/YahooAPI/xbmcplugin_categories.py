@@ -54,7 +54,7 @@ class Main:
             ok = self._fill_media_list( categories )
         except:
             # oops print error message
-            print sys.exc_info()[ 1 ]
+            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             ok = False
         # send notification we're finished, successfully or unsuccessfully
         xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=ok )
@@ -90,9 +90,8 @@ class Main:
                 # if user cancels, call raise to exit loop
                 if ( not ok ): raise
         except:
-            traceback.print_exc()
             # user cancelled dialog or an error occurred
-            print sys.exc_info()[ 1 ]
+            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             ok = False
         return ok
 
