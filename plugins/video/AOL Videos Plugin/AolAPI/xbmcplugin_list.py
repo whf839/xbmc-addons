@@ -75,7 +75,7 @@ class Main:
             return eval( jsonSource.strip().replace( "true", "True" ).replace( "false", "False" ) )
         except:
             # oops return an empty dictionary
-            print sys.exc_info()[ 1 ]
+            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             return {}
 
     def _fill_media_list_channels( self, channels ):
@@ -94,7 +94,7 @@ class Main:
                 if ( not ok ): raise
         except:
             # user cancelled dialog or an error occurred
-            print sys.exc_info()[ 1 ]
+            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             ok = False
         return ok
 
@@ -125,7 +125,6 @@ class Main:
                 # mpaa rating
                 mpaa_rating = unicode( asset.get( "ratingText", "" ), "utf-8" )
                 # studio
-                #studio = unicode( asset.get( "franchise", "" ).split( ":" )[ -1 ].strip(), "utf-8" )
                 try:
                     studio = unicode( asset[ "providedBy" ], "utf-8" )
                 except:
@@ -136,14 +135,12 @@ class Main:
                 # set our content type
                 if ( not content ):
                     tmp_content = asset.get( "subject", "" ).lower()
-                    #tmp_content = studio.replace( " ", "" ).lower()
                     if ( tmp_content == "music" ):
                         content = "musicvideos"
                     elif ( tmp_content == "movies" ):
                         content = "movies"
                     elif ( tmp_content == "television" ):
                         content = "tvshows"
-                    #print asset
                 # runtime
                 t = asset.get( "duration", 0 )
                 runtime = "0"
@@ -177,7 +174,7 @@ class Main:
                 if ( not ok ): raise
         except:
             # user cancelled dialog or an error occurred
-            print sys.exc_info()[ 1 ]
+            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             ok = False
         if ( ok ):
             xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )
