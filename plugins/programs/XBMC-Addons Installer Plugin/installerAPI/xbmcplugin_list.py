@@ -105,7 +105,7 @@ class Main:
                 if ( not ok ): raise
         except:
             # user cancelled dialog or an error occurred
-            print sys.exc_info()[ 1 ]
+            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             ok = False
         if ( ok ):
             xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )
@@ -122,8 +122,8 @@ class Main:
             # parse source and return a dictionary
             return self._parse_html_source( htmlSource )
         except:
-            # oops return an empty dictionary
-            print sys.exc_info()[ 1 ]
+            # oops print error message
+            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             return {}
 
     def _parse_html_source( self, htmlsource ):
@@ -151,5 +151,5 @@ class Main:
             return filepath
         except:
             # return empty string if retrieval failed
-            print sys.exc_info()[ 1 ]
+            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             return ""        
