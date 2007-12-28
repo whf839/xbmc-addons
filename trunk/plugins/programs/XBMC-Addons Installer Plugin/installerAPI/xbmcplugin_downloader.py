@@ -85,6 +85,8 @@ class Main:
                         folders = []
                 self._get_files( script_files )
         except:
+            # oops print error message
+            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             self.dialog.close()
             xbmcgui.Dialog().ok( self.title, xbmc.getLocalizedString( 30030 ) )
         
@@ -109,6 +111,8 @@ class Main:
                 fpath = xbmc.translatePath( os.path.join( path, file ) )
                 urllib.urlretrieve( url.replace( " ", "%20" ), fpath )
         except:
+            # oops print error message
+            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             raise
         else:
             self.dialog.close()
