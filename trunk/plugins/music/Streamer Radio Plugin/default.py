@@ -57,7 +57,7 @@ class _Parser:
                 self.stations = self._get_stations( node )
         except:
             # oops print error message
-            print sys.exc_info()[ 1 ]
+            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
         # clean-up document object
         try: doc.unlink()
         except: pass
@@ -165,7 +165,7 @@ class Main:
                 ok = self.save_xml_source( xmlSource )
         except:
             # oops print error message
-            print sys.exc_info()[ 1 ]
+            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             ok = False
         return ok
 
@@ -183,8 +183,8 @@ class Main:
             # return successful
             return True
         except:
-            # oops print error message and return unsuccessful
-            print sys.exc_info()[ 1 ]
+            # oops print error message
+            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             return False
 
     def parse_xml_source( self, xmlSource="", levels=[] ):
@@ -210,7 +210,7 @@ class Main:
                 if ( not ok ): raise
         except:
             # user cancelled dialog or an error occurred
-            print sys.exc_info()[ 1 ]
+            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             ok = False
         return ok
 
@@ -230,7 +230,7 @@ class Main:
                 if ( not ok ): raise
         except:
             # user cancelled dialog or an error occurred
-            print sys.exc_info()[ 1 ]
+            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             ok = False
         return ok
 
