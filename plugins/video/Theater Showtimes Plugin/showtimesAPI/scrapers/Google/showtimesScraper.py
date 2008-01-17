@@ -144,7 +144,9 @@ class ShowtimesFetcher:
             date = datetime.date.today() + datetime.timedelta( days=day )
             # get the current locals long date format and convert it to what strftime() expects
             if ( __name__ != "__main__" ):
-                format = xbmc.getRegion( "datelong" ).replace( "DDDD", "%A" ).replace( "MMMM", "%B" ).replace( "D", "%d" ).replace( "YYYY", "%Y" )
+                # TODO: use the new getRegion() method
+                format = "%A, %B %d, %Y"
+                #format = xbmc.getRegion( "datelong" ).replace( "DDDD", "%A" ).replace( "MMMM", "%B" ).replace( "D", "%d" ).replace( "YYYY", "%Y" )
             else:
                 format = "%A, %B %d, %Y"
             # format our date
