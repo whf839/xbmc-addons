@@ -31,10 +31,14 @@ import traceback
 
 class GUI( xbmcgui.WindowXML ):
     # we need to store the strings as they do not exists after the call to endOfDirector()
+    # main strings
     strings = {}
     for stringId in range( 30000, 30029 ):
         strings[ stringId ] = xbmc.getLocalizedString( stringId )
-    
+    # error message strings
+    for stringId in range( 30100, 30101 ):
+        strings[ stringId ] = xbmc.getLocalizedString( stringId )
+
     # end the directory (failed) since this does not fill a media list
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=False )
 
@@ -45,6 +49,7 @@ class GUI( xbmcgui.WindowXML ):
     # control constants
     CONTROL_TITLE_LABEL = 10
     CONTROL_INFO_LIST = 100
+    CONTROL_INFO_LIST_SCROLLBAR = 101
     CONTROL_INFO_LABEL1 = 200
     CONTROL_INFO_LABEL2 = 201
     CONTROL_INFO_LABEL3 = 202
@@ -277,33 +282,36 @@ class GUI( xbmcgui.WindowXML ):
         records = Records( db_path=self.settings[ "amt_db_path" ] )
         result = records.fetch( self.TRAILER_SQL, ( title, ) )
         records.close()
-        trailers = self._get_trailer_url( result[ 0 ], eval( result[ 3 ] ), eval( result[ 13 ] ) )
-        if ( trailers ):
-            # set the thumbnail
-            thumbnail = ""
-            if ( result[ 4 ] and result[ 4 ] is not None ):
-                thumbnail = xbmc.translatePath( os.path.join( "Q:\\UserData", "script_data", "Apple Movie Trailers", ".cache", result[ 4 ][ 0 ], result[ 4 ] ) )
-            # set the default icon
-            icon = "DefaultVideo.png"
-            # create our playlist
-            playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
-            # clear any possible entries
-            playlist.clear()
-            # enumerate thru and add our item
-            for count, trailer in enumerate( trailers ):
-                # only need to add label, icon and thumbnail, setInfo() and addSortMethod() takes care of label2
-                listitem = xbmcgui.ListItem( self.title, iconImage=icon, thumbnailImage=thumbnail )
-                # set the key information
-                listitem.setInfo( "video", { "Title": "%s%s" % ( self.title, ( "", " (%s %d)" % ( self.strings[ 30017 ], count + 1, ) )[ len( trailers ) > 1 ], ), "Genre": self.genre, "Director": self.director, "PlotOutline": self.plot, "Year": self.year } )
-                # add our item
-                playlist.add( trailer, listitem )
-            # mark the video watched
-            #if ( self.settings[ "mark_watched" ] ):
-            #    self._mark_watched()
-            # we're finished
-            #pDialog.close()
-            # play the playlist (TODO: when playlist can set the player core, add this back in)
-            xbmc.Player().play( playlist )
+        if ( result ):
+            trailers = self._get_trailer_url( result[ 0 ], eval( result[ 3 ] ), eval( result[ 13 ] ) )
+            if ( trailers ):
+                # set the thumbnail
+                thumbnail = ""
+                if ( result[ 4 ] and result[ 4 ] is not None ):
+                    thumbnail = xbmc.translatePath( os.path.join( "Q:\\UserData", "script_data", "Apple Movie Trailers", ".cache", result[ 4 ][ 0 ], result[ 4 ] ) )
+                # set the default icon
+                icon = "DefaultVideo.png"
+                # create our playlist
+                playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
+                # clear any possible entries
+                playlist.clear()
+                # enumerate thru and add our item
+                for count, trailer in enumerate( trailers ):
+                    # only need to add label, icon and thumbnail, setInfo() and addSortMethod() takes care of label2
+                    listitem = xbmcgui.ListItem( self.title, iconImage=icon, thumbnailImage=thumbnail )
+                    # set the key information
+                    listitem.setInfo( "video", { "Title": "%s%s" % ( self.title, ( "", " (%s %d)" % ( self.strings[ 30017 ], count + 1, ) )[ len( trailers ) > 1 ], ), "Genre": self.genre, "Director": self.director, "PlotOutline": self.plot, "Year": self.year } )
+                    # add our item
+                    playlist.add( trailer, listitem )
+                # mark the video watched
+                #if ( self.settings[ "mark_watched" ] ):
+                #    self._mark_watched()
+                # we're finished
+                #pDialog.close()
+                # play the playlist (TODO: when playlist can set the player core, add this back in)
+                xbmc.Player().play( playlist )
+        else:
+            xbmcgui.Dialog().ok( self.strings[ 30000 ], self.strings[ 30100 ] )
 
     def _get_trailer_url( self, idMovie, trailer_urls, saved_trailers ):
         # pick a random url (only really applies to multiple urls)
@@ -366,7 +374,7 @@ class GUI( xbmcgui.WindowXML ):
                 self._close_dialog()
             elif ( action.getButtonCode() in self.THEATER_LIST ):
                 self._show_dialog()
-            elif ( self.controlId == self.CONTROL_INFO_LIST ):
+            elif ( self.controlId in ( self.CONTROL_INFO_LIST, self.CONTROL_INFO_LIST_SCROLLBAR, ) ):
                 self._fill_cast( self.getControl( self.CONTROL_INFO_LIST ).getSelectedItem() )
         except:
             traceback.print_exc()
