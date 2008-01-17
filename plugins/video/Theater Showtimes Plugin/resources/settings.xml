@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+    <setting id="local" type="text" label="30500" default="90210" />
+    <setting type="sep" />
+    <setting id="scraper" type="fileenum" mask="/" values="showtimesAPI\scrapers\" label="30510" default="Google" />
+    <setting id="day" type="enum" lvalues="30521|30522|30523|30524|30525|30526|30527|30528" label="30520" default="0" />
+    <setting type="sep" />
+    <!--setting id="imdb_full_details" type="bool" label="30530" default="false" />
+    <setting type="sep" /-->
+    <setting id="trailer" type="bool" label="30540" default="false" />
+    <setting id="amt_db_path" type="files" source="local" mask="AMT.db" label="30541" enable="eq(-1,true)" default="Q:\UserData\script_data\Apple Movie Trailers\AMT.db" />
+    <setting id="quality" type="enum" lvalues="30551|30552|30553|30554|30555|30556" label="30550" enable="eq(-2,true)" default="2" />
+    <setting id="only_hd" type="bool" enable="eq(-3,true) + gt(-1,3)" label="30560" default="false" />
+    <setting id="play_all" type="bool" label="30570" enable="eq(-4,true)" default="true" />
+</settings>
