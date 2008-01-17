@@ -31,6 +31,9 @@
     <string id="30027">Awards</string>
     <string id="30028">Certification</string>
 
+    <!-- Error messages -->
+    <string id="30100">No trailer was found for this movie.</string>
+
     <!-- Settings -->
     <string id="30500">Zipcode/Post Code or City, State</string>
     <string id="30510">Showtimes scraper</string>
