@@ -1,34 +1,50 @@
 import os
+import xbmc
 import xbmcgui
 import xbmcplugin
 import pydoc
 
-dialog = xbmcgui.DialogProgress()
-dialog.create('Python Docs Maker', 'Creating html pages in \\web\\python\\')
 
-def makeDocDir():
+def _get_browse_dialog( default="", heading="", dlg_type=3, shares="files", mask="", use_thumbs=False, treat_as_folder=False ):
+    """ shows a browse dialog and returns a value
+        - 0 : ShowAndGetDirectory
+        - 1 : ShowAndGetFile
+        - 2 : ShowAndGetImage
+        - 3 : ShowAndGetWriteableDirectory
+    """
+    dialog = xbmcgui.Dialog()
+    value = dialog.browse( dlg_type, heading, shares, mask, use_thumbs, treat_as_folder, default )
+    return value
+
+def _create_base_paths():
   try:
-    os.mkdir('q:\\web\\python')
+    os.makedirs( xbmc.translatePath( doc_path ) )
   except:
     pass
 
-makeDocDir()    
-doc = pydoc.HTMLDoc()
+doc_path = _get_browse_dialog( "", "Folder for pydocs"  )
+if ( doc_path ):
+    _create_base_paths()    
 
-f = open('Q:\\web\\python\\xbmc.html', 'w')
-f.write(doc.document(xbmc))
-f.close()
-dialog.update(33)
+    pDialog = xbmcgui.DialogProgress()
+    pDialog.create( "Python Docs Maker" )
 
-f = open('Q:\\web\\python\\xbmcplugin.html', 'w')
-f.write(doc.document(xbmcplugin))
-f.close()
-dialog.update(67)
+    doc = pydoc.HTMLDoc()
 
-f = open('Q:\\web\\python\\xbmcgui.html', 'w')
-f.write(doc.document(xbmcgui))
-f.close()
+    pDialog.update( 0, "Creating pydoc:", xbmc.translatePath( os.path.join( doc_path, "xbmc.html" ) ) )
+    f = open( xbmc.translatePath( os.path.join( doc_path, "xbmc.html" ) ), "w" )
+    f.write( doc.document( xbmc ) )
+    f.close()
 
-dialog.update(100)
-dialog.close()
+    pDialog.update( 33, "Creating pydoc:", xbmc.translatePath( os.path.join( doc_path, "xbmcplugin.html" ) ) )
+    f = open( xbmc.translatePath( os.path.join( doc_path, "xbmcplugin.html" ) ), "w" )
+    f.write( doc.document( xbmcplugin ) )
+    f.close()
 
+    pDialog.update( 67, "Creating pydoc:", xbmc.translatePath( os.path.join( doc_path, "xbmcgui.html" ) ) )
+    f = open( xbmc.translatePath( os.path.join( doc_path, "xbmcgui.html" ) ), "w" )
+    f.write( doc.document( xbmcgui ) )
+    f.close()
+
+    pDialog.update( 100 )
+    pDialog.close()
