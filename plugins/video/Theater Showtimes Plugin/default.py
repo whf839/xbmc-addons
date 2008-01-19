@@ -171,7 +171,7 @@ class GUI( xbmcgui.WindowXML ):
                         listitem.setInfo( type="Video", infoLabels={ "Duration": self.movie_showtimes[ theater ].duration, "TVShowTitle": self.movie_showtimes[ theater ].mpaa, "Genre": self.movie_showtimes[ theater ].genre, "Premiered": self.movie_showtimes[ theater ].premiered } )
                     else:
                         other = self._create_other( info )
-                        listitem.setInfo( type="Video", infoLabels={ "Title": info.title, "Premiered": self.movie_showtimes[ theater ].premiered, "TVShowTitle": self.movie_showtimes[ theater ].mpaa, "plotoutline": other, "Plot": info.plot, "Duration": info.duration, "MPAA": info.mpaa, "Genre": info.genre, "Director": info.director, "Writer": info.writer, "Studio": info.studio, "Year": info.year, "Rating": info.user_rating, "Tagline": info.tagline, "Cast": info.cast } )
+                        listitem.setInfo( type="Video", infoLabels={ "Title": info.title, "Premiered": self.movie_showtimes[ theater ].premiered, "TVShowTitle": self.movie_showtimes[ theater ].mpaa, "plotoutline": other, "Plot": info.plot, "Duration": info.duration, "MPAA": info.mpaa, "Genre": info.genre, "Director": info.director, "Writer": info.writer, "Studio": info.studio, "Year": info.year, "Rating": info.user_rating, "Votes": info.user_votes, "Tagline": info.tagline, "Cast": info.cast } )
                     self.getControl( self.CONTROL_INFO_LIST ).addItem( listitem )
             else:
                 self.getControl( self.CONTROL_INFO_LIST ).addItem( self.strings[ 30006 ] )

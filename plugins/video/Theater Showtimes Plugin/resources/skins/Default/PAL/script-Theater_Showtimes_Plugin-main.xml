@@ -474,7 +474,7 @@
                     <visible>!IsEmpty(Container(100).ListItem.Duration)</visible>
                 </control>
                 <control type="label">
-                    <description>Rating</description>
+                    <description>Rating and Votes</description>
                     <posx>0</posx>
                     <posy>0</posy>
                     <width>350</width>
@@ -482,8 +482,8 @@
                     <align>left</align>
                     <font>font13</font>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[B]$LOCALIZE[204][/B] $INFO[Container(100).ListItem.Rating]</label>
-                    <visible>!IsEmpty(Container(100).ListItem.Rating)</visible>
+                    <label>[B]$LOCALIZE[204][/B] $INFO[Container(100).ListItem.RatingAndVotes]</label>
+                    <visible>!IsEmpty(Container(100).ListItem.RatingAndVotes)</visible>
                 </control>
                 <control type="label">
                     <description>TagLine</description>
