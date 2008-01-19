@@ -12,6 +12,7 @@ if ( __name__ != "__main__" ):
 
 import urllib
 import re
+from htmllib import HTMLParser
 
 
 class _Info:
@@ -84,9 +85,11 @@ class _IMDBParser:
 
         # user rating
         self.info.user_rating = 0.0
+        self.info.user_votes = ""
         matches = self.pattern_user_rating.findall( htmlSource )
         if ( matches ):
-            self.info.user_rating = float( matches[ 0 ][ 0 ] ) #self._clean_text( "%s (%s votes)" % ( matches[ 0 ][ 0 ], matches[ 0 ][ 1 ], ) )
+            self.info.user_rating = float( matches[ 0 ][ 0 ] ) 
+            self.info.user_votes = matches[ 0 ][ 1 ]
 
         # director
         self.info.director = ""
@@ -260,9 +263,19 @@ class _IMDBParser:
                 for actor, role in matches:
                     self.info.cast += [ ( self._clean_text( actor ), self._clean_text( role ), ) ]
 
-    def _clean_text( self, text ):
+    def _clean_text1( self, text ):
         text = re.sub( self.pattern_clean, '', text ).strip()
         return unicode( text.replace( "&lt;", "<" ).replace( "&gt;", ">" ).replace( "&quot;", '"' ).replace( "&amp;", "&" ).replace( "&#38;", "&" ).replace( "&#39;", "'" ), "iso-8859-1" )
+
+    def _clean_text( self, text ):
+        try:
+            text = text.strip()
+            parser = HTMLParser( None )
+            parser.save_bgn()
+            parser.feed( text )
+            return unicode( parser.save_end().replace( "[1]", "" ), "iso-8859-1" )
+        except:
+            return text
 
 
 class IMDBFetcher:
