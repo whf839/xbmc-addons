@@ -7,8 +7,10 @@ Nuka1195
 import sys
 import os
 
-if ( __name__ != "__main__" ):
+try:
     import xbmc
+except:
+    pass
 
 from sgmllib import SGMLParser
 import urllib
@@ -143,11 +145,9 @@ class ShowtimesFetcher:
             # add the appropriate number of days to todays date
             date = datetime.date.today() + datetime.timedelta( days=day )
             # get the current locals long date format and convert it to what strftime() expects
-            if ( __name__ != "__main__" ):
-                # TODO: use the new getRegion() method
-                format = "%A, %B %d, %Y"
-                #format = xbmc.getRegion( "datelong" ).replace( "DDDD", "%A" ).replace( "MMMM", "%B" ).replace( "D", "%d" ).replace( "YYYY", "%Y" )
-            else:
+            try:
+                format = xbmc.getRegion( "datelong" ).replace( "DDDD", "%A" ).replace( "MMMM", "%B" ).replace( "D", "%d" ).replace( "YYYY", "%Y" )
+            except:
                 format = "%A, %B %d, %Y"
             # format our date
             date = date.strftime( format )
@@ -225,7 +225,7 @@ if ( __name__ == "__main__" ):
 
     for cnt in range( 1 ):
         #theaters = ShowtimesFetcher().get_theater_list( location[ cnt ] )
-        date, theaters = ShowtimesFetcher().get_selection( url[ cnt ], 5 )
+        date, theaters = ShowtimesFetcher().get_selection( url[ cnt ], 0 )
         print date
         print
         if ( theaters ):
