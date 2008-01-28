@@ -47,7 +47,7 @@
     <string id="30527">Day 7</string>
     <string id="30528">Day 8</string>
     <string id="30530">Fetch full IMDb details (cast/plot)</string>
-    <string id="30540">Enable play trailer button</string>
+    <string id="30540">Play trailer button links to Apple Movie Trailers </string>
     <string id="30541">- Path to Apple Movie Trailers database</string>
     <string id="30550">- Preferred trailer quality</string>
     <string id="30551">Low</string>
