@@ -165,13 +165,17 @@ class GUI( xbmcgui.WindowXML ):
                     # fetch movie details
                     info = self._get_details( self.theaters[ count ] )
                     # create our listitem
-                    listitem = xbmcgui.ListItem( theater, self.movie_showtimes[ theater ].label2 )
+                    listitem = xbmcgui.ListItem( theater, self.movie_showtimes[ theater ].label2, thumbnailImage="" )
                     if ( info is None ):
                         # fill in all the info
                         listitem.setInfo( type="Video", infoLabels={ "Duration": self.movie_showtimes[ theater ].duration, "TVShowTitle": self.movie_showtimes[ theater ].mpaa, "Genre": self.movie_showtimes[ theater ].genre, "Premiered": self.movie_showtimes[ theater ].premiered } )
                     else:
+                        # set plotoutline to all info that isn't covered by an infolabel
                         other = self._create_other( info )
-                        listitem.setInfo( type="Video", infoLabels={ "Title": info.title, "Premiered": self.movie_showtimes[ theater ].premiered, "TVShowTitle": self.movie_showtimes[ theater ].mpaa, "plotoutline": other, "Plot": info.plot, "Duration": info.duration, "MPAA": info.mpaa, "Genre": info.genre, "Director": info.director, "Writer": info.writer, "Studio": info.studio, "Year": info.year, "Rating": info.user_rating, "Votes": info.user_votes, "Tagline": info.tagline, "Cast": info.cast } )
+                        # here we download the thumb and set the value to it's cached filepath
+                        listitem.setThumbnailImage( info.poster )
+                        # set the infolabels
+                        listitem.setInfo( type="Video", infoLabels={ "Title": info.title, "Premiered": self.movie_showtimes[ theater ].premiered, "TVShowTitle": self.movie_showtimes[ theater ].mpaa, "plotoutline": other, "Plot": info.plot, "Duration": info.duration, "MPAA": info.mpaa, "Genre": info.genre, "Director": info.director, "Writer": info.writer, "Studio": info.studio, "Year": info.year, "Rating": info.user_rating, "Votes": info.user_votes, "Tagline": info.tagline, "Cast": info.cast, "Trailer": info.trailer } )
                     self.getControl( self.CONTROL_INFO_LIST ).addItem( listitem )
             else:
                 self.getControl( self.CONTROL_INFO_LIST ).addItem( self.strings[ 30006 ] )
@@ -197,8 +201,8 @@ class GUI( xbmcgui.WindowXML ):
 
     def _set_trailer_button( self, info ):
         # set the play trailer buttons enabled status
-        self.getControl( self.CONTROL_BUTTON_TRAILER ).setEnabled( info is not None and self.settings[ "trailer" ] )
-        self.getControl( self.CONTROL_BUTTON_TRAILER ).setVisible( self.settings[ "trailer" ] )
+        self.getControl( self.CONTROL_BUTTON_TRAILER ).setEnabled( info is not None and ( info.trailer != "" or self.settings[ "trailer" ] ) )
+        #self.getControl( self.CONTROL_BUTTON_TRAILER ).setVisible( self.settings[ "trailer" ] )
         
     def _fill_cast( self, listitem ):
         xbmcgui.lock()
@@ -214,6 +218,7 @@ class GUI( xbmcgui.WindowXML ):
             self.plot = xbmc.getInfoLabel( "Container(100).ListItem.Plot" )
             self.director = xbmc.getInfoLabel( "Container(100).ListItem.Director" )
             self.year = int( xbmc.getInfoLabel( "Container(100).ListItem.Year" ) )
+            self.trailer = xbmc.getInfoImage( "Container(100).ListItem.Trailer" )
             # we actually use the ListItem.CastAndRole infolabel to fill the list
             role = xbmc.getInfoLabel( "Container(100).ListItem.CastAndRole" ).split( "\n" )
             # enumerate through our cast list and set cast and role
@@ -272,44 +277,48 @@ class GUI( xbmcgui.WindowXML ):
         #xbmcgui.unlock()
 
     def _play_trailer( self ):
-        title = "%"
-        for char in self.title:
-            if ( not char.isalnum() ):
-                title += "%"
-            else:
-                title += char
-        title += "%"
-        records = Records( db_path=self.settings[ "amt_db_path" ] )
-        result = records.fetch( self.TRAILER_SQL, ( title, ) )
-        records.close()
-        if ( result ):
-            trailers = self._get_trailer_url( result[ 0 ], eval( result[ 3 ] ), eval( result[ 13 ] ) )
-            if ( trailers ):
+        thumbnail = ""
+        trailers = [ self.trailer ]
+        if ( self.settings[ "trailer" ] ):
+            title = "%"
+            for char in self.title:
+                if ( not char.isalnum() ):
+                    title += "%"
+                else:
+                    title += char
+            title += "%"
+            records = Records( db_path=self.settings[ "amt_db_path" ] )
+            result = records.fetch( self.TRAILER_SQL, ( title, ) )
+            records.close()
+            if ( result ):
+                trailers = self._get_trailer_url( result[ 0 ], eval( result[ 3 ] ), eval( result[ 13 ] ) )
                 # set the thumbnail
-                thumbnail = ""
                 if ( result[ 4 ] and result[ 4 ] is not None ):
                     thumbnail = xbmc.translatePath( os.path.join( "Q:\\UserData", "script_data", "Apple Movie Trailers", ".cache", result[ 4 ][ 0 ], result[ 4 ] ) )
-                # set the default icon
-                icon = "DefaultVideo.png"
-                # create our playlist
-                playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
-                # clear any possible entries
-                playlist.clear()
-                # enumerate thru and add our item
-                for count, trailer in enumerate( trailers ):
-                    # only need to add label, icon and thumbnail, setInfo() and addSortMethod() takes care of label2
-                    listitem = xbmcgui.ListItem( self.title, iconImage=icon, thumbnailImage=thumbnail )
-                    # set the key information
-                    listitem.setInfo( "video", { "Title": "%s%s" % ( self.title, ( "", " (%s %d)" % ( self.strings[ 30017 ], count + 1, ) )[ len( trailers ) > 1 ], ), "Genre": self.genre, "Director": self.director, "PlotOutline": self.plot, "Year": self.year } )
-                    # add our item
-                    playlist.add( trailer, listitem )
-                # mark the video watched
-                #if ( self.settings[ "mark_watched" ] ):
-                #    self._mark_watched()
-                # we're finished
-                #pDialog.close()
-                # play the playlist (TODO: when playlist can set the player core, add this back in)
-                xbmc.Player().play( playlist )
+        if ( trailers ):
+            # set the default icon
+            icon = "DefaultVideo.png"
+            # create our playlist
+            playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
+            # clear any possible entries
+            playlist.clear()
+            # enumerate thru and add our item
+            for count, trailer in enumerate( trailers ):
+                print trailer[ :50]
+                print trailer[50:]
+                # only need to add label, icon and thumbnail, setInfo() and addSortMethod() takes care of label2
+                listitem = xbmcgui.ListItem( self.title, iconImage=icon, thumbnailImage=thumbnail )
+                # set the key information
+                listitem.setInfo( "video", { "Title": "%s%s" % ( self.title, ( "", " (%s %d)" % ( self.strings[ 30017 ], count + 1, ) )[ len( trailers ) > 1 ], ), "Genre": self.genre, "Director": self.director, "PlotOutline": self.plot, "Year": self.year } )
+                # add our item
+                playlist.add( trailer, listitem )
+            # mark the video watched
+            #if ( self.settings[ "mark_watched" ] ):
+            #    self._mark_watched()
+            # we're finished
+            #pDialog.close()
+            # play the playlist (TODO: when playlist can set the player core, add this back in)
+            xbmc.Player().play( playlist )
         else:
             xbmcgui.Dialog().ok( self.strings[ 30000 ], self.strings[ 30100 ] )
 
