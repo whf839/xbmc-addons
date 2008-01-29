@@ -8,7 +8,7 @@ Nuka1195
 __plugin__ = "Theater Showtimes Plugin"
 __author__ = "nuka1195/Jezz_X"
 __url__ = "http://code.google.com/p/xbmc-addons/"
-__svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/programs/Theater%20Showtimes%20Plugin"
+__svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Theater%20Showtimes%20Plugin"
 __credits__ = "Team XBMC"
 __version__ = "1.0"
 __svn_revision__ = 0
@@ -26,8 +26,6 @@ from random import randrange
 from showtimesAPI import IMDbClient
 from pysqlite2 import dbapi2 as sqlite
 
-import traceback
-
 
 class GUI( xbmcgui.WindowXML ):
     # we need to store the strings as they do not exists after the call to endOfDirector()
@@ -36,7 +34,7 @@ class GUI( xbmcgui.WindowXML ):
     for stringId in range( 30000, 30029 ):
         strings[ stringId ] = xbmc.getLocalizedString( stringId )
     # error message strings
-    for stringId in range( 30100, 30101 ):
+    for stringId in range( 30100, 30102 ):
         strings[ stringId ] = xbmc.getLocalizedString( stringId )
 
     # end the directory (failed) since this does not fill a media list
@@ -97,7 +95,6 @@ class GUI( xbmcgui.WindowXML ):
         self.settings[ "local" ] = xbmcplugin.getSetting( "local" )
         self.settings[ "scraper" ] = xbmcplugin.getSetting( "scraper" )
         self.settings[ "day" ] = int( xbmcplugin.getSetting( "day" ) )
-        #self.settings[ "imdb_full_details" ] = xbmcplugin.getSetting( "imdb_full_details" ) == "true"
         self.settings[ "trailer" ] = xbmcplugin.getSetting( "trailer" ) == "true"
         self.settings[ "amt_db_path" ] = xbmcplugin.getSetting( "amt_db_path" )
         self.settings[ "quality" ] = int( xbmcplugin.getSetting( "quality" ) )
@@ -110,7 +107,7 @@ class GUI( xbmcgui.WindowXML ):
         self.ShowtimesFetcher = showtimesScraper.ShowtimesFetcher()
 
     def _get_imdb_fetcher( self ):
-        self.IMDBFetcher = IMDbClient.IMDBFetcher()
+        self.IMDbFetcher = IMDbClient.IMDbFetcher()
 
     def _show_dialog( self ):
         try:
@@ -165,11 +162,13 @@ class GUI( xbmcgui.WindowXML ):
                     # fetch movie details
                     info = self._get_details( self.theaters[ count ] )
                     # create our listitem
-                    listitem = xbmcgui.ListItem( theater, self.movie_showtimes[ theater ].label2, thumbnailImage="" )
+                    listitem = xbmcgui.ListItem( theater, self.movie_showtimes[ theater ].label2, iconImage="a", thumbnailImage="a" )
                     if ( info is None ):
                         # fill in all the info
                         listitem.setInfo( type="Video", infoLabels={ "Duration": self.movie_showtimes[ theater ].duration, "TVShowTitle": self.movie_showtimes[ theater ].mpaa, "Genre": self.movie_showtimes[ theater ].genre, "Premiered": self.movie_showtimes[ theater ].premiered } )
                     else:
+                        if ( info.plot == "" ):
+                            info.plot = self.strings[ 30101 ]
                         # set plotoutline to all info that isn't covered by an infolabel
                         other = self._create_other( info )
                         # here we download the thumb and set the value to it's cached filepath
@@ -194,7 +193,7 @@ class GUI( xbmcgui.WindowXML ):
             imdb = self.imdb
         if ( imdb ):
             # fetch movie details
-            info = self.IMDBFetcher.fetch_info( imdb )
+            info = self.IMDbFetcher.fetch_info( imdb )
         # set the play trailer buttons status
         self._set_trailer_button( info )
         return info
@@ -202,7 +201,6 @@ class GUI( xbmcgui.WindowXML ):
     def _set_trailer_button( self, info ):
         # set the play trailer buttons enabled status
         self.getControl( self.CONTROL_BUTTON_TRAILER ).setEnabled( info is not None and ( info.trailer != "" or self.settings[ "trailer" ] ) )
-        #self.getControl( self.CONTROL_BUTTON_TRAILER ).setVisible( self.settings[ "trailer" ] )
         
     def _fill_cast( self, listitem ):
         xbmcgui.lock()
@@ -219,6 +217,7 @@ class GUI( xbmcgui.WindowXML ):
             self.director = xbmc.getInfoLabel( "Container(100).ListItem.Director" )
             self.year = int( xbmc.getInfoLabel( "Container(100).ListItem.Year" ) )
             self.trailer = xbmc.getInfoImage( "Container(100).ListItem.Trailer" )
+            self.thumb = xbmc.getInfoImage( "Container(100).ListItem.Thumb" )
             # we actually use the ListItem.CastAndRole infolabel to fill the list
             role = xbmc.getInfoLabel( "Container(100).ListItem.CastAndRole" ).split( "\n" )
             # enumerate through our cast list and set cast and role
@@ -277,7 +276,7 @@ class GUI( xbmcgui.WindowXML ):
         #xbmcgui.unlock()
 
     def _play_trailer( self ):
-        thumbnail = ""
+        thumbnail = self.thumb
         trailers = [ self.trailer ]
         if ( self.settings[ "trailer" ] ):
             title = "%"
@@ -304,8 +303,6 @@ class GUI( xbmcgui.WindowXML ):
             playlist.clear()
             # enumerate thru and add our item
             for count, trailer in enumerate( trailers ):
-                print trailer[ :50]
-                print trailer[50:]
                 # only need to add label, icon and thumbnail, setInfo() and addSortMethod() takes care of label2
                 listitem = xbmcgui.ListItem( self.title, iconImage=icon, thumbnailImage=thumbnail )
                 # set the key information
@@ -316,7 +313,6 @@ class GUI( xbmcgui.WindowXML ):
             #if ( self.settings[ "mark_watched" ] ):
             #    self._mark_watched()
             # we're finished
-            #pDialog.close()
             # play the playlist (TODO: when playlist can set the player core, add this back in)
             xbmc.Player().play( playlist )
         else:
@@ -378,15 +374,12 @@ class GUI( xbmcgui.WindowXML ):
         self.controlId = self.getFocusId()
 
     def onAction( self, action ):
-        try:
-            if ( action.getButtonCode() in self.CANCEL_DIALOG ):
-                self._close_dialog()
-            elif ( action.getButtonCode() in self.THEATER_LIST ):
-                self._show_dialog()
-            elif ( self.controlId in ( self.CONTROL_INFO_LIST, self.CONTROL_INFO_LIST_SCROLLBAR, ) ):
-                self._fill_cast( self.getControl( self.CONTROL_INFO_LIST ).getSelectedItem() )
-        except:
-            traceback.print_exc()
+        if ( action.getButtonCode() in self.CANCEL_DIALOG ):
+            self._close_dialog()
+        elif ( action.getButtonCode() in self.THEATER_LIST ):
+            self._show_dialog()
+        elif ( self.controlId in ( self.CONTROL_INFO_LIST, self.CONTROL_INFO_LIST_SCROLLBAR, ) ):
+            self._fill_cast( self.getControl( self.CONTROL_INFO_LIST ).getSelectedItem() )
 
 
 class Records:
