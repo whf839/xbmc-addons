@@ -33,6 +33,7 @@
 
     <!-- Error messages -->
     <string id="30100">No trailer was found for this movie.</string>
+    <string id="30101">No plot was found for this movie.</string>
 
     <!-- Settings -->
     <string id="30500">Zipcode/Post Code or City, State</string>

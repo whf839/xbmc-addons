@@ -11,6 +11,7 @@ if ( __name__ != "__main__" ):
     import xbmc
 
 import urllib
+import urllib2
 import re
 from htmllib import HTMLParser
 
@@ -20,7 +21,7 @@ class _Info:
         self.__dict__.update( kwargs )
 
 
-class _IMDBParser:
+class _IMDbParser:
     """ 
         Parser Class: parses an html document for movie info
     """
@@ -60,13 +61,12 @@ class _IMDBParser:
     pattern_poster = re.compile( '<a name="poster".*?src="([^"]*)' )
     pattern_cast = re.compile( '<table class="cast">.*' )
     pattern_cast2 = re.compile( 'href="/name/nm[0-9]*/">([^<]*).*?<td class="char">(.*?)</td>' )
-    pattern_trailer = re.compile( 'a href="/title/[^/]*/trailers-([^"]*)' )
+    pattern_trailer = re.compile( '<a href="([^"]*)" onClick=[^>]*link=/video/|link=/title/[^\']*screenplay' )
     pattern_trailer2 = re.compile( 'so.addVariable\("file", "([^"]*)' )
-#?link=/title/tt0760329/trailers-screenplay-E33381-314';">
 
     def __init__( self ):
         self.info = _Info()
-        self.base_trailer = "http://www.imdb.com/video/title/%s/player"
+        self.base_url = "http://www.imdb.com"
 
     def parse( self, htmlSource ):
         # title
@@ -271,7 +271,7 @@ class _IMDBParser:
         self.info.trailer = ""
         matches = self.pattern_trailer.findall( htmlSource )
         if ( matches ):
-            self.info.trailer = self.base_trailer % ( matches[ 0 ], )
+            self.info.trailer = self.base_url + matches[ 0 ] + "/player"
 
     def parse_trailer( self, htmlSource ):
         self.info.trailer = ""
@@ -279,11 +279,11 @@ class _IMDBParser:
         if ( matches ):
             self.info.trailer = urllib.unquote( matches[ 0 ] )
 
-    def _clean_text1( self, text ):
+    def _clean_text( self, text ):
         text = re.sub( self.pattern_clean, '', text ).strip()
         return unicode( text.replace( "&lt;", "<" ).replace( "&gt;", ">" ).replace( "&quot;", '"' ).replace( "&amp;", "&" ).replace( "&#38;", "&" ).replace( "&#39;", "'" ), "iso-8859-1" )
 
-    def _clean_text( self, text ):
+    def _clean_text1( self, text ):
         try:
             text = text.strip()
             parser = HTMLParser( None )
@@ -294,7 +294,7 @@ class _IMDBParser:
             return text
 
 
-class IMDBFetcher:
+class IMDbFetcher:
     def __init__( self ):
         # create the cache folder if it does not exist
         self.base_cache_path = self._create_base_cache_path()
@@ -334,10 +334,12 @@ class IMDBFetcher:
                 file_object.write( htmlSource )
                 file_object.close()
             # Parse htmlSource for showtimes
-            self.parser = _IMDBParser()
+            self.parser = _IMDbParser()
             self.parser.parse( htmlSource )
             # parse htmlSource for movie trailer
-            self._get_trailer( self.parser.info.trailer )
+            self._get_trailer( url, file_path )
+            # fetch trailer poster
+            self._fetch_poster( self.parser.info.poster, file_path )
             # return the IMDb info
             return self.parser.info
         except:
@@ -345,25 +347,53 @@ class IMDBFetcher:
             print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             return None
 
-    def _get_trailer( self, url ):
-            # create the cache filename
-            file_path = self._get_cache_name( url ) + "_player"
-            # Open url or local cache file
-            if ( os.path.exists( file_path ) ):
-                usock = open( file_path, "r" )
-            else:
-                usock = urllib.urlopen( url )
-            # read source
-            htmlSource = usock.read()
-            # close socket
-            usock.close()
-            # Save htmlSource to a file
-            if ( not os.path.exists( file_path ) ):
-                file_object = open( file_path, "w" )
-                file_object.write( htmlSource )
-                file_object.close()
-            # Parse htmlSource for trailer url
-            self.parser.parse_trailer( htmlSource )
+    def _fetch_poster( self, url, file_path ):
+        # create the cache filename
+        file_path += ".jpg"
+        try:
+            if ( url ):
+                # retrieve poster from IMDb if it is not cached
+                if ( not os.path.exists( file_path ) and url != "" ):
+                    urllib.urlretrieve( url, file_path )
+                self.parser.info.poster = file_path
+        except:
+            urllib.urlcleanup()
+            remove_tries = 3
+            while remove_tries and os.path.isfile( filepath ):
+                try:
+                    os.remove( filepath )
+                except:
+                    remove_tries -= 1
+                    xbmc.sleep( 1000 )
+
+    def _get_trailer( self, url, file_path ):
+        try:
+            if ( self.parser.info.trailer ):
+                # create our file path
+                filepath = file_path + "_trailer"
+                # if cached file exists use it
+                if ( os.path.exists( filepath ) ):
+                    usock = open( filepath, "r" )
+                else:
+                    # request the player url
+                    request = urllib2.Request( self.parser.info.trailer )
+                    # build the opener object
+                    opener = urllib2.build_opener()
+                    # open the redirect
+                    usock = opener.open( request )
+                # read source
+                htmlSource = usock.read()
+                # close socket
+                usock.close()
+                # Save htmlSource to a file
+                if ( not os.path.exists( filepath ) ):
+                    file_object = open( filepath, "w" )
+                    file_object.write( htmlSource )
+                    file_object.close()
+                # Parse htmlSource for trailer url
+                self.parser.parse_trailer( htmlSource )
+        except:
+            pass
 
     def _get_cache_name( self, url ):
         # get the imdb title code
@@ -376,15 +406,12 @@ class IMDBFetcher:
         else:
             return file_path
 
-# used for testing only
-debug = False
-debugWrite = False
 
 if ( __name__ == "__main__" ):
-    url = [ "http://www.imdb.com/title/tt0760329/", "http://www.imdb.com/title/tt0880578/", "http://www.imdb.com/title/tt0080684/", "http://www.imdb.com/title/tt0472062/",  "http://www.imdb.com/title/tt0462499/", "http://www.imdb.com/title/tt0389790/", "http://www.imdb.com/title/tt0442933/", "http://www.imdb.com/title/tt0085106/" ]
+    url = [ "http://www.imdb.com/title/tt1073498/", "http://www.imdb.com/title/tt0760329/", "http://www.imdb.com/title/tt0880578/", "http://www.imdb.com/title/tt0080684/", "http://www.imdb.com/title/tt0472062/",  "http://www.imdb.com/title/tt0462499/", "http://www.imdb.com/title/tt0389790/", "http://www.imdb.com/title/tt0442933/", "http://www.imdb.com/title/tt0085106/" ]
 
     for cnt in range( 1 ):
-        info = IMDBFetcher().fetch_info( url[ cnt ] )
+        info = IMDbFetcher().fetch_info( url[ cnt ] )
         if ( info ):
             for attr in dir( info ):
                 if ( not attr.startswith( "__" ) ):
