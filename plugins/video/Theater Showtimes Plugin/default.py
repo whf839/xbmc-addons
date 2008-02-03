@@ -97,6 +97,7 @@ class GUI( xbmcgui.WindowXML ):
         self.settings[ "local" ] = xbmcplugin.getSetting( "local" )
         self.settings[ "scraper" ] = xbmcplugin.getSetting( "scraper" )
         self.settings[ "day" ] = int( xbmcplugin.getSetting( "day" ) )
+        self.settings[ "autoshow" ] = xbmcplugin.getSetting( "autoshow" ) == "true"
         self.settings[ "trailer" ] = xbmcplugin.getSetting( "trailer" ) == "true"
         self.settings[ "amt_db_path" ] = xbmcplugin.getSetting( "amt_db_path" )
         self.settings[ "quality" ] = int( xbmcplugin.getSetting( "quality" ) )
@@ -368,15 +369,15 @@ class GUI( xbmcgui.WindowXML ):
     def onClick( self, controlId ):
         if ( controlId == self.CONTROL_INFO_LIST ):
             self._get_selection( self.theaters[ self.getControl( controlId ).getSelectedPosition() ] )
-        #elif ( controlId in ( self.CONTROL_BUTTON_PLOT, self.CONTROL_BUTTON_DETAILS, self.CONTROL_BUTTON_CAST, self.CONTROL_BUTTON_OTHER ) ):
-        #    self._show_info( controlId )
+        elif ( controlId in ( self.CONTROL_BUTTON_PLOT, self.CONTROL_BUTTON_DETAILS, self.CONTROL_BUTTON_CAST, self.CONTROL_BUTTON_OTHER ) ):
+            self._show_info( controlId )
         elif ( controlId == self.CONTROL_BUTTON_TRAILER ):
             self._play_trailer()
 
     def onFocus( self, controlId ):
         xbmc.sleep( 5 )
         self.controlId = self.getFocusId()
-        if ( controlId in ( self.CONTROL_BUTTON_PLOT, self.CONTROL_BUTTON_DETAILS, self.CONTROL_BUTTON_CAST, self.CONTROL_BUTTON_OTHER ) ):
+        if ( self.settings[ "autoshow" ] and controlId in ( self.CONTROL_BUTTON_PLOT, self.CONTROL_BUTTON_DETAILS, self.CONTROL_BUTTON_CAST, self.CONTROL_BUTTON_OTHER ) ):
             self._show_info( controlId )
 
     def onAction( self, action ):
