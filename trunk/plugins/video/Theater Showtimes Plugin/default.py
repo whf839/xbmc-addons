@@ -6,10 +6,10 @@ Nuka1195
 
 # Script constants
 __plugin__ = "Theater Showtimes Plugin"
-__author__ = "nuka1195/Jezz_X"
+__author__ = "nuka1195"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Theater%20Showtimes%20Plugin"
-__credits__ = "Team XBMC"
+__credits__ = "Team XBMC/Jezz_X"
 __version__ = "1.0"
 __svn_revision__ = 0
 
@@ -25,6 +25,8 @@ from random import randrange
 
 from showtimesAPI import IMDbClient
 from pysqlite2 import dbapi2 as sqlite
+
+import traceback
 
 
 class GUI( xbmcgui.WindowXML ):
@@ -67,19 +69,19 @@ class GUI( xbmcgui.WindowXML ):
     TRAILER_SQL = "SELECT * FROM movies WHERE movies.title LIKE ?;"
 
     def __init__( self, *args, **kwargs ):
-        xbmcgui.lock()
+        #xbmcgui.lock()
         self.startup = True
         self._get_settings()
         self._get_scraper()
         self._get_imdb_fetcher()
-        xbmcgui.unlock()
+        #xbmcgui.unlock()
 
     def onInit( self ):
         if ( self.startup ):
             self.startup = False
             self._set_controls_labels()
             # set the play trailer buttons status
-            self._set_trailer_button( None )
+            self._set_trailer_button()
             self._show_dialog()
             self._show_info( self.CONTROL_BUTTON_PLOT )
 
@@ -174,7 +176,9 @@ class GUI( xbmcgui.WindowXML ):
                         # here we download the thumb and set the value to it's cached filepath
                         listitem.setThumbnailImage( info.poster )
                         # set the infolabels
-                        listitem.setInfo( type="Video", infoLabels={ "Title": info.title, "Premiered": self.movie_showtimes[ theater ].premiered, "TVShowTitle": self.movie_showtimes[ theater ].mpaa, "plotoutline": other, "Plot": info.plot, "Duration": info.duration, "MPAA": info.mpaa, "Genre": info.genre, "Director": info.director, "Writer": info.writer, "Studio": info.studio, "Year": info.year, "Rating": info.user_rating, "Votes": info.user_votes, "Tagline": info.tagline, "Cast": info.cast, "Trailer": info.trailer } )
+                        listitem.setInfo( type="Video", infoLabels={ "Title": info.title, "Premiered": self.movie_showtimes[ theater ].premiered, "TVShowTitle": self.movie_showtimes[ theater ].mpaa, "Plot": info.plot, "Duration": info.duration, "MPAA": info.mpaa, "Genre": info.genre, "Director": info.director, "Writer": info.writer, "Studio": info.studio, "Year": info.year, "Rating": info.user_rating, "Votes": info.user_votes, "Tagline": info.tagline, "Cast": info.cast, "Trailer": info.trailer } )
+                        # set the other info
+                        listitem.setProperty( "OtherInfo", other )
                     self.getControl( self.CONTROL_INFO_LIST ).addItem( listitem )
             else:
                 self.getControl( self.CONTROL_INFO_LIST ).addItem( self.strings[ 30006 ] )
@@ -194,13 +198,11 @@ class GUI( xbmcgui.WindowXML ):
         if ( imdb ):
             # fetch movie details
             info = self.IMDbFetcher.fetch_info( imdb )
-        # set the play trailer buttons status
-        self._set_trailer_button( info )
         return info
 
-    def _set_trailer_button( self, info ):
+    def _set_trailer_button( self, trailer=None ):
         # set the play trailer buttons enabled status
-        self.getControl( self.CONTROL_BUTTON_TRAILER ).setEnabled( info is not None and ( info.trailer != "" or self.settings[ "trailer" ] ) )
+        self.getControl( self.CONTROL_BUTTON_TRAILER ).setEnabled( trailer is not None and ( trailer != "" or self.settings[ "trailer" ] ) )
         
     def _fill_cast( self, listitem ):
         xbmcgui.lock()
@@ -230,6 +232,8 @@ class GUI( xbmcgui.WindowXML ):
                 actor_icon = "DefaultActorBig.png"
                 # add the item to our cast list
                 self.getControl( self.CONTROL_INFO_CAST ).addItem( xbmcgui.ListItem( role[ count ], iconImage=actor_icon, thumbnailImage=actor_thumbnail ) )
+            # set the play trailer buttons status
+            self._set_trailer_button( self.trailer )
         xbmcgui.unlock()
 
     def _create_other( self, info ):
@@ -264,16 +268,16 @@ class GUI( xbmcgui.WindowXML ):
         return other
 
     def _show_info( self, controlId ):
-        #xbmcgui.lock()
+        xbmcgui.lock()
         self.getControl( self.CONTROL_INFO_PLOT ).setVisible( controlId == self.CONTROL_BUTTON_PLOT )
         self.getControl( self.CONTROL_INFO_DETAILS ).setVisible( controlId == self.CONTROL_BUTTON_DETAILS )
         self.getControl( self.CONTROL_INFO_CAST ).setVisible( controlId == self.CONTROL_BUTTON_CAST )
         self.getControl( self.CONTROL_INFO_OTHER ).setVisible( controlId == self.CONTROL_BUTTON_OTHER )
-        self.getControl( self.CONTROL_BUTTON_PLOT ).setEnabled( controlId != self.CONTROL_BUTTON_PLOT )
-        self.getControl( self.CONTROL_BUTTON_DETAILS ).setEnabled( controlId != self.CONTROL_BUTTON_DETAILS )
-        self.getControl( self.CONTROL_BUTTON_CAST ).setEnabled( controlId != self.CONTROL_BUTTON_CAST )
-        self.getControl( self.CONTROL_BUTTON_OTHER ).setEnabled( controlId != self.CONTROL_BUTTON_OTHER )
-        #xbmcgui.unlock()
+        #self.getControl( self.CONTROL_BUTTON_PLOT ).setEnabled( controlId != self.CONTROL_BUTTON_PLOT )
+        #self.getControl( self.CONTROL_BUTTON_DETAILS ).setEnabled( controlId != self.CONTROL_BUTTON_DETAILS )
+        #self.getControl( self.CONTROL_BUTTON_CAST ).setEnabled( controlId != self.CONTROL_BUTTON_CAST )
+        #self.getControl( self.CONTROL_BUTTON_OTHER ).setEnabled( controlId != self.CONTROL_BUTTON_OTHER )
+        xbmcgui.unlock()
 
     def _play_trailer( self ):
         thumbnail = self.thumb
@@ -364,14 +368,16 @@ class GUI( xbmcgui.WindowXML ):
     def onClick( self, controlId ):
         if ( controlId == self.CONTROL_INFO_LIST ):
             self._get_selection( self.theaters[ self.getControl( controlId ).getSelectedPosition() ] )
-        elif ( controlId in ( self.CONTROL_BUTTON_PLOT, self.CONTROL_BUTTON_DETAILS, self.CONTROL_BUTTON_CAST, self.CONTROL_BUTTON_OTHER ) ):
-            self._show_info( controlId )
+        #elif ( controlId in ( self.CONTROL_BUTTON_PLOT, self.CONTROL_BUTTON_DETAILS, self.CONTROL_BUTTON_CAST, self.CONTROL_BUTTON_OTHER ) ):
+        #    self._show_info( controlId )
         elif ( controlId == self.CONTROL_BUTTON_TRAILER ):
             self._play_trailer()
 
     def onFocus( self, controlId ):
         xbmc.sleep( 5 )
         self.controlId = self.getFocusId()
+        if ( controlId in ( self.CONTROL_BUTTON_PLOT, self.CONTROL_BUTTON_DETAILS, self.CONTROL_BUTTON_CAST, self.CONTROL_BUTTON_OTHER ) ):
+            self._show_info( controlId )
 
     def onAction( self, action ):
         if ( action.getButtonCode() in self.CANCEL_DIALOG ):
