@@ -12,16 +12,16 @@
 			<posy>0</posy>
 			<width>720</width>
 			<height>576</height>
-			<texture>black.png</texture>
+			<texture>showtimes-black.png</texture>
 			<animation effect="fade" time="2000">WindowOpen</animation>
 		</control>
-		<control type="image" id="1">
+		<control type="image" id="0">
 			<description>background image</description>
 			<posx>25</posx>
 			<posy>35</posy>
 			<width>670</width>
 			<height>535</height>
-			<texture>dialog-panel2.png</texture>
+			<texture border="20">showtimes-dialog-panel.png</texture>
 		</control>
 		<!-- ** Optional ** -->
 		<control type="image">
@@ -97,7 +97,7 @@
 			<scrolltime>200</scrolltime>
 			<onup>100</onup>
 			<ondown>100</ondown>
-			<onleft>305</onleft>
+			<onleft>3040</onleft>
 			<onright>101</onright>
 			<pagecontrol>101</pagecontrol>
 			<itemlayout height="65">
@@ -107,7 +107,7 @@
 					<posx>0</posx>
 					<posy>0</posy>
 					<texture border="5">showtimes-input-nofocus.png</texture>
-					<animation effect="zoom" end="0,0,490,62" condition="!Control.IsVisible(101) + Window.IsActive(script-Theater_Showtimes_Plugin-main.xml)">Conditional</animation>
+					<!--animation effect="zoom" end="0,0,490,62" condition="!Control.IsVisible(101) + Window.IsActive(script-Theater_Showtimes_Plugin-main.xml)">Conditional</animation-->
 				</control>
 				<control type="label">
 					<posx>5</posx>
@@ -161,7 +161,7 @@
 					<posx>0</posx>
 					<posy>0</posy>
 					<texture border="5">showtimes-input-nofocus.png</texture>
-					<animation effect="zoom" end="0,0,470,62" condition="!Control.IsVisible(101) + Window.IsActive(script-Theater_Showtimes_Plugin-main.xml)">Conditional</animation>
+					<!--animation effect="zoom" end="0,0,470,62" condition="!Control.IsVisible(101) + Window.IsActive(script-Theater_Showtimes_Plugin-main.xml)">Conditional</animation-->
 					<visible>!Control.HasFocus(100)</visible>
 				</control>
 				<control type="image">
@@ -170,7 +170,7 @@
 					<posx>0</posx>
 					<posy>0</posy>
 					<texture border="5">showtimes-input-focus.png</texture>
-					<animation effect="zoom" end="0,0,490,62" condition="!Control.IsVisible(101) + Window.IsActive(script-Theater_Showtimes_Plugin-main.xml)">Conditional</animation>
+					<!--animation effect="zoom" end="0,0,490,62" condition="!Control.IsVisible(101) + Window.IsActive(script-Theater_Showtimes_Plugin-main.xml)">Conditional</animation-->
 					<visible>Control.HasFocus(100)</visible>
 				</control>
 				<control type="label">
@@ -247,7 +247,7 @@
 				<textureslidernibfocus>-</textureslidernibfocus>
 				<onleft>100</onleft>
 				<onright>4000</onright>
-				<showonepage>false</showonepage>
+				<showonepage>true</showonepage>
 				<orientation>vertical</orientation>
 			</control>
 			<control type="button">
@@ -270,13 +270,14 @@
 			<height>195</height>
 			<aspectratio>keep</aspectratio>
 			<texture fallback="showtimes-blank-poster.png">$INFO[Container(100).ListItem.Thumb]</texture>
+            <!--texture>$INFO[Container(100).ListItem.Thumb]</texture-->
 		</control>
 		<control type="image">
 			<posx>55</posx>
 			<posy>303</posy>
 			<width>620</width>
 			<height>10</height>
-			<texture>separator.png</texture>
+			<texture>showtimes-separator.png</texture>
 		</control>
 		<control type="group" id="4000">
             <control type="button" id="401">
@@ -370,36 +371,39 @@
                 <ondown>401</ondown>
             </control>
         </control>
-		<control type="textbox" id="301">
-			<description>Plot Textbox</description>
-			<posx>200</posx>
-			<posy>315</posy>
-			<width>445</width>
-			<height>210</height>
-			<pagecontrol>305</pagecontrol>
-			<font>font12</font>
-			<textcolor>FFFFFFFF</textcolor>
-			<align>justify</align>
+
+        <control type="textbox" id="301">
+            <description>Plot Textbox</description>
+            <posx>200</posx>
+            <posy>315</posy>
+            <width>445</width>
+            <height>210</height>
+            <pagecontrol>3010</pagecontrol>
+            <font>font13</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <align>justify</align>
             <info>Container(100).ListItem.Plot</info>
-			<label>-</label>
-			<onleft>4000</onleft>
-			<onright>3020</onright>
-			<onup>5</onup>
-			<ondown>5</ondown>
-		</control>
-		<control type="group" id="302">
-            <visible>!IsEmpty(Container(100).ListItem.Plot)</visible>
-            <control type="grouplist" id="3020">
+            <label>-</label>
+            <onleft>4000</onleft>
+            <onright>302</onright>
+            <onup>301</onup>
+            <ondown>301</ondown>
+        </control>
+        <control type="group" id="302">
+            <onleft>301</onleft>
+            <onright>303</onright>
+            <visible>!IsEmpty(Container(100).ListItem.Plot) + !Control.IsVisible(301) + !Control.IsVisible(303) + !Control.IsVisible(304)</visible>
+            <control type="grouplist" id="3025">
                 <posx>200</posx>
                 <posy>315</posy>
                 <width>350</width>
                 <height>210</height>
                 <onleft>301</onleft>
                 <onright>303</onright>
-                <onup>3020</onup>
-                <ondown>3020</ondown>
+                <onup>3025</onup>
+                <ondown>3025</ondown>
                 <orientation>vertical</orientation>
-                <pagecontrol>305</pagecontrol>
+                <pagecontrol>3020</pagecontrol>
                 <scrolltime>200</scrolltime>
                 <control type="label">
                     <description>Director</description>
@@ -510,257 +514,270 @@
                     <visible>!IsEmpty(Container(100).ListItem.MPAA)</visible>
                 </control>
             </control>
-		</control>
-
-		<!--control type="list" id="302">
-			<description>Details List Container</description>
-			<posx>200</posx>
-			<posy>315</posy>
-			<width>350</width>
-			<height>210</height>
-			<onleft>301</onleft>
-			<onright>303</onright>
-			<onup>302</onup>
-			<ondown>302</ondown>
-			<orientation>vertical</orientation>
-			<pagecontrol>305</pagecontrol>
-			<scrolltime>200</scrolltime>
-			<itemlayout width="250" height="29">
-				<control type="label">
-					<posx>0</posx>
-					<posy>3</posy>
-					<width>150</width>
-					<height>22</height>
-					<font>font13</font>
-					<aligny>center</aligny>
-					<selectedcolor>green</selectedcolor>
-					<align>left</align>
-					<info>ListItem.Label</info>
-				</control>
-				<control type="label">
-					<posx>100</posx>
-					<posy>3</posy>
-					<width>320</width>
-					<height>22</height>
-					<font>font13</font>
-					<aligny>center</aligny>
-					<selectedcolor>green</selectedcolor>
-					<align>left</align>
-					<info>ListItem.Label2</info>
-				</control>
-			</itemlayout>
-			<focusedlayout height="29" width="250">
-				<control type="image">
-					<width>320</width>
-					<height>22</height>
-					<posx>0</posx>
-					<posy>0</posy>
-					<texture border="5">showtimes-input-focus.png</texture>
-					<visible>Control.HasFocus(302)</visible>
-				</control>
-				<control type="label">
-					<posx>0</posx>
-					<posy>3</posy>
-					<width>320</width>
-					<height>22</height>
-					<font>font13</font>
-					<aligny>center</aligny>
-					<selectedcolor>green</selectedcolor>
-					<align>left</align>
-					<info>ListItem.Label</info>
-				</control>
-				<control type="label">
-					<posx>100</posx>
-					<posy>3</posy>
-					<width>320</width>
-					<height>22</height>
-					<font>font13</font>
-					<aligny>center</aligny>
-					<selectedcolor>green</selectedcolor>
-					<align>left</align>
-					<info>ListItem.Label2</info>
-				</control>
-			</focusedlayout>
-			<content>
-				<item>
-					<label>199</label>
-					<label2>$INFO[Container(100).ListItem.Director]</label2>
-					<onclick>-</onclick>
-					<visible>!IsEmpty(Container(100).ListItem.Director)</visible>
-				</item>
-				<item>
-					<label>200</label>
-					<label2>$INFO[Container(100).ListItem.Writer]</label2>
-					<onclick>-</onclick>
-					<visible>!IsEmpty(Container(100).ListItem.Writer)</visible>
-				</item>
-				<item>
-					<label>$LOCALIZE[572]:</label>
-					<label2>$INFO[Container(100).ListItem.Studio]</label2>
-					<onclick>-</onclick>
-					<visible>!IsEmpty(Container(100).ListItem.Studio)</visible>
-				</item>
-				<item>
-					<label>174</label>
-					<label2>$INFO[Container(100).ListItem.Genre]</label2>
-					<onclick>-</onclick>
-					<visible>!IsEmpty(Container(100).ListItem.Genre)</visible>
-				</item>
-				<item>
-					<label>201</label>
-					<label2>$INFO[Container(100).ListItem.Year]</label2>
-					<onclick>-</onclick>
-					<visible>!IsEmpty(Container(100).ListItem.Year)</visible>
-				</item>
-				<item>
-					<label>2050</label>
-					<label2>$INFO[Container(100).ListItem.Duration]</label2>
-					<onclick>-</onclick>
-					<visible>!IsEmpty(Container(100).ListItem.Duration)</visible>
-				</item>
-				<item>
-					<label>204</label>
-					<label2>$INFO[Container(100).ListItem.Rating]</label2>
-					<onclick>-</onclick>
-					<visible>!IsEmpty(Container(100).ListItem.Rating)</visible>
-				</item>
-				<item>
-					<label>202</label>
-					<label2>$INFO[Container(100).ListItem.TagLine]</label2>
-					<onclick>-</onclick>
-					<visible>!IsEmpty(Container(100).ListItem.TagLine)</visible>
-				</item>
-				<item>
-					<label>20074</label>
-					<label2>$INFO[Container(100).ListItem.mpaa]</label2>
-					<onclick>-</onclick>
-					<visible>!IsEmpty(Container(100).ListItem.mpaa)</visible>
-				</item>
-			</content>
-		</control-->
+        </control>
 
         <control type="list" id="303">
-			<description>Cast List Container</description>
-			<posx>200</posx>
-			<posy>315</posy>
-			<width>350</width>
-			<height>210</height>
-			<onleft>3020</onleft>
-			<onright>304</onright>
-			<onup>303</onup>
-			<ondown>303</ondown>
-			<orientation>vertical</orientation>
-			<pagecontrol>305</pagecontrol>
-			<scrolltime>200</scrolltime>
-			<itemlayout width="250" height="29">
-				<control type="image">
-					<posx>0</posx>
-					<posy>3</posy>
-					<width>22</width>
-					<height>22</height>
-					<texture>DefaultActorBig.png</texture>
-					<info>ListItem.Icon</info>
-				</control>
-				<control type="label">
-					<posx>30</posx>
-					<posy>3</posy>
-					<width>320</width>
-					<height>22</height>
-					<font>font13</font>
-					<aligny>center</aligny>
-					<selectedcolor>green</selectedcolor>
-					<align>left</align>
-					<info>ListItem.Label</info>
-				</control>
-			</itemlayout>
-			<focusedlayout height="29" width="250">
-				<control type="image">
-					<width>350</width>
-					<height>29</height>
-					<posx>0</posx>
-					<posy>0</posy>
-					<visible>Control.HasFocus(303)</visible>
-					<texture>list-focus.png</texture>
-				</control>
-				<control type="image">
-					<posx>0</posx>
-					<posy>3</posy>
-					<width>22</width>
-					<height>22</height>
-					<texture>DefaultActorBig.png</texture>
-					<info>ListItem.Icon</info>
-				</control>
-				<control type="label">
-					<posx>30</posx>
-					<posy>3</posy>
-					<width>320</width>
-					<height>22</height>
-					<font>font13</font>
-					<aligny>center</aligny>
-					<selectedcolor>green</selectedcolor>
-					<align>left</align>
-					<info>ListItem.Label</info>
-				</control>
-			</focusedlayout>
-		</control>
-		<control type="textbox" id="304">
-			<description>Other Textbox</description>
-			<posx>200</posx>
-			<posy>315</posy>
-			<width>445</width>
-			<height>210</height>
-			<pagecontrol>305</pagecontrol>
-			<font>font12</font>
-			<textcolor>FFFFFFFF</textcolor>
-			<align>justify</align>
-            <info>Container(100).ListItem.PlotOutline</info>
-			<label>-</label>
-			<onleft>303</onleft>
-			<onright>305</onright>
-			<onup>5</onup>
-			<ondown>5</ondown>
-		</control>
-		<control type="group">
-			<posx>655</posx>
-			<posy>315</posy>
-			<control type="button">
-				<description>Scrollbar Up Arrow</description>
-				<posx>0</posx>
-				<posy>0</posy>
-				<width>20</width>
-				<height>20</height>
-				<texturenofocus>showtimes-scrollbar-up-arrow.png</texturenofocus>
-				<texturefocus>showtimes-scrollbar-up-arrow-focus.png</texturefocus>
-				<onclick>PageUp(305)</onclick>
-				<visible>Control.IsVisible(305)</visible>
-			</control>
-			<control type="scrollbar" id="305">
-				<description>Scrollbar</description>
-				<posx>0</posx>
-				<posy>20</posy>
-				<width>20</width>
-				<height>170</height>
-				<texturesliderbackground border="4">showtimes-scrollbar-bg.png</texturesliderbackground>
-				<texturesliderbar border="3">showtimes-scrollbar-bar-nofocus.png</texturesliderbar>
-				<texturesliderbarfocus border="3">showtimes-scrollbar-bar-focus.png</texturesliderbarfocus>
-				<textureslidernib>-</textureslidernib>
-				<textureslidernibfocus>-</textureslidernibfocus>
-				<onleft>304</onleft>
-				<onright>100</onright>
-				<showonepage>true</showonepage>
-				<orientation>vertical</orientation>
-			</control>
-			<control type="button">
-				<description>Scrollbar Down Arrow</description>
-				<posx>0</posx>
-				<posy>190</posy>
-				<width>20</width>
-				<height>20</height>
-				<texturenofocus>showtimes-scrollbar-down-arrow.png</texturenofocus>
-				<texturefocus>showtimes-scrollbar-down-arrow-focus.png</texturefocus>
-				<onclick>PageDown(305)</onclick>
-				<visible>Control.IsVisible(305)</visible>
-			</control>
-		</control>
-	</controls>
+            <description>Cast List Container</description>
+            <visible>!IsEmpty(Container(100).ListItem.Plot) + !Control.IsVisible(301) + !Control.IsVisible(302) + !Control.IsVisible(304)</visible>
+            <posx>200</posx>
+            <posy>315</posy>
+            <width>320</width>
+            <height>210</height>
+            <onleft>302</onleft>
+            <onright>304</onright>
+            <onup>303</onup>
+            <ondown>303</ondown>
+            <orientation>vertical</orientation>
+            <pagecontrol>3030</pagecontrol>
+            <scrolltime>200</scrolltime>
+            <itemlayout width="320" height="29">
+                <control type="image">
+                    <posx>0</posx>
+                    <posy>3</posy>
+                    <width>22</width>
+                    <height>22</height>
+                    <texture>DefaultActorBig.png</texture>
+                    <info>ListItem.Icon</info>
+                </control>
+                <control type="label">
+                    <posx>30</posx>
+                    <posy>3</posy>
+                    <width>290</width>
+                    <height>22</height>
+                    <font>font13</font>
+                    <aligny>center</aligny>
+                    <selectedcolor>green</selectedcolor>
+                    <align>left</align>
+                    <info>ListItem.Label</info>
+                </control>
+            </itemlayout>
+            <focusedlayout height="29" width="320">
+                <control type="image">
+                    <width>320</width>
+                    <height>29</height>
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <visible>Control.HasFocus(303)</visible>
+                    <texture>list-focus.png</texture>
+                </control>
+                <control type="image">
+                    <posx>0</posx>
+                    <posy>3</posy>
+                    <width>22</width>
+                    <height>22</height>
+                    <texture>DefaultActorBig.png</texture>
+                    <info>ListItem.Icon</info>
+                </control>
+                <control type="label">
+                    <posx>30</posx>
+                    <posy>3</posy>
+                    <width>290</width>
+                    <height>22</height>
+                    <font>font13</font>
+                    <aligny>center</aligny>
+                    <selectedcolor>green</selectedcolor>
+                    <align>left</align>
+                    <info>ListItem.Label</info>
+                </control>
+            </focusedlayout>
+        </control>
+        <control type="image">
+            <description>Actor Icon Image</description>
+            <posx>555</posx>
+            <posy>315</posy>
+            <width>120</width>
+            <height>195</height>
+            <aspectratio>keep</aspectratio>
+            <!--texture fallback="showtimes-blank-poster.png">$INFO[Container(100).ListItem.Thumb]</texture-->
+            <texture>$INFO[Container(303).ListItem.Thumb]</texture>
+            <visible>Control.IsVisible(303)</visible>
+        </control>
+
+        <control type="textbox" id="304">
+            <description>Other Textbox</description>
+            <visible>!IsEmpty(Container(100).ListItem.Plot) + !Control.IsVisible(301) + !Control.IsVisible(302) + !Control.IsVisible(303)</visible>
+            <posx>200</posx>
+            <posy>315</posy>
+            <width>445</width>
+            <height>210</height>
+            <pagecontrol>3040</pagecontrol>
+            <font>font13</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <align>justify</align>
+            <info>Container(100).ListItem.Property(OtherInfo)</info>
+            <label>-</label>
+            <onleft>303</onleft>
+            <onright>3010</onright>
+            <onup>304</onup>
+            <ondown>304</ondown>
+        </control>
+
+        <control type="group">
+            <visible>Control.IsVisible(301)</visible>
+            <posx>655</posx>
+            <posy>315</posy>
+            <control type="button">
+                <description>Scrollbar Up Arrow</description>
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>20</width>
+                <height>20</height>
+                <texturenofocus>showtimes-scrollbar-up-arrow.png</texturenofocus>
+                <texturefocus>showtimes-scrollbar-up-arrow-focus.png</texturefocus>
+                <onclick>PageUp(3010)</onclick>
+            </control>
+            <control type="scrollbar" id="3010">
+                <description>Scrollbar</description>
+                <posx>0</posx>
+                <posy>20</posy>
+                <width>20</width>
+                <height>170</height>
+                <texturesliderbackground border="4">showtimes-scrollbar-bg.png</texturesliderbackground>
+                <texturesliderbar border="3">showtimes-scrollbar-bar-nofocus.png</texturesliderbar>
+                <texturesliderbarfocus border="3">showtimes-scrollbar-bar-focus.png</texturesliderbarfocus>
+                <textureslidernib>-</textureslidernib>
+                <textureslidernibfocus>-</textureslidernibfocus>
+                <onleft>304</onleft>
+                <onright>3020</onright>
+                <showonepage>true</showonepage>
+                <orientation>vertical</orientation>
+            </control>
+            <control type="button">
+                <description>Scrollbar Down Arrow</description>
+                <posx>0</posx>
+                <posy>190</posy>
+                <width>20</width>
+                <height>20</height>
+                <texturenofocus>showtimes-scrollbar-down-arrow.png</texturenofocus>
+                <texturefocus>showtimes-scrollbar-down-arrow-focus.png</texturefocus>
+                <onclick>PageDown(3010)</onclick>
+            </control>
+        </control>
+
+        <control type="group">
+            <visible>Control.IsVisible(302)</visible>
+            <posx>655</posx>
+            <posy>315</posy>
+            <control type="button">
+                <description>Scrollbar Up Arrow</description>
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>20</width>
+                <height>20</height>
+                <texturenofocus>showtimes-scrollbar-up-arrow.png</texturenofocus>
+                <texturefocus>showtimes-scrollbar-up-arrow-focus.png</texturefocus>
+                <onclick>PageUp(3020)</onclick>
+            </control>
+            <control type="scrollbar" id="3020">
+                <description>Scrollbar</description>
+                <posx>0</posx>
+                <posy>20</posy>
+                <width>20</width>
+                <height>170</height>
+                <texturesliderbackground border="4">showtimes-scrollbar-bg.png</texturesliderbackground>
+                <texturesliderbar border="3">showtimes-scrollbar-bar-nofocus.png</texturesliderbar>
+                <texturesliderbarfocus border="3">showtimes-scrollbar-bar-focus.png</texturesliderbarfocus>
+                <textureslidernib>-</textureslidernib>
+                <textureslidernibfocus>-</textureslidernibfocus>
+                <onleft>3010</onleft>
+                <onright>3030</onright>
+                <showonepage>true</showonepage>
+                <orientation>vertical</orientation>
+            </control>
+            <control type="button">
+                <description>Scrollbar Down Arrow</description>
+                <posx>0</posx>
+                <posy>190</posy>
+                <width>20</width>
+                <height>20</height>
+                <texturenofocus>showtimes-scrollbar-down-arrow.png</texturenofocus>
+                <texturefocus>showtimes-scrollbar-down-arrow-focus.png</texturefocus>
+                <onclick>PageDown(3020)</onclick>
+            </control>
+        </control>
+        <control type="group">
+            <visible>Control.IsVisible(303)</visible>
+            <posx>530</posx>
+            <posy>315</posy>
+            <control type="button">
+                <description>Scrollbar Up Arrow</description>
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>20</width>
+                <height>20</height>
+                <texturenofocus>showtimes-scrollbar-up-arrow.png</texturenofocus>
+                <texturefocus>showtimes-scrollbar-up-arrow-focus.png</texturefocus>
+                <onclick>PageUp(3030)</onclick>
+            </control>
+            <control type="scrollbar" id="3030">
+                <description>Scrollbar</description>
+                <posx>0</posx>
+                <posy>20</posy>
+                <width>20</width>
+                <height>170</height>
+                <texturesliderbackground border="4">showtimes-scrollbar-bg.png</texturesliderbackground>
+                <texturesliderbar border="3">showtimes-scrollbar-bar-nofocus.png</texturesliderbar>
+                <texturesliderbarfocus border="3">showtimes-scrollbar-bar-focus.png</texturesliderbarfocus>
+                <textureslidernib>-</textureslidernib>
+                <textureslidernibfocus>-</textureslidernibfocus>
+                <onleft>3020</onleft>
+                <onright>3040</onright>
+                <showonepage>true</showonepage>
+                <orientation>vertical</orientation>
+            </control>
+            <control type="button">
+                <description>Scrollbar Down Arrow</description>
+                <posx>0</posx>
+                <posy>190</posy>
+                <width>20</width>
+                <height>20</height>
+                <texturenofocus>showtimes-scrollbar-down-arrow.png</texturenofocus>
+                <texturefocus>showtimes-scrollbar-down-arrow-focus.png</texturefocus>
+                <onclick>PageDown(3030)</onclick>
+            </control>
+        </control>
+
+        <control type="group">
+            <visible>Control.IsVisible(304)</visible>
+            <posx>655</posx>
+            <posy>315</posy>
+            <control type="button">
+                <description>Scrollbar Up Arrow</description>
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>20</width>
+                <height>20</height>
+                <texturenofocus>showtimes-scrollbar-up-arrow.png</texturenofocus>
+                <texturefocus>showtimes-scrollbar-up-arrow-focus.png</texturefocus>
+                <onclick>PageUp(3040)</onclick>
+            </control>
+            <control type="scrollbar" id="3040">
+                <description>Scrollbar</description>
+                <posx>0</posx>
+                <posy>20</posy>
+                <width>20</width>
+                <height>170</height>
+                <texturesliderbackground border="4">showtimes-scrollbar-bg.png</texturesliderbackground>
+                <texturesliderbar border="3">showtimes-scrollbar-bar-nofocus.png</texturesliderbar>
+                <texturesliderbarfocus border="3">showtimes-scrollbar-bar-focus.png</texturesliderbarfocus>
+                <textureslidernib>-</textureslidernib>
+                <textureslidernibfocus>-</textureslidernibfocus>
+                <onleft>3030</onleft>
+                <onright>100</onright>
+                <showonepage>true</showonepage>
+                <orientation>vertical</orientation>
+            </control>
+            <control type="button">
+                <description>Scrollbar Down Arrow</description>
+                <posx>0</posx>
+                <posy>190</posy>
+                <width>20</width>
+                <height>20</height>
+                <texturenofocus>showtimes-scrollbar-down-arrow.png</texturenofocus>
+                <texturefocus>showtimes-scrollbar-down-arrow-focus.png</texturefocus>
+                <onclick>PageDown(3040)</onclick>
+            </control>
+        </control>
+
+    </controls>
 </window>

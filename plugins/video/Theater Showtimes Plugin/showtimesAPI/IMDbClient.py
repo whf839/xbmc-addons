@@ -410,7 +410,7 @@ class IMDbFetcher:
 if ( __name__ == "__main__" ):
     url = [ "http://www.imdb.com/title/tt1073498/", "http://www.imdb.com/title/tt0760329/", "http://www.imdb.com/title/tt0880578/", "http://www.imdb.com/title/tt0080684/", "http://www.imdb.com/title/tt0472062/",  "http://www.imdb.com/title/tt0462499/", "http://www.imdb.com/title/tt0389790/", "http://www.imdb.com/title/tt0442933/", "http://www.imdb.com/title/tt0085106/" ]
 
-    for cnt in range( 1 ):
+    for cnt in range( 4,5 ):
         info = IMDbFetcher().fetch_info( url[ cnt ] )
         if ( info ):
             for attr in dir( info ):
