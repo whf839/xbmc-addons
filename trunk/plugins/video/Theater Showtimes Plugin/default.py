@@ -219,7 +219,7 @@ class GUI( xbmcgui.WindowXML ):
             self.plot = xbmc.getInfoLabel( "Container(100).ListItem.Plot" )
             self.director = xbmc.getInfoLabel( "Container(100).ListItem.Director" )
             self.year = int( xbmc.getInfoLabel( "Container(100).ListItem.Year" ) )
-            self.trailer = xbmc.getInfoImage( "Container(100).ListItem.Trailer" )
+            self.trailer = xbmc.getInfoLabel( "Container(100).ListItem.Trailer" )
             self.thumb = xbmc.getInfoImage( "Container(100).ListItem.Thumb" )
             # we actually use the ListItem.CastAndRole infolabel to fill the list
             role = xbmc.getInfoLabel( "Container(100).ListItem.CastAndRole" ).split( "\n" )
