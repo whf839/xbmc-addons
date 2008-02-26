@@ -97,10 +97,11 @@ class Main:
             for cnt, url in enumerate( script_files ):
                 items = os.path.split( url )
                 path = "Q:\\" + items[ 0 ][ 7 : ].replace( "%20", " " ).replace( "/", "\\" )
-                if ( path.startswith( "Q:\\scripts" ) ):
-                    path = path.split( "\\" )
-                    path = path[ : 2 ] + path[ 3 : ]
-                    path = "\\".join( path )
+                # use this if we categorize scripts
+                #if ( path.startswith( "Q:\\scripts" ) ):
+                #    path = path.split( "\\" )
+                #    path = path[ : 2 ] + path[ 3 : ]
+                #    path = "\\".join( path )
                 if ( not finished_path ): finished_path = xbmc.translatePath( path )
                 file = items[ 1 ].replace( "%20", " " )
                 pct = int( ( float( cnt ) / len( script_files ) ) * 100 )
