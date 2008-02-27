@@ -93,15 +93,17 @@ class GUI( xbmcgui.WindowXMLDialog ):
             filter_login = xbmc.getInfoLabel( "Skin.HasSetting(IRCLogViewerFilter)" )
             highlight_user = xbmc.getInfoLabel( "Skin.String(IRCLogViewerHighlight)" )
             for message in messages:
+                select = False
                 # create our listitem
                 if ( message[ 2 ].startswith( "color: #" ) ):
                     if ( highlight_user and highlight_user.lower() not in message[ 1 ].lower() and highlight_user.lower() in message[ 3 ].lower() ):
-                        color = "FFFF0000"
+                        select = True
+                        formatter = "%s"
                     else:
-                        color = message[ 2 ].split( "color: #" )[ 1 ]
-                    msg = "[COLOR=FF%s]%s[/COLOR]" % ( color, self._clean_text( message[ 3 ] ), )
-                    time = "[COLOR=FF%s]%s[/COLOR]" % ( color, message[ 0 ], )
-                    user = "[COLOR=FF%s]%s[/COLOR]" % ( color, message[ 1 ], )
+                        formatter = "[COLOR=FF%s]%%s[/COLOR]" % ( message[ 2 ].split( "color: #" )[ 1 ], )
+                    msg = formatter % ( self._clean_text( message[ 3 ] ), )
+                    time = formatter % ( message[ 0 ], )
+                    user = formatter % ( message[ 1 ], )
                 elif ( message[ 1 ].startswith( "Action: " ) ):
                     msg = self._clean_text( message[ 1 ] )
                     time = message[ 0 ]
@@ -113,6 +115,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
                     user = message[ 1 ].split( " " )[ 0 ]
                 listitem = xbmcgui.ListItem( time, user )
                 listitem.setProperty( "Message", msg )
+                listitem.select( select )
                 self.getControl( self.CONTROL_LIST_MESSAGES ).addItem( listitem )
             if ( self.getControl( self.CONTROL_LIST_MESSAGES ).size() == 0 ):
                 listitem = xbmcgui.ListItem( "--:--", "xbmcfaq" )
