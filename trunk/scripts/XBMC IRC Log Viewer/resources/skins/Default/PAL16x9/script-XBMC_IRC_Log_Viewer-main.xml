@@ -51,7 +51,7 @@
 			<description>List</description>
 			<posx>45</posx>
 			<posy>105</posy>
-			<width>130</width>
+			<width>135</width>
 			<height>275</height>
 			<scrolltime>200</scrolltime>
 			<onup>100</onup>
@@ -61,7 +61,7 @@
 			<pagecontrol>101</pagecontrol>
 			<itemlayout height="25">
 				<control type="image">
-					<width>130</width>
+					<width>135</width>
 					<height>22</height>
 					<posx>0</posx>
 					<posy>0</posy>
@@ -70,7 +70,7 @@
 				<control type="label">
 					<posx>5</posx>
 					<posy>1</posy>
-					<width>120</width>
+					<width>125</width>
 					<height>18</height>
 					<font>font10</font>
 					<textcolor>FFFFFFFF</textcolor>
@@ -80,7 +80,7 @@
 					<info>ListItem.Label</info>
 				</control>
 				<control type="label">
-					<posx>130</posx>
+					<posx>135</posx>
 					<posy>1</posy>
 					<width>0</width>
 					<height>18</height>
@@ -93,7 +93,7 @@
 			</itemlayout>
 			<focusedlayout height="25">
 				<control type="image">
-					<width>130</width>
+					<width>135</width>
 					<height>22</height>
 					<posx>0</posx>
 					<posy>0</posy>
@@ -101,7 +101,7 @@
 					<visible>!Control.HasFocus(100)</visible>
 				</control>
 				<control type="image">
-					<width>130</width>
+					<width>135</width>
 					<height>22</height>
 					<posx>0</posx>
 					<posy>0</posy>
@@ -111,7 +111,7 @@
 				<control type="label">
 					<posx>5</posx>
 					<posy>1</posy>
-					<width>120</width>
+					<width>125</width>
 					<height>18</height>
 					<font>font10</font>
 					<textcolor>FFFFFFFF</textcolor>
@@ -121,7 +121,7 @@
 					<info>ListItem.Label</info>
 				</control>
 				<control type="label">
-					<posx>130</posx>
+					<posx>135</posx>
 					<posy>1</posy>
 					<width>0</width>
 					<height>18</height>
@@ -135,13 +135,13 @@
 		</control>
 
         <control type="group">
-			<posx>180</posx>
+			<posx>185</posx>
 			<posy>105</posy>
 			<control type="button">
 				<description>Scrollbar Up Arrow</description>
 				<posx>0</posx>
 				<posy>0</posy>
-				<width>20</width>
+				<width>16</width>
 				<height>20</height>
 				<texturenofocus>log-scrollbar-up-arrow.png</texturenofocus>
 				<texturefocus>log-scrollbar-up-arrow-focus.png</texturefocus>
@@ -152,7 +152,7 @@
 				<description>Scrollbar</description>
 				<posx>0</posx>
 				<posy>20</posy>
-				<width>20</width>
+				<width>16</width>
 				<height>232</height>
 				<texturesliderbackground border="4">log-scrollbar-bg.png</texturesliderbackground>
 				<texturesliderbar border="3">log-scrollbar-bar-nofocus.png</texturesliderbar>
@@ -168,7 +168,7 @@
 				<description>Scrollbar Down Arrow</description>
 				<posx>0</posx>
 				<posy>252</posy>
-				<width>20</width>
+				<width>16</width>
 				<height>20</height>
 				<texturenofocus>log-scrollbar-down-arrow.png</texturenofocus>
 				<texturefocus>log-scrollbar-down-arrow-focus.png</texturefocus>
@@ -181,7 +181,7 @@
 			<description>List</description>
 			<posx>220</posx>
 			<posy>105</posy>
-			<width>440</width>
+			<width>445</width>
 			<height>450</height>
 			<scrolltime>200</scrolltime>
 			<onup>110</onup>
@@ -191,7 +191,7 @@
 			<pagecontrol>111</pagecontrol>
 			<itemlayout height="25">
 				<control type="image">
-					<width>440</width>
+					<width>445</width>
 					<height>22</height>
 					<posx>0</posx>
 					<posy>0</posy>
@@ -212,7 +212,7 @@
 				<control type="label">
 					<posx>42</posx>
 					<posy>1</posy>
-					<width>60</width>
+					<width>65</width>
 					<height>18</height>
 					<font>font12</font>
 					<textcolor>60FFFFFF</textcolor>
@@ -222,7 +222,7 @@
 					<info>ListItem.Label2</info>
 				</control>
 				<control type="label">
-					<posx>105</posx>
+					<posx>110</posx>
 					<posy>1</posy>
 					<width>330</width>
 					<height>18</height>
@@ -236,7 +236,7 @@
 			</itemlayout>
 			<focusedlayout height="25">
 				<control type="image">
-					<width>440</width>
+					<width>445</width>
 					<height>22</height>
 					<posx>0</posx>
 					<posy>0</posy>
@@ -244,7 +244,7 @@
 					<visible>!Control.HasFocus(110)</visible>
 				</control>
 				<control type="image">
-					<width>440</width>
+					<width>445</width>
 					<height>22</height>
 					<posx>0</posx>
 					<posy>0</posy>
@@ -266,7 +266,7 @@
 				<control type="label">
 					<posx>42</posx>
 					<posy>1</posy>
-					<width>60</width>
+					<width>65</width>
 					<height>18</height>
 					<font>font12</font>
 					<textcolor>60FFFFFF</textcolor>
@@ -276,7 +276,7 @@
 					<info>ListItem.Label2</info>
 				</control>
 				<control type="label">
-					<posx>105</posx>
+					<posx>110</posx>
 					<posy>1</posy>
 					<width>330</width>
 					<height>18</height>
@@ -291,13 +291,13 @@
 		</control>
 
         <control type="group">
-			<posx>665</posx>
+			<posx>670</posx>
 			<posy>105</posy>
 			<control type="button">
 				<description>Scrollbar Up Arrow</description>
 				<posx>0</posx>
 				<posy>0</posy>
-				<width>20</width>
+				<width>16</width>
 				<height>20</height>
 				<texturenofocus>log-scrollbar-up-arrow.png</texturenofocus>
 				<texturefocus>log-scrollbar-up-arrow-focus.png</texturefocus>
@@ -308,7 +308,7 @@
 				<description>Scrollbar</description>
 				<posx>0</posx>
 				<posy>20</posy>
-				<width>20</width>
+				<width>16</width>
 				<height>407</height>
 				<texturesliderbackground border="4">log-scrollbar-bg.png</texturesliderbackground>
 				<texturesliderbar border="3">log-scrollbar-bar-nofocus.png</texturesliderbar>
@@ -324,7 +324,7 @@
 				<description>Scrollbar Down Arrow</description>
 				<posx>0</posx>
 				<posy>427</posy>
-				<width>20</width>
+				<width>16</width>
 				<height>20</height>
 				<texturenofocus>log-scrollbar-down-arrow.png</texturenofocus>
 				<texturefocus>log-scrollbar-down-arrow-focus.png</texturefocus>
