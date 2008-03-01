@@ -3,11 +3,11 @@
     <!-- Messages and Headings-->
     <string id="30000">Theater Showtimes</string>
     <string id="30001">Theater Listing</string>
-    <string id="30002">Finding theaters, please wait...</string>
-    <string id="30003">Finding showtimes, please wait...</string>
+    <string id="30002">Söker theaters, var god vänta...</string>
+    <string id="30003">Söker showtimes, var god vänta...</string>
     <string id="30004">Datum</string>
     <string id="30005">Plats</string>
-    <string id="30006">No showtimes found!</string>
+    <string id="30006">Inga showtimes hittade!</string>
     <string id="30007">IMDb Filmdetaljer</string>
     <string id="30008">Hämtar filmdetaljer</string>
     <string id="30009">Var god vänta...</string>
@@ -19,8 +19,8 @@
     <string id="30015">Rollsättning</string>
     <string id="30016">Annat</string>
     <string id="30017">Trailer</string>
-    <string id="30018">Movie Meter</string>
-    <string id="30019">Goofs</string>
+    <string id="30018">Film-mätare</string>
+    <string id="30019">Blunders</string>
     <string id="30020">Trivia</string>
     <string id="30021">Citat</string>
     <string id="30022">Användarkommentarer</string>
@@ -36,7 +36,7 @@
     <string id="30101">Ingen handling hittades för denna film.</string>
 
     <!-- Settings -->
-    <string id="30500">Zipcode/Post Code or City, State</string>
+    <string id="30500">Postnummer/Postort eller delstat</string>
     <string id="30510">Showtimes scraper</string>
     <string id="30520">Antal dagar att lista filmer för</string>
     <string id="30521">Idag</string>
