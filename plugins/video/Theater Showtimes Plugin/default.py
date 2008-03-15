@@ -10,7 +10,7 @@ __author__ = "nuka1195"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Theater%20Showtimes%20Plugin"
 __credits__ = "Team XBMC/Jezz_X"
-__version__ = "1.0"
+__version__ = "1.1"
 __svn_revision__ = 0
 
 #main imports
@@ -25,8 +25,6 @@ from random import randrange
 
 from showtimesAPI import IMDbClient
 from pysqlite2 import dbapi2 as sqlite
-
-import traceback
 
 
 class GUI( xbmcgui.WindowXML ):
@@ -70,6 +68,7 @@ class GUI( xbmcgui.WindowXML ):
 
     def __init__( self, *args, **kwargs ):
         #xbmcgui.lock()
+        xbmcgui.WindowXML.__init__( self )
         self.startup = True
         self._get_settings()
         self._get_scraper()
@@ -98,6 +97,7 @@ class GUI( xbmcgui.WindowXML ):
         self.settings[ "scraper" ] = xbmcplugin.getSetting( "scraper" )
         self.settings[ "day" ] = int( xbmcplugin.getSetting( "day" ) )
         self.settings[ "autoshow" ] = xbmcplugin.getSetting( "autoshow" ) == "true"
+        self.settings[ "poster_size" ] = ( "128", "256", "512", )[ int( xbmcplugin.getSetting( "poster_size" ) ) ]
         self.settings[ "trailer" ] = xbmcplugin.getSetting( "trailer" ) == "true"
         self.settings[ "amt_db_path" ] = xbmcplugin.getSetting( "amt_db_path" )
         self.settings[ "quality" ] = int( xbmcplugin.getSetting( "quality" ) )
@@ -170,14 +170,19 @@ class GUI( xbmcgui.WindowXML ):
                         # fill in all the info
                         listitem.setInfo( type="Video", infoLabels={ "Duration": self.movie_showtimes[ theater ].duration, "TVShowTitle": self.movie_showtimes[ theater ].mpaa, "Genre": self.movie_showtimes[ theater ].genre, "Premiered": self.movie_showtimes[ theater ].premiered } )
                     else:
+                        # if no plot let user know
                         if ( info.plot == "" ):
                             info.plot = self.strings[ 30101 ]
+                        # if the showtimes parser returned a trailer url use that
+                        trailer = self.movie_showtimes[ theater ].trailer
+                        if ( not trailer ):
+                            trailer = info.trailer
                         # set plotoutline to all info that isn't covered by an infolabel
                         other = self._create_other( info )
                         # here we download the thumb and set the value to it's cached filepath
                         listitem.setThumbnailImage( info.poster )
                         # set the infolabels
-                        listitem.setInfo( type="Video", infoLabels={ "Title": info.title, "Premiered": self.movie_showtimes[ theater ].premiered, "TVShowTitle": self.movie_showtimes[ theater ].mpaa, "Plot": info.plot, "Duration": info.duration, "MPAA": info.mpaa, "Genre": info.genre, "Director": info.director, "Writer": info.writer, "Studio": info.studio, "Year": info.year, "Rating": info.user_rating, "Votes": info.user_votes, "Tagline": info.tagline, "Cast": info.cast, "Trailer": info.trailer } )
+                        listitem.setInfo( type="Video", infoLabels={ "Title": info.title, "Premiered": self.movie_showtimes[ theater ].premiered, "TVShowTitle": self.movie_showtimes[ theater ].mpaa, "Plot": info.plot, "Duration": info.duration, "MPAA": info.mpaa, "Genre": info.genre, "Director": info.director, "Writer": info.writer, "Studio": info.studio, "Year": info.year, "Rating": info.user_rating, "Votes": info.user_votes, "Tagline": info.tagline, "Cast": info.cast, "Trailer": trailer } )
                         # set the other info
                         listitem.setProperty( "OtherInfo", other )
                     self.getControl( self.CONTROL_INFO_LIST ).addItem( listitem )
@@ -198,7 +203,7 @@ class GUI( xbmcgui.WindowXML ):
             imdb = self.imdb
         if ( imdb ):
             # fetch movie details
-            info = self.IMDbFetcher.fetch_info( imdb )
+            info = self.IMDbFetcher.fetch_info( imdb, self.settings[ "poster_size" ] )
         return info
 
     def _set_trailer_button( self, trailer=None ):
