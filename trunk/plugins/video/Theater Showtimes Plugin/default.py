@@ -41,8 +41,8 @@ class GUI( xbmcgui.WindowXML ):
     xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=False )
 
     # action button codes
-    CANCEL_DIALOG = ( 247, 275, 61467, )
-    THEATER_LIST = ( 216, 257, 61448, )
+    ACTION_CANCEL_DIALOG = ( 10, )
+    ACTION_THEATER_LIST = ( 9, )
 
     # control constants
     CONTROL_TITLE_LABEL = 10
@@ -63,7 +63,7 @@ class GUI( xbmcgui.WindowXML ):
     
     CONTROL_BUTTON_TRAILER = 500
 
-    # play trailer search query
+    # AMT play trailer search query
     TRAILER_SQL = "SELECT * FROM movies WHERE movies.title LIKE ?;"
 
     def __init__( self, *args, **kwargs ):
@@ -386,9 +386,9 @@ class GUI( xbmcgui.WindowXML ):
             self._show_info( controlId )
 
     def onAction( self, action ):
-        if ( action.getButtonCode() in self.CANCEL_DIALOG ):
+        if ( action in self.ACTION_CANCEL_DIALOG ):
             self._close_dialog()
-        elif ( action.getButtonCode() in self.THEATER_LIST ):
+        elif ( action in self.ACTION_THEATER_LIST ):
             self._show_dialog()
         elif ( self.controlId in ( self.CONTROL_INFO_LIST, self.CONTROL_INFO_LIST_SCROLLBAR, ) ):
             self._fill_cast( self.getControl( self.CONTROL_INFO_LIST ).getSelectedItem() )
