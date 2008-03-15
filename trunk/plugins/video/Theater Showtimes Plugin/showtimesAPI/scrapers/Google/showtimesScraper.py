@@ -45,7 +45,7 @@ class _TheaterListParser( SGMLParser ):
 
     def end_a( self ):
         if ( self.theater_id is not None ):
-            self.theater_list[ self.current_theater ] = _Info( imdb="", label2="", mpaa="", duration="", genre="", premiered="", plot="", thumbnail="", url="http://www.google.com%s" % self.theater_id )
+            self.theater_list[ self.current_theater ] = _Info( trailer="", imdb="", label2="", mpaa="", duration="", genre="", premiered="", plot="", thumbnail="", url="http://www.google.com%s" % self.theater_id )
             self.theater_name_found = True
             self.theater_id = None
 
@@ -83,11 +83,15 @@ class _ShowtimesParser( SGMLParser ):
                 url = value.split( "&" )[ 0 ]
                 url = url.split( "=" )[ 1 ]
                 self.theaters[ self.current_theater ].imdb = url
+            elif ( key == "href" and "www.apple.com" in value ):
+                pass
+                #TODO: this is not an actual trailer url, maybe consider parsing it for actual trailers
+                #self.theaters[ self.current_theater ].trailer = value
 
     def end_a( self ):
         if ( self.start_theaters ):
             if ( self.theater_id ):
-                self.theaters[ self.current_theater ] = _Info( imdb="", label2="", mpaa="", duration="", genre="", premiered="", plot="", thumbnail="", url="http://www.google.com%s" % self.theater_id )
+                self.theaters[ self.current_theater ] = _Info( trailer="", imdb="", label2="", mpaa="", duration="", genre="", premiered="", plot="", thumbnail="", url="http://www.google.com%s" % self.theater_id )
                 self.theater_id = ""
                 self.show_info = ""
                 self.theater_set = True
@@ -220,8 +224,7 @@ if ( __name__ == "__main__" ):
     # used to test get_lyrics() 
     movie = [ "Bee Movie", "The Seeker: the Dark is Rising", "el cantante", "Rush Hour 3", "The Simpsons Movie", "Transformers", "I Now Pronounce You Chuck & Larry", "Transformers", "I Now Pronounce You Chuck & Larry" ]
     location = [ "detroit", "Houston", "detroit", "new york", "London", "Toronto", "33102", "W2 4YL", "T1A 3T9" ]
-    #url = [ "http://www.google.com/movies?near=London&tid=6642f6f298729f38" ]
-    url = [ "http://www.google.com/movies?near=monroe,+mi&tid=5dae5b1eb982b608" ]
+    url = [ "http://www.google.com/movies?near=90210&tid=63dad2c3a9a07013" ]
 
     for cnt in range( 1 ):
         #theaters = ShowtimesFetcher().get_theater_list( location[ cnt ] )
@@ -232,6 +235,7 @@ if ( __name__ == "__main__" ):
             theater_names = theaters.keys()
             theater_names.sort()
             for theater in theater_names:
+                print theater
                 for attr in dir( theaters[ theater ] ):
                     if ( not attr.startswith( "__" ) ):
                         print "%s:" % attr.replace( "_", " " ).title(), getattr( theaters[ theater ], attr )

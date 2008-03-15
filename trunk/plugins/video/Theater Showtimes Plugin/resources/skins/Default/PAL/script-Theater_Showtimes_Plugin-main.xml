@@ -7,7 +7,7 @@
 	</coordinates>
 	<controls>
 		<!-- ** Optional ** -->
-		<control type="image" id="0">
+		<control type="image">
 			<posx>0</posx>
 			<posy>0</posy>
 			<width>720</width>
@@ -15,7 +15,8 @@
 			<texture>showtimes-black.png</texture>
 			<animation effect="fade" time="2000">WindowOpen</animation>
 		</control>
-		<control type="image" id="0">
+		<!-- ** Optional ** -->
+		<control type="image">
 			<description>background image</description>
 			<posx>25</posx>
 			<posy>35</posy>
@@ -270,7 +271,7 @@
 			<height>195</height>
 			<aspectratio>keep</aspectratio>
 			<texture fallback="showtimes-blank-poster.png">$INFO[Container(100).ListItem.Thumb]</texture>
-            <!--texture>$INFO[Container(100).ListItem.Thumb]</texture-->
+            <visible>!IsEmpty(Container(100).ListItem.Plot)</visible>
 		</control>
 		<control type="image">
 			<posx>55</posx>
@@ -778,6 +779,5 @@
                 <onclick>PageDown(3040)</onclick>
             </control>
         </control>
-
     </controls>
 </window>
