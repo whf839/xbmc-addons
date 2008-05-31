@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<context>
-    <!--RunPlugin(plugin://video/Apple Movie Trailers Plugin/?update=newest)-->
-    <item folder="false" label="30500" arg="movie_showtime"/>
-    <item folder="true" label="30510" arg="refresh_trailers"/>
-</context>
