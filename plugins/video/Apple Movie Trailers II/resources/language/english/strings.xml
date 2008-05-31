@@ -23,6 +23,7 @@
     <string id="30076">Day 6</string>
     <string id="30077">Day 7</string>
     <string id="30078">Day 8</string>
+    <string id="30080">- Use movie title for saved filename</string>
 
     <!-- messages -->
     <string id="30500">Downloading: %s</string>

@@ -49,17 +49,23 @@ class Main:
         self.settings = {}
         self.settings[ "download_mode" ] = int( xbmcplugin.getSetting( "download_mode" ) )
         self.settings[ "download_path" ] = xbmcplugin.getSetting( "download_path" )
+        self.settings[ "use_title" ] = ( xbmcplugin.getSetting( "use_title" ) == "true" )
 
     def _download_video( self ):
         try:
-            # parse the extension
-            ext = os.path.splitext( g_movie_url )[ 1 ]
-            # if download_mode is temp, then download to cache folder
+            # if download_mode is temp or a smb share, then download to cache folder
             if ( self.settings[ "download_mode" ] == 0 ):
                 self.filepath = xbmc.translatePath( "Z:\\%s" % ( os.path.basename( g_movie_url ), ) )
             else:
                 # get a valid filepath
-                self.filepath = self._make_legal_filepath( g_title + ext )
+                if ( self.settings[ "use_title" ] ):
+                    # add trailer extension to trailer title
+                    title = g_title + os.path.splitext( g_movie_url )[ 1 ]
+                else:
+                    # we use the urls trailer name
+                    title = os.path.basename( g_movie_url )
+                # make the path legal for the users platform
+                self.filepath = self._make_legal_filepath( title )
             # only download if the trailer doesn't exist
             if ( not os.path.isfile( self.filepath ) ):
                 if ( self.filepath.startswith( "smb://" ) ):
@@ -109,7 +115,7 @@ class Main:
 
     def _finalize_download( self, savepath ):
         try:
-            # if save location is a samba share, copy the file
+            # if save location is a smb share, copy the file
             if ( savepath != self.filepath ):
                 msg1 = xbmc.getLocalizedString( 30503 ) % ( os.path.split( self.filepath )[ 1 ], )
                 msg2 = xbmc.getLocalizedString( 30502 ) % ( os.path.split( self.filepath )[ 0 ], )
