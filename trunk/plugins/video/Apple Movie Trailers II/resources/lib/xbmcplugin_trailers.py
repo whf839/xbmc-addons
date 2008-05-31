@@ -96,8 +96,8 @@ class _Parser:
             # TODO: remove this try/except block when branch is updated
             try:
                 # set context menu item
-                action1 = "XBMC.RunPlugin(%s?Fetch_Showtimes=%s)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "title" ] ) ), )
-                action2 = "XBMC.RunPlugin(%s?Download_Trailer)" % ( sys.argv[ 0 ], )
+                action1 = "XBMC.RunPlugin(%s?Fetch_Showtimes=True&title=%s)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "title" ] ) ), )
+                action2 = "XBMC.RunPlugin(%s?Download_Trailer=True)" % ( sys.argv[ 0 ], )
                 listitem.addContextMenuItem( [ ( xbmc.getLocalizedString( 30900 ), action1, ), ( xbmc.getLocalizedString( 30910 ), action2, ) ] )
             except:
                 pass

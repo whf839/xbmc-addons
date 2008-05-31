@@ -19,14 +19,13 @@ class _Info:
         self.__dict__.update( kwargs )
 
 
-class GUI( xbmcgui.WindowXML ):
+class GUI( xbmcgui.WindowXMLDialog ):
     ACTION_CANCEL_DIALOG = ( 9, 10, )
 
     def __init__( self, *args, **kwargs ):
-        xbmcgui.WindowXML.__init__( self, *args, **kwargs )
+        xbmcgui.WindowXMLDialog.__init__( self, *args, **kwargs )
         xbmcgui.lock()
         self._parse_argv()
-        self.title = self.args.Fetch_Showtimes
         self._get_settings()
         self._get_scraper()
         self.doModal()
@@ -41,7 +40,7 @@ class GUI( xbmcgui.WindowXML ):
         exec "self.args = _Info(%s)" % ( unquote_plus( sys.argv[ 2 ][ 1 : ] ).replace( "&", ", " ), )
 
     def _show_dialog( self ):
-        self.getControl( 20 ).setLabel( self.title )
+        self.getControl( 20 ).setLabel( self.args.title )
         self.getControl( 30 ).setLabel( "%s: %s" % ( xbmc.getLocalizedString( 30603 ), self.settings[ "local" ] ), )
         self.getControl( 40 ).setLabel( "%s:" % ( xbmc.getLocalizedString(30602 ), ) )
         self.getControl( 50 ).setLabel( "" )
@@ -59,7 +58,7 @@ class GUI( xbmcgui.WindowXML ):
         self.ShowtimesFetcher = showtimesScraper.ShowtimesFetcher()
 
     def _get_showtimes( self ):
-        date, self.movie_showtimes = self.ShowtimesFetcher.get_showtimes( self.title, self.settings[ "local" ] )
+        date, self.movie_showtimes = self.ShowtimesFetcher.get_showtimes( self.args.title, self.settings[ "local" ] )
         if ( date is None ): date = xbmc.getLocalizedString( 30600 )
         else: date = "%s: %s" % ( xbmc.getLocalizedString( 30602 ), date, )
         self.getControl( 40 ).setLabel( date )
