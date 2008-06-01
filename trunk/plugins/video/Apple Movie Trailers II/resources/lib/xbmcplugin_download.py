@@ -80,6 +80,7 @@ class Main:
                 if ( not ok ): raise
             return self.filepath
         except:
+            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             # filepath is not always released immediately, we may need to try more than one attempt, sleeping between
             urllib.urlcleanup()
             remove_tries = 3
@@ -100,17 +101,21 @@ class Main:
         if ( pDialog.iscanceled() ): raise
 
     def _make_legal_filepath( self, title ):
+        # TODO: figure out how to determine download_path's filesystem, statvfs() not available on windows
         import re
         # different os's have different illegal characters
         illegal_characters = { "xbox": '\\/,*=|<>?;:\"+', "win32": '\\/*|<>?:\"', "Linux": "/", "OS X": "/:" }
         # get the flavor of XBMC
-        environment = os.environ.get( "OS", "xbox" )
+        filesystem = environment = os.environ.get( "OS", "xbox" )
+        # use win32 illegal characters for smb shares to be safe (run on linux, save to windows)
+        if ( self.settings[ "download_path" ].startswith( "smb://" ) ):
+            filesystem = "win32"
         # clean the filename
-        filename = re.sub( '[%s]' % ( illegal_characters[ environment ], ), "_", title )
-        # TODO: maybe change the length to 37 and create a .conf file for xbox
-        if ( environment == "xbox" and len( filename ) > 42 ):
+        filename = re.sub( '[%s]' % ( illegal_characters[ filesystem ], ), "_", title )
+        # we need to set the length to 37 if xbox and filepath isn't a smb share for the .conf file
+        if ( environment == "xbox" and len( filename ) > 37 and not self.settings[ "download_path" ].startswith( "smb://" ) ):
             name, ext = os.path.splitext( filename )
-            filename = name[ : 42 - len( ext ) ].strip() + ext
+            filename = name[ : 37 - len( ext ) ].strip() + ext
         return xbmc.translatePath( os.path.join( self.settings[ "download_path" ], filename ) )
 
     def _finalize_download( self, savepath ):
@@ -137,7 +142,7 @@ class Main:
     def _play_video( self ):
         if ( self.filepath ):
             # set DVDPLAYER as the player for progressive videos
-            core_player = ( xbmc.PLAYER_CORE_MPLAYER, xbmc.PLAYER_CORE_DVDPLAYER, )[ self.filepath.endswith( "p.mov" ) ]
+            core_player = ( xbmc.PLAYER_CORE_MPLAYER, xbmc.PLAYER_CORE_DVDPLAYER, )[ g_movie_url.endswith( "p.mov" ) ]
             # create our playlist
             playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
             # clear any possible entries
