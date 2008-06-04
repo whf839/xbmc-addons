@@ -51,6 +51,8 @@ class _Parser:
                 studio = unicode( re.findall( "<studio>(.*?)</studio>", info[ 0 ] )[ 0 ], encoding, "replace" )
                 postdate = re.findall( "<postdate>(.*?)</postdate>", info[ 0 ] )[ 0 ]
                 releasedate = re.findall( "<releasedate>(.*?)</releasedate>", info[ 0 ] )[ 0 ]
+                if ( not releasedate ):
+                    releasedate = "0000"
                 copyright = unicode( re.findall( "<copyright>(.*?)</copyright>", info[ 0 ] )[ 0 ], encoding, "replace" )
                 director = unicode( re.findall( "<director>(.*?)</director>", info[ 0 ] )[ 0 ], encoding, "replace" )
                 plot = unicode( re.findall( "<description>(.*?)</description>", info[ 0 ] )[ 0 ], encoding, "replace" )
@@ -95,7 +97,7 @@ class _Parser:
             listitem.setInfo( "video", { "Title": video[ "title" ], "Size": video[ "size" ], "Year": int( video[ "releasedate" ][ : 4 ] ), "Plot": video[ "plot" ], "PlotOutline": video[ "plot" ], "MPAA": video[ "mpaa" ], "Genre": video[ "genre" ], "Studio": video[ "studio" ], "Director": video[ "director" ], "Duration": video[ "runtime" ], "Cast": video[ "cast" ] } )
             # TODO: remove this try/except block when branch is updated
             try:
-                # set context menu item
+                # set context menu items
                 action1 = "XBMC.RunPlugin(%s?Fetch_Showtimes=True&title=%s)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "title" ] ) ), )
                 action2 = "XBMC.RunPlugin(%s?Download_Trailer=True)" % ( sys.argv[ 0 ], )
                 listitem.addContextMenuItem( [ ( xbmc.getLocalizedString( 30900 ), action1, ), ( xbmc.getLocalizedString( 30910 ), action2, ) ] )
