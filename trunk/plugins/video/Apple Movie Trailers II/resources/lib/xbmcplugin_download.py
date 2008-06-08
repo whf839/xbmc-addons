@@ -4,7 +4,6 @@
 
 import sys
 
-# TODO: copy thumb if saving trailer
 # TODO: we may need to store these in the addContextMenuItem() call, when using a mouse, if the user
 # moves, before this module can be imported the selection can change.
 # TODO: remove this when dialog issue is resolved
@@ -107,7 +106,7 @@ class Main:
         illegal_characters = { "xbox": '\\/,*=|<>?;:\"+', "win32": '\\/*|<>?:\"', "Linux": "/", "OS X": "/:" }
         # get the flavor of XBMC
         filesystem = environment = os.environ.get( "OS", "xbox" )
-        # use win32 illegal characters for smb shares to be safe (run on linux, save to windows)
+        # use win32 illegal characters for smb shares to be safe (eg run on linux, save to windows)
         if ( self.settings[ "download_path" ].startswith( "smb://" ) ):
             filesystem = "win32"
         # clean the filename

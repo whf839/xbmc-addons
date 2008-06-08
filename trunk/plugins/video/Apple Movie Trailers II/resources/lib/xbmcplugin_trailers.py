@@ -19,7 +19,6 @@ class _Parser:
         Parses an xml document for videos
     """
     def __init__( self, xmlSource, settings ):
-        # initialize our videos list
         self.success = True
         self.settings = settings
         # get the list
@@ -100,7 +99,7 @@ class _Parser:
                 # set context menu items
                 action1 = "XBMC.RunPlugin(%s?Fetch_Showtimes=True&title=%s)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "title" ] ) ), )
                 action2 = "XBMC.RunPlugin(%s?Download_Trailer=True)" % ( sys.argv[ 0 ], )
-                listitem.addContextMenuItem( [ ( xbmc.getLocalizedString( 30900 ), action1, ), ( xbmc.getLocalizedString( 30910 ), action2, ) ] )
+                listitem.addContextMenuItems( [ ( xbmc.getLocalizedString( 30900 ), action1, ), ( xbmc.getLocalizedString( 30910 ), action2, ) ] )
             except:
                 pass
             # add the item to the media list
@@ -118,16 +117,14 @@ class Main:
 
     # base paths
     BASE_DATA_PATH = xbmc.translatePath( os.path.join( "P:\\plugin_data", "video", sys.modules[ "__main__" ].__plugin__ ) )
-    BASE_CURRENT_SOURCE_PATH = os.path.join( "P:\\plugin_data", "video", sys.modules[ "__main__" ].__plugin__, "current%s.xml" )
-    ##BASE_CURRENT_SOURCE_PATH = "P:\\plugin_data\\video\\%s\\current%%s.xml" % ( sys.modules[ "__main__" ].__plugin__, )
+    BASE_CURRENT_SOURCE_PATH = xbmc.translatePath( os.path.join( "P:\\plugin_data", "video", sys.modules[ "__main__" ].__plugin__, "current%s.xml" ) )
 
     def __init__( self ):
         # get users preference
         self._get_settings()
         # fetch videos
         ok = self.get_videos()
-        # if successful set our sort orders
-        # TODO: verify genre as it doesn't sort properly
+        # if successful and user did not cancel, set our sort orders, content and plugin category
         if ( ok ):
             xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )
             xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_SIZE )
@@ -149,6 +146,7 @@ class Main:
         self.settings[ "rating" ] = int( xbmcplugin.getSetting( "rating" ) )
 
     def get_videos( self ):
+        ok = False
         # fetch xml source
         xmlSource = self.get_xml_source()
         if ( xmlSource ):
@@ -159,7 +157,7 @@ class Main:
         try:
             ok = True
             # set proper source
-            base_path = xbmc.translatePath( self.BASE_CURRENT_SOURCE_PATH % ( self.settings[ "quality" ], ) )
+            base_path = self.BASE_CURRENT_SOURCE_PATH % ( self.settings[ "quality" ], )
             base_url = self.BASE_CURRENT_URL % ( self.settings[ "quality" ], )
             # get the source files date if it exists
             try: date = os.path.getmtime( base_path )
@@ -192,7 +190,7 @@ class Main:
     def save_xml_source( self, xmlSource ):
         try:
             # set proper source
-            base_path = xbmc.translatePath( self.BASE_CURRENT_SOURCE_PATH % ( self.settings[ "quality" ], ) )
+            base_path = self.BASE_CURRENT_SOURCE_PATH % ( self.settings[ "quality" ], )
             # if the path to the source file does not exist create it
             if ( not os.path.isdir( self.BASE_DATA_PATH ) ):
                 os.makedirs( self.BASE_DATA_PATH )
