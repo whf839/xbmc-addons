@@ -37,6 +37,12 @@
     <string id="30602">Date</string>
     <string id="30603">Location</string>
 
+    <!-- PluginCategory infolabel -->
+    <string id="30700">Standard videos</string>
+    <string id="30701">480p videos</string>
+    <string id="30702">720p videos</string>
+    <string id="30703">1080p videos</string>
+
     <!-- context menu labels -->
     <string id="30900">Theater Showtimes</string>
     <string id="30910">Download Trailer</string>

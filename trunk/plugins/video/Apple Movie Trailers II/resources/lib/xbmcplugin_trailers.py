@@ -135,12 +135,18 @@ class Main:
             xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_STUDIO )
             # set content
             xbmcplugin.setContent( handle=int( sys.argv[ 1 ] ), content="movies" )
+            try:
+                # set our plugin category
+                xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.PluginCategory )
+            except:
+                pass
         # send notification we're finished, successfully or unsuccessfully
         xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=ok )
 
     def _get_settings( self ):
         self.settings = {}
         # TODO: enable 1080p in settings
+        self.PluginCategory = ( xbmc.getLocalizedString( 30700 ), xbmc.getLocalizedString( 30701 ), xbmc.getLocalizedString( 30702 ), xbmc.getLocalizedString( 30703 ), )[ int( xbmcplugin.getSetting( "quality" ) ) ]
         self.settings[ "quality" ] = ( "", "_480p", "_720p", "_1080p", )[ int( xbmcplugin.getSetting( "quality" ) ) ]
         self.settings[ "poster" ] = ( xbmcplugin.getSetting( "poster" ) == "true" )
         self.settings[ "rating" ] = int( xbmcplugin.getSetting( "rating" ) )
