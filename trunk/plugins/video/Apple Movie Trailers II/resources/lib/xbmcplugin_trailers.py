@@ -75,6 +75,7 @@ class _Parser:
                     poster = location[ 0 ]
                 # trailer
                 trailer = re.findall( "<large[^>]*>(.*?)</large>", preview[ 0 ] )[ 0 ]
+                # size
                 size = long( re.findall( "filesize=\"([0-9]*)", preview[ 0 ] )[ 0 ] )
                 # add the item to our media list
                 ok = self._add_video( { "title": title, "runtime": runtime, "mpaa": mpaa, "studio": studio, "postdate": postdate, "releasedate": releasedate, "copyright": copyright, "director": director, "plot": plot, "cast": actors, "genre": genre, "poster": poster, "trailer": trailer, "size": size }, 0 )
@@ -90,10 +91,12 @@ class _Parser:
         try:
             # set the default icon
             icon = "DefaultVideo.png"
+            # set an overlay if one is practical
+            overlay = ( xbmcgui.ICON_OVERLAY_NONE, xbmcgui.ICON_OVERLAY_HD, )[ "720p.mov" in video[ "trailer" ] or "1080p.mov" in video[ "trailer" ] ]
             # only need to add label and thumbnail, setInfo() and addSortMethod() takes care of label2
             listitem = xbmcgui.ListItem( video[ "title" ], iconImage=icon, thumbnailImage=video[ "poster" ] )
             # set the key information
-            listitem.setInfo( "video", { "Title": video[ "title" ], "Size": video[ "size" ], "Year": int( video[ "releasedate" ][ : 4 ] ), "Plot": video[ "plot" ], "PlotOutline": video[ "plot" ], "MPAA": video[ "mpaa" ], "Genre": video[ "genre" ], "Studio": video[ "studio" ], "Director": video[ "director" ], "Duration": video[ "runtime" ], "Cast": video[ "cast" ] } )
+            listitem.setInfo( "video", { "Title": video[ "title" ], "Overlay": overlay, "Size": video[ "size" ], "Year": int( video[ "releasedate" ][ : 4 ] ), "Plot": video[ "plot" ], "PlotOutline": video[ "plot" ], "MPAA": video[ "mpaa" ], "Genre": video[ "genre" ], "Studio": video[ "studio" ], "Director": video[ "director" ], "Duration": video[ "runtime" ], "Cast": video[ "cast" ] } )
             # TODO: remove this try/except block when branch is updated
             try:
                 # set context menu items
