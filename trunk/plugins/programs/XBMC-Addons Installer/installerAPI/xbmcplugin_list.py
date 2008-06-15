@@ -100,7 +100,7 @@ class Main:
                 # set the title
                 listitem.setInfo( type="Video", infoLabels={ "Title": item[ : -1 ].replace( "%20", " " ).title() } )
                 # add the item to the media list
-                ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=url, listitem=listitem, isFolder=isFolder, totalItems=len( items ) )
+                ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=url, listitem=listitem, isFolder=isFolder, totalItems=len( items[ "assets" ] ) )
                 # if user cancels, call raise to exit loop
                 if ( not ok ): raise
         except:
