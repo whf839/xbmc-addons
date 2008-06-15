@@ -40,7 +40,7 @@ class Main:
         # get user preferences
         self._get_settings()
         # download the video
-        filepath = self._download_video()
+        self._download_video()
         # play the video
         self._play_video()
 
@@ -50,11 +50,21 @@ class Main:
         self.settings[ "download_path" ] = xbmcplugin.getSetting( "download_path" )
         self.settings[ "use_title" ] = ( xbmcplugin.getSetting( "use_title" ) == "true" )
 
+    def _get_filesystem( self ):
+        # get the flavor of XBMC
+        filesystem = os.environ.get( "OS", "xbox" )
+        # use win32 illegal characters for smb shares to be safe (eg run on linux, save to windows)
+        if ( self.settings[ "download_path" ].startswith( "smb://" ) ):
+            filesystem = "win32"
+        return filesystem
+
     def _download_video( self ):
         try:
+            # create our temp save path
+            tmp_path = xbmc.translatePath( "Z:\\%s" % ( os.path.basename( g_movie_url ), ) )
             # if download_mode is temp or a smb share, then download to cache folder
             if ( self.settings[ "download_mode" ] == 0 ):
-                self.filepath = xbmc.translatePath( "Z:\\%s" % ( os.path.basename( g_movie_url ), ) )
+                self.filepath = unicode( tmp_path, "utf-8", "replace" )
             else:
                 # get a valid filepath
                 if ( self.settings[ "use_title" ] ):
@@ -65,32 +75,34 @@ class Main:
                     title = os.path.basename( g_movie_url )
                 # make the path legal for the users platform
                 self.filepath = self._make_legal_filepath( title )
+            # get the filesystem the trailer will be saved to
+            filesystem = self._get_filesystem()
+            # win32 requires encoding to work proper
+            if ( self._get_filesystem() == "win32" ):
+                filepath = self.filepath.encode( "utf-8" )
+            else:
+                filepath = self.filepath
             # only download if the trailer doesn't exist
-            if ( not os.path.isfile( self.filepath ) ):
-                if ( self.filepath.startswith( "smb://" ) ):
-                    savepath = xbmc.translatePath( "Z:\\%s" % ( os.path.basename( g_movie_url ), ) )
-                else:
-                    savepath = self.filepath
+            if ( not os.path.isfile( filepath ) ):
                 # fetch the video
-                urllib.urlretrieve( g_movie_url, savepath, self._report_hook )
-                # create the conf file for xbox
-                ok = self._finalize_download( savepath )
+                urllib.urlretrieve( g_movie_url, tmp_path, self._report_hook )
+                # create the conf file for xbox and copy to final location
+                ok = self._finalize_download( tmp_path )
                 # if the copy failed raise an error
                 if ( not ok ): raise
-            return self.filepath
         except:
             print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             # filepath is not always released immediately, we may need to try more than one attempt, sleeping between
             urllib.urlcleanup()
             remove_tries = 3
-            while remove_tries and os.path.isfile( self.filepath ):
+            while remove_tries and os.path.isfile( tmp_path ):
                 try:
-                    os.remove( self.filepath )
+                    os.remove( tmp_path )
                 except:
                     remove_tries -= 1
                     xbmc.sleep( 1000 )
             pDialog.close()
-            return ""
+            self.filepath = ""
 
     def _report_hook( self, count, blocksize, totalsize ):
         percent = int( float( count * blocksize * 100) / totalsize )
@@ -105,33 +117,44 @@ class Main:
         # different os's have different illegal characters
         illegal_characters = { "xbox": '\\/,*=|<>?;:\"+', "win32": '\\/*|<>?:\"', "Linux": "/", "OS X": "/:" }
         # get the flavor of XBMC
-        filesystem = environment = os.environ.get( "OS", "xbox" )
-        # use win32 illegal characters for smb shares to be safe (eg run on linux, save to windows)
-        if ( self.settings[ "download_path" ].startswith( "smb://" ) ):
-            filesystem = "win32"
+        environment = os.environ.get( "OS", "xbox" )
+        # get the filesystem the trailer will be saved to
+        filesystem = self._get_filesystem()
         # clean the filename
         filename = re.sub( '[%s]' % ( illegal_characters[ filesystem ], ), "_", title )
-        # we need to set the length to 37 if xbox and filepath isn't a smb share for the .conf file
-        if ( environment == "xbox" and len( filename ) > 37 and not self.settings[ "download_path" ].startswith( "smb://" ) ):
+        # we need to set the length to 37 if filesystem is xbox and filepath isn't a smb share for the .conf file
+        if ( filesystem == "xbox" and len( filename ) > 37 and not self.settings[ "download_path" ].startswith( "smb://" ) ):
             name, ext = os.path.splitext( filename )
             filename = name[ : 37 - len( ext ) ].strip() + ext
-        return xbmc.translatePath( os.path.join( self.settings[ "download_path" ], filename ) )
+        # replace any charcaters whose ord > 127 for xbox filesystem
+        if ( filesystem == "xbox" ):
+            for char in filename:
+                if ( ord( char ) > 127 ):
+                    filename = filename.replace( char, "_" )
+        # return a unicode object
+        return unicode( xbmc.translatePath( os.path.join( self.settings[ "download_path" ], filename ) ), "utf-8", "replace" )
 
-    def _finalize_download( self, savepath ):
+    def _finalize_download( self, tmp_path ):
         try:
-            # if save location is a smb share, copy the file
-            if ( savepath != self.filepath ):
-                msg1 = xbmc.getLocalizedString( 30503 ) % ( os.path.split( self.filepath )[ 1 ], )
-                msg2 = xbmc.getLocalizedString( 30502 ) % ( os.path.split( self.filepath )[ 0 ], )
-                pDialog.update( -1, msg1, msg2 )
-                xbmc.executehttpapi("FileCopy(%s,%s)" % ( savepath, self.filepath, ) )
-            # create conf file for better MPlayer playback
-            elif ( not os.path.isfile( savepath + ".conf" ) and os.environ.get( "OS", "xbox" ) == "xbox" ):
-                f = open( savepath + ".conf" , "w" )
+            # copy the trailer
+            msg1 = xbmc.getLocalizedString( 30503 ) % ( os.path.split( self.filepath )[ 1 ], )
+            msg2 = xbmc.getLocalizedString( 30502 ) % ( os.path.split( self.filepath )[ 0 ], )
+            pDialog.update( -1, msg1, msg2 )
+            # necessary for dialog to update
+            xbmc.sleep( 50 )
+            xbmc.executehttpapi( "FileCopy(%s,%s)" % ( tmp_path, self.filepath.encode( "utf-8" ), ) )
+            # create conf file for better MPlayer playback only when trailer saved on xbox and not progressive
+            if ( not self.filepath.startswith( "smb://" ) and not g_movie_url.endswith( "p.mov" ) and not os.path.isfile( self.filepath + ".conf" ) and os.environ.get( "OS", "xbox" ) == "xbox" ):
+                f = open( self.filepath + ".conf" , "w" )
                 f.write( "nocache=1" )
                 f.close()
-            # copy thumbnail for trailer
-            xbmc.executehttpapi("FileCopy(%s,%s)" % ( g_thumbnail, os.path.splitext( self.filepath )[ 0 ] + ".tbn", ) )
+            # copy the thumbnail
+            thumbpath = os.path.splitext( self.filepath )[ 0 ] + ".tbn"
+            msg1 = xbmc.getLocalizedString( 30503 ) % ( os.path.split( thumbpath )[ 1 ], )
+            pDialog.update( -1, msg1, msg2 )
+            # necessary for dialog to update
+            xbmc.sleep( 50 )
+            xbmc.executehttpapi( "FileCopy(%s,%s)" % ( g_thumbnail, thumbpath.encode( "utf-8" ), ) )
             # we succeeded
             return True
         except:
