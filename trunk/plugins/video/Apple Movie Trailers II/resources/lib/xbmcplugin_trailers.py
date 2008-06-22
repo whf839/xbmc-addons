@@ -141,6 +141,9 @@ class Main:
             try:
                 # set our plugin category
                 xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.PluginCategory )
+                # set our fanart from user setting
+                if ( self.settings[ "fanart_image" ] ):
+                    xbmcplugin.setPluginFanart( handle=int( sys.argv[ 1 ] ), image=self.settings[ "fanart_image" ], color1=self.settings[ "fanart_color1" ], color2=self.settings[ "fanart_color2" ], color3=self.settings[ "fanart_color3" ] )
             except:
                 pass
         # send notification we're finished, successfully or unsuccessfully
@@ -153,6 +156,10 @@ class Main:
         self.settings[ "quality" ] = ( "", "_480p", "_720p", "_1080p", )[ int( xbmcplugin.getSetting( "quality" ) ) ]
         self.settings[ "poster" ] = ( xbmcplugin.getSetting( "poster" ) == "true" )
         self.settings[ "rating" ] = int( xbmcplugin.getSetting( "rating" ) )
+        self.settings[ "fanart_image" ] = xbmcplugin.getSetting( "fanart_image" )
+        self.settings[ "fanart_color1" ] = xbmcplugin.getSetting( "fanart_color1" )
+        self.settings[ "fanart_color2" ] = xbmcplugin.getSetting( "fanart_color2" )
+        self.settings[ "fanart_color3" ] = xbmcplugin.getSetting( "fanart_color3" )
 
     def get_videos( self ):
         ok = False
