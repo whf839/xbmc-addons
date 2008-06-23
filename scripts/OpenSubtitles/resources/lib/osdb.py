@@ -30,10 +30,10 @@ class OSDBServer:
 			info = self.server.ServerInfo()
 			if username:
 				LOG( LOG_INFO, "Logging in " + username + "..." )
-				login = self.server.LogIn(username, password, "en", "")
+				login = self.server.LogIn(username, password, "en", "xbmc")
 			else:
 				LOG( LOG_INFO, "Logging in anonymously..." )
-				login = self.server.LogIn("", "", "en", "")
+				login = self.server.LogIn("", "", "en", "xbmc")
 			if (login["status"].find("200") > -1):
 				self.connected = True
 				self.osdb_token = login["token"]
