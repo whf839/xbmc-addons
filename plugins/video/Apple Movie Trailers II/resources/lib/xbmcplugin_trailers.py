@@ -127,7 +127,7 @@ class Main:
         self._get_settings()
         # fetch videos
         ok = self.get_videos()
-        # if successful and user did not cancel, set our sort orders, content and plugin category
+        # if successful and user did not cancel, set our sort orders, content, plugin category and fanart
         if ( ok ):
             xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )
             xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_SIZE )
