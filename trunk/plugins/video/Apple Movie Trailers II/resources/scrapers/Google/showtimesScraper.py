@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Scraper for http://www.google.com/movies
 
@@ -134,7 +136,7 @@ class ShowtimesFetcher:
 
     def get_showtimes( self, movie, location ):
         """ *REQUIRED: Returns showtimes for each theater in your local """
-        movie = self._format_param( movie )
+        movie = self._format_param( movie.encode( "utf-8" ) )
         location = self._format_param( location )
         date, showtimes = self._fetch_showtimes( self.base_url + "/movies?q=%s&near=%s" % ( movie, location, ) )
         if ( showtimes is None or not showtimes ):
@@ -232,12 +234,12 @@ debugWrite = False
 
 if ( __name__ == "__main__" ):
     # used to test get_lyrics() 
-    movie = [ "The Seeker: the Dark is Rising", "el cantante", "Rush Hour 3", "The Simpsons Movie", "Transformers", "I Now Pronounce You Chuck & Larry", "Transformers", "I Now Pronounce You Chuck & Larry" ]
+    movie = [ "wall•e", "The Seeker: the Dark is Rising", "el cantante", "Rush Hour 3", "The Simpsons Movie", "Transformers", "I Now Pronounce You Chuck & Larry", "Transformers", "I Now Pronounce You Chuck & Larry" ]
     location = [ "detroit", "Houston", "detroit", "new york", "London", "Toronto", "33102", "W2 4YL", "T1A 3T9" ]
     url = [ "http://www.google.com/movies?near=London&tid=6642f6f298729f38" ]
     for cnt in range( 1 ):
-        #date, theaters = ShowtimesFetcher().get_showtimes( movie[ cnt ], location[ cnt ] )
-        date, theaters = ShowtimesFetcher().get_selection( url[ cnt ] )
+        date, theaters = ShowtimesFetcher().get_showtimes( movie[ cnt ], location[ cnt ] )
+        #date, theaters = ShowtimesFetcher().get_selection( url[ cnt ] )
 
         # print the results
         print "====================================================="
