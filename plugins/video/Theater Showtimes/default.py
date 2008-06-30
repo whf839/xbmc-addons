@@ -316,7 +316,7 @@ class GUI( xbmcgui.WindowXML ):
                 # only need to add label, icon and thumbnail, setInfo() and addSortMethod() takes care of label2
                 listitem = xbmcgui.ListItem( self.title, iconImage=icon, thumbnailImage=thumbnail )
                 # set the key information
-                listitem.setInfo( "video", { "Title": "%s%s" % ( self.title, ( "", " (%s %d)" % ( self.strings[ 30017 ], count + 1, ) )[ len( trailers ) > 1 ], ), "Genre": self.genre, "Director": self.director, "PlotOutline": self.plot, "Year": self.year } )
+                listitem.setInfo( "video", { "Title": "%s%s" % ( self.title, ( "", " (%s %d)" % ( self.strings[ 30017 ], count + 1, ) )[ len( trailers ) > 1 ], ), "Genre": self.genre, "Director": self.director, "PlotOutline": self.plot, "Plot": self.plot, "Year": self.year } )
                 # add our item
                 playlist.add( trailer, listitem )
             # mark the video watched
