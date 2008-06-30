@@ -252,7 +252,7 @@ class ShowtimesFetcher:
             # parse htmlSource for theaters
             parser = _TheaterListParser()
             parser.feed( htmlSource )
-            parser.close()
+            #parser.close()
             return parser.theater_list
         except:
             # oops print error message

@@ -415,7 +415,7 @@
                     <align>left</align>
                     <font>font13</font>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[B]$LOCALIZE[199][/B] $INFO[Container(100).ListItem.Director]</label>
+                    <label>[B]$LOCALIZE[20339]:[/B] $INFO[Container(100).ListItem.Director]</label>
                     <visible>!IsEmpty(Container(100).ListItem.Director)</visible>
                 </control>
                 <control type="label">
@@ -427,7 +427,7 @@
                     <align>left</align>
                     <font>font13</font>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[B]$LOCALIZE[200][/B] $INFO[Container(100).ListItem.Writer]</label>
+                    <label>[B]$LOCALIZE[20417]:[/B] $INFO[Container(100).ListItem.Writer]</label>
                     <visible>!IsEmpty(Container(100).ListItem.Writer)</visible>
                 </control>
                 <control type="label">
@@ -451,7 +451,7 @@
                     <align>left</align>
                     <font>font13</font>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[B]$LOCALIZE[174][/B] $INFO[Container(100).ListItem.Genre]</label>
+                    <label>[B]$LOCALIZE[515]:[/B] $INFO[Container(100).ListItem.Genre]</label>
                     <visible>!IsEmpty(Container(100).ListItem.Genre)</visible>
                 </control>
                 <control type="label">
@@ -463,7 +463,7 @@
                     <align>left</align>
                     <font>font13</font>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[B]$LOCALIZE[201][/B] $INFO[Container(100).ListItem.Year]</label>
+                    <label>[B]$LOCALIZE[345]:[/B] $INFO[Container(100).ListItem.Year]</label>
                     <visible>!IsEmpty(Container(100).ListItem.Year)</visible>
                 </control>
                 <control type="label">
@@ -475,7 +475,7 @@
                     <align>left</align>
                     <font>font13</font>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[B]$LOCALIZE[2050][/B] $INFO[Container(100).ListItem.Duration]</label>
+                    <label>[B]$LOCALIZE[2050]:[/B] $INFO[Container(100).ListItem.Duration]</label>
                     <visible>!IsEmpty(Container(100).ListItem.Duration)</visible>
                 </control>
                 <control type="label">
@@ -487,7 +487,7 @@
                     <align>left</align>
                     <font>font13</font>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[B]$LOCALIZE[204][/B] $INFO[Container(100).ListItem.RatingAndVotes]</label>
+                    <label>[B]$LOCALIZE[13408]:[/B] $INFO[Container(100).ListItem.RatingAndVotes]</label>
                     <visible>!IsEmpty(Container(100).ListItem.RatingAndVotes)</visible>
                 </control>
                 <control type="label">
@@ -499,7 +499,7 @@
                     <align>left</align>
                     <font>font13</font>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[B]$LOCALIZE[202][/B] $INFO[Container(100).ListItem.TagLine]</label>
+                    <label>[B]$LOCALIZE[202]:[/B] $INFO[Container(100).ListItem.TagLine]</label>
                     <visible>!IsEmpty(Container(100).ListItem.TagLine)</visible>
                 </control>
                 <control type="label">
@@ -511,7 +511,7 @@
                     <align>left</align>
                     <font>font13</font>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[B]$LOCALIZE[20074][/B] $INFO[Container(100).ListItem.MPAA]</label>
+                    <label>[B]$LOCALIZE[20074]:[/B] $INFO[Container(100).ListItem.MPAA]</label>
                     <visible>!IsEmpty(Container(100).ListItem.MPAA)</visible>
                 </control>
             </control>
