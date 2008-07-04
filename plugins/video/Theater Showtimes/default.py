@@ -10,7 +10,7 @@ __author__ = "nuka1195"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Theater%20Showtimes"
 __credits__ = "Team XBMC/Jezz_X"
-__version__ = "1.2.1"
+__version__ = "1.2.2"
 __svn_revision__ = 0
 
 #main imports
@@ -22,6 +22,21 @@ import xbmcgui
 import xbmcplugin
 
 from random import randrange
+
+def _install_libraries():
+    # copy the proper libraries
+    environment = os.environ.get( "OS", "xbox" )
+    if ( environment == "Linux" or environment == "OS X" ):
+        ext = ".so"
+    else:
+        environment = "win32"
+        ext = ".pyd"
+    sql_path = xbmc.translatePath( os.path.join( os.getcwd().replace( ";", "" ), "pysqlite2", "_sqlite" + ext ) )
+    if ( not os.path.isfile( sql_path ) ):
+        platform_sql_path = xbmc.translatePath( os.path.join( os.getcwd().replace( ";", "" ), "platform libraries", environment, "_sqlite" + ext ) )
+        from shutil import copyfile
+        copyfile( platform_sql_path, sql_path )
+_install_libraries()
 
 from showtimesAPI import IMDbClient
 from pysqlite2 import dbapi2 as sqlite

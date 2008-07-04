@@ -375,5 +375,5 @@ if ( __name__ == "__main__" ):
         if ( info ):
             for attr in dir( info ):
                 if ( not attr.startswith( "__" ) ):
-                    print "%s:" % attr.replace( "_", " " ).title(), getattr( info, attr )
+                    print "%s:" % attr.replace( "_", " " ).title(), getattr( info, attr ), type( getattr( info, attr ) )
             print "---------------\n"
