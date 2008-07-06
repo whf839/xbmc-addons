@@ -52,7 +52,7 @@
 			<posx>45</posx>
 			<posy>105</posy>
 			<width>130</width>
-			<height>275</height>
+			<height>250</height>
 			<scrolltime>200</scrolltime>
 			<onup>100</onup>
 			<ondown>100</ondown>
@@ -153,7 +153,7 @@
 				<posx>0</posx>
 				<posy>20</posy>
 				<width>20</width>
-				<height>232</height>
+				<height>207</height>
 				<texturesliderbackground border="4">log-scrollbar-bg.png</texturesliderbackground>
 				<texturesliderbar border="3">log-scrollbar-bar-nofocus.png</texturesliderbar>
 				<texturesliderbarfocus border="3">log-scrollbar-bar-focus.png</texturesliderbarfocus>
@@ -167,7 +167,7 @@
 			<control type="button">
 				<description>Scrollbar Down Arrow</description>
 				<posx>0</posx>
-				<posy>252</posy>
+				<posy>227</posy>
 				<width>20</width>
 				<height>20</height>
 				<texturenofocus>log-scrollbar-down-arrow.png</texturenofocus>
@@ -336,6 +336,24 @@
 		<control type="group" id="4000">
             <posx>45</posx>
             <posy>380</posy>
+            <control type="button" id="403">
+                <description>Cast</description>
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>155</width>
+                <height>32</height>
+                <label>#xbmc</label>
+                <font>font10</font>
+                <textcolor>FFFFFFFF</textcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <texturenofocus border="5">log-keyboard-btn-space.png</texturenofocus>
+                <texturefocus border="5">log-keyboard-btn-space-focus.png</texturefocus>
+                <onleft>111</onleft>
+                <onright>100</onright>
+                <onup>501</onup>
+                <ondown>401</ondown>
+            </control>
             <control type="button" id="401">
                 <description>Other</description>
                 <posx>0</posx>
@@ -351,7 +369,7 @@
                 <texturefocus border="5">log-keyboard-btn-space-focus.png</texturefocus>
                 <onleft>111</onleft>
                 <onright>100</onright>
-                <onup>501</onup>
+                <onup>403</onup>
                 <ondown>402</ondown>
             </control>
             <control type="button" id="402">
@@ -409,7 +427,7 @@
                 <onleft>111</onleft>
                 <onright>100</onright>
                 <onup>500</onup>
-                <ondown>401</ondown>
+                <ondown>403</ondown>
             </control>
         </control>
 
