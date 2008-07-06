@@ -22,7 +22,7 @@ from htmllib import HTMLParser
 
 class GUI( xbmcgui.WindowXMLDialog ):
     # base url
-    BASE_LOG_URL = "http://xbmc.newsforyou.com/"
+    BASE_LOG_URL = "http://xbmc%s.newsforyou.com%s"
 
     # action button codes
     ACTION_CANCEL_DIALOG = ( 9, 10, )
@@ -36,6 +36,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
     CONTROL_LABEL_LOG_TITLE = 200
     CONTROL_BUTTON_LINUX = 401
     CONTROL_BUTTON_SCRIPTING = 402
+    CONTROL_BUTTON_XBMC = 403
     CONTROL_RADIOBUTTON_FILTER = 500
     CONTROL_BUTTON_HIGHLIGHT = 501
 
@@ -51,8 +52,8 @@ class GUI( xbmcgui.WindowXMLDialog ):
             self._show_dialog()
 
     def _show_dialog( self ):
-        self.domain = "xbmc-linux"
-        self._get_log_list( "#xbmc-linux" )
+        self.domain = ( "logs", "/", )
+        self._get_log_list( "#xbmc" )
 
     def _get_log_list( self, channel ):
         try:
@@ -62,7 +63,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
             self.getControl( self.CONTROL_LABEL_LOG_TITLE ).setLabel( "" )
             self.getControl( self.CONTROL_LIST_LOGS ).addItem( "Fetching log list..." )
             xbmcgui.lock()
-            htmlSource = self._fetch_info( url=self.BASE_LOG_URL + self.domain )
+            htmlSource = self._fetch_info( url=self.BASE_LOG_URL % self.domain )
             log_list = self._parse_list( htmlSource )
             self.getControl( self.CONTROL_LIST_LOGS ).reset()
             for log in log_list:
@@ -73,6 +74,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
         except:
             # oops print error message
             print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
+            self.setFocus( self.getControl( self.CONTROL_BUTTON_XBMC ) )
         xbmcgui.unlock()
 
     def _get_selection( self, url, date, selected, keep=False ):
@@ -85,7 +87,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 pos = self.getControl( self.CONTROL_LIST_MESSAGES ).getSelectedPosition()
             self.getControl( self.CONTROL_LIST_MESSAGES ).reset()
             xbmcgui.lock()
-            htmlSource = self._fetch_info( url=self.BASE_LOG_URL + self.domain + "/" + url )
+            htmlSource = self._fetch_info( url=self.BASE_LOG_URL % self.domain + url )
             log_date, messages = self._parse_log( htmlSource )
             self.url = url
             self.date = date
@@ -192,11 +194,14 @@ class GUI( xbmcgui.WindowXMLDialog ):
         if ( controlId == self.CONTROL_LIST_LOGS ):
             self._get_selection( self.getControl( controlId ).getSelectedItem().getLabel2(), self.getControl( controlId ).getSelectedItem().getLabel(), self.getControl( controlId ).getSelectedPosition() )
         elif ( controlId == self.CONTROL_BUTTON_LINUX ):
-            self.domain = "xbmc-linux"
+            self.domain = ( "", "/xbmc-linux/", )
             self._get_log_list( "#xbmc-linux" )
         elif ( controlId == self.CONTROL_BUTTON_SCRIPTING ):
-            self.domain = "xbmc-scripting"
+            self.domain = ( "", "/xbmc-scripting/", )
             self._get_log_list( "#xbmc-scripting" )
+        elif ( controlId == self.CONTROL_BUTTON_XBMC ):
+            self.domain = ( "logs", "/", )
+            self._get_log_list( "#xbmc" )
         elif ( controlId == self.CONTROL_RADIOBUTTON_FILTER ):
             self._get_selection( self.url, self.date, self.selected, True )
         elif ( controlId == self.CONTROL_BUTTON_HIGHLIGHT ):
