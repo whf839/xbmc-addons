@@ -100,7 +100,14 @@ class _Parser:
             listitem = xbmcgui.ListItem( video[ "title" ], iconImage=icon, thumbnailImage=video[ "poster" ] )
             # release date and year
             try:
-                release_date = datetime.date( int( video[ "releasedate" ].split( "-" )[ 0 ] ), int( video[ "releasedate" ].split( "-" )[ 1 ] ), int( video[ "releasedate" ].split( "-" )[ 2 ] ) ).strftime( "%B %d, %Y" )
+                # get our regions format
+                try:
+                    format = xbmc.getRegion( "datelong" ).replace( "DDDD,", "" ).replace( "MMMM", "%B" ).replace( "D", "%d" ).replace( "YYYY", "%Y" ).strip()
+                except:
+                    format = "%B %d, %Y"
+                # format the date
+                release_date = datetime.date( int( video[ "releasedate" ].split( "-" )[ 0 ] ), int( video[ "releasedate" ].split( "-" )[ 1 ] ), int( video[ "releasedate" ].split( "-" )[ 2 ] ) ).strftime( format )
+                # we need just year also
                 year = int( video[ "releasedate" ].split( "-" )[ 0 ] )
             except:
                 release_date = ""
