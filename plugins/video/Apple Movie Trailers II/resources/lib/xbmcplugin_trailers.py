@@ -21,6 +21,11 @@ class _Parser:
     def __init__( self, xmlSource, settings ):
         self.success = True
         self.settings = settings
+        # get our regions format
+        try:
+            self.date_format = xbmc.getRegion( "datelong" ).replace( "DDDD,", "" ).replace( "MMMM", "%B" ).replace( "D", "%d" ).replace( "YYYY", "%Y" ).strip()
+        except:
+            self.date_format = "%B %d, %Y"
         # get the list
         self.success = self._get_current_videos( xmlSource )
 
@@ -100,13 +105,8 @@ class _Parser:
             listitem = xbmcgui.ListItem( video[ "title" ], iconImage=icon, thumbnailImage=video[ "poster" ] )
             # release date and year
             try:
-                # get our regions format
-                try:
-                    format = xbmc.getRegion( "datelong" ).replace( "DDDD,", "" ).replace( "MMMM", "%B" ).replace( "D", "%d" ).replace( "YYYY", "%Y" ).strip()
-                except:
-                    format = "%B %d, %Y"
                 # format the date
-                release_date = datetime.date( int( video[ "releasedate" ].split( "-" )[ 0 ] ), int( video[ "releasedate" ].split( "-" )[ 1 ] ), int( video[ "releasedate" ].split( "-" )[ 2 ] ) ).strftime( format )
+                release_date = datetime.date( int( video[ "releasedate" ].split( "-" )[ 0 ] ), int( video[ "releasedate" ].split( "-" )[ 1 ] ), int( video[ "releasedate" ].split( "-" )[ 2 ] ) ).strftime( self.date_format )
                 # we need just year also
                 year = int( video[ "releasedate" ].split( "-" )[ 0 ] )
             except:
