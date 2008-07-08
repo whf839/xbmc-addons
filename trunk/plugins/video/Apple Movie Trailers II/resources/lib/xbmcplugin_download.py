@@ -24,6 +24,12 @@ g_thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
 g_plotoutline = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
 # set movie url
 g_movie_url = xbmc.getInfoLabel( "ListItem.FilenameAndPath" )
+# set our released date
+g_releasedate = xbmc.getInfoLabel( "ListItem.Property(releasedate)" )
+# set our year
+g_year = 0
+if ( xbmc.getInfoLabel( "ListItem.Year" ) ):
+    g_year = int( xbmc.getInfoLabel( "ListItem.Year" ) )
 
 # create the progress dialog (we do it here so there is minimal delay with nothing displayed)
 import xbmcgui
@@ -174,7 +180,9 @@ class Main:
             # only need to add label, icon and thumbnail, setInfo() and addSortMethod() takes care of label2
             listitem = xbmcgui.ListItem( g_title, iconImage=icon, thumbnailImage=g_thumbnail )
             # set the key information
-            listitem.setInfo( "video", { "Title": g_title, "Genre": g_genre, "Studio": g_studio, "Director": g_director, "MPAA": g_mpaa_rating, "Plotoutline": g_plotoutline } )
+            listitem.setInfo( "video", { "Title": g_title, "Genre": g_genre, "Studio": g_studio, "Director": g_director, "MPAA": g_mpaa_rating, "Plot": g_plotoutline, "Plotoutline": g_plotoutline, "Year": g_year } )
+            # set release date property
+            listitem.setProperty( "releasedate", g_releasedate )
             # add item to our playlist
             playlist.add( self.filepath, listitem )
             # close dialog

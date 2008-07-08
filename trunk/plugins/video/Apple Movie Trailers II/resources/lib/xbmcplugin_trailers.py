@@ -12,7 +12,7 @@ import xbmcplugin
 import time
 import re
 import urllib
-
+import datetime
 
 class _Parser:
     """
@@ -54,7 +54,7 @@ class _Parser:
                     postdate = "%s-%s-%s" % ( tmp_postdate[ 8 : ], tmp_postdate[ 5 : 7 ], tmp_postdate[ : 4 ], )
                 releasedate = re.findall( "<releasedate>(.*?)</releasedate>", info[ 0 ] )[ 0 ]
                 if ( not releasedate ):
-                    releasedate = "0000"
+                    releasedate = ""
                 copyright = unicode( re.findall( "<copyright>(.*?)</copyright>", info[ 0 ] )[ 0 ], encoding, "replace" )
                 director = unicode( re.findall( "<director>(.*?)</director>", info[ 0 ] )[ 0 ], encoding, "replace" )
                 plot = unicode( re.findall( "<description>(.*?)</description>", info[ 0 ] )[ 0 ], encoding, "replace" )
@@ -98,8 +98,17 @@ class _Parser:
             overlay = ( xbmcgui.ICON_OVERLAY_NONE, xbmcgui.ICON_OVERLAY_HD, )[ "720p.mov" in video[ "trailer" ] or "1080p.mov" in video[ "trailer" ] ]
             # only need to add label and thumbnail, setInfo() and addSortMethod() takes care of label2
             listitem = xbmcgui.ListItem( video[ "title" ], iconImage=icon, thumbnailImage=video[ "poster" ] )
+            # release date and year
+            try:
+                release_date = datetime.date( int( video[ "releasedate" ].split( "-" )[ 0 ] ), int( video[ "releasedate" ].split( "-" )[ 1 ] ), int( video[ "releasedate" ].split( "-" )[ 2 ] ) ).strftime( "%B %d, %Y" )
+                year = int( video[ "releasedate" ].split( "-" )[ 0 ] )
+            except:
+                release_date = ""
+                year = 0
             # set the key information
-            listitem.setInfo( "video", { "Title": video[ "title" ], "Overlay": overlay, "Size": video[ "size" ], "Year": int( video[ "releasedate" ][ : 4 ] ), "Plot": video[ "plot" ], "PlotOutline": video[ "plot" ], "MPAA": video[ "mpaa" ], "Genre": video[ "genre" ], "Studio": video[ "studio" ], "Director": video[ "director" ], "Duration": video[ "runtime" ], "Cast": video[ "cast" ], "Date": video[ "postdate" ] } )
+            listitem.setInfo( "video", { "Title": video[ "title" ], "Overlay": overlay, "Size": video[ "size" ], "Year": year, "Plot": video[ "plot" ], "PlotOutline": video[ "plot" ], "MPAA": video[ "mpaa" ], "Genre": video[ "genre" ], "Studio": video[ "studio" ], "Director": video[ "director" ], "Duration": video[ "runtime" ], "Cast": video[ "cast" ], "Date": video[ "postdate" ] } )
+            # set release date property
+            listitem.setProperty( "releasedate", release_date )
             # TODO: remove this try/except block when branch is updated
             try:
                 # set context menu items
