@@ -1,36 +1,39 @@
 import urllib,urllib2,re,sys,xbmcplugin,xbmcgui
 
 
-def alphabetList(url):
-	res=[]
-	alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	res.append((url, "0-9"))
-	for a in alphabet:
-		res.append((url,a))
-	return res
+def showCats():
+        cat=[("anime", "Anime"), ("drama", "Drama"), ("mv", "Music")]
+        for url,name in cat:
+                addDir(name,url,1,"")
 
-#[(url,show)]
-def getShows(url,name):
+def ALPHABET(url):
+        res=[]
+        alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        res.append((url, "0-9"))
+        for a in alphabet:
+                res.append((url,a))
+        for url,name in res:
+                addDir(name,url,2,"")
+
+def INDEX(url,name):
         res=[]
         alph=[]
-        req = urllib2.Request("http://www.crunchyroll.com/"+ url +"/?tab=index")
+        req = urllib2.Request("http://www.crunchyroll.com/"+url+"?tab=index")
         req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
         response = urllib2.urlopen(req)
         link=response.read()
         response.close()
-        p=re.compile(r'<a href="http://www\.crunchyroll\.com/series-(.+?)/(.*)\.html" class="channel-index-item" title="(.+?)">')
+        p=re.compile('<a href="http://www\.crunchyroll\.com/series-(.+?)/(.*)\.html" class="channel-index-item" title="(.+?)">')
         match=p.findall(link)
         for i in range(0,len(match)):
-        	if match[i][1][:1].isdigit() == True and name == "0-9":
-        		alph.append(match[i])
-        	elif match[i][1][:1] == name:
-        		alph.append(match[i])
+                if match[i][1][:1].isdigit() == True and name == "0-9":
+                        alph.append(match[i])
+                elif match[i][1][:1] == name:
+                        alph.append(match[i])
         for url,title,name in alph:
-                res.append((url,name))
-        return res
+                 addDir(name,url,3,"")
 
-#[(url,name)]
-def getShowSeason(url):
+def EPISODES(url):
         res=[]
         req = urllib2.Request("http://www.crunchyroll.com/showseriesmedia?id=" + url)
         req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
@@ -40,30 +43,29 @@ def getShowSeason(url):
         inpage=re.compile(r'<a href="http://www\.crunchyroll\.com/showseriesmedia\?id=' + url + '&amp;pg=(.?)" class="paginator" title="Last">')
         match=inpage.findall(link)
         if (len(match) > 0):
-	        lastpage=int(match[0])+1
-	else:
-		lastpage=1
+                lastpage=int(match[0])+1
+        else:
+                lastpage=1
         for page in range(0, lastpage):
-        	f=urllib.urlopen("http://www.crunchyroll.com/showseriesmedia?id=" + url + "&pg=" + str(page))
-        	a=f.read()
-        	f.close()
-        	p=re.compile(r'<div class="thumb-media-mug mediathumb-mug mediathumb-mug-thumb"><a href="http://www.crunchyroll.com/media-(.+?)" title="(.+?)">')
-        	match=p.findall(a)
-        	for a in match:
-                	res.append(a)
-        return res
+                f=urllib.urlopen("http://www.crunchyroll.com/showseriesmedia?id=" + url + "&pg=" + str(page))
+                a=f.read()
+                f.close()
+                p=re.compile('<div class="thumb-media-mug mediathumb-mug mediathumb-mug-thumb"><a href="http://www.crunchyroll.com/media-(.+?)".+?title="(.+?)".+?class=".+?link"><div class="mediathumb-mug-image" style=".+?&#039;(.+?)&#039.+?no-repeat center;"></div>')
+                match=p.findall(a)
+                for epurl,name,thumb in match:
+                        addDir(name,epurl,4,thumb)
 
 def getVideo(link):
-	p=re.compile(r"flashvars:'premium=true&autoStart=true&delay=3&file=(.+?)&hash=")
-	match=p.findall(link)
-	for vidurl in match:
-		url=urllib.unquote(vidurl)
-		return url
-	# deal with a different format
-	p=re.compile(r"var btdna_file = encodeURIComponent\(btdna\({url:'(.+?)',")
-	match=p.findall(link)
-	for vidurl in match:
-		return vidurl
+        p=re.compile(r"flashvars:'premium=true&autoStart=true&delay=3&file=(.+?)&hash=")
+        match=p.findall(link)
+        for vidurl in match:
+                url=urllib.unquote(vidurl)
+                return url
+        # deal with a different format
+        p=re.compile(r"var btdna_file = encodeURIComponent\(btdna\({url:'(.+?)',")
+        match=p.findall(link)
+        for vidurl in match:
+                return vidurl
 
 def get_params():
         param=[]
@@ -84,33 +86,33 @@ def get_params():
 
 
 def getVidLinks(url):
-	res = []
-	# get hi-res
+        res = []
+        # get hi-res
         req = urllib2.Request("http://www.crunchyroll.com/media-" + url + "?hires=1")
         req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
         response = urllib2.urlopen(req)
         link=response.read()
         response.close()
         vidlink=getVideo(link)
-	if vidlink: res.append(vidlink)
-	# get low-res
+        if vidlink: res.append(vidlink)
+        # get low-res
         req = urllib2.Request("http://www.crunchyroll.com/media-" + url)
         req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
         response = urllib2.urlopen(req)
         link=response.read()
         response.close()
         vidlink=getVideo(link)
-	if vidlink: res.append(vidlink)
-	# get h.264
-	req = urllib2.Request("http://www.crunchyroll.com/media-" + url + "?h264=1")
+        if vidlink: res.append(vidlink)
+        # get h.264
+        req = urllib2.Request("http://www.crunchyroll.com/media-" + url + "?h264=1")
         req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
         response = urllib2.urlopen(req)
         link=response.read()
         response.close()
         vidlink=getVideo(link)
-	if vidlink: res.append(vidlink)
-	return res
-	
+        if vidlink: res.append(vidlink)
+        return res
+        
 def addLink(name,url,thumbnail):
         ok=True
         liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=thumbnail)
@@ -126,40 +128,20 @@ def addDir(name,url,mode,thumbnail):
         ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
         return ok
         
-def showCats():
-	cat=[("anime", "Anime"), ("drama", "Drama"), ("mv", "Music")]
-	for url,name in cat:
-		addDir(name,url,1,"")
-
-def showAlphabet(url):
-        alphabet=alphabetList(url)
-        for url,name in alphabet:
-                addDir(name,url,2,"")
-
-def showShows(url,name):
-        shows=getShows(url,name)
-        for url,name in shows:
-                addDir(name,url,3,"")
-
-def showEpisodes(url):
-        episodes=getShowSeason(url)
-        for url,name in episodes:
-                addDir(name,url,4,"")
-
 def showVidLinks(url):
         vidLinks=getVidLinks(url)
         if len(vidLinks) == 1:
-		addLink("Watch Episode",vidLinks[0],"")
-	elif len(vidLinks) == 2:
-        	addLink("Watch Episode - High Quality",vidLinks[0],"")
-        	addLink("Watch Episode - Low Quality",vidLinks[1],"")
+                addLink("Watch Episode",vidLinks[0],"")
+        elif len(vidLinks) == 2:
+                addLink("Watch Episode - High Quality",vidLinks[0],"")
+                addLink("Watch Episode - Low Quality",vidLinks[1],"")
         elif len(vidLinks) == 3:
-        	addLink("Watch Episode - High Quality",vidLinks[0],"")
-        	addLink("Watch Episode - Low Quality",vidLinks[1],"")
-        	if not vidLinks[2] == vidLinks[1]:
-        		addLink("Watch Episode - Hi-Def", vidLinks[2],"")
+                addLink("Watch Episode - High Quality",vidLinks[0],"")
+                addLink("Watch Episode - Low Quality",vidLinks[1],"")
+                if not vidLinks[2] == vidLinks[1]:
+                        addLink("Watch Episode - Hi-Def", vidLinks[2],"")
         else:
-        	addLink("Unable to find video","","")
+                addLink("Unable to find video","","")
 
 
 
@@ -183,17 +165,17 @@ print "Mode: "+str(mode)
 print "URL: "+str(url)
 print "Name: "+str(name)
 if mode==None or url==None or len(url)<1:
-	print "categories"
-	showCats()
+        print "categories"
+        showCats()
 elif mode==1:
-	print "alphabet of " + name
-	showAlphabet(url)
+        print "alphabet of " + name
+        ALPHABET(url)
 elif mode==2:
         print "show Shows: "+url
-        showShows(url,name)
+        INDEX(url,name)
 elif mode==3:
         print "show eps: "+url+" - "+name
-        showEpisodes(url)
+        EPISODES(url)
 elif mode==4:
         print "show vidlinks: "+url
         showVidLinks(url)

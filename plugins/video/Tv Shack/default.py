@@ -105,7 +105,7 @@ def vidlink(url):
         p=re.compile(".+?unescape.+?'(.+?)'.+?")
         match=p.findall(clean4)
         for vidlinks in match:
-                decode=urllib.unquote(vidlinks)
+                decode=urllib.unquote(vidlinks)+"?.flv"
                 res.append(decode)
         return res
             
