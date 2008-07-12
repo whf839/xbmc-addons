@@ -6,15 +6,46 @@ def INDEXCATS():
         addDir("1. ANIME","http://quicksilverscreen.com/videos?c=3",3,"")
         addDir("2. TV-SHOWS","http://quicksilverscreen.com/videos?c=1",3,"")
         addDir( "3. MOVIES ","http://quicksilverscreen.com/videos?c=2&pt=thumbs",1,"")
-        addDir("9. FOREIGN MOVIES","http://quicksilverscreen.com/videos?c=715",1,"")
-        addDir( "4. CARTOONS","http://quicksilverscreen.com/videos?c=112",3,"")
-        addDir("5. DOCUMENTARIES","http://quicksilverscreen.com/videos?c=44",1,"")
-        addDir("6. MUSIC VIDEOS","http://quicksilverscreen.com/videos?c=30",1,"")
-        addDir("7. STAND-UP COMEDY","http://quicksilverscreen.com/videos?c=137",1,"")
-        addDir("8. BOLLYWOOD","http://quicksilverscreen.com/videos?c=142",1,"")
+        addDir("4. A - Z MOVIES","http://quicksilverscreen.com/videos?c=2&pt=list",4,"")
+        addDir("11. FOREIGN MOVIES","http://quicksilverscreen.com/videos?c=715",1,"")
+        addDir( "5. CARTOONS","http://quicksilverscreen.com/videos?c=112",3,"")
+        addDir("6. DOCUMENTARIES","http://quicksilverscreen.com/videos?c=44",1,"")
+        addDir("7. MUSIC VIDEOS","http://quicksilverscreen.com/videos?c=30",1,"")
+        addDir("8. STAND-UP COMEDY","http://quicksilverscreen.com/videos?c=137",1,"")
+        addDir("9. BOLLYWOOD","http://quicksilverscreen.com/videos?c=142",1,"")
         addDir("10. SPORT","http://quicksilverscreen.com/videos?c=207&pt=thumbs",1,"")
         
-        
+def ALPHABETLIST(url):
+        res=[]
+        alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        res.append((url, "0-9"))
+        for a in alphabet:
+                res.append((url,a))
+        for url,a in res:
+                addDir(a,url,5,"")
+
+def A_Z(url,name):
+        res=[]
+        alph=[]
+        req = urllib2.Request(url)
+        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
+        response = urllib2.urlopen(req)
+        link=response.read()
+        clean=re.sub('&quot;',' ',link)
+        clean1=re.sub('&amp;',' ',clean)
+        response.close()
+        p=re.compile('<a href="(.+?)">(.+?)</a>*.?')
+        match=p.findall(clean1)
+        for i in range(0,len(match)):
+                if match[i][1][:1].isdigit() == True and name == "0-9":
+                        alph.append(match[i])
+                elif match[i][1][:1] == name:
+                        alph.append(match[i])
+        for url,name in alph:
+                res.append((url,name))
+        for url,name in res:
+                url="http://quicksilverscreen.com/"+url
+                addDir(name,url,2,"")
 
         
 def INDEX(url,name):
@@ -94,12 +125,28 @@ def VIDEOLINKS(url,name):
         response = urllib2.urlopen(req)
         link=response.read()
         response.close()
-        p=re.compile('\n\t\t\t\t<embed src=".+?permalinkId=(.+?)&id=anonymous')
+        p=re.compile('\n\t\t\t\t<embed src=".+?permalinkId=(.+?)&id=.+?')
         match=p.findall(link)
-        for VEOH in match:
-                url='http://127.0.0.1:64652/'+VEOH
-                addLink("WATCH VEOH HIGH QUALITY",url,"")
-                
+        for code in match:
+                veoh='http://127.0.0.1:64653/'+code+"?.avi"
+                addLink("WATCH VEOH HIGH QUALITY",veoh,"")
+        #YOUKU
+        p=re.compile('<embed src="http://player.youku.com/player.php/sid/(.+?)/v.swf"')
+        YOUKU=p.findall(link)
+        DECODE='http://clipnabber.com/gethint.php'
+        if len(YOUKU)>0:
+                try:
+                        YOUKU2='http://v.youku.com/v_show/id_'+YOUKU[0]+'=.html'
+                        data = "mode=1&url="+YOUKU2
+                        req = urllib2.Request(DECODE,data)
+                        response = urllib2.urlopen(req)
+                        results = response.read()
+                        p=re.compile('<a href=(.+?)><strong>(.+?)</strong></a>&nbsp;&nbsp;&nbsp;')
+                        final=p.findall(results)
+                        for url,name in final:
+                                addLink("WATCH YOUKU - "+name,url,"")
+                except IndexError:
+                        pass
         #MEGAVIDEO
         p=re.compile('<param name="movie" value="(.+?)">')
         match=p.findall(link)
@@ -117,74 +164,54 @@ def VIDEOLINKS(url,name):
                         flvappend="voinage.flv"
                         flvlink=new+flvappend
                         addLink("WATCH MEGAVIDEO",flvlink,"")
-                        
-                
+
                 elif len(a)<80:
-                                a=a[:-44]
-                                code=re.sub('http://www.megavideo.com/v/','v=',a)
-                                url="http://www.megavideo.com/xml/videolink.php?"+code
-                                req = urllib2.Request(url)
-                                req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
-                                response = urllib2.urlopen(req)
-                                link=response.read()
-                                response.close()
-                                new=ExtractMediaUrl(url,link)
-                                flvappend="voinage.flv"
-                                flvlink=new+flvappend
-                                addLink("WATCH MEGAVIDEO",flvlink,"")
-                                
-                                        
-                                
+                        a=a[:-44]
+                        code=re.sub('http://www.megavideo.com/v/','v=',a)
+                        url="http://www.megavideo.com/xml/videolink.php?"+code
+                        req = urllib2.Request(url)
+                        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
+                        response = urllib2.urlopen(req)
+                        link=response.read()
+                        response.close()
+                        new=ExtractMediaUrl(url,link)
+                        flvappend="voinage.flv"
+                        flvlink=new+flvappend
+                        addLink("WATCH MEGAVIDEO",flvlink,"")
+                   
                 elif len(a)<81:
-                                a=a[:-45]
-                                code=re.sub('http://www.megavideo.com/v/','v=',a)
-                                url="http://www.megavideo.com/xml/videolink.php?"+code
-                                req = urllib2.Request(url)
-                                req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
-                                response = urllib2.urlopen(req)
-                                link=response.read()
-                                response.close()
-                                new=ExtractMediaUrl(url,link)
-                                flvappend="voinage.flv"
-                                flvlink=new+flvappend
-                                addLink("WATCH MEGAVIDEO",flvlink,"")
-                                
-        #YOUKU
-        p=re.compile('<embed src="http://player.youku.com/player.php/sid/(.+?)/v.swf"')
-        YOUKU=p.findall(link)
-        DECODE='http://clipnabber.com/gethint.php'
-        try:
-                YOUKU2='http://v.youku.com/v_show/id_'+YOUKU[0]+'=.html'
-                data = "mode=1&url="+YOUKU2
-                req = urllib2.Request(DECODE,data)
-                response = urllib2.urlopen(req)
-                results = response.read()
-                p=re.compile('<a href=(.+?)><strong>(.+?)</strong></a>&nbsp;&nbsp;&nbsp;')
-                final=p.findall(results)
-                for url,name in final:
-                        addLink("WATCH YOUKU - "+name,url,"")
-        except IndexError:
-                pass
-        
+                        a=a[:-45]
+                        code=re.sub('http://www.megavideo.com/v/','v=',a)
+                        url="http://www.megavideo.com/xml/videolink.php?"+code
+                        req = urllib2.Request(url)
+                        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
+                        response = urllib2.urlopen(req)
+                        link=response.read()
+                        response.close()
+                        new=ExtractMediaUrl(url,link)
+                        flvappend="voinage.flv"
+                        flvlink=new+flvappend
+                        addLink("WATCH MEGAVIDEO",flvlink,"")
                 
         #GOOGLE
         p=re.compile('\n\t\t\t\t\t<a rel="nofollow" target="_blank" href=".+?docId=(.+?)">fullscreen</a>')
         GOOGLE=p.findall(link)
-        DECODE='http://clipnabber.com/gethint.php'
         try:
-                GOOGLE2='http://video.google.com/videoplay?docid='+GOOGLE[0]
-                data = "mode=1&url="+GOOGLE2
-                req = urllib2.Request(DECODE,data)
+                req = urllib2.Request("http://video.google.com/videoplay?docid="+GOOGLE[0])
+                req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
                 response = urllib2.urlopen(req)
-                results = response.read()
-                p=re.compile('<a href=\'(.+?)\' >')
-                final=p.findall(results)
-                for url in final:
+                link=response.read()
+                response.close()
+                p=re.compile('right-click <a href="(.+?)">')
+                p=re.compile('.+?videoUrl.+?.+?.+?.+?(.+?)%26sigh')
+                match=p.findall(link)
+                for url2 in match:
+                        url=urllib.unquote(url2)
                         addLink("WATCH GOOGLE HIGH QUALITY",url,"")
+                        
         except IndexError:
                 pass
-        
-                
+                        
 def get_params():
         param=[]
         paramstring=sys.argv[2]
@@ -251,5 +278,12 @@ elif mode==2:
 elif mode==3:
         print "GET TV INDEX: "+url
         INDEX2(url,name)
+elif mode==4:
+        print "A - Z MOVIES: "+url
+        ALPHABETLIST(url)
+elif mode==5:
+        print "A - Z MOVIES: "+url
+        A_Z(url,name)
 
+        
 xbmcplugin.endOfDirectory(int(sys.argv[1]))

@@ -33,14 +33,14 @@ def Vidlinks(url,name):
         for url in match:
                 res.append(url)                       
         # Get Flash        
-        p=re.compile('file=(.+?)\?OBT_fname')
+        p=re.compile('file=(.+?)/?OBT_fname')
         match=p.findall(link)
         for url in match:
                 res.append(url)
         # Get Thumb
-        p=re.compile('<div align="center"><a href="(.+?)"')
+        p=re.compile('<div align="center"><a href="(.+?)" rel="lightbox" title=".+?">')
         match=p.findall(link)
-        Tb="http://www.divvin.com/"+match[1]
+        Tb="http://www.divvin.com/"+match[0]
         Thumb.append(Tb)
         return res
 
@@ -53,12 +53,12 @@ def ogmfile(url,name):
         p=re.compile("StreamPlugLoadUrl.+?.+?(.+?)\'")
         match=p.findall(link)
         a=match[0]
-        url="http://127.0.0.1:64652/streamplug/"+base64.urlsafe_b64encode(a)
+        url="http://127.0.0.1:64653/streamplug/"+base64.urlsafe_b64encode(a)+'?.ogm'
         pass
         # Get Thumb
-        p=re.compile('<div align="center"><a href="(.+?)"')
+        p=re.compile('<div align="center"><a href="(.+?)" rel="lightbox" title=".+?">')
         match=p.findall(link)
-        Tb="http://www.divvin.com/"+match[1]
+        Tb="http://www.divvin.com/"+match[0]
         Thumb.append(Tb)
         return url
 

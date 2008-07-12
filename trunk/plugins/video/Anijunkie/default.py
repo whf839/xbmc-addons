@@ -1,7 +1,4 @@
-import urllib,urllib2,re,sys,xbmcplugin,xbmcgui
-
-#Animefuel Plugin - By Voinage 2008.
-
+import urllib,urllib2,re,xbmcplugin,xbmcgui#v/a.j
 
 def ExtractMediaUrl(url, data):
         
@@ -22,101 +19,91 @@ def RegexReplaceDictionary(string, dictionary):
                 return dictionary[match.group(0)]
         return rc.sub(Translate, string)
 
-def CATS():
-        cat=[("http://www.animefuel.com", "Anime"),("http://www.animefuel.com/anime-movies/", "Anime Movies")]
-        for url,name in cat:
+def INDEXCATS():
+        res=[]
+        req = urllib2.Request('http://anijunkie.com/')
+        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
+        response = urllib2.urlopen(req)
+        link=response.read()
+        code=re.sub('&amp;','&',link)
+        code2=re.sub('~','',code)
+        response.close()
+        p=re.compile('<li class=".+?"><a href="http://anijunkie.com/index.+?option=com_seyret&catid=(.+?)&Itemid=(.+?)">(.+?)</a></li>')
+        match=p.findall(code2)
+        del match[0:6]
+        for catid,itemid,name in match:
+                url="http://anijunkie.com/index2.php?option=com_seyret&Itemid="+itemid+"&task=rss2feed&no_html=1&cid="+catid
                 addDir(name,url,1,"")
-
-def INDEX(url,name):
-        res=[("http://www.animefuel.com/guyver-out-of-control/","Guyver Out of Control Movie"),("http://www.animefuel.com/category/g/the-guyver-bioboosted-armor-ova/","Guyver Bio Boosted Armour Ova"),("http://www.animefuel.com/category/g/guyver-the-bioboosted-armor/","Guyver Bio Boosted Armour")]
-        req = urllib2.Request(url)
-        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
-        response = urllib2.urlopen(req)
-        link=response.read()
-        code=re.sub('#8217;','',link)
-        code2=re.sub('.+?<span></span>','',code)
-        code3=re.sub('news','',code2)
-        code4=re.sub('&s','s',code3)
-        response.close()
-        p=re.compile('<li><a href="(.+?)" title=".+?">(.+?)</a> </li>')
-        p=re.compile('<li><a href="(.+?)">(.+)</a>+?.+?span style="color:#fc3737;font-size:12px;">')
-        p=re.compile('<li><a href="(.+?)">(.+?)</a>')
-        match=p.findall(code4)
-        for url,name in match:
-                res.append((url,name))
-        for url,name in res:
-                addDir(name,url,2,"")
-
-def INDEX2(url,name):
-        res=[]
-        req = urllib2.Request(url)
-        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
-        response = urllib2.urlopen(req)
-        link=response.read()
-        response.close()
-        p=re.compile('<h2 id="post-.+?"><a href="(.+?)" rel=".+?" title=".+?">(.+?)</a></h2>')
-        match=p.findall(link)
-        for url,name in match:         
-                addDir(name,url,3,"")
-                pass
-        p=re.compile('\r\n\r\n\t\t\t\t<span class="ppre"><a href="(.+?)">&.+?; (.+?)</a></span>')
-        match=p.findall(link)
-        for Previouspage,name in match:
-                addDir(name,Previouspage,2,"")
-
-
-def VIDLINK(url):
-        res=[]
-        req = urllib2.Request(url)
-        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
-        response = urllib2.urlopen(req)
-        link=response.read()
-        response.close()        
-        p=re.compile('\r\n\r\n<p><embed src="http://www.veoh.com\/.+?.swf\?player=videodetailsembedded&#038;type=v&#038;permalinkId=(.+?)&#038;id=.+?"')
-        match=p.findall(link)
-        for a in match:
-                f=urllib2.urlopen("http://www.veoh.com/rest/video/"+str(a)+"/details")
-                veo=f.read()
-                comp=re.compile('fullPreviewHashPath="(.+?)"')
-                for url in comp.findall(veo):
-                        addLink("VEOH LOW QUALITY",url,"")
-                addLink("VEOH AVI","http://127.0.0.1:64653/"+str(a)+"?.avi","")
-        # Veoh 2
-        p=re.compile('<embed src="http://www.veoh.com\/.+?.swf\?permalinkId=(.+?)\&#038;id=.+?;player=videodetailsembedded&#038;videoAutoPlay=0"')
-        match=p.findall(link)
-        for a in match:
-                f=urllib2.urlopen("http://www.veoh.com/rest/video/"+str(a)+"/details")
-                veo=f.read()
-                comp=re.compile('fullPreviewHashPath="(.+?)"')
-                for url in comp.findall(veo):
-                        addLink("VEOH NORMAL",url+"?.avi","")
-                addLink("VEOH AVI","http://127.0.0.1:64653/"+str(a)+"?.avi","")
-                        
-        #Dailymotion
-        p=re.compile('<embed src="http://www.dailymotion.com/swf/(.+?)&#038.+?" type="application/x-shockwave-flash"')
-        match=p.findall(link)
-        for url in match:
-                linkage="http://www.dailymotion.com/video/"+url
                 
+def INDEX(url):
+        req = urllib2.Request(url)
+        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
+        response = urllib2.urlopen(req)
+        link=response.read()
+        code=re.sub('&amp;','&',link)
+        response.close()
+        p=re.compile('<title>(.+?)</title>\n\t\t\t\t\n\t\t\t\t<link>(.+?)</link>\n\t\t\t\t\t\t\t\t\n\t\t\t\t<description>&lt;p&gt;&lt;img width=&quot;160&quot; src=&quot;(.+?)&')
+        match=p.findall(code)
+        for name,url,thumb in match:
+                addDir(name,url,2,thumb)
+                
+def VID(url,name):
+        req = urllib2.Request(url)
+        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
+        response = urllib2.urlopen(req)
+        link=response.read()
+        response.close()
+        p=re.compile('<embed src="http://www.veoh.com/videodetails.+?permalinkId=(.+?)&id=.+?&player=.+?&videoAutoPlay=.+?"')
+        match=p.findall(link)
         try:
-                req = urllib2.Request(linkage)
+                del match[0]
+        except IndexError:
+                pass
+        for perma in match:
+                f=urllib2.urlopen("http://www.veoh.com/rest/video/"+perma+"/details")
+                veo=f.read()
+                comp=re.compile('fullPreviewHashPath="(.+?)"')
+                for url in comp.findall(veo):
+                        addLink("VEOH LOW QUALITY",url+"?.avi","")
+                        veoh="http://127.0.0.1:64653/"+perma+"?.avi"
+                        addLink(name+"-VEOH PROXY",veoh,"")
+                        
+        #GOFISH
+        p=re.compile('gfid=(.+?)&')
+        match=p.findall(link)
+        try:
+                del match[0]
+        except IndexError:
+                pass
+        for gfid in match:
+                req = urllib2.Request("http://www.gofish.com/channel.gfp?&videoGfid="+gfid)
                 req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
                 response = urllib2.urlopen(req)
                 link=response.read()
                 response.close()
-                p=re.compile('url=rev=.+?&uid=.+?&lang=en&callback=.+?&preview=.+?&video=(.+?)%40%40spark')
+                p=re.compile('\npage.commentListGfid = \'(.+?)\'')
                 match=p.findall(link)
-                for url1 in match:
-                        decode=urllib.unquote(url1)
-                        url2="http://www.dailymotion.com"+decode
-                addLink("DAILYMOTION VIDEO",url2,"")
-        except UnboundLocalError:
-                pass
-        # Megavideo.
-        p=re.compile('<embed src="(.+?)" type="application/x-shockwave-flash"')
+                for item in match:
+                        url2="http://www.gofish.com/channel.gfp?gfid="+item+"%26videoGfid="+gfid
+                        link = 'http://clipnabber.com/gethint.php'
+                        data = "mode=1&url="+url2
+                        req = urllib2.Request(link,data)
+                        response = urllib2.urlopen(req)
+                        results = response.read()
+                        p=re.compile(r'<a href=\'(.+?)\' >')
+                        flv=p.findall(results)
+                        for url in flv:
+                                addLink("GOFISH VIDEO",url,"")
+                                pass
+        #MEGAVIDEO                     
+        p=re.compile('<embed src="(.+?)"')
         match=p.findall(link)
+        try:
+                del match[0]
+        except IndexError:
+                pass
         for a in match:
-                if len(a)<79 and a.find('megavideo'):
+                if len(a)<79 and a.find('megavideo')>0:
                         a=a[:-43]
                         code=re.sub('http://www.megavideo.com/v/','v=',a)
                         url="http://www.megavideo.com/xml/videolink.php?"+code
@@ -131,7 +118,7 @@ def VIDLINK(url):
                         addLink("MEGAVIDEO LINK",flvlink,"")
                      
                 
-                elif len(a)<80 and a.find('megavideo'):
+                elif len(a)<80 and a.find('megavideo')>0:
                                 a=a[:-44]
                                 code=re.sub('http://www.megavideo.com/v/','v=',a)
                                 url="http://www.megavideo.com/xml/videolink.php?"+code
@@ -144,11 +131,9 @@ def VIDLINK(url):
                                 flvappend="voinage.flv"
                                 flvlink=new+flvappend
                                 addLink("MEGAVIDEO LINK",flvlink,"")
-                          
-                                        
-                                
+               
                 else:
-                        if len(a)==80 and a.find('megavideo'):
+                        if len(a)==80 and a.find('megavideo')>0:
                                 a=a[:-45]
                                 code=re.sub('http://www.megavideo.com/v/','v=',a)
                                 url="http://www.megavideo.com/xml/videolink.php?"+code
@@ -161,30 +146,24 @@ def VIDLINK(url):
                                 flvappend="voinage.flv"
                                 flvlink=new+flvappend
                                 addLink("MEGAVIDEO LINK",flvlink,"")
-       
-        #Myspace
-        p=re.compile('<p><a href=".+?videoid=(.+?)">.+?</a>')
-        match=p.findall(link)
-        for a in match:
-                f=urllib2.urlopen("http://mediaservices.myspace.com/services/rss.ashx?type=video&mediaID="+str(a))
-                myspace=f.read()
-                comp=re.compile('<media:content url="(.+?)"')
-                for url in comp.findall(myspace):
-                        addLink("MYSPACE LINK",url,"")
-        #LIVEVIDEO
-        p=re.compile('<a href="(.+?)">')
-        match=p.findall(link)
-        for item in match:
-                link = 'http://clipnabber.com/gethint.php'
-                data = "mode=1&url="+item
-                req = urllib2.Request(link,data)
-                response = urllib2.urlopen(req)
-                results = response.read()
-                p=re.compile(r'<a href=\'(.+?)\' >')
-                flv=p.findall(results)
-                for url in flv:
-                        addLink("LIVE VIDEO",url,"")
 
+                        elif len(a)>90 and a.find('megavideo')>0:
+                                a=a[:-35]
+                                code=re.sub('http://www.megavideo.com/v/','v=',a)
+                                url="http://www.megavideo.com/xml/videolink.php?"+code
+                                req = urllib2.Request(url)
+                                req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
+                                response = urllib2.urlopen(req)
+                                link=response.read()
+                                response.close()
+                                new=ExtractMediaUrl(url,link)
+                                flvappend="voinage.flv"
+                                flvlink=new+flvappend
+                                addLink(flvlink,flvlink,"")
+        
+        
+        
+                
 def get_params():
         param=[]
         paramstring=sys.argv[2]
@@ -203,7 +182,6 @@ def get_params():
                                 
         return param
 
-      
 def addLink(name,url,iconimage):
         ok=True
         liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
@@ -220,7 +198,7 @@ def addDir(name,url,mode,iconimage):
         ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
         return ok
         
-       
+              
 params=get_params()
 url=None
 name=None
@@ -240,18 +218,15 @@ except:
 print "Mode: "+str(mode)
 print "URL: "+str(url)
 print "Name: "+str(name)
-if mode==None or url==None or len(url)<1:
-        print "categories"
-        CATS()
-elif mode==1:
-        print "index of : "+url
-        INDEX(url,name)
-elif mode==2:
-        print "show Page: "+url
-        INDEX2(url,name)
-elif mode==3:
-        print "show Page: "+url
-        VIDLINK(url)
 
+if mode==None or url==None or len(url)<1:
+        print "CATEGORY INDEX : "
+        INDEXCATS()
+elif mode==1:
+        print "GET INDEX OF PAGE : "+url
+        INDEX(url)
+elif mode==2:
+        print "GET INDEX OF PAGE : "+url
+        VID(url,name)
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
