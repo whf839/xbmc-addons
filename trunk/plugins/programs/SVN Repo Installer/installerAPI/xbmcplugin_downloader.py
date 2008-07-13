@@ -114,7 +114,7 @@ class Main:
             for cnt, url in enumerate( script_files ):
                 items = os.path.split( url )
                 # TODO: Change this to U: for other than xbox
-                drive = ( "Q:\\%s" % self.args.install, "Q:\\%s" % self.args.install, )[ os.environ.get( "OS", "xbox" ) == "xbox" ]
+                drive = ( "U:\\%s" % self.args.install, "Q:\\%s" % self.args.install, )[ os.environ.get( "OS", "xbox" ) == "xbox" ]
                 path = drive + items[ 0 ][ 7 : ].replace( "%20", " " ).replace( "/", "\\" )
                 # use this if we categorize scripts
                 #if ( path.startswith( "Q:\\scripts" ) ):
