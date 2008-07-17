@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <string id="30000">VideoMonkey</string>
+    <string id="30001">Xbox Media Center</string>
+
+    <string id="30002">Inhalte für Erwachsene ausschließen</string>
+    <string id="30003">Player Type</string>
+    <string id="30004">Auto</string>
+    <string id="30005">MPlayer</string>
+    <string id="30006">DVDPlayer</string>
+    <string id="30007">Video speichern</string>
+    <string id="30008">Download Pfad</string>
+    <string id="30009">Fragen nach dem download vor dem Abspielen</string>
+
+    <string id="30050">Lade video herunter...</string>
+    <string id="30051">Bitte warten.</string>
+    <string id="30052">Wollen Sie dieses video herunterladen?</string>
+    <string id="30053">Video download scheiterte. Versuche das video zu streamen...</string>
+
+    <string id="30100">Kategorien</string>
+    <string id="30101">Unterkategorien</string>
+    <string id="30102">Suche</string>
+    <string id="30103">Nächste Seite</string>
+    <string id="30104">Weitere</string>
+    <string id="30105">Genre</string>
+    <string id="30106">Derzeitig</string>
+    <string id="30107">Künstler</string>
+    <string id="30108">Videos</string>
+    <string id="30109">Sortieren</string>
+    <string id="30110">Vorschlag</string>
+    <string id="30111">Verfeinern</string>
+</strings>
