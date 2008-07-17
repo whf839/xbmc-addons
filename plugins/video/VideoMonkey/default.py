@@ -1,4 +1,4 @@
-# VideoMonkey version 0.1. by sfaxman
+# VideoMonkey version 0.2. by sfaxman
 
 from string import *
 import xbmcplugin
@@ -13,7 +13,7 @@ import cookielib
 import htmlentitydefs
 
 Version = '0'
-SubVersion = '1'
+SubVersion = '2'
 
 rootDir = os.getcwd()
 if rootDir[-1] == ';':rootDir = rootDir[0:-1]
@@ -938,6 +938,7 @@ class Main:
         if vidURL == '':
             return
         vidURL = clean_url(self.siteSpecificUrlTarget(vidURL, cfg_file))
+        title = clean_url(self.siteSpecificName(title, cfg_file))
         try:
             urllib.urlretrieve(icon, os.path.join(cacheDir, 'thumb.tbn'))
             icon = os.path.join(cacheDir, 'thumb.tbn')
@@ -969,7 +970,7 @@ class Main:
         else:
             flv_file = None
 
-        palyer_type = {0:xbmc.PLAYER_CORE_AUTO, 1:xbmc.PLAYER_CORE_MPLAYER, 2:xbmc.PLAYER_CORE_DVDPLAYER}[int(xbmcplugin.getSetting("player_type"))]
+        player_type = {0:xbmc.PLAYER_CORE_AUTO, 1:xbmc.PLAYER_CORE_MPLAYER, 2:xbmc.PLAYER_CORE_DVDPLAYER}[int(xbmcplugin.getSetting("player_type"))]
         if (self.currentlist.force_player == 'auto'):
             player_type = xbmc.PLAYER_CORE_AUTO
         elif (self.currentlist.force_player == 'mplayer'):
@@ -977,11 +978,11 @@ class Main:
         elif (self.currentlist.force_player == 'dvdplayer'):
             player_type = xbmc.PLAYER_CORE_DVDPLAYER
 
-        xbmc.sleep(100)
         if (flv_file != None and os.path.isfile(flv_file)):
-            xbmc.Player(palyer_type).play(vidURL, listitem)
+            xbmc.Player(player_type).play(vidURL, listitem)
         else:
-            xbmc.Player(palyer_type).play(vidURL, listitem)
+            xbmc.Player(player_type).play(vidURL, listitem)
+        xbmc.sleep(200)
 
     def downloadMovie(self, url, title):
         filepath = xbmc.translatePath(os.path.join(xbmcplugin.getSetting("download_Path"), title + '.flv'))
@@ -1012,7 +1013,7 @@ class Main:
         self.pDialog.update(percent, xbmc.getLocalizedString(30050), xbmc.getLocalizedString(30051))
         if (self.pDialog.iscanceled()):raise
 
-    def siteSpecificUrlTarget(self, url, cfg_file): # The site specific target url handling
+    def siteSpecificUrlTarget(self, url, cfg_file): # Site specific target url handling
         if cfg_file == 'metacafe.com.cfg' or cfg_file == 'metacafe.adult.com.cfg': # Metacafe
             return url.replace('[', '%5B').replace(']', '%5D').replace(' ', '%20')
         elif cfg_file == 'tu.tv.cfg': # TUtv
@@ -1024,19 +1025,39 @@ class Main:
             req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
             urlfile=opener.open(req)
             feed_data = urlfile.read()
-            #f = open(os.path.join(cacheDir, 'feed.html'), 'w')
-            #f.write('<Titel>'+ url + '</Title>\n\n')
-            #f.write(feed_data)
-            #f.close()
-            resecurl=re.compile('href=\"([^\"]+)\"', re.IGNORECASE)
-            urlsearch=resecurl.search(feed_data)
+            match=re.compile('href=\"([^\"]+)\"', re.IGNORECASE)
+            urlsearch=match.search(feed_data)
             try:
                 url=urlsearch.group(1)
             except:
                 traceback.print_exc(file = sys.stdout)
+                url=''
+        elif cfg_file == 'arteplus7.cfg' or cfg_file == 'arteplus7.de.cfg'or cfg_file == 'arteplus7.fr.cfg': # arte+7
+            freq = urllib.urlopen(url)
+            feed_data = freq.read()
+            freq.close()
+            match = re.search(r'availableFormats\[\d]\["format"] = "WMV";\n    availableFormats\[\d]\["quality"] = "HQ";\n    availableFormats\[\d]\["url"] = "(.+?)\?obj', feed_data)
+            if match:
+                request = urllib2.Request(match.group(1))
+                opener = urllib2.build_opener()
+                req = urllib2.Request(match.group(1))
+                req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
+                urlfile=opener.open(req)
+                feed_data = urlfile.read(500)
+                match=re.compile('href=\"([^\"]+)\"', re.IGNORECASE)
+                urlsearch=match.search(feed_data)
+                try:
+                    url=urlsearch.group(1)
+                except:
+                    traceback.print_exc(file = sys.stdout)
+                    url=''
+            else:
+                url = ''
         return url
 
-    def siteSpecificName(self, name, cfg_file): # The site specific name handling
+    def siteSpecificName(self, name, cfg_file): # Site specific name handling
+        if cfg_file == 'arteplus7.cfg' or cfg_file == 'arteplus7.de.cfg'or cfg_file == 'arteplus7.fr.cfg': # arte+7
+            return name.replace('</index>', ' - ').replace('        <bigTitle>', '').replace('\n', '')
         return name
 
     def parseView(self, url):
