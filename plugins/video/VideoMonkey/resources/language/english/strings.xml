@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
     <string id="30000">VideoMonkey</string>
-    <string id="30001">Xbox Media Center</string>
+    <string id="30001">XBMC Media Center</string>
 
     <string id="30002">Exclude adult content</string>
     <string id="30003">Player type</string>
