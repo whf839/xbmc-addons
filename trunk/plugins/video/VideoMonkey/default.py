@@ -387,7 +387,7 @@ def clean_name(s):
 def clean_url(s):
     if not s:
         return ''
-    return clean4(s)
+    return clean4(s.replace('&amp;', '&'))
 
 class CListItem:
     def __init__(self):
