@@ -350,7 +350,7 @@ def decode(s):
             entity='&' + key + ';'
             s=s.replace(entity, unichr(dic[key]))
     except:
-        pass
+        traceback.print_exc(file = sys.stdout)
     return s
 
 #def XXXXXX(s): # XXXXXX
@@ -387,7 +387,7 @@ def clean_name(s):
     try:
         s = clean1(clean2(clean3(smart_unicode(s)))).replace('\r\n', '').replace('\n', '')
     except:
-        pass
+        traceback.print_exc(file = sys.stdout)
     return s
 
 def clean_url(s):
@@ -396,7 +396,7 @@ def clean_url(s):
     try:
         s = clean4(s)
     except:
-        pass
+        traceback.print_exc(file = sys.stdout)
     return s
 
 class CListItem:
@@ -722,7 +722,11 @@ class CCurrentList:
             #f = open(os.path.join(cacheDir, 'page.html'), 'w')
             #f.write('<Titel>'+ curr_url + '</Title>\n\n')
             req = Request(curr_url, None, txheaders)
-            handle = urlopen(req)
+            try:
+                handle = urlopen(req)
+            except:
+                traceback.print_exc(file = sys.stdout)
+                return
             data = handle.read()
             #cj.save(os.path.join(resDir, 'cookies.lwp'), ignore_discard=True)
             cj.save(os.path.join(resDir, 'cookies.lwp'))
