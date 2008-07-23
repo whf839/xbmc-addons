@@ -1202,7 +1202,7 @@ class Main:
         else:
             xbmcplugin.addSortMethod(handle = self.handle, sortMethod = xbmcplugin.SORT_METHOD_LABEL)
 
-        if self.currentlist.videoCount() == 1:
+        if self.currentlist.video_action.find('play') != -1 and self.currentlist.videoCount() == 1:
             videoItem = self.currentlist.getVideo()
             result = self.parseView(videoItem.url + '|' + videoItem.name + '|' + videoItem.thumb + '.videomonkey')
         else:
