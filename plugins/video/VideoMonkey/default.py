@@ -5,11 +5,9 @@ import urllib,urllib2
 import re, random, string
 import xbmc, xbmcgui
 import re, os, time, datetime, traceback
-import shutil
-import codecs
-import cookielib
-import htmlentitydefs
-import socket
+import shutil, codecs
+import cookielib, htmlentitydefs
+import socket, base64
 
 __plugin__ = "VideoMonkey"
 __author__ = "sfaxman"
@@ -810,7 +808,7 @@ class CCurrentList:
                         img = pot_img
                         name = pot_name
                     url = decode(url)
-                    img = decode(img).replace(' ', '%20')
+                    img = decode(unquote_safe(img)).replace(' ', '%20')
                     name = clean_name(name)
                     tmp = CListItem()
                     tmp.type = 'video'
@@ -829,7 +827,7 @@ class CCurrentList:
                         reimg = re.compile(img_catcher, re.IGNORECASE + re.DOTALL + re.MULTILINE)
                         imgsearch = reimg.search(data)
                         try:
-                            img = video.img_build % (decode(imgsearch.group(1)).replace(' ', '%20'))
+                            img = video.img_build % (decode(unquote_safe(imgsearch.group(1))).replace(' ', '%20'))
                         except:
                             traceback.print_exc(file = sys.stdout)
                             img = os.path.join(imgDir, 'video.png')
@@ -842,7 +840,7 @@ class CCurrentList:
                         retitle = re.compile(title_catcher, re.IGNORECASE + re.DOTALL + re.MULTILINE)
                         titlesearch = retitle.search(data)
                         try:
-                            name = titlesearch.group(1)
+                            name = clean_name(titlesearch.group(1))
                         except:
                             traceback.print_exc(file = sys.stdout)
                             name = self.randomFilename(prefix = 'noname_')
@@ -1111,6 +1109,33 @@ class Main:
     def siteSpecificUrlTarget(self, url, cfg_file): # Site specific target url handling
         if cfg_file == 'metacafe.com.cfg' or cfg_file == 'metacafe.adult.com.cfg': # Metacafe
             return url.replace('[', '%5B').replace(']', '%5D').replace(' ', '%20')
+        elif cfg_file == 'joox.net.cfg': # Joox
+            if url.find('messagefromme') > 0:
+                url = "http://127.0.0.1:64653/streamplug/" + base64.urlsafe_b64encode(url) + '?.ogm'
+            elif url.find('fliqz') > 0:
+                url = url + "?.flv"
+            #elif url.find('beta.vreel.net') > 0:
+            #    f = urllib.urlopen(url)
+            #    a = f.read()
+            #    f.close()
+            #    p = re.compile('<param name="src" value="(.+?)" />')
+            #    match = p.findall(a)
+            #    url = match[0]
+            elif url.find('torrent') > 0:
+                url = url + "?.avi"
+            elif url.find('vreel-') > 0:
+                pass
+            elif url.find('smallurl') > 0:
+                request = urllib2.Request(url)
+                opener = urllib2.build_opener()
+                f = opener.open(request)
+                vix = urllib.unquote(f.url)
+                url = vix + "?.avi"
+            elif url.find('megavideo') > 0:
+                url = url + "voinage.flv"
+            elif url.find('stage') > 0:
+                pass
+            return url
         elif cfg_file == 'tu.tv.cfg': # TUtv
             return urllib.unquote(urllib.unquote(url))
         if cfg_file == 'zdf.de.cfg': # ZDF mediathek
@@ -1204,7 +1229,7 @@ class Main:
 
         if self.currentlist.video_action.find('play') != -1 and self.currentlist.videoCount() == 1:
             videoItem = self.currentlist.getVideo()
-            result = self.parseView(videoItem.url + '|' + videoItem.name + '|' + videoItem.thumb + '.videomonkey')
+            result = self.parseView(clean_url(videoItem.url) + '|' + videoItem.name + '|' + videoItem.thumb + '.videomonkey')
         else:
             for m in self.currentlist.list:
                 if (m.type == u'rss') or (m.type == u'adult_rss' and xbmcplugin.getSetting("no_adult") == 'false'):
