@@ -966,6 +966,7 @@ class CCurrentList:
 class Main:
     def __init__(self):
         self.pDialog = None
+        self.videoExtension = '.flv'
         self.currentlist = CCurrentList()
 
     def getDirectLink(self, orig_url):
@@ -1078,7 +1079,7 @@ class Main:
         xbmc.sleep(200)
 
     def downloadMovie(self, url, title):
-        filepath = xbmc.translatePath(os.path.join(xbmcplugin.getSetting("download_Path"), title + '.flv'))
+        filepath = xbmc.translatePath(os.path.join(xbmcplugin.getSetting("download_Path"), title + self.videoExtension))
         try:
             urllib.urlretrieve(url, filepath, self._report_hook)
         except:
@@ -1109,22 +1110,13 @@ class Main:
     def siteSpecificUrlTarget(self, url, cfg_file): # Site specific target url handling
         if cfg_file == 'metacafe.com.cfg' or cfg_file == 'metacafe.adult.com.cfg': # Metacafe
             return url.replace('[', '%5B').replace(']', '%5D').replace(' ', '%20')
-        elif cfg_file == 'joox.net.cfg': # Joox
+        elif cfg_file == 'joox.net.cfg': # Joox # thx voinage
             if url.find('messagefromme') > 0:
                 url = "http://127.0.0.1:64653/streamplug/" + base64.urlsafe_b64encode(url) + '?.ogm'
             elif url.find('fliqz') > 0:
                 url = url + "?.flv"
-            #elif url.find('beta.vreel.net') > 0:
-            #    f = urllib.urlopen(url)
-            #    a = f.read()
-            #    f.close()
-            #    p = re.compile('<param name="src" value="(.+?)" />')
-            #    match = p.findall(a)
-            #    url = match[0]
             elif url.find('torrent') > 0:
                 url = url + "?.avi"
-            elif url.find('vreel-') > 0:
-                pass
             elif url.find('smallurl') > 0:
                 request = urllib2.Request(url)
                 opener = urllib2.build_opener()
@@ -1133,8 +1125,6 @@ class Main:
                 url = vix + "?.avi"
             elif url.find('megavideo') > 0:
                 url = url + "voinage.flv"
-            elif url.find('stage') > 0:
-                pass
             return url
         elif cfg_file == 'tu.tv.cfg': # TUtv
             return urllib.unquote(urllib.unquote(url))
