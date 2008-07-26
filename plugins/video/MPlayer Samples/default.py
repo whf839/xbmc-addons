@@ -1,5 +1,5 @@
 """
-    Plugin for streaming music content from the internet
+    Plugin for streaming MPlayer's sample videos
 """
 
 # main imports
