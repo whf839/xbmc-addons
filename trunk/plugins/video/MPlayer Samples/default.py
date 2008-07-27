@@ -29,7 +29,7 @@ class _Info:
 
 class _Parser:
     """
-        Parses an html document for category links
+        Parses an html document for video links
     """
     def __init__( self, htmlSource ):
         # initialize our content list
@@ -124,7 +124,7 @@ class Main:
                 # only need to add label and thumbnail, setInfo() and addSortMethod() takes care of label2
                 listitem=xbmcgui.ListItem( urllib.unquote( title ), iconImage=icon )
                 # set extra info
-                listitem.setInfo( type="Video", infoLabels={ "Title": title, "Date": date, "Size": size } )
+                listitem.setInfo( type="Video", infoLabels={ "Title": urllib.unquote( title ), "Date": date, "Size": size } )
                 # add the item to the media list
                 ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=url, listitem=listitem, isFolder=itype, totalItems=len( items ) )
                 # if user cancels, call raise to exit loop
