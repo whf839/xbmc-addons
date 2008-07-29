@@ -66,6 +66,11 @@ type=live
 thumb=video.monkey.image|mvtv_5.png
 url=http://61.19.248.196/mvtv_5?WMContentBitrate=256000
 ########################################################
+name=MVtv News
+type=live
+thumb=video.monkey.image|mvtv_news.png
+url=mms://61.47.2.118/NTTV?WMContentBitrate=256000
+########################################################
 name=MVtv Health+
 type=live
 thumb=video.monkey.image|mvtv_health_plus.png
