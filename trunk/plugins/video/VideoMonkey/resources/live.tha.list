@@ -29,7 +29,8 @@ url=http://61.90.201.61/live2?WMContentBitrate=256000
 name=Modernine TV (TV9)
 type=live
 thumb=video.monkey.image|thaitv9.png
-url=mms://202.142.200.130/tv9?WMcontentBitrate=256000
+#url=mms://202.142.200.130/tv9?WMcontentBitrate=256000
+url=http://modernine.mcot.net/live/mcot_live512.asx
 ########################################################
 name=NBT (TV11)
 type=live
@@ -85,4 +86,14 @@ name=ASTV2 TOC
 type=live
 thumb=video.monkey.image|astv_toc.png
 url=mms://broadcast.manager.co.th/toc
+########################################################
+name=Faikham TV
+type=live
+thumb=video.monkey.image|faikham.png
+url=mms://media.ru.ac.th/Faikham_TV
+########################################################
+name=DMC
+type=live
+thumb=video.monkey.image|dmc.png
+url=http://203.146.251.191/vcont450k_4
 ########################################################
