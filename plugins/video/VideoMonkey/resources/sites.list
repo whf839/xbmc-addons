@@ -52,6 +52,11 @@ type=rss
 thumb=video.monkey.image|joox.png
 url=joox.net.cfg
 ########################################################
+name=Myspass
+type=rss
+thumb=video.monkey.image|myspass.png
+url=myspass.de.cfg
+########################################################
 # More adult sites
 ########################################################
 name=video.monkey.locale|30104

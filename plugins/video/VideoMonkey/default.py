@@ -879,26 +879,29 @@ class CCurrentList:
                             url = curr_url + url
                         else:
                             url = curr_url + '&' + url
-                    if dir.type.find('flat') != -1:
-                        tmp = CListItem()
-                        if dir.type.find('space') != -1:
-                            tmp.name = ' ' + name + ' '
-                        else:
-                            tmp.name = name
-                        if (len(tmp.name) == 0):
-                            tmp.name = self.randomFilename(prefix = 'noname_')
-                        tmp.type = 'rss'
-                        tmp.thumb = dir.thumb
-                        tmp.url = self.cfg_name + '|' + url
-                        self.list.append(tmp)
+                    if dir.url_action.find('recursive') != -1:
+                        self.loadRemote(url, False)
                     else:
-                        if f == None:
-                            f = codecs.open(os.path.join(cacheDir, catfilename), 'w', 'utf-8')
-                        f.write('name= ' + smart_unicode(name) + ' \n')
-                        f.write('type=rss\n')
-                        f.write('thumb=' + smart_unicode(dir.thumb) + '\n')
-                        f.write('url=' + smart_unicode(self.cfg_name) + '|' + smart_unicode(url) + '\n')
-                    oneFound = True
+                        if dir.type.find('flat') != -1:
+                            tmp = CListItem()
+                            if dir.type.find('space') != -1:
+                                tmp.name = ' ' + name + ' '
+                            else:
+                                tmp.name = name
+                            if (len(tmp.name) == 0):
+                                tmp.name = self.randomFilename(prefix = 'noname_')
+                            tmp.type = 'rss'
+                            tmp.thumb = dir.thumb
+                            tmp.url = self.cfg_name + '|' + url
+                            self.list.append(tmp)
+                        else:
+                            if f == None:
+                                f = codecs.open(os.path.join(cacheDir, catfilename), 'w', 'utf-8')
+                            f.write('name= ' + smart_unicode(name) + ' \n')
+                            f.write('type=rss\n')
+                            f.write('thumb=' + smart_unicode(dir.thumb) + '\n')
+                            f.write('url=' + smart_unicode(self.cfg_name) + '|' + smart_unicode(url) + '\n')
+                        oneFound = True
             if (dir.curr_url != ''):
                 recat = re.compile(dir.curr_url, re.IGNORECASE + re.DOTALL + re.MULTILINE)
                 for name in recat.findall(data):
@@ -1110,6 +1113,8 @@ class Main:
     def siteSpecificUrlTarget(self, url, cfg_file): # Site specific target url handling
         if cfg_file == 'metacafe.com.cfg' or cfg_file == 'metacafe.adult.com.cfg': # Metacafe
             return url.replace('[', '%5B').replace(']', '%5D').replace(' ', '%20')
+        elif cfg_file == 'myspass.de.cfg': # Myspass
+            return unquote_safe(url)
         elif cfg_file == 'pornhub.com.cfg': # Pornhub
             return urllib.unquote(url)
         elif cfg_file == 'joox.net.cfg': # Joox # thx voinage

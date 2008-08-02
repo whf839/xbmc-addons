@@ -50,3 +50,7 @@ header=Referer|http://www.atrapavideo.com/en/
 url=http://www.atrapavideo.com/video
 target=so.addVariable\('file','(.+?.flv)
 ########################################################
+name=degrab.de
+url=http://www.degrab.de/?url=%s
+target=klicke bitte auf diesen Link: <a href=\"([^\"]+)\"
+########################################################
