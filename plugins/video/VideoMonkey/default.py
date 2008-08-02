@@ -14,7 +14,7 @@ __author__ = "sfaxman"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/VideoMonkey/"
 __credits__ = "sfaxman"
-__version__ = "1.0" # of this file
+__version__ = "1.1" # of this file
 
 rootDir = os.getcwd()
 if rootDir[-1] == ';':rootDir = rootDir[0:-1]
@@ -456,7 +456,6 @@ class CDirItem:
 
 class CCurrentList:
     def __init__(self):
-        self.version = '0'
         self.title = ''
         self.start_url = ''
         self.force_player = ''
@@ -514,6 +513,67 @@ class CCurrentList:
             if item.type == 'video':
                 return item
 
+    def getItemFromList(self, listname, name):
+        self.loadLocal(listname, False)
+        for item in self.list:
+            if item.url == name:
+                return item
+        return None
+
+    def itemInLocalList(self, name):
+        for item in self.list:
+            if item.url == name:
+                return True
+        return False
+
+    def getItem(self, name):
+        item = None
+        for root, dirs, files in os.walk(resDir):
+            for listname in files:
+                if self.getFileExtension(listname) == 'list':
+                    item = self.getItemFromList(listname, name)
+                if item != None:
+                    return item
+        return None
+
+    def addItem(self, name):
+        name = name[:len(name) - 4] # .add
+        item = self.getItem(name)
+        del self.list[:]
+        try:
+            self.loadLocal('entry.list', False)
+        except:
+            del self.list[:]
+        if self.itemInLocalList(name) == False and item != None:
+            self.list.append(item)
+            self.saveList()
+        return
+
+    def removeItem(self, name):
+        name = name[:len(name) - 7] #.remove
+        item = self.getItemFromList('entry.list', name)
+        if item != None:
+            self.list.remove(item)
+            self.saveList()
+        return
+
+    def saveList(self):
+        f = codecs.open(os.path.join(resDir, 'entry.list'), 'w', 'utf-8')
+        f.write('########################################################\n')
+        f.write('# Added sites and live streams\n')
+        f.write('########################################################\n')
+        f.write('title=My sites\n')
+        f.write('action=remove\n')
+        f.write('########################################################\n')
+        for item in self.list:
+            f.write('name=' + item.name + '\n')
+            f.write('type=' + item.type + '\n')
+            f.write('thumb=' + item.thumb + '\n')
+            f.write('url=' + item.url + '\n')
+            f.write('########################################################\n')
+        f.close()
+        return
+
     def loadCatcher(self, name):
         f = codecs.open(os.path.join(resDir, 'catcher.list'), 'r', 'utf-8')
         data = f.read()
@@ -528,10 +588,7 @@ class CCurrentList:
                 if index != -1:
                     key = m[:index]
                     value = m[index+1:]
-                    if key == 'version':
-                        if value != '1':
-                            return -1
-                    elif key == 'name':
+                    if key == 'name':
                         if name == value:
                             catcher_found = True
                     elif key == 'data' and catcher_found == True:
@@ -564,8 +621,15 @@ class CCurrentList:
                 data = data.split('\n')
                 f.close()
             except:
-                traceback.print_exc(file = sys.stdout)
-                return -2
+                try:
+                    f = codecs.open(os.path.join(filename.replace('|', '%')), 'r', 'utf-8')
+                    data = f.read()
+                    data = data.replace('\r\n', '\n')
+                    data = data.split('\n')
+                    f.close()
+                except:
+                    traceback.print_exc(file = sys.stdout)
+                    return -1
 
         self.cfg_name = filename
         del self.list[:]
@@ -575,11 +639,7 @@ class CCurrentList:
                 if index != -1:
                     key = m[:index]
                     value = m[index+1:]
-                    if key == 'version':
-                        self.version = value
-                        if self.version != '1':
-                            return -1
-                    elif key == 'title':
+                    if key == 'title':
                         self.title = value
                     elif key == 'start_url':
                         self.start_url = value
@@ -611,7 +671,7 @@ class CCurrentList:
                                 return ret
                         except:
                             traceback.print_exc(file = sys.stdout)
-                            return -2
+                            return -1
                     elif key == 'user':
                         self.user = value
                     elif key == 'password':
@@ -769,7 +829,7 @@ class CCurrentList:
             #f.close()
         except IOError:
             traceback.print_exc(file = sys.stdout)
-            return -2
+            return -1
 
         # Find video items
         for video in self.video_list:
@@ -1196,18 +1256,19 @@ class Main:
         ext = self.currentlist.getFileExtension(url)
         if ext == 'cfg' or ext == 'list':
             result = self.currentlist.loadLocal(url)
+        elif ext == 'add':
+            self.currentlist.addItem(url)
+            return -2
+        elif ext == 'remove':
+            dia = xbmcgui.Dialog()
+            if dia.yesno('', xbmc.getLocalizedString(30054)):
+                self.currentlist.removeItem(url)
+            return -2
         elif ext == 'videomonkey':
             result = self.playVideo(url)
             return
         else:
             result = self.currentlist.loadRemote(url)
-
-        if result == -1:
-            dialog = xbmcgui.Dialog()
-            dialog.ok("Error", "Invalid directory version.")
-        elif result == -2:
-            dialog = xbmcgui.Dialog()
-            dialog.ok("Error", "Directory could not be opened.")
 
         if self.currentlist.sort_method == 'label':
             xbmcplugin.addSortMethod(handle = self.handle, sortMethod = xbmcplugin.SORT_METHOD_LABEL)
@@ -1238,11 +1299,18 @@ class Main:
         return result
 
     def addLink(self, name, url, icon = None, totalItems = None):
+        u = sys.argv[0] + "?url=" + urllib.quote_plus(url)
         if (icon == None or icon == ''):
             liz = xbmcgui.ListItem(name)
         else:
             liz = xbmcgui.ListItem(name, name, icon, icon)
         liz.setInfo( type = "Video", infoLabels = {"Title":name})
+        if self.currentlist.action.find('add') != -1:
+            action = "XBMC.RunPlugin(%s.add)" % (u)
+            liz.addContextMenuItems([(xbmc.getLocalizedString(30010), action)])
+        if self.currentlist.action.find('remove') != -1:
+            action = "XBMC.RunPlugin(%s.remove)" % (u)
+            liz.addContextMenuItems([(xbmc.getLocalizedString(30011), action)])
         if totalItems == None:
             ok = xbmcplugin.addDirectoryItem(handle = int(sys.argv[1]), url = url, listitem = liz)
         else:
@@ -1254,6 +1322,12 @@ class Main:
             liz = xbmcgui.ListItem(name)
         else:
             liz = xbmcgui.ListItem(name, name, icon, icon)
+        if self.currentlist.action.find('add') != -1:
+            action = "XBMC.RunPlugin(%s.add)" % (u)
+            liz.addContextMenuItems([(xbmc.getLocalizedString(30010), action)])
+        if self.currentlist.action.find('remove') != -1:
+            action = "XBMC.RunPlugin(%s.remove)" % (u)
+            liz.addContextMenuItems([(xbmc.getLocalizedString(30011), action)])
         if totalItems == None:
             ok = xbmcplugin.addDirectoryItem(handle = int(sys.argv[1]), url = u, listitem = liz, isFolder = True)
         else:
@@ -1281,7 +1355,17 @@ class Main:
                     except:
                         traceback.print_exc(file = sys.stdout)
                 self.purgeCache()
-                if self.parseView('sites.list') == 0:
+                try:
+                    xbmcplugin.disableCache()
+                except:
+                    pass
+                result = self.parseView('sites.list')
+                del self.currentlist.list[:]
+                try:
+                    self.parseView('entry.list')
+                except:
+                    pass
+                if result == 0:
                     xbmcplugin.endOfDirectory(int(sys.argv[1]))
             else:
                 params = sys.argv[2]
