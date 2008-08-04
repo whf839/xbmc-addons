@@ -1307,10 +1307,16 @@ class Main:
         liz.setInfo( type = "Video", infoLabels = {"Title":name})
         if self.currentlist.action.find('add') != -1:
             action = "XBMC.RunPlugin(%s.add)" % (u)
-            liz.addContextMenuItems([(xbmc.getLocalizedString(30010), action)])
+            try:
+                liz.addContextMenuItems([(xbmc.getLocalizedString(30010), action)])
+            except:
+                pass
         if self.currentlist.action.find('remove') != -1:
             action = "XBMC.RunPlugin(%s.remove)" % (u)
-            liz.addContextMenuItems([(xbmc.getLocalizedString(30011), action)])
+            try:
+                liz.addContextMenuItems([(xbmc.getLocalizedString(30011), action)])
+            except:
+                pass
         if totalItems == None:
             ok = xbmcplugin.addDirectoryItem(handle = int(sys.argv[1]), url = url, listitem = liz)
         else:
@@ -1324,10 +1330,16 @@ class Main:
             liz = xbmcgui.ListItem(name, name, icon, icon)
         if self.currentlist.action.find('add') != -1:
             action = "XBMC.RunPlugin(%s.add)" % (u)
-            liz.addContextMenuItems([(xbmc.getLocalizedString(30010), action)])
+            try:
+                liz.addContextMenuItems([(xbmc.getLocalizedString(30010), action)])
+            except:
+                pass
         if self.currentlist.action.find('remove') != -1:
             action = "XBMC.RunPlugin(%s.remove)" % (u)
-            liz.addContextMenuItems([(xbmc.getLocalizedString(30011), action)])
+            try:
+                liz.addContextMenuItems([(xbmc.getLocalizedString(30011), action)])
+            except:
+                pass
         if totalItems == None:
             ok = xbmcplugin.addDirectoryItem(handle = int(sys.argv[1]), url = u, listitem = liz, isFolder = True)
         else:
