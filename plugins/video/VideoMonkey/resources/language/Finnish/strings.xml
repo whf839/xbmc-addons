@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
-    <!--  30.7.2008 Finnish   -->
+    <!--  4.8.2008 Finnish   -->
     <string id="30000">VideoMonkey</string>
     <string id="30001">XBMC Media Center</string>
 
@@ -12,11 +12,14 @@
     <string id="30007">Tallenna video</string>
     <string id="30008">Latauspolku</string>
     <string id="30009">Kysy latauksesta ennen toistoa</string>
+    <string id="30010">Lisää kirjanmerkki</string>
+    <string id="30011">Poista kirjanmerkki</string>
 
     <string id="30050">Ladataan videota...</string>
     <string id="30051">Odota hetki...</string>
     <string id="30052">Haluatko ladata tämän videon?</string>
     <string id="30053">Videon lataus epäonnistui.[CR]Yritetään katsoa videota...</string>
+    <string id="30054">Haluatko poistaa kirjanmerkin?</string>
 
     <string id="30100">Kategoria</string>
     <string id="30101">Alikategoria</string>
@@ -32,4 +35,7 @@
     <string id="30111">Määritä</string>
     <string id="30112">Maa</string>
     <string id="30113">Ajan askellus</string>
+    <string id="30114">Urheilu</string>
+    <string id="30115">Lapsille</string>
+    <string id="30116">Musiikki</string>
 </strings>
