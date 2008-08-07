@@ -33,3 +33,8 @@ type=rss
 thumb=video.monkey.image|tha.png
 url=live.tha.list
 ########################################################
+name=VN
+type=rss
+thumb=video.monkey.image|vn.png
+url=live.vn.list
+########################################################
