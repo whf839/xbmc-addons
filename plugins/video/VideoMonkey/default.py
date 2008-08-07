@@ -1136,9 +1136,9 @@ class Main:
             player_type = xbmc.PLAYER_CORE_DVDPLAYER
 
         if (flv_file != None and os.path.isfile(flv_file)):
-            xbmc.Player(player_type).play(flv_file, listitem)
+            xbmc.Player(player_type).play(str(flv_file), listitem)
         else:
-            xbmc.Player(player_type).play(vidURL, listitem)
+            xbmc.Player(player_type).play(str(vidURL), listitem)
         xbmc.sleep(200)
 
     def downloadMovie(self, url, title):

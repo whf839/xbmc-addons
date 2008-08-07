@@ -21,3 +21,8 @@ type=rss
 thumb=video.monkey.image|arte_plus7.png
 url=arteplus7.cfg
 ########################################################
+name=Alpha Centauri (DE)
+type=rss
+thumb=video.monkey.image|alpha_centauri.png
+url=alphacentauri.de.cfg
+########################################################
