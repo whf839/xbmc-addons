@@ -15,10 +15,9 @@ url=http://www.2video.de/index.php?dl=%s&action=download
 target=<div id=\"box\">[^<]*<h2>Download</h2>[^<]*<p><a href=\"([^\"]+)\" target=\"_blank\">
 ########################################################
 name=keepvid.com
-data=url=%s&site=aa
+url=http://keepvid.com/?url=%s
 header=Referer|http://keepvid.com/
-url=http://keepvid.com/megaupload/keepvid.php
-target=Original link: <a href=\"[^\"]+\">[^<]+</a><br /><a href=\"([^\"]+)\"><b>[^D]+Download[^<]+</b>
+target=<a href=\"([^\"]+)\" class=\"link\" target=\"\_blank\">
 ########################################################
 name=viloader.net
 data=action=formDownload&url=%s&json=false
