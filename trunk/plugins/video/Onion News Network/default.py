@@ -3,6 +3,7 @@
 
 import urllib,urllib2,re
 import xbmcplugin,xbmcgui,xbmc
+from random import choice
 from BeautifulSoup import BeautifulStoneSoup,BeautifulSoup
 
 def getLink(site):
@@ -29,7 +30,7 @@ def addThumbDir(name,url,mode,thumb):
     ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
     return ok
 
-def addLink(name,url,date):
+def addLink(name,url,date,thumb):
     ok=True
     liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png",thumbnailImage="http://www.theonion.com/content/themes/onion/assets/onn/itunes_large.jpg")
     liz.setInfo( type="Video", infoLabels={"Title": name,"Date":date } )
@@ -63,8 +64,9 @@ def showMP4Links(site):
         match=p.findall(str(videos[i]))
         for temp in match:
             url=temp
-        addLink(str(i+1)+'. '+name,url,date)
+        addLink(str(i+1)+'. '+name,url,date,'')
 def showList(url):
+    addDir('Play Random',url,8)
     tree=BeautifulSoup(getLink(url))
     videos=tree.findAll('li')
     for i in range(len(videos)):
@@ -74,7 +76,17 @@ def showList(url):
         page='http://www.theonion.com'+li('a')[0]['href']
         addThumbDir(str(i+1)+'. '+title,page,2,thumb)
 
-def playItem(url,name):
+def playRandom(url):
+    tree=BeautifulSoup(getLink(url))
+    videos=tree.findAll('li')
+    li=BeautifulSoup(''.join(str(choice(videos))))
+    #li=BeautifulSoup(''.join(str(videos[0])))
+    title=li('a')[1].contents[0].string
+    page='http://www.theonion.com'+li('a')[0]['href']
+    thumb=li('img')[0]['src']
+    playItem(page,title,thumb)
+
+def playItem(url,name,thumb):
     b=[]
     link=getLink(url)
     p=re.compile('flashvars=&quot;file=(.*embedded_video)&quot;&gt;')
@@ -85,14 +97,16 @@ def playItem(url,name):
     match=p.findall(link)
     for a in match:
         b.append(a)
-    addLink(name,b[0],'')
-    #xbmc.executebuiltin('XBMC.PlayMedia('+b[0]+')')
+    #addLink(name,b[1],'')
+    xbmc.executebuiltin('XBMC.PlayMedia('+b[1]+')')
+    fakefunction(name)#exits virtual dir so PlayMedia isn't repeatedly called.
 
 ########################################
 params=get_params()
 url=None
 name=None
 mode=None
+thumb=None
 
 try:
     url=urllib.unquote_plus(params["url"])
@@ -106,6 +120,10 @@ try:
     mode=int(params["mode"])
 except:
     pass
+try:
+    name=urllib.unquote_plus(params["thumb"])
+except:
+    pass
 if mode==None or url==None or len(url)<1:
     addDir('1. All Videos','http://theonion.com/content/onn/ajax_videolist/onn',1)
     addDir('2. Most Viewed','http://theonion.com/content/onn/ajax_videolist/most_viewed',1)
@@ -117,12 +135,11 @@ if mode==None or url==None or len(url)<1:
 if mode==1:
     showList(url)
 if mode==2:
-    playItem(url,name)
+    playItem(url,name,thumb)
 if mode==7:
     showMP4Links(url)
 if mode==8:
-    xbmcgui.Dialog().ok('Coming Soon...','This Feature will be implimented \n shortly.  Stay tuned')
-    fakeFunction('to return to list')
+    playRandom(url)
 
 
 
