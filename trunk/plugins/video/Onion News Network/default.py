@@ -97,8 +97,14 @@ def playItem(url,name,thumb):
     match=p.findall(link)
     for a in match:
         b.append(a)
-    #addLink(name,b[1],'')
-    xbmc.executebuiltin('XBMC.PlayMedia('+b[1]+')')
+    pL=xbmc.PlayList(1)
+    pL.clear()
+    pL.add(b[0])
+    try:
+        pL.add(b[1])
+    except:
+        pass
+    xbmc.Player().play(pL)
     fakefunction(name)#exits virtual dir so PlayMedia isn't repeatedly called.
 
 ########################################
