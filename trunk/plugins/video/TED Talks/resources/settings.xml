@@ -1,0 +1,5 @@
+<settings>
+   <!-- GUI  -->
+   <setting id="video_quality" 	type="enum" 	label="30070" lvalues="30072|30071|30073" 	default="0"/>
+   <setting type="sep" />
+</settings>
