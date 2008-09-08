@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <string id="30000">TED Talks - Ideas Worth Spreading</string>
+
+    <string id="30001">Search</string>
+	<string id="30002">Add to Favorite Talks</string>
+    
+    <string id="30003">Browse By Theme</string>
+    <string id="30004">Each year,  the TED (Technology, Entertainment, Design) conference hosts some of the world's most fascinating people: Trusted voices and convention-breaking mavericks, icons and geniuses. These podcasts (also available in audio format) capture the most extraordinary presentations delivered from the TED stage.</string>
+
+	<string id="30010">Play Random</string>
+    <string id="30020">Download</string>
+	
+	<string id="30030">Browse By Theme</string>
+	<string id="30031">Browse All Feeds</string>
+	<string id="30032">Your Favorites</string>
+	<string id="30033">Browse by Speaker</string>
+	
+	<!--Settings-->
+    
+	<string id="30040">Player Type</string>   
+    <string id="30050">DVDPlayer </string>
+    <string id="30060">MPlayer</string>
+	
+    <string id="30070">Video Quality</string>
+	<string id="30071">Standard Def</string>
+    <string id="30072">High Def (480p)</string>
+    <string id="30073">Audio </string>
+	
+	<string id="30074">Download instead Stream on select?</string>
+    <string id="30075">Download Path</string>  
+	
+</strings>
