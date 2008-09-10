@@ -9,61 +9,73 @@ import urllib, re
 __plugin__ = "UlmenTV"
 __version__ = '1.0'
 __author__ = 'bootsy [bootsy82@gmail.com] with much help from BigBellyBilly'
-__date__ = '09-09-2008'
+__date__ = '10-09-2008'
 
 DIR_USERDATA = os.path.join( "T:\\script_data", __plugin__ )
+BASE_URL = 'http://www.myspass.de'
 
 def log(msg):
-    xbmc.output(str(msg))
+	if isinstance(msg,list):
+		for i in msg:
+			xbmc.output(str(i))
+	else:
+		xbmc.output(str(msg))
 
 dialogProgress = xbmcgui.DialogProgress()
 
-
-#[(url,show)]
+# Get all Categories.
 def getUlmenCats():
 	log("> getUlmenCats()")
 	res=[]
-	url = "http://www.myspass.de/de/ulmentv/index.html"
+	url = BASE_URL + "/de/ulmentv/index.html"
 	doc = fetchText(url)
 	if doc:
-		doc = doc.replace('<br />', ' ').replace('Neueste Videos', '')
-		p=re.compile('"others"><a href="(/de/ulmentv/.+?/index.html\?id=\d+)">(.*?)</a')
+		p=re.compile('class="(?:active|inactive).*?href="(.*?)">(.*?)</a', re.DOTALL + re.MULTILINE + re.IGNORECASE)
 		matches=p.findall(doc)
 		for url,name in matches:
-			res.append((url,name))
+			res.append((url, name.replace('<br />',' ')))
 
-		for item in res:
-			log(item)
-
+		log(res)
 	log("< getUlmenCats()")
 	return res
 
-#[(url,show)]
+# Get all episodes for a cat.
 def getUlmenepisodes(url,name):
 	log("> getUlmenepisodes()")
 	res=[]
-	base_url = 'http://www.myspass.de'
-	if not url.startswith(base_url):
-		url = base_url+url
 	doc = fetchText(url)
 	if doc:
 		p1=re.compile('class="my_chapter_headline">(.*?)</div>(.*?)<!--my_videoslider_line', re.DOTALL + re.MULTILINE + re.IGNORECASE)				# bbb
 		p2=re.compile('class="my_video_headline">(.*?)</.*?(http.*?jpg).*?id=(\d+)" title="(.*?)"', re.DOTALL + re.MULTILINE + re.IGNORECASE)
 		chMatches=p1.findall(doc)
-#		print "chMatches=", chMatches
 		for chname, episodes in chMatches:
 			p2Matches=p2.findall(episodes)
-#			print "p2Matches=", p2Matches
 			for part,thumbnail,id,name in p2Matches:
 				url='http://c11021-o.l.core.cdn.streamfarm.net/1000041copo/ondemand/163840/'+id+'/'+id+'_de.flv'
 				res.append((chname,part,thumbnail,url,name))
 
-		for item in res:
-			log(item)
-
+		log(res)
 	log("< getUlmenepisodes()")
 	return res
 
+# Get all newest episodes.
+def getUlmenNewEpisodes(name):
+	log("> getUlmenNewEpisodes()")
+	res=[]
+	url = BASE_URL + '/de/ajax/utv/utv_videolist_newest.html?owner=UlmenTV'
+	doc = fetchText(url)
+	if doc:
+		p=re.compile('url\(\'(.*?)\'.*?href=".*?id=(.*?)".*?title="(.*?)"', re.DOTALL + re.MULTILINE + re.IGNORECASE)
+		matches=p.findall(doc)
+		for thumbnail,id,name in matches:
+			url='http://c11021-o.l.core.cdn.streamfarm.net/1000041copo/ondemand/163840/'+id+'/'+id+'_de.flv'
+			res.append(('Neueste Videos','Folge 1/1',thumbnail,url,name))
+
+		log(res)
+	log("< getUlmenNewEpisodes()")
+	return res
+
+# fetch webpage
 def fetchText(url):
 	doc = ""
 	try:
@@ -75,9 +87,10 @@ def fetchText(url):
 	except:
 		msg = sys.exc_info()[ 1 ]
 		print msg
-		xbmcgui.Dialog().ok("Page Download failed!", msg)
+		xbmcgui.Dialog().ok("WebPage Download failed!", msg)
 	return doc
 
+# fetch media file
 def fetchBinary(url):
 	fn = ''
 	try:
@@ -92,7 +105,7 @@ def fetchBinary(url):
 	except:
 		msg = sys.exc_info()[ 1 ]
 		print msg
-		xbmcgui.Dialog().ok("Download failed!", msg)
+		xbmcgui.Dialog().ok("Media Download failed!", msg)
 		fn = ''
 
 	if fn and os.path.isfile(fn):
@@ -116,12 +129,14 @@ def get_params():
 
 	return paramDict
 
+# add a link to directory
 def addLink(name, url, img):
 	log("addLink() url=%s" % url)
 	liz=xbmcgui.ListItem(name, '', img, img)
 	liz.setInfo( type="Video", infoLabels={ "Title": name } )
 	return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
 
+# add a folder to directory
 def addDir(name,url,mode):
 	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
 	log("addDir() url=%s" % u)
@@ -129,13 +144,20 @@ def addDir(name,url,mode):
 	liz.setInfo( type="Video", infoLabels={ "Title": name } )
 	return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
 
+# fetch Cats and add to directory
 def showCats(url,name):
 	cat=getUlmenCats()
 	for url,name in cat:
 		addDir(name,url,1)
 
+# fetch Episodes for a Cat. and add to directory
 def showShows(url,name):
-	shows=getUlmenepisodes(url,name)
+	if not url.startswith(BASE_URL):
+		url = BASE_URL+url
+	if url.endswith('index.html'):
+		shows=getUlmenNewEpisodes(name)
+	else:
+		shows=getUlmenepisodes(url,name)
 	dialogProgress.create("Downloading Shows ...")
 	for chname,part,thumbnail,url,name in shows:
 		ep = "%s - %s" % (part, name)
@@ -143,7 +165,10 @@ def showShows(url,name):
 		img = fetchBinary(thumbnail)
 		if not img:
 			img = "DefaultVideo.png"
-		show = "%s - %s - %s" % (chname, part, name)
+		if (chname=='Neueste Videos'):
+			show=name
+		else:
+			show = "%s - %s - %s" % (chname, part, name)
 		addLink(show,url,img)        
 	dialogProgress.close()
 
