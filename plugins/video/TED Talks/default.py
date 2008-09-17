@@ -1,3 +1,4 @@
+#2008091700
 """
     TED Talks
         by rwparris
@@ -218,5 +219,6 @@ if mode==3:
 xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 xbmcplugin.addSortMethod(int(sys.argv[1]), 20)#episode
 xbmcplugin.addSortMethod(int(sys.argv[1]),  3)#date
+xbmcplugin.addSortMethod(int(sys.argv[1]), 10)#title
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
 sys.modules.clear()
