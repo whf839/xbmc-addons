@@ -7,9 +7,9 @@ import xbmc, xbmcgui, xbmcplugin
 import urllib, re
 
 __plugin__ = "UlmenTV"
-__version__ = '1.0'
+__version__ = '1.1'
 __author__ = 'bootsy [bootsy82@gmail.com] with much help from BigBellyBilly'
-__date__ = '10-09-2008'
+__date__ = '18-09-2008'
 
 DIR_USERDATA = os.path.join( "T:\\script_data", __plugin__ )
 BASE_URL = 'http://www.myspass.de'
@@ -154,7 +154,7 @@ def showCats(url,name):
 def showShows(url,name):
 	if not url.startswith(BASE_URL):
 		url = BASE_URL+url
-	if url.endswith('index.html'):
+	if url.endswith('ulmentv/index.html'):
 		shows=getUlmenNewEpisodes(name)
 	else:
 		shows=getUlmenepisodes(url,name)
