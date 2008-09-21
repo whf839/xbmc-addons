@@ -97,16 +97,14 @@ def playItem(url,name,thumb):
     match=p.findall(link)
     for a in match:
         b.append(a)
-    pL=xbmc.PlayList(1)
-    pL.clear()
-    pL.add(b[0])
-    try:
-        pL.add(b[1])
-    except:
-        pass
-    xbmc.Player().play(pL)
-    fakefunction(name)#exits virtual dir so PlayMedia isn't repeatedly called.
-
+    for i in range(len(b)):
+	p=b[i].rindex('.')
+	q=b[i].rindex('/')
+	if (b[i][q:p].isupper()):
+            url=b[i]
+    addLink(name,url,'',thumb)
+	    
+        
 ########################################
 params=get_params()
 url=None
