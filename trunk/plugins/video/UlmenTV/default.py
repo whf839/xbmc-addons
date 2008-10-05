@@ -7,9 +7,9 @@ import xbmc, xbmcgui, xbmcplugin
 import urllib, re
 
 __plugin__ = "UlmenTV"
-__version__ = '1.1'
+__version__ = '1.2'
 __author__ = 'bootsy [bootsy82@gmail.com] with much help from BigBellyBilly'
-__date__ = '18-09-2008'
+__date__ = '05-10-2008'
 
 DIR_USERDATA = os.path.join( "T:\\script_data", __plugin__ )
 BASE_URL = 'http://www.myspass.de'
@@ -46,12 +46,12 @@ def getUlmenepisodes(url,name):
 	doc = fetchText(url)
 	if doc:
 		p1=re.compile('class="my_chapter_headline">(.*?)</div>(.*?)<!--my_videoslider_line', re.DOTALL + re.MULTILINE + re.IGNORECASE)				# bbb
-		p2=re.compile('class="my_video_headline">(.*?)</.*?(http.*?jpg).*?id=(\d+)" title="(.*?)"', re.DOTALL + re.MULTILINE + re.IGNORECASE)
+		p2=re.compile('class="my_video_headline">(.*?)</.*?(http.*?jpg).*?href="(.*?)" title="(.*?)"', re.DOTALL + re.MULTILINE + re.IGNORECASE)		
 		chMatches=p1.findall(doc)
 		for chname, episodes in chMatches:
 			p2Matches=p2.findall(episodes)
 			for part,thumbnail,id,name in p2Matches:
-				url='http://c11021-o.l.core.cdn.streamfarm.net/1000041copo/ondemand/163840/'+id+'/'+id+'_de.flv'
+				url='http://www.myspass.de'+id
 				res.append((chname,part,thumbnail,url,name))
 
 		log(res)
@@ -65,15 +65,27 @@ def getUlmenNewEpisodes(name):
 	url = BASE_URL + '/de/ajax/utv/utv_videolist_newest.html?owner=UlmenTV'
 	doc = fetchText(url)
 	if doc:
-		p=re.compile('url\(\'(.*?)\'.*?href=".*?id=(.*?)".*?title="(.*?)"', re.DOTALL + re.MULTILINE + re.IGNORECASE)
+		p=re.compile('url\(\'(.*?)\'.*?href="(.*?)".*?title="(.*?)"', re.DOTALL + re.MULTILINE + re.IGNORECASE)
 		matches=p.findall(doc)
 		for thumbnail,id,name in matches:
-			url='http://c11021-o.l.core.cdn.streamfarm.net/1000041copo/ondemand/163840/'+id+'/'+id+'_de.flv'
+			url='http://www.myspass.de'+id
 			res.append(('Neueste Videos','Folge 1/1',thumbnail,url,name))
 
 		log(res)
 	log("< getUlmenNewEpisodes()")
 	return res
+	
+#fetch videolinks
+def fetchVideoLink(url):
+	url='http://www.degrab.de/?url='+url
+	f=urllib.urlopen(url)
+	doc=f.read()
+	f.close()
+	if doc:
+		p=re.compile('<h3>.+?</h3><p style=".+?">.+?<a href="(.+?)" rel="nofollow">Download</a></p><h3>.+?</h3>', re.DOTALL + re.MULTILINE + re.IGNORECASE)
+		matches=p.findall(doc)
+		url=matches[0]
+	return url	
 
 # fetch webpage
 def fetchText(url):
@@ -134,6 +146,8 @@ def addLink(name, url, img):
 	log("addLink() url=%s" % url)
 	liz=xbmcgui.ListItem(name, '', img, img)
 	liz.setInfo( type="Video", infoLabels={ "Title": name } )
+	url = fetchVideoLink(url)
+	log("addLink() videourl=%s" % url)
 	return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
 
 # add a folder to directory
