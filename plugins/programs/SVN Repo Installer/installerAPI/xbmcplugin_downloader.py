@@ -126,7 +126,7 @@ class Main:
                 pct = int( ( float( cnt ) / len( script_files ) ) * 100 )
                 self.dialog.update( pct, "%s %s" % ( xbmc.getLocalizedString( 30005 ), url, ), "%s %s" % ( xbmc.getLocalizedString( 30006 ), xbmc.translatePath( path ), ), "%s %s" % ( xbmc.getLocalizedString( 30007 ), file, ) )
                 if ( self.dialog.iscanceled() ): raise
-                if ( not os.path.isdir( translatePath( path ) ) ): os.makedirs( translatePath( path ) )
+                if ( not os.path.isdir( xbmc.translatePath( path ) ) ): os.makedirs( xbmc.translatePath( path ) )
                 url = self.REPO_URL + url
                 fpath = xbmc.translatePath( os.path.join( path, file ) )
                 urllib.urlretrieve( url.replace( " ", "%20" ), fpath )
