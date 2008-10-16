@@ -2,5 +2,5 @@
 <repo>
     <url>http://xbmc-scripting.googlecode.com/svn</url>
     <root>/trunk</root>
-    <structure name="trunk" offset="-1" install="scripts\\" />
+    <structure name="trunk" noffset="-1" install="scripts" ioffset="2" />
 </repo>
