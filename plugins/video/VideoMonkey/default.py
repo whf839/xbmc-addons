@@ -14,7 +14,7 @@ __author__ = "sfaxman"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/VideoMonkey/"
 __credits__ = "sfaxman"
-__version__ = "1.2" # of this file
+__version__ = "1.3" # of this file
 
 rootDir = os.getcwd()
 if rootDir[-1] == ';':rootDir = rootDir[0:-1]
@@ -1157,7 +1157,8 @@ class Main:
                                 if source.quality == 'high' and source.url != '':
                                     self.videoExtension = '.' + source.extension
                                     return source.url
-                return match
+                if self.currentlist.ext_target_url == '':
+                    return match
             except:
                 traceback.print_exc(file = sys.stdout)
                 return ''
