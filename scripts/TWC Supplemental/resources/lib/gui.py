@@ -1,18 +1,15 @@
 """
-    This script allows displays radars from weather.com
+    GUI for displaying maps and forecasts from weather.com
     
     Nuka1195
 """
 
 # main imports
-#import os
 import xbmc
 import xbmcgui
 
 import resources.lib.TWCClient as TWCClient
 
-# get our localize strings object
-#_ = xbmc.Language().getLocalizedString( os.getcwd() )
 
 
 class GUI( xbmcgui.WindowXMLDialog ):
@@ -21,7 +18,6 @@ class GUI( xbmcgui.WindowXMLDialog ):
     ACTION_SET_DEFAULT = ( 117, )
     ACTION_TOGGLE_MAP = ( 18, )
     # required control id's
-    CONTROL_MAIN_GROUP = 1000
     CONTROL_MAP_LIST = 500
     CONTROL_HOUR_LIST = 600
     CONTROL_10DAY_LIST = 700
@@ -84,11 +80,11 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 if ( location.lower() != "busy" ):
                     break
                 t += 1
-                xbmc.sleep(500)
+                xbmc.sleep( 500 )
             # loop thru and compare location with the three saved locations
             for count in range( 1, 4 ):
                 # grab a saved location
-                preset = xbmc.executehttpapi( "getguisetting(3,weather.areacode%d)" % ( count, ) ).replace("<li>","")
+                preset = xbmc.executehttpapi( "getguisetting(3,weather.areacode%d)" % ( count, ) ).replace( "<li>", "" )
                 # if location is same as saved location, we have our local code
                 if ( preset.split( " - " )[ 1 ] == location ):
                     self.local_code = preset.split( " - " )[ 0 ]
@@ -310,7 +306,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
     def onAction( self, action ):
         # convert action to an id number
         actionId = action.getId()
-        # only exit if not fullscreen
+        # perform action
         if ( actionId in self.ACTION_EXIT_SCRIPT and not self.loading ):
             self.exit_script()
         elif ( actionId in self.ACTION_TOGGLE_MAP and self.success and not self.loading and xbmc.getCondVisibility( "!IsEmpty(Container(50).Property(view-Maps))" ) ):
