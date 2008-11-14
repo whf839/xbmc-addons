@@ -2113,7 +2113,7 @@
                         <control type="label">
                             <posx>33</posx>
                             <posy>0</posy>
-                            <width>40</width>
+                            <width>50</width>
                             <height>56</height>
                             <font>font10</font>
                             <textcolor>DDFFFFFF</textcolor>
@@ -2207,7 +2207,7 @@
                         <control type="label">
                             <posx>33</posx>
                             <posy>0</posy>
-                            <width>40</width>
+                            <width>50</width>
                             <height>56</height>
                             <font>font10</font>
                             <textcolor>DDFFFFFF</textcolor>
