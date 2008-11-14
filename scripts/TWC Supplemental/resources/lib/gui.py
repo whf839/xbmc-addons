@@ -158,7 +158,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 self.setProperty( "36Hour%dtemp" % ( day + 1, ), forecast[ 4 ] )
                 self.setProperty( "36Hour%dpreciptitle" % ( day + 1, ), forecast[ 5 ] )
                 self.setProperty( "36Hour%dprecip" % ( day + 1, ), forecast[ 6 ] )
-                self.setProperty( "36Hour%dforecast" % ( day + 1, ), forecast[ 7 ] )
+                self.setProperty( "36Hour%doutlook" % ( day + 1, ), forecast[ 7 ] )
                 self.setProperty( "36Hour%ddaylight" % ( day + 1, ), forecast[ 8 ] )
 
     def _fetch_hour_forecast( self ):
@@ -215,7 +215,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 self.setProperty( "Weekend%dsunrise" % ( day + 1, ), forecast[ 17 ] )
                 self.setProperty( "Weekend%dsunsettitle" % ( day + 1, ), forecast[ 18 ] )
                 self.setProperty( "Weekend%dsunset" % ( day + 1, ), forecast[ 19 ] )
-                self.setProperty( "Weekend%dforecast" % ( day + 1, ), forecast[ 20 ] )
+                self.setProperty( "Weekend%doutlook" % ( day + 1, ), forecast[ 20 ] )
 
     def _fetch_10day_forecast( self ):
         # reset our view
