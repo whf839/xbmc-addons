@@ -233,7 +233,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 listitem = xbmcgui.ListItem( forecast[ 0 ] )
                 listitem.setProperty( "date", forecast[ 1 ] )
                 listitem.setProperty( "icon", forecast[ 2 ] )
-                listitem.setProperty( "brief", forecast[ 3 ].replace( " ", "\n" ) )
+                listitem.setProperty( "brief", forecast[ 3 ].replace( " / ", "/" ).replace( " ", "\n" ).replace( "/", " /\n" ) )
                 listitem.setProperty( "high", forecast[ 4 ] )
                 listitem.setProperty( "low", forecast[ 5 ] )
                 listitem.setProperty( "precip", forecast[ 6 ] )
