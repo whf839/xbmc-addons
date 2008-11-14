@@ -8,8 +8,9 @@
 import xbmc
 import xbmcgui
 
-import resources.lib.TWCClient as TWCClient
+from threading import Timer
 
+import resources.lib.TWCClient as TWCClient
 
 
 class GUI( xbmcgui.WindowXMLDialog ):
@@ -36,7 +37,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
         # get default view
         self._get_default_view()
         # set the maps path
-        self._set_loading_maps_path()
+        self._set_maps_path()
         # get our local code, needed for localizing radars
         self._get_local_code()
         # setup our radar client
@@ -60,10 +61,11 @@ class GUI( xbmcgui.WindowXMLDialog ):
             self._fetch_map_list()
 
     def _init_defaults( self ):
+        self.timer = None
         self.toggle = True
         self.weekendToggle = False
         self.loading = False
-        self.success = False
+        self.maps_path = False
         self.defaultmap = None
         self.forecast36Hour = None
         self.forecastHourByHour = None
@@ -92,14 +94,13 @@ class GUI( xbmcgui.WindowXMLDialog ):
         except Exception, e:
             print str( e )
 
-    def _set_maps_path( self ):
-        xbmc.executebuiltin( "Skin.SetString(twc-mapspath,%s)" % ( self.success, ) )
-
-    def _set_default_maps_path( self ):
-        xbmc.executebuiltin( "Skin.SetString(twc-mapspath,weather.com/default)" )
-
-    def _set_loading_maps_path( self ):
-        xbmc.executebuiltin( "Skin.SetString(twc-mapspath,weather.com/loading)" )
+    def _set_maps_path( self, path=0 ):
+        if ( path == 0 ):
+            xbmc.executebuiltin( "Skin.SetString(twc-mapspath,weather.com/loading)" )
+        elif ( path == 1 ):
+            xbmc.executebuiltin( "Skin.SetString(twc-mapspath,%s)" % ( self.maps_path, ) )
+        elif ( path == 2 ):
+            xbmc.executebuiltin( "Skin.SetString(twc-mapspath,weather.com/default)" )
 
     def _fetch_map_list( self ):
         # reset our view
@@ -123,21 +124,24 @@ class GUI( xbmcgui.WindowXMLDialog ):
             self._fetch_map( self.getControl( self.CONTROL_MAP_LIST ).getListItem( self.defaultmap ).getLabel2() )
 
     def _fetch_map( self, map ):
+        # cancel any timer
+        if ( self.timer is not None ):
+            self.timer.cancel()
+            self.timer = None
         # make sure user can't keep selecting maps
         self.loading = True
         # we set our skin setting to defaultimages while downloading
-        self._set_loading_maps_path()
+        self._set_maps_path()
         # fetch the available map urls
         maps = self.TWCClient.fetch_map_urls( map )
         # fetch the images
-        self.success = self.TWCClient.fetch_images( maps )
-        # now set our skin string so multi image will display images
-        if ( self.success ):
-            # successful so set correct map path
-            self._set_maps_path()
-        else:
-            # failed so reset map path
-            self._set_default_maps_path()
+        self.maps_path, expires = self.TWCClient.fetch_images( maps )
+        # now set our skin string so multi image will display images 1==success, 2==failure
+        self._set_maps_path( ( self.maps_path == "" ) + 1 )
+        # successful so set timer thread
+        if ( self.maps_path != "" and expires > 0 ):
+            self.timer = Timer( expires, self._fetch_map,( map, ) )
+            self.timer.start()
         # reset loading status
         self.loading = False
 
@@ -281,6 +285,8 @@ class GUI( xbmcgui.WindowXMLDialog ):
             xbmc.executebuiltin( "Skin.SetString(twc-defaultview,10Day)" )
 
     def exit_script( self ):
+        if ( self.timer is not None ):
+            self.timer.cancel()
         self.close()
 
     def onClick( self, controlId ):
@@ -309,7 +315,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
         # perform action
         if ( actionId in self.ACTION_EXIT_SCRIPT and not self.loading ):
             self.exit_script()
-        elif ( actionId in self.ACTION_TOGGLE_MAP and self.success and not self.loading and xbmc.getCondVisibility( "!IsEmpty(Container(50).Property(view-Maps))" ) ):
+        elif ( actionId in self.ACTION_TOGGLE_MAP and xbmc.getCondVisibility( "!IsEmpty(Container(50).Property(view-Maps))" ) ):
             self._toggle_map()
         elif ( actionId in self.ACTION_SET_DEFAULT and self.toggle ):
             self._set_default_view()
