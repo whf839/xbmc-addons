@@ -16,6 +16,7 @@
             <width>720</width>
             <height>480</height>
             <texture>twc-black.png</texture>
+            <aspectratio>stretch</aspectratio>
         </control>
 
         <control type="group">
@@ -38,8 +39,8 @@
                 <height>30</height>
                 <font>font13</font>
                 <textcolor>FFFFFFFF</textcolor>
-                <aligny>center</aligny>
                 <align>left</align>
+                <aligny>center</aligny>
                 <label>SCRIPT0</label>
             </control>
             <control type="label">
@@ -50,8 +51,8 @@
                 <height>30</height>
                 <font>font13</font>
                 <textcolor>FFFFFFFF</textcolor>
-                <aligny>center</aligny>
                 <align>right</align>
+                <aligny>center</aligny>
                 <info>Weather.Location</info>
             </control>
             <!-- Main buttons ** required ** -->
@@ -339,8 +340,8 @@
                     <height>100</height>
                     <font>font10</font>
                     <textcolor>FFFFFFFF</textcolor>
-                    <aligny>top</aligny>
                     <align>left</align>
+                    <aligny>top</aligny>
                     <label>$LOCALIZE[SCRIPT50]&#10;$LOCALIZE[SCRIPT51]&#10;$LOCALIZE[SCRIPT52]</label>
                 </control>
                 <!-- Maps multiimage ** Required ** -->
@@ -379,7 +380,6 @@
                     <textcolor>FFFFFFFF</textcolor>
                     <aligny>top</aligny>
                     <align>center</align>
-                    <wrapmultiline>true</wrapmultiline>
                     <label>SCRIPT101</label>
                     <visible>IsEmpty(Container(50).Property(36Hour1title))</visible>
                     <animation effect="zoom" reversible="false" center="auto" start="100" end="200" time="0">WindowOpen</animation>
@@ -502,7 +502,7 @@
                         <control type="label">
                             <description>precip</description>
                             <posx>85</posx>
-                            <posy>105</posy>
+                            <posy>103</posy>
                             <width>95</width>
                             <height>20</height>
                             <font>font10</font>
@@ -510,11 +510,11 @@
                             <aligny>top</aligny>
                             <align>center</align>
                             <info>Container(50).Property(36Hour1precip)</info>
-                            <animation effect="zoom" reversible="false" center="auto" start="100" end="170" time="0">WindowOpen</animation>
+                            <animation effect="zoom" reversible="false" center="auto" start="100" end="150" time="0">WindowOpen</animation>
                         </control>
                         <!-- Forecast -->
                         <control type="label">
-                            <description>forecast</description>
+                            <description>outlook</description>
                             <posx>5</posx>
                             <posy>145</posy>
                             <width>170</width>
@@ -524,7 +524,7 @@
                             <aligny>top</aligny>
                             <align>left</align>
                             <wrapmultiline>true</wrapmultiline>
-                            <info>Container(50).Property(36Hour1forecast)</info>
+                            <info>Container(50).Property(36Hour1outlook)</info>
                         </control>
                         <!-- Sunrise/Sunset -->
                         <control type="label">
@@ -562,7 +562,7 @@
                             <height>28</height>
                             <texture>twc-heading.png</texture>
                         </control>
-                        <!-- Heading label -->
+                        <!-- Forecast heading -->
                         <control type="label">
                             <description>heading</description>
                             <posx>0</posx>
@@ -575,7 +575,7 @@
                             <aligny>center</aligny>
                             <align>center</align>
                         </control>
-                        <!-- Weather Icon -->
+                        <!-- Weather icon -->
                         <control type="image">
                             <description>forecast icon</description>
                             <posx>15</posx>
@@ -643,7 +643,7 @@
                         <control type="label">
                             <description>precip</description>
                             <posx>85</posx>
-                            <posy>105</posy>
+                            <posy>103</posy>
                             <width>95</width>
                             <height>20</height>
                             <font>font10</font>
@@ -651,11 +651,11 @@
                             <aligny>top</aligny>
                             <align>center</align>
                             <info>Container(50).Property(36Hour2precip)</info>
-                            <animation effect="zoom" reversible="false" center="auto" start="100" end="170" time="0">WindowOpen</animation>
+                            <animation effect="zoom" reversible="false" center="auto" start="100" end="150" time="0">WindowOpen</animation>
                         </control>
                         <!-- Forecast -->
                         <control type="label">
-                            <description>forecast</description>
+                            <description>outlook</description>
                             <posx>5</posx>
                             <posy>145</posy>
                             <width>170</width>
@@ -665,7 +665,7 @@
                             <aligny>top</aligny>
                             <align>left</align>
                             <wrapmultiline>true</wrapmultiline>
-                            <info>Container(50).Property(36Hour2forecast)</info>
+                            <info>Container(50).Property(36Hour2outlook)</info>
                         </control>
                         <!-- Sunrise/Sunset -->
                         <control type="label">
@@ -703,7 +703,7 @@
                             <height>28</height>
                             <texture>twc-heading.png</texture>
                         </control>
-                        <!-- Heading label -->
+                        <!-- Forecast heading -->
                         <control type="label">
                             <description>heading</description>
                             <posx>0</posx>
@@ -716,7 +716,7 @@
                             <aligny>center</aligny>
                             <align>center</align>
                         </control>
-                        <!-- Weather Icon -->
+                        <!-- Weather icon -->
                         <control type="image">
                             <description>forecast icon</description>
                             <posx>15</posx>
@@ -784,7 +784,7 @@
                         <control type="label">
                             <description>precip</description>
                             <posx>85</posx>
-                            <posy>105</posy>
+                            <posy>103</posy>
                             <width>95</width>
                             <height>20</height>
                             <font>font10</font>
@@ -792,11 +792,11 @@
                             <aligny>top</aligny>
                             <align>center</align>
                             <info>Container(50).Property(36Hour3precip)</info>
-                            <animation effect="zoom" reversible="false" center="auto" start="100" end="170" time="0">WindowOpen</animation>
+                            <animation effect="zoom" reversible="false" center="auto" start="100" end="150" time="0">WindowOpen</animation>
                         </control>
                         <!-- Forecast -->
                         <control type="label">
-                            <description>forecast</description>
+                            <description>outlook</description>
                             <posx>5</posx>
                             <posy>145</posy>
                             <width>170</width>
@@ -806,7 +806,7 @@
                             <aligny>top</aligny>
                             <align>left</align>
                             <wrapmultiline>true</wrapmultiline>
-                            <info>Container(50).Property(36Hour3forecast)</info>
+                            <info>Container(50).Property(36Hour3outlook)</info>
                         </control>
                         <!-- Sunrise/Sunset -->
                         <control type="label">
@@ -832,8 +832,8 @@
                     <height>100</height>
                     <font>font10</font>
                     <textcolor>FFFFFFFF</textcolor>
-                    <aligny>top</aligny>
                     <align>left</align>
+                    <aligny>top</aligny>
                     <label>&#10;$LOCALIZE[SCRIPT53]&#10;$LOCALIZE[SCRIPT52]</label>
                 </control>
             </control>
@@ -852,92 +852,85 @@
                     <height>20</height>
                     <font>font13</font>
                     <textcolor>FFFFFFFF</textcolor>
-                    <aligny>top</aligny>
                     <align>center</align>
-                    <wrapmultiline>true</wrapmultiline>
+                    <aligny>top</aligny>
                     <label>SCRIPT102</label>
                     <visible>IsEmpty(Container(50).Property(HBHHead1))</visible>
                     <animation effect="zoom" reversible="false" center="auto" start="100" end="200" time="0">WindowOpen</animation>
                 </control>
                 <!-- Time heading -->
                 <control type="label">
-                    <posx>5</posx>
+                    <posx>10</posx>
                     <posy>-8</posy>
                     <width>45</width>
                     <height>20</height>
                     <font>font10</font>
-                    <aligny>center</aligny>
                     <textcolor>DDFFFFFF</textcolor>
-                    <selectedcolor>FFe2ff43</selectedcolor>
                     <align>center</align>
+                    <aligny>center</aligny>
                     <info>Container(50).Property(HBHHead1)</info>
                 </control>
                 <!-- Condition heading -->
                 <control type="label">
-                    <posx>55</posx>
+                    <posx>65</posx>
                     <posy>-8</posy>
                     <width>150</width>
                     <height>20</height>
                     <font>font10</font>
-                    <aligny>center</aligny>
                     <textcolor>DDFFFFFF</textcolor>
-                    <selectedcolor>FFe2ff43</selectedcolor>
                     <align>center</align>
+                    <aligny>center</aligny>
                     <info>Container(50).Property(HBHHead2)</info>
                 </control>
                 <!-- Feels like heading -->
                 <control type="label">
-                    <posx>217</posx>
+                    <posx>224</posx>
                     <posy>-8</posy>
                     <width>50</width>
                     <height>20</height>
                     <font>font10</font>
-                    <aligny>center</aligny>
                     <textcolor>DDFFFFFF</textcolor>
-                    <selectedcolor>FFe2ff43</selectedcolor>
                     <align>center</align>
+                    <aligny>center</aligny>
                     <wrapmultiline>true</wrapmultiline>
                     <info>Container(50).Property(HBHHead3)</info>
                 </control>
                 <!-- Chance of precipitation heading -->
                 <control type="label">
-                    <posx>276</posx>
+                    <posx>281</posx>
                     <posy>-8</posy>
                     <width>50</width>
                     <height>20</height>
                     <font>font10</font>
-                    <aligny>center</aligny>
                     <textcolor>DDFFFFFF</textcolor>
-                    <selectedcolor>FFe2ff43</selectedcolor>
                     <align>center</align>
+                    <aligny>center</aligny>
                     <wrapmultiline>true</wrapmultiline>
                     <info>Container(50).Property(HBHHead4)</info>
                 </control>
                 <!-- Dew point heading -->
                 <control type="label">
-                    <posx>334</posx>
+                    <posx>338</posx>
                     <posy>-8</posy>
                     <width>50</width>
                     <height>20</height>
                     <font>font10</font>
-                    <aligny>center</aligny>
                     <textcolor>DDFFFFFF</textcolor>
-                    <selectedcolor>FFe2ff43</selectedcolor>
                     <align>center</align>
+                    <aligny>center</aligny>
                     <wrapmultiline>true</wrapmultiline>
                     <info>Container(50).Property(HBHHead5)</info>
                 </control>
                 <!-- Humidity heading -->
                 <control type="label">
-                    <posx>393</posx>
+                    <posx>394</posx>
                     <posy>-8</posy>
                     <width>50</width>
                     <height>20</height>
                     <font>font10</font>
-                    <aligny>center</aligny>
                     <textcolor>DDFFFFFF</textcolor>
-                    <selectedcolor>FFe2ff43</selectedcolor>
                     <align>center</align>
+                    <aligny>center</aligny>
                     <wrapmultiline>true</wrapmultiline>
                     <info>Container(50).Property(HBHHead6)</info>
                 </control>
@@ -948,10 +941,9 @@
                     <width>120</width>
                     <height>20</height>
                     <font>font10</font>
-                    <aligny>center</aligny>
                     <textcolor>DDFFFFFF</textcolor>
-                    <selectedcolor>FFe2ff43</selectedcolor>
                     <align>center</align>
+                    <aligny>center</aligny>
                     <info>Container(50).Property(HBHHead7)</info>
                 </control>
                 <!-- Forecast list ** required ** -->
@@ -969,19 +961,18 @@
                     <scrolltime>200</scrolltime>
                     <itemlayout height="62">
                         <control type="image">
-                            <width>575</width>
-                            <height>60</height>
                             <posx>0</posx>
                             <posy>0</posy>
+                            <width>575</width>
+                            <height>60</height>
                             <texture border="3">twc-input-nofocus.png</texture>
                         </control>
                         <control type="label">
-                            <posx>28</posx>
+                            <posx>33</posx>
                             <posy>0</posy>
-                            <width>40</width>
+                            <width>50</width>
                             <height>56</height>
                             <font>font10</font>
-                            <aligny>center</aligny>
                             <textcolor>DDFFFFFF</textcolor>
                             <selectedcolor>FFe2ff43</selectedcolor>
                             <align>center</align>
@@ -989,66 +980,66 @@
                             <info>ListItem.Label</info>
                         </control>
                         <control type="image">
+                            <posx>65</posx>
+                            <posy>4</posy>
                             <width>150</width>
                             <height>56</height>
-                            <posx>55</posx>
-                            <posy>4</posy>
                             <texture>twc-contentpanel.png</texture>
                         </control>
                         <control type="image">
+                            <posx>70</posx>
+                            <posy>7</posy>
                             <width>48</width>
                             <height>48</height>
-                            <posx>60</posx>
-                            <posy>7</posy>
                             <info>ListItem.Property(icon)</info>
                         </control>
                         <control type="label">
-                            <posx>155</posx>
+                            <posx>165</posx>
                             <posy>0</posy>
                             <width>80</width>
                             <height>56</height>
                             <font>font10</font>
-                            <aligny>center</aligny>
                             <textcolor>DDFFFFFF</textcolor>
                             <selectedcolor>FFe2ff43</selectedcolor>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <wrapmultiline>true</wrapmultiline>
                             <label>$INFO[ListItem.Property(brief)]&#10;[B]$INFO[ListItem.Property(temp)][/B]</label>
                         </control>
                         <control type="label">
-                            <posx>240</posx>
+                            <posx>250</posx>
                             <posy>0</posy>
                             <width>40</width>
                             <height>56</height>
                             <font>font10</font>
-                            <aligny>center</aligny>
                             <textcolor>DDFFFFFF</textcolor>
                             <selectedcolor>FFe2ff43</selectedcolor>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <info>ListItem.Property(feels)</info>
                         </control>
                         <control type="label">
-                            <posx>300</posx>
+                            <posx>306</posx>
                             <posy>0</posy>
                             <width>40</width>
                             <height>56</height>
                             <font>font10</font>
-                            <aligny>center</aligny>
                             <textcolor>DDFFFFFF</textcolor>
                             <selectedcolor>FFe2ff43</selectedcolor>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <info>ListItem.Property(precip)</info>
                         </control>
                         <control type="label">
-                            <posx>360</posx>
+                            <posx>363</posx>
                             <posy>0</posy>
                             <width>40</width>
                             <height>56</height>
                             <font>font10</font>
-                            <aligny>center</aligny>
                             <textcolor>DDFFFFFF</textcolor>
                             <selectedcolor>FFe2ff43</selectedcolor>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <info>ListItem.Property(dew)</info>
                         </control>
                         <control type="label">
@@ -1057,10 +1048,10 @@
                             <width>40</width>
                             <height>56</height>
                             <font>font10</font>
-                            <aligny>center</aligny>
                             <textcolor>DDFFFFFF</textcolor>
                             <selectedcolor>FFe2ff43</selectedcolor>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <info>ListItem.Property(humidity)</info>
                         </control>
                         <control type="label">
@@ -1069,104 +1060,104 @@
                             <width>110</width>
                             <height>56</height>
                             <font>font10</font>
-                            <aligny>center</aligny>
                             <textcolor>DDFFFFFF</textcolor>
                             <selectedcolor>FFe2ff43</selectedcolor>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <wrapmultiline>true</wrapmultiline>
                             <info>ListItem.Property(wind)</info>
                         </control>
                     </itemlayout>
                     <focusedlayout height="62">
                         <control type="image">
-                            <width>575</width>
-                            <height>60</height>
                             <posx>0</posx>
                             <posy>0</posy>
-                            <visible>Control.HasFocus(600)</visible>
+                            <width>575</width>
+                            <height>60</height>
                             <texture border="3">twc-input-focus.png</texture>
+                            <visible>Control.HasFocus(600)</visible>
                         </control>
                         <control type="image">
-                            <width>575</width>
-                            <height>60</height>
                             <posx>0</posx>
                             <posy>0</posy>
-                            <visible>!Control.HasFocus(600)</visible>
+                            <width>575</width>
+                            <height>60</height>
                             <texture border="3">twc-input-nofocus.png</texture>
+                            <visible>!Control.HasFocus(600)</visible>
                         </control>
                         <control type="label">
-                            <posx>28</posx>
+                            <posx>33</posx>
                             <posy>0</posy>
-                            <width>40</width>
+                            <width>50</width>
                             <height>56</height>
                             <font>font10</font>
-                            <aligny>center</aligny>
                             <textcolor>DDFFFFFF</textcolor>
                             <selectedcolor>FFe2ff43</selectedcolor>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <info>ListItem.Label</info>
                         </control>
                         <control type="image">
+                            <posx>65</posx>
+                            <posy>4</posy>
                             <width>150</width>
                             <height>56</height>
-                            <posx>55</posx>
-                            <posy>4</posy>
                             <texture>twc-contentpanel.png</texture>
                         </control>
                         <control type="image">
+                            <posx>70</posx>
+                            <posy>7</posy>
                             <width>48</width>
                             <height>48</height>
-                            <posx>60</posx>
-                            <posy>7</posy>
                             <info>ListItem.Property(icon)</info>
                         </control>
                         <control type="label">
-                            <posx>155</posx>
+                            <posx>165</posx>
                             <posy>0</posy>
                             <width>80</width>
                             <height>56</height>
                             <font>font10</font>
-                            <aligny>center</aligny>
                             <textcolor>DDFFFFFF</textcolor>
                             <selectedcolor>FFe2ff43</selectedcolor>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <wrapmultiline>true</wrapmultiline>
                             <label>$INFO[ListItem.Property(brief)]&#10;[B]$INFO[ListItem.Property(temp)][/B]</label>
                         </control>
                         <control type="label">
-                            <posx>240</posx>
+                            <posx>250</posx>
                             <posy>0</posy>
                             <width>40</width>
                             <height>56</height>
                             <font>font10</font>
-                            <aligny>center</aligny>
                             <textcolor>DDFFFFFF</textcolor>
                             <selectedcolor>FFe2ff43</selectedcolor>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <info>ListItem.Property(feels)</info>
                         </control>
                         <control type="label">
-                            <posx>300</posx>
+                            <posx>306</posx>
                             <posy>0</posy>
                             <width>40</width>
                             <height>56</height>
                             <font>font10</font>
-                            <aligny>center</aligny>
                             <textcolor>DDFFFFFF</textcolor>
                             <selectedcolor>FFe2ff43</selectedcolor>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <info>ListItem.Property(precip)</info>
                         </control>
                         <control type="label">
-                            <posx>360</posx>
+                            <posx>363</posx>
                             <posy>0</posy>
                             <width>40</width>
                             <height>56</height>
                             <font>font10</font>
-                            <aligny>center</aligny>
                             <textcolor>DDFFFFFF</textcolor>
                             <selectedcolor>FFe2ff43</selectedcolor>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <info>ListItem.Property(dew)</info>
                         </control>
                         <control type="label">
@@ -1175,10 +1166,10 @@
                             <width>40</width>
                             <height>56</height>
                             <font>font10</font>
-                            <aligny>center</aligny>
                             <textcolor>DDFFFFFF</textcolor>
                             <selectedcolor>FFe2ff43</selectedcolor>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <info>ListItem.Property(humidity)</info>
                         </control>
                         <control type="label">
@@ -1187,10 +1178,10 @@
                             <width>110</width>
                             <height>56</height>
                             <font>font10</font>
-                            <aligny>center</aligny>
                             <textcolor>DDFFFFFF</textcolor>
                             <selectedcolor>FFe2ff43</selectedcolor>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <wrapmultiline>true</wrapmultiline>
                             <info>ListItem.Property(wind)</info>
                         </control>
@@ -1244,8 +1235,8 @@
                     <height>100</height>
                     <font>font10</font>
                     <textcolor>FFFFFFFF</textcolor>
-                    <aligny>top</aligny>
                     <align>left</align>
+                    <aligny>top</aligny>
                     <label>&#10;$LOCALIZE[SCRIPT54]&#10;$LOCALIZE[SCRIPT52]</label>
                 </control>
             </control>
@@ -1265,9 +1256,8 @@
                     <height>20</height>
                     <font>font13</font>
                     <textcolor>FFFFFFFF</textcolor>
-                    <aligny>top</aligny>
                     <align>center</align>
-                    <wrapmultiline>true</wrapmultiline>
+                    <aligny>top</aligny>
                     <label>SCRIPT103</label>
                     <visible>IsEmpty(Container(50).Property(Weekend1day))</visible>
                     <animation effect="zoom" reversible="false" center="auto" start="100" end="200" time="0">WindowOpen</animation>
@@ -1318,9 +1308,9 @@
                             <height>24</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <info>Container(50).Property(Weekend1day)</info>
-                            <aligny>center</aligny>
                             <align>center</align>
+                            <aligny>center</aligny>
+                            <info>Container(50).Property(Weekend1day)</info>
                         </control>
                         <!-- Forecast date-->
                         <control type="label">
@@ -1331,9 +1321,9 @@
                             <height>24</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <info>Container(50).Property(Weekend1date)</info>
-                            <aligny>center</aligny>
                             <align>right</align>
+                            <aligny>center</aligny>
+                            <info>Container(50).Property(Weekend1date)</info>
                         </control>
                         <!-- Weather icon -->
                         <control type="image">
@@ -1354,8 +1344,8 @@
                             <height>90</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <aligny>top</aligny>
                             <align>center</align>
+                            <aligny>top</aligny>
                             <wrapmultiline>true</wrapmultiline>
                             <info>Container(50).Property(Weekend1brief)</info>
                         </control>
@@ -1368,8 +1358,8 @@
                             <height>20</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <aligny>bottom</aligny>
                             <align>center</align>
+                            <aligny>bottom</aligny>
                             <info>Container(50).Property(Weekend1hightitle)</info>
                         </control>
                         <!-- Forecasted high temp -->
@@ -1395,23 +1385,23 @@
                             <height>20</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <aligny>bottom</aligny>
                             <align>center</align>
+                            <aligny>bottom</aligny>
                             <info>Container(50).Property(Weekend1lowtitle)</info>
                         </control>
                         <!-- Forecasted low temp -->
                         <control type="label">
                             <description>low temp</description>
                             <posx>85</posx>
-                            <posy>105</posy>
+                            <posy>103</posy>
                             <width>95</width>
                             <height>20</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <aligny>top</aligny>
                             <align>center</align>
+                            <aligny>top</aligny>
                             <info>Container(50).Property(Weekend1lowtemp)</info>
-                            <animation effect="zoom" reversible="false" center="auto" start="100" end="170" time="0">WindowOpen</animation>
+                            <animation effect="zoom" reversible="false" center="auto" start="100" end="150" time="0">WindowOpen</animation>
                         </control>
                         <!-- Forecasted precipitation -->
                         <control type="label">
@@ -1422,13 +1412,13 @@
                             <height>20</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <aligny>center</aligny>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <label>$INFO[Container(50).Property(Weekend1preciptitle)] $INFO[Container(50).Property(Weekend1precip)]</label>
                         </control>
                         <!-- Details -->
                         <control type="group">
-                            <visible>!IsEmpty(Container(50).Property(WeekendToggle)) | IsEmpty(Container(50).Property(Weekend1forecast))</visible>
+                            <visible>!IsEmpty(Container(50).Property(WeekendToggle)) | IsEmpty(Container(50).Property(Weekend1outlook))</visible>
                             <!-- Forecasted wind -->
                             <control type="label">
                                 <description>wind</description>
@@ -1438,8 +1428,8 @@
                                 <height>20</height>
                                 <font>font10</font>
                                 <textcolor>FFFFFFFF</textcolor>
-                                <aligny>center</aligny>
                                 <align>center</align>
+                                <aligny>center</aligny>
                                 <label>$INFO[Container(50).Property(Weekend1windtitle)] $INFO[Container(50).Property(Weekend1wind)]</label>
                             </control>
                             <!-- Forecasted uv index -->
@@ -1451,8 +1441,8 @@
                                 <height>20</height>
                                 <font>font10</font>
                                 <textcolor>FFFFFFFF</textcolor>
-                                <aligny>center</aligny>
                                 <align>center</align>
+                                <aligny>center</aligny>
                                 <label>$INFO[Container(50).Property(Weekend1uvtitle)] $INFO[Container(50).Property(Weekend1uv)]</label>
                             </control>
                             <!-- Forecasted humidty -->
@@ -1464,8 +1454,8 @@
                                 <height>20</height>
                                 <font>font10</font>
                                 <textcolor>FFFFFFFF</textcolor>
-                                <aligny>center</aligny>
                                 <align>center</align>
+                                <aligny>center</aligny>
                                 <label>$INFO[Container(50).Property(Weekend1humiditytitle)] $INFO[Container(50).Property(Weekend1humidity)]</label>
                             </control>
                             <!-- Forecasted sunrise -->
@@ -1477,8 +1467,8 @@
                                 <height>20</height>
                                 <font>font10</font>
                                 <textcolor>FFFFFFFF</textcolor>
-                                <aligny>center</aligny>
                                 <align>center</align>
+                                <aligny>center</aligny>
                                 <label>$INFO[Container(50).Property(Weekend1sunrisetitle)] $INFO[Container(50).Property(Weekend1sunrise)]</label>
                             </control>
                             <!-- Forecasted sunset -->
@@ -1490,24 +1480,24 @@
                                 <height>20</height>
                                 <font>font10</font>
                                 <textcolor>FFFFFFFF</textcolor>
-                                <aligny>center</aligny>
                                 <align>center</align>
+                                <aligny>center</aligny>
                                 <label>$INFO[Container(50).Property(Weekend1sunsettitle)] $INFO[Container(50).Property(Weekend1sunset)]</label>
                             </control>
                         </control>
                         <!-- Forecast outlook-->
                         <control type="label">
-                            <description>forecast</description>
+                            <description>outlook</description>
                             <posx>5</posx>
                             <posy>170</posy>
                             <width>170</width>
                             <height>20</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <aligny>top</aligny>
                             <align>left</align>
+                            <aligny>top</aligny>
                             <wrapmultiline>true</wrapmultiline>
-                            <label>$INFO[Container(50).Property(Weekend1forecast)]</label>
+                            <label>$INFO[Container(50).Property(Weekend1outlook)]</label>
                             <visible>IsEmpty(Container(50).Property(WeekendToggle))</visible>
                         </control>
                     </control>
@@ -1542,9 +1532,9 @@
                             <height>24</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <info>Container(50).Property(Weekend2day)</info>
-                            <aligny>center</aligny>
                             <align>center</align>
+                            <aligny>center</aligny>
+                            <info>Container(50).Property(Weekend2day)</info>
                         </control>
                         <!-- Forecast date-->
                         <control type="label">
@@ -1555,9 +1545,9 @@
                             <height>24</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <info>Container(50).Property(Weekend2date)</info>
-                            <aligny>center</aligny>
                             <align>right</align>
+                            <aligny>center</aligny>
+                            <info>Container(50).Property(Weekend2date)</info>
                         </control>
                         <!-- Weather icon -->
                         <control type="image">
@@ -1578,8 +1568,8 @@
                             <height>90</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <aligny>top</aligny>
                             <align>center</align>
+                            <aligny>top</aligny>
                             <wrapmultiline>true</wrapmultiline>
                             <info>Container(50).Property(Weekend2brief)</info>
                         </control>
@@ -1592,8 +1582,8 @@
                             <height>20</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <aligny>bottom</aligny>
                             <align>center</align>
+                            <aligny>bottom</aligny>
                             <info>Container(50).Property(Weekend2hightitle)</info>
                         </control>
                         <!-- Forecasted high temp -->
@@ -1619,23 +1609,23 @@
                             <height>20</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <aligny>bottom</aligny>
                             <align>center</align>
+                            <aligny>bottom</aligny>
                             <info>Container(50).Property(Weekend2lowtitle)</info>
                         </control>
                         <!-- Forecasted low temp -->
                         <control type="label">
                             <description>low temp</description>
                             <posx>85</posx>
-                            <posy>105</posy>
+                            <posy>103</posy>
                             <width>95</width>
                             <height>20</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <aligny>top</aligny>
                             <align>center</align>
+                            <aligny>top</aligny>
                             <info>Container(50).Property(Weekend2lowtemp)</info>
-                            <animation effect="zoom" reversible="false" center="auto" start="100" end="170" time="0">WindowOpen</animation>
+                            <animation effect="zoom" reversible="false" center="auto" start="100" end="150" time="0">WindowOpen</animation>
                         </control>
                         <!-- Forecasted precipitation -->
                         <control type="label">
@@ -1646,13 +1636,13 @@
                             <height>20</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <aligny>center</aligny>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <label>$INFO[Container(50).Property(Weekend2preciptitle)] $INFO[Container(50).Property(Weekend2precip)]</label>
                         </control>
                         <!-- Details -->
                         <control type="group">
-                            <visible>!IsEmpty(Container(50).Property(WeekendToggle)) | IsEmpty(Container(50).Property(Weekend2forecast))</visible>
+                            <visible>!IsEmpty(Container(50).Property(WeekendToggle)) | IsEmpty(Container(50).Property(Weekend2outlook))</visible>
                             <!-- Forecasted wind -->
                             <control type="label">
                                 <description>wind</description>
@@ -1662,8 +1652,8 @@
                                 <height>20</height>
                                 <font>font10</font>
                                 <textcolor>FFFFFFFF</textcolor>
-                                <aligny>center</aligny>
                                 <align>center</align>
+                                <aligny>center</aligny>
                                 <label>$INFO[Container(50).Property(Weekend2windtitle)] $INFO[Container(50).Property(Weekend2wind)]</label>
                             </control>
                             <!-- Forecasted uv index -->
@@ -1675,8 +1665,8 @@
                                 <height>20</height>
                                 <font>font10</font>
                                 <textcolor>FFFFFFFF</textcolor>
-                                <aligny>center</aligny>
                                 <align>center</align>
+                                <aligny>center</aligny>
                                 <label>$INFO[Container(50).Property(Weekend2uvtitle)] $INFO[Container(50).Property(Weekend2uv)]</label>
                             </control>
                             <!-- Forecasted humidty -->
@@ -1688,8 +1678,8 @@
                                 <height>20</height>
                                 <font>font10</font>
                                 <textcolor>FFFFFFFF</textcolor>
-                                <aligny>center</aligny>
                                 <align>center</align>
+                                <aligny>center</aligny>
                                 <label>$INFO[Container(50).Property(Weekend2humiditytitle)] $INFO[Container(50).Property(Weekend2humidity)]</label>
                             </control>
                             <!-- Forecasted sunrise -->
@@ -1701,8 +1691,8 @@
                                 <height>20</height>
                                 <font>font10</font>
                                 <textcolor>FFFFFFFF</textcolor>
-                                <aligny>center</aligny>
                                 <align>center</align>
+                                <aligny>center</aligny>
                                 <label>$INFO[Container(50).Property(Weekend2sunrisetitle)] $INFO[Container(50).Property(Weekend2sunrise)]</label>
                             </control>
                             <!-- Forecasted sunset -->
@@ -1714,24 +1704,24 @@
                                 <height>20</height>
                                 <font>font10</font>
                                 <textcolor>FFFFFFFF</textcolor>
-                                <aligny>center</aligny>
                                 <align>center</align>
+                                <aligny>center</aligny>
                                 <label>$INFO[Container(50).Property(Weekend2sunsettitle)] $INFO[Container(50).Property(Weekend2sunset)]</label>
                             </control>
                         </control>
                         <!-- Forecast outlook-->
                         <control type="label">
-                            <description>forecast</description>
+                            <description>outlook</description>
                             <posx>5</posx>
                             <posy>170</posy>
                             <width>170</width>
                             <height>20</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <aligny>top</aligny>
                             <align>left</align>
+                            <aligny>top</aligny>
                             <wrapmultiline>true</wrapmultiline>
-                            <label>$INFO[Container(50).Property(Weekend2forecast)]</label>
+                            <label>$INFO[Container(50).Property(Weekend2outlook)]</label>
                             <visible>IsEmpty(Container(50).Property(WeekendToggle))</visible>
                         </control>
                     </control>
@@ -1766,9 +1756,9 @@
                             <height>24</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <info>Container(50).Property(Weekend3day)</info>
-                            <aligny>center</aligny>
                             <align>center</align>
+                            <aligny>center</aligny>
+                            <info>Container(50).Property(Weekend3day)</info>
                         </control>
                         <!-- Forecast date-->
                         <control type="label">
@@ -1779,9 +1769,9 @@
                             <height>24</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <info>Container(50).Property(Weekend3date)</info>
-                            <aligny>center</aligny>
                             <align>right</align>
+                            <aligny>center</aligny>
+                            <info>Container(50).Property(Weekend3date)</info>
                         </control>
                         <!-- Weather icon -->
                         <control type="image">
@@ -1802,8 +1792,8 @@
                             <height>90</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <aligny>top</aligny>
                             <align>center</align>
+                            <aligny>top</aligny>
                             <wrapmultiline>true</wrapmultiline>
                             <info>Container(50).Property(Weekend3brief)</info>
                         </control>
@@ -1816,8 +1806,8 @@
                             <height>20</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <aligny>bottom</aligny>
                             <align>center</align>
+                            <aligny>bottom</aligny>
                             <info>Container(50).Property(Weekend3hightitle)</info>
                         </control>
                         <!-- Forecasted high temp -->
@@ -1843,23 +1833,23 @@
                             <height>20</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <aligny>bottom</aligny>
                             <align>center</align>
+                            <aligny>bottom</aligny>
                             <info>Container(50).Property(Weekend3lowtitle)</info>
                         </control>
                         <!-- Forecasted low temp -->
                         <control type="label">
                             <description>low temp</description>
                             <posx>85</posx>
-                            <posy>105</posy>
+                            <posy>103</posy>
                             <width>95</width>
                             <height>20</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <aligny>top</aligny>
                             <align>center</align>
+                            <aligny>top</aligny>
                             <info>Container(50).Property(Weekend3lowtemp)</info>
-                            <animation effect="zoom" reversible="false" center="auto" start="100" end="170" time="0">WindowOpen</animation>
+                            <animation effect="zoom" reversible="false" center="auto" start="100" end="150" time="0">WindowOpen</animation>
                         </control>
                         <!-- Forecasted precipitation -->
                         <control type="label">
@@ -1870,13 +1860,13 @@
                             <height>20</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <aligny>center</aligny>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <label>$INFO[Container(50).Property(Weekend3preciptitle)] $INFO[Container(50).Property(Weekend3precip)]</label>
                         </control>
                         <!-- Details -->
                         <control type="group">
-                            <visible>!IsEmpty(Container(50).Property(WeekendToggle)) | IsEmpty(Container(50).Property(Weekend3forecast))</visible>
+                            <visible>!IsEmpty(Container(50).Property(WeekendToggle)) | IsEmpty(Container(50).Property(Weekend3outlook))</visible>
                             <!-- Forecasted wind -->
                             <control type="label">
                                 <description>wind</description>
@@ -1886,8 +1876,8 @@
                                 <height>20</height>
                                 <font>font10</font>
                                 <textcolor>FFFFFFFF</textcolor>
-                                <aligny>center</aligny>
                                 <align>center</align>
+                                <aligny>center</aligny>
                                 <label>$INFO[Container(50).Property(Weekend3windtitle)] $INFO[Container(50).Property(Weekend3wind)]</label>
                             </control>
                             <!-- Forecasted uv index -->
@@ -1899,8 +1889,8 @@
                                 <height>20</height>
                                 <font>font10</font>
                                 <textcolor>FFFFFFFF</textcolor>
-                                <aligny>center</aligny>
                                 <align>center</align>
+                                <aligny>center</aligny>
                                 <label>$INFO[Container(50).Property(Weekend3uvtitle)] $INFO[Container(50).Property(Weekend3uv)]</label>
                             </control>
                             <!-- Forecasted humidty -->
@@ -1912,8 +1902,8 @@
                                 <height>20</height>
                                 <font>font10</font>
                                 <textcolor>FFFFFFFF</textcolor>
-                                <aligny>center</aligny>
                                 <align>center</align>
+                                <aligny>center</aligny>
                                 <label>$INFO[Container(50).Property(Weekend3humiditytitle)] $INFO[Container(50).Property(Weekend3humidity)]</label>
                             </control>
                             <!-- Forecasted sunrise -->
@@ -1925,8 +1915,8 @@
                                 <height>20</height>
                                 <font>font10</font>
                                 <textcolor>FFFFFFFF</textcolor>
-                                <aligny>center</aligny>
                                 <align>center</align>
+                                <aligny>center</aligny>
                                 <label>$INFO[Container(50).Property(Weekend3sunrisetitle)] $INFO[Container(50).Property(Weekend3sunrise)]</label>
                             </control>
                             <!-- Forecasted sunset -->
@@ -1938,24 +1928,24 @@
                                 <height>20</height>
                                 <font>font10</font>
                                 <textcolor>FFFFFFFF</textcolor>
-                                <aligny>center</aligny>
                                 <align>center</align>
+                                <aligny>center</aligny>
                                 <label>$INFO[Container(50).Property(Weekend3sunsettitle)] $INFO[Container(50).Property(Weekend3sunset)]</label>
                             </control>
                         </control>
                         <!-- Forecast outlook-->
                         <control type="label">
-                            <description>forecast</description>
+                            <description>outlook</description>
                             <posx>5</posx>
                             <posy>170</posy>
                             <width>170</width>
                             <height>20</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <aligny>top</aligny>
                             <align>left</align>
+                            <aligny>top</aligny>
                             <wrapmultiline>true</wrapmultiline>
-                            <label>$INFO[Container(50).Property(Weekend3forecast)]</label>
+                            <label>$INFO[Container(50).Property(Weekend3outlook)]</label>
                             <visible>IsEmpty(Container(50).Property(WeekendToggle))</visible>
                         </control>
                     </control>
@@ -1990,8 +1980,8 @@
                     <height>30</height>
                     <font>font10</font>
                     <textcolor>FFFFFFFF</textcolor>
-                    <aligny>center</aligny>
                     <align>center</align>
+                    <aligny>center</aligny>
                     <label>SCRIPT300</label>
                     <visible>IsEmpty(Container(50).Property(WeekendToggle))</visible>
                 </control>
@@ -2004,8 +1994,8 @@
                     <height>30</height>
                     <font>font10</font>
                     <textcolor>FFFFFFFF</textcolor>
-                    <aligny>center</aligny>
                     <align>center</align>
+                    <aligny>center</aligny>
                     <label>SCRIPT301</label>
                     <visible>!IsEmpty(Container(50).Property(WeekendToggle))</visible>
                 </control>
@@ -2018,8 +2008,8 @@
                     <height>100</height>
                     <font>font10</font>
                     <textcolor>FFFFFFFF</textcolor>
-                    <aligny>top</aligny>
                     <align>left</align>
+                    <aligny>top</aligny>
                     <label>&#10;$LOCALIZE[SCRIPT55]&#10;$LOCALIZE[SCRIPT52]</label>
                 </control>
             </control>
@@ -2039,9 +2029,8 @@
                     <height>20</height>
                     <font>font13</font>
                     <textcolor>FFFFFFFF</textcolor>
-                    <aligny>top</aligny>
                     <align>center</align>
-                    <wrapmultiline>true</wrapmultiline>
+                    <aligny>top</aligny>
                     <label>SCRIPT104</label>
                     <visible>IsEmpty(Container(50).Property(10DayHead1))</visible>
                     <animation effect="zoom" reversible="false" center="auto" start="100" end="200" time="0">WindowOpen</animation>
@@ -2053,10 +2042,10 @@
                     <width>160</width>
                     <height>20</height>
                     <font>font10</font>
-                    <aligny>center</aligny>
                     <textcolor>DDFFFFFF</textcolor>
                     <selectedcolor>FFe2ff43</selectedcolor>
                     <align>center</align>
+                    <aligny>center</aligny>
                     <info>Container(50).Property(10DayHead1)</info>
                 </control>
                 <!-- High/Low heading -->
@@ -2066,10 +2055,10 @@
                     <width>150</width>
                     <height>20</height>
                     <font>font10</font>
-                    <aligny>center</aligny>
                     <textcolor>DDFFFFFF</textcolor>
                     <selectedcolor>FFe2ff43</selectedcolor>
                     <align>center</align>
+                    <aligny>center</aligny>
                     <label>$INFO[Container(50).Property(10DayHead2)]&#10;$INFO[Container(50).Property(10DayHead3)]</label>
                 </control>
                 <!-- Chance of precipitation heading -->
@@ -2079,10 +2068,10 @@
                     <width>50</width>
                     <height>20</height>
                     <font>font10</font>
-                    <aligny>center</aligny>
                     <textcolor>DDFFFFFF</textcolor>
                     <selectedcolor>FFe2ff43</selectedcolor>
                     <align>center</align>
+                    <aligny>center</aligny>
                     <wrapmultiline>true</wrapmultiline>
                     <info>Container(50).Property(10DayHead4)</info>
                 </control>
@@ -2093,10 +2082,10 @@
                     <width>70</width>
                     <height>20</height>
                     <font>font10</font>
-                    <aligny>center</aligny>
                     <textcolor>DDFFFFFF</textcolor>
                     <selectedcolor>FFe2ff43</selectedcolor>
                     <align>center</align>
+                    <aligny>center</aligny>
                     <wrapmultiline>true</wrapmultiline>
                     <info>Container(50).Property(10DayHead5)</info>
                 </control>
@@ -2115,51 +2104,49 @@
                     <scrolltime>200</scrolltime>
                     <itemlayout height="62">
                         <control type="image">
-                            <width>575</width>
-                            <height>60</height>
                             <posx>0</posx>
                             <posy>0</posy>
+                            <width>575</width>
+                            <height>60</height>
                             <texture border="3">twc-input-nofocus.png</texture>
                         </control>
                         <control type="label">
                             <posx>33</posx>
                             <posy>0</posy>
-                            <width>50</width>
+                            <width>40</width>
                             <height>56</height>
                             <font>font10</font>
-                            <aligny>center</aligny>
                             <textcolor>DDFFFFFF</textcolor>
                             <selectedcolor>FFe2ff43</selectedcolor>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <label>$INFO[ListItem.Label]&#10;$INFO[ListItem.Property(date)]</label>
                         </control>
                         <control type="image">
-                            <width>160</width>
-                            <height>56</height>
                             <posx>65</posx>
                             <posy>4</posy>
+                            <width>150</width>
+                            <height>56</height>
                             <texture>twc-contentpanel.png</texture>
                         </control>
                         <control type="image">
+                            <posx>70</posx>
+                            <posy>7</posy>
                             <width>48</width>
                             <height>48</height>
-                            <posx>75</posx>
-                            <posy>7</posy>
                             <info>ListItem.Property(icon)</info>
-                            <aspectratio>keep</aspectratio>
                         </control>
                         <control type="label">
-                            <posx>175</posx>
+                            <posx>165</posx>
                             <posy>0</posy>
                             <width>80</width>
                             <height>56</height>
                             <font>font10</font>
-                            <aligny>center</aligny>
                             <textcolor>DDFFFFFF</textcolor>
                             <selectedcolor>FFe2ff43</selectedcolor>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <wrapmultiline>true</wrapmultiline>
-                            <scroll>false</scroll>
                             <label>$INFO[ListItem.Property(brief)]</label>
                         </control>
                         <control type="label">
@@ -2168,10 +2155,10 @@
                             <width>50</width>
                             <height>56</height>
                             <font>font10</font>
-                            <aligny>center</aligny>
                             <textcolor>DDFFFFFF</textcolor>
                             <selectedcolor>FFe2ff43</selectedcolor>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <label>[B]$INFO[ListItem.Property(high)][B]&#10;$INFO[ListItem.Property(low)]</label>
                         </control>
                         <control type="label">
@@ -2180,10 +2167,10 @@
                             <width>50</width>
                             <height>56</height>
                             <font>font10</font>
-                            <aligny>center</aligny>
                             <textcolor>DDFFFFFF</textcolor>
                             <selectedcolor>FFe2ff43</selectedcolor>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <info>ListItem.Property(precip)</info>
                         </control>
                         <control type="label">
@@ -2192,70 +2179,68 @@
                             <width>150</width>
                             <height>56</height>
                             <font>font10</font>
-                            <aligny>center</aligny>
                             <textcolor>DDFFFFFF</textcolor>
                             <selectedcolor>FFe2ff43</selectedcolor>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <wrapmultiline>true</wrapmultiline>
                             <label>$INFO[ListItem.Property(wind)]&#10;$INFO[ListItem.Property(speed)]</label>
                         </control>
                     </itemlayout>
                     <focusedlayout height="62">
                         <control type="image">
-                            <width>575</width>
-                            <height>60</height>
                             <posx>0</posx>
                             <posy>0</posy>
-                            <visible>Control.HasFocus(700)</visible>
+                            <width>575</width>
+                            <height>60</height>
                             <texture border="3">twc-input-focus.png</texture>
+                            <visible>Control.HasFocus(700)</visible>
                         </control>
                         <control type="image">
-                            <width>575</width>
-                            <height>60</height>
                             <posx>0</posx>
                             <posy>0</posy>
-                            <visible>!Control.HasFocus(700)</visible>
+                            <width>575</width>
+                            <height>60</height>
                             <texture border="3">twc-input-nofocus.png</texture>
+                            <visible>!Control.HasFocus(700)</visible>
                         </control>
                         <control type="label">
                             <posx>33</posx>
                             <posy>0</posy>
-                            <width>50</width>
+                            <width>40</width>
                             <height>56</height>
                             <font>font10</font>
-                            <aligny>center</aligny>
                             <textcolor>DDFFFFFF</textcolor>
                             <selectedcolor>FFe2ff43</selectedcolor>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <label>$INFO[ListItem.Label]&#10;$INFO[ListItem.Property(date)]</label>
                         </control>
                         <control type="image">
-                            <width>160</width>
-                            <height>56</height>
                             <posx>65</posx>
                             <posy>4</posy>
+                            <width>150</width>
+                            <height>56</height>
                             <texture>twc-contentpanel.png</texture>
                         </control>
                         <control type="image">
+                            <posx>70</posx>
+                            <posy>7</posy>
                             <width>48</width>
                             <height>48</height>
-                            <posx>75</posx>
-                            <posy>7</posy>
                             <info>ListItem.Property(icon)</info>
-                            <aspectratio>keep</aspectratio>
                         </control>
                         <control type="label">
-                            <posx>175</posx>
+                            <posx>165</posx>
                             <posy>0</posy>
                             <width>80</width>
                             <height>56</height>
                             <font>font10</font>
-                            <aligny>center</aligny>
                             <textcolor>DDFFFFFF</textcolor>
                             <selectedcolor>FFe2ff43</selectedcolor>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <wrapmultiline>true</wrapmultiline>
-                            <scroll>false</scroll>
                             <label>$INFO[ListItem.Property(brief)]</label>
                         </control>
                         <control type="label">
@@ -2264,10 +2249,10 @@
                             <width>50</width>
                             <height>56</height>
                             <font>font10</font>
-                            <aligny>center</aligny>
                             <textcolor>DDFFFFFF</textcolor>
                             <selectedcolor>FFe2ff43</selectedcolor>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <label>[B]$INFO[ListItem.Property(high)][B]&#10;$INFO[ListItem.Property(low)]</label>
                         </control>
                         <control type="label">
@@ -2276,10 +2261,10 @@
                             <width>50</width>
                             <height>56</height>
                             <font>font10</font>
-                            <aligny>center</aligny>
                             <textcolor>DDFFFFFF</textcolor>
                             <selectedcolor>FFe2ff43</selectedcolor>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <info>ListItem.Property(precip)</info>
                         </control>
                         <control type="label">
@@ -2288,10 +2273,10 @@
                             <width>150</width>
                             <height>56</height>
                             <font>font10</font>
-                            <aligny>center</aligny>
                             <textcolor>DDFFFFFF</textcolor>
                             <selectedcolor>FFe2ff43</selectedcolor>
                             <align>center</align>
+                            <aligny>center</aligny>
                             <wrapmultiline>true</wrapmultiline>
                             <label>$INFO[ListItem.Property(wind)]&#10;$INFO[ListItem.Property(speed)]</label>
                         </control>
@@ -2345,8 +2330,8 @@
                     <height>100</height>
                     <font>font10</font>
                     <textcolor>FFFFFFFF</textcolor>
-                    <aligny>top</aligny>
                     <align>left</align>
+                    <aligny>top</aligny>
                     <label>&#10;$LOCALIZE[SCRIPT56]&#10;$LOCALIZE[SCRIPT52]</label>
                 </control>
             </control>
