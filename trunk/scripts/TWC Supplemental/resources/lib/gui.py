@@ -29,6 +29,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
     CONTROL_WEEKEND_BUTTON = 203
     CONTROL_10DAY_BUTTON = 204
     CONTROL_WEEKEND_TOGGLE_BUTTON = 300
+    CONTROL_MAP_TOGGLE_BUTTON = 301
 
     def __init__( self, *args, **kwargs ):
         xbmcgui.WindowXMLDialog.__init__( self, *args, **kwargs )
@@ -290,7 +291,9 @@ class GUI( xbmcgui.WindowXMLDialog ):
         self.close()
 
     def onClick( self, controlId ):
-        if ( self.toggle ):
+        if ( controlId == self.CONTROL_MAP_TOGGLE_BUTTON ):
+            self._toggle_map()
+        elif ( self.toggle ):
             if ( controlId == self.CONTROL_MAP_LIST and not self.loading ):
                 self._fetch_map( self.getControl( self.CONTROL_MAP_LIST ).getSelectedItem().getLabel2() )
             elif ( controlId == self.CONTROL_MAP_BUTTON ):
