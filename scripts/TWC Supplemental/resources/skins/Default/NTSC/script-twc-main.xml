@@ -361,6 +361,25 @@
                     <!-- animation is used for zooming map -->
                     <animation effect="zoom" reversible="true" center="602,285" start="100" end="195" time="100" condition="!IsEmpty(Container(50).Property(Toggle))">Conditional</animation>
                 </control>
+                <!-- Toggle map button -->
+                <control type="button" id="301">
+                    <description>Toggle button</description>
+                    <posx>305</posx>
+                    <posy>150</posy>
+                    <width>360</width>
+                    <height>243</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <label></label>
+                    <font>font10</font>
+                    <textcolor>ffffffff</textcolor>
+                    <disabledcolor>60ffffff</disabledcolor>
+                    <textoffsetx>17</textoffsetx>
+                    <texturenofocus>-</texturenofocus>
+                    <texturefocus>-</texturefocus>
+                    <!-- animation is used for zoomed map -->
+                    <animation effect="zoom" reversible="true" center="602,285" start="100" end="195" time="100" condition="!IsEmpty(Container(50).Property(Toggle))">Conditional</animation>
+                </control>
             </control>
 
             <!-- 36 Hour forecast section ** Required ** -->
@@ -512,19 +531,19 @@
                             <info>Container(50).Property(36Hour1precip)</info>
                             <animation effect="zoom" reversible="false" center="auto" start="100" end="150" time="0">WindowOpen</animation>
                         </control>
-                        <!-- Forecast -->
-                        <control type="label">
+                        <!-- Outlook -->
+                        <control type="textbox">
                             <description>outlook</description>
                             <posx>5</posx>
                             <posy>145</posy>
                             <width>170</width>
-                            <height>20</height>
+                            <height>85</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <aligny>top</aligny>
                             <align>left</align>
-                            <wrapmultiline>true</wrapmultiline>
+                            <aligny>top</aligny>
                             <info>Container(50).Property(36Hour1outlook)</info>
+                            <autoscroll time="2000" delay="6000" repeat="6000">VisibleChange</autoscroll>
                         </control>
                         <!-- Sunrise/Sunset -->
                         <control type="label">
@@ -653,19 +672,19 @@
                             <info>Container(50).Property(36Hour2precip)</info>
                             <animation effect="zoom" reversible="false" center="auto" start="100" end="150" time="0">WindowOpen</animation>
                         </control>
-                        <!-- Forecast -->
-                        <control type="label">
+                        <!-- Outlook -->
+                        <control type="textbox">
                             <description>outlook</description>
                             <posx>5</posx>
                             <posy>145</posy>
                             <width>170</width>
-                            <height>20</height>
+                            <height>85</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <aligny>top</aligny>
                             <align>left</align>
-                            <wrapmultiline>true</wrapmultiline>
+                            <aligny>top</aligny>
                             <info>Container(50).Property(36Hour2outlook)</info>
+                            <autoscroll time="2000" delay="6000" repeat="6000">VisibleChange</autoscroll>
                         </control>
                         <!-- Sunrise/Sunset -->
                         <control type="label">
@@ -794,19 +813,19 @@
                             <info>Container(50).Property(36Hour3precip)</info>
                             <animation effect="zoom" reversible="false" center="auto" start="100" end="150" time="0">WindowOpen</animation>
                         </control>
-                        <!-- Forecast -->
-                        <control type="label">
+                        <!-- Outlook -->
+                        <control type="textbox">
                             <description>outlook</description>
                             <posx>5</posx>
                             <posy>145</posy>
                             <width>170</width>
-                            <height>20</height>
+                            <height>85</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <aligny>top</aligny>
                             <align>left</align>
-                            <wrapmultiline>true</wrapmultiline>
+                            <aligny>top</aligny>
                             <info>Container(50).Property(36Hour3outlook)</info>
+                            <autoscroll time="2000" delay="6000" repeat="6000">VisibleChange</autoscroll>
                         </control>
                         <!-- Sunrise/Sunset -->
                         <control type="label">
@@ -1486,19 +1505,19 @@
                             </control>
                         </control>
                         <!-- Forecast outlook-->
-                        <control type="label">
+                        <control type="textbox">
                             <description>outlook</description>
                             <posx>5</posx>
                             <posy>170</posy>
                             <width>170</width>
-                            <height>20</height>
+                            <height>85</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
                             <align>left</align>
                             <aligny>top</aligny>
-                            <wrapmultiline>true</wrapmultiline>
-                            <label>$INFO[Container(50).Property(Weekend1outlook)]</label>
+                            <info>Container(50).Property(Weekend1outlook)</info>
                             <visible>IsEmpty(Container(50).Property(WeekendToggle))</visible>
+                            <autoscroll time="2000" delay="6000" repeat="6000">VisibleChange</autoscroll>
                         </control>
                     </control>
                     <!-- Saturday forecast -->
@@ -1710,19 +1729,19 @@
                             </control>
                         </control>
                         <!-- Forecast outlook-->
-                        <control type="label">
+                        <control type="textbox">
                             <description>outlook</description>
                             <posx>5</posx>
                             <posy>170</posy>
                             <width>170</width>
-                            <height>20</height>
+                            <height>85</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
                             <align>left</align>
                             <aligny>top</aligny>
-                            <wrapmultiline>true</wrapmultiline>
-                            <label>$INFO[Container(50).Property(Weekend2outlook)]</label>
+                            <info>Container(50).Property(Weekend2outlook)</info>
                             <visible>IsEmpty(Container(50).Property(WeekendToggle))</visible>
+                            <autoscroll time="2000" delay="6000" repeat="6000">VisibleChange</autoscroll>
                         </control>
                     </control>
                     <!-- Sunday forecast -->
@@ -1934,19 +1953,19 @@
                             </control>
                         </control>
                         <!-- Forecast outlook-->
-                        <control type="label">
+                        <control type="textbox">
                             <description>outlook</description>
                             <posx>5</posx>
                             <posy>170</posy>
                             <width>170</width>
-                            <height>20</height>
+                            <height>85</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
                             <align>left</align>
                             <aligny>top</aligny>
-                            <wrapmultiline>true</wrapmultiline>
-                            <label>$INFO[Container(50).Property(Weekend3outlook)]</label>
+                            <info>Container(50).Property(Weekend3outlook)</info>
                             <visible>IsEmpty(Container(50).Property(WeekendToggle))</visible>
+                            <autoscroll time="2000" delay="6000" repeat="6000">VisibleChange</autoscroll>
                         </control>
                     </control>
                 </control>
