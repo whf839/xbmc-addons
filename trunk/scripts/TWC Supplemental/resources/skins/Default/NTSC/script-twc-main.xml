@@ -223,6 +223,8 @@
 
         <!-- Sections group -->
         <control type="group" id="3000">
+            <onup>2000</onup>
+            <ondown>2000</ondown>
             <!-- Maps section ** Required ** -->
             <control type="group" id="1000">
                 <visible>!IsEmpty(Container(50).Property(view-Maps))</visible>
