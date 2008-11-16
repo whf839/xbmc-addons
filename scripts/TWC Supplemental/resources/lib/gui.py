@@ -67,7 +67,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
         self.weekendToggle = False
         self.loading = False
         self.maps_path = False
-        self.defaultmap = None
+        self.current_map = None
         self.forecast36Hour = None
         self.forecastHourByHour = None
         self.forecastWeekend = None
@@ -107,28 +107,37 @@ class GUI( xbmcgui.WindowXMLDialog ):
         # reset our view
         self._reset_views()
         # only run this once
-        if ( self.defaultmap is None ):
-            # set default map
-            self.defaultmap = 0
+        if ( self.current_map is None ):
+            # initialize current map
+            self.current_map = 0
             # get the users default map
             default = xbmc.getInfoLabel( "Skin.String(twc-defaultmap)" )
             # fetch map list
             map_list = self.TWCClient.fetch_map_list()
             # enumerate thru our map list and add map and title and check for default
             for count, map in enumerate( map_list ):
+                # create our listitem, label 2 is not visible (in default skin)
                 listitem = xbmcgui.ListItem( map[ 1 ], map [ 0 ] )
-                # yep we have a match
+                # if we have a match, set our class variable
                 if ( map[ 1 ] == default ):
-                    self.defaultmap = count
+                    self.current_map = count
+                # add map to our list
                 self.getControl( self.CONTROL_MAP_LIST ).addItem( listitem )
-            # fetch our default map
-            self._fetch_map( self.getControl( self.CONTROL_MAP_LIST ).getListItem( self.defaultmap ).getLabel2() )
+        # fetch our map
+        self._fetch_map( self.current_map )
 
     def _fetch_map( self, map ):
+        # set the current map
+        self.current_map = map
         # cancel any timer
         if ( self.timer is not None ):
             self.timer.cancel()
             self.timer = None
+        # do not refresh map if not current view
+        if ( xbmc.getCondVisibility( "IsEmpty(Container(50).Property(view-Maps))" ) ):
+            return
+        # get maps url name
+        map = self.getControl( self.CONTROL_MAP_LIST ).getListItem( map ).getLabel2()
         # make sure user can't keep selecting maps
         self.loading = True
         # we set our skin setting to defaultimages while downloading
@@ -141,7 +150,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
         self._set_maps_path( ( self.maps_path == "" ) + 1 )
         # successful so set timer thread
         if ( self.maps_path != "" and expires > 0 ):
-            self.timer = Timer( expires, self._fetch_map,( map, ) )
+            self.timer = Timer( expires, self._fetch_map,( self.current_map, ) )
             self.timer.start()
         # reset loading status
         self.loading = False
@@ -295,7 +304,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
             self._toggle_map()
         elif ( self.toggle ):
             if ( controlId == self.CONTROL_MAP_LIST and not self.loading ):
-                self._fetch_map( self.getControl( self.CONTROL_MAP_LIST ).getSelectedItem().getLabel2() )
+                self._fetch_map( self.getControl( self.CONTROL_MAP_LIST ).getSelectedPosition() )
             elif ( controlId == self.CONTROL_MAP_BUTTON ):
                 self._fetch_map_list()
             elif ( controlId == self.CONTROL_36HOUR_BUTTON ):
