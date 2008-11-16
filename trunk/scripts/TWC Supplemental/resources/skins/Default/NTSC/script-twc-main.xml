@@ -1315,7 +1315,7 @@
                         <control type="label">
                             <description>alert</description>
                             <posx>0</posx>
-                            <posy>-20</posy>
+                            <posy>-25</posy>
                             <width>180</width>
                             <height>24</height>
                             <font>font10</font>
@@ -1634,7 +1634,7 @@
                         <control type="label">
                             <description>alert</description>
                             <posx>0</posx>
-                            <posy>-20</posy>
+                            <posy>-25</posy>
                             <width>180</width>
                             <height>24</height>
                             <font>font10</font>
