@@ -2285,6 +2285,7 @@
                     <onright>2000</onright>
                     <onup>2000</onup>
                     <ondown>2000</ondown>
+                    <visible>!IsEmpty(Container(50).Property(Weekend1outlook)) | !IsEmpty(Container(50).Property(Weekend2outlook)) | !IsEmpty(Container(50).Property(Weekend3outlook))</visible> 
                 </control>
                 <!-- Details label -->
                 <control type="label">
@@ -2298,7 +2299,7 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <label>SCRIPT300</label>
-                    <visible>IsEmpty(Container(50).Property(WeekendToggle))</visible>
+                    <visible>IsEmpty(Container(50).Property(WeekendToggle)) + Control.Isvisible(300)</visible>
                 </control>
                 <!-- Outlook label -->
                 <control type="label">
@@ -2312,7 +2313,7 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <label>SCRIPT301</label>
-                    <visible>!IsEmpty(Container(50).Property(WeekendToggle))</visible>
+                    <visible>!IsEmpty(Container(50).Property(WeekendToggle)) + Control.Isvisible(300)</visible>
                 </control>
                 <!-- User instruction label -->
                 <control type="label">
