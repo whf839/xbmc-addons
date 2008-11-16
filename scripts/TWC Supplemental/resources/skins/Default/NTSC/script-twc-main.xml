@@ -1428,7 +1428,7 @@
                         <control type="label">
                             <description>precip</description>
                             <posx>0</posx>
-                            <posy>140</posy>
+                            <posy>145</posy>
                             <width>180</width>
                             <height>20</height>
                             <font>font10</font>
@@ -1652,7 +1652,7 @@
                         <control type="label">
                             <description>precip</description>
                             <posx>0</posx>
-                            <posy>140</posy>
+                            <posy>145</posy>
                             <width>180</width>
                             <height>20</height>
                             <font>font10</font>
@@ -1876,7 +1876,7 @@
                         <control type="label">
                             <description>precip</description>
                             <posx>0</posx>
-                            <posy>140</posy>
+                            <posy>145</posy>
                             <width>180</width>
                             <height>20</height>
                             <font>font10</font>
