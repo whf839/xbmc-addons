@@ -230,6 +230,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 self.setProperty( "Weekend%dsunsettitle" % ( day + 1, ), forecast[ 18 ] )
                 self.setProperty( "Weekend%dsunset" % ( day + 1, ), forecast[ 19 ] )
                 self.setProperty( "Weekend%doutlook" % ( day + 1, ), forecast[ 20 ] )
+                self.setProperty( "Weekend%dobserved" % ( day + 1, ), forecast[ 21 ] )
 
     def _fetch_10day_forecast( self ):
         # reset our view
