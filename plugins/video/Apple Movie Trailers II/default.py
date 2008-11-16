@@ -21,7 +21,7 @@ if ( __name__ == "__main__" ):
         plugin.Main()
     elif ( sys.argv[ 2 ].startswith( "?Fetch_Showtimes" ) ):
         import resources.lib.xbmcplugin_showtimes as showtimes
-        s = showtimes.GUI( "plugin-AMTII-showtimes.xml", xbmc.translatePath( os.path.join( os.getcwd().replace( ";", "" ), "resources" ) ), "default" )
+        s = showtimes.GUI( "plugin-AMTII-showtimes.xml", os.getcwd(), "default" )
         del s
     elif ( sys.argv[ 2 ].startswith( "?Download_Trailer" ) ):
         import resources.lib.xbmcplugin_download as download
