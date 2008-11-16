@@ -1302,6 +1302,19 @@
                     <control type="group">
                         <posx>0</posx>
                         <posy>0</posy>
+                        <!-- Alert -->
+                        <control type="label">
+                            <description>alert</description>
+                            <posx>0</posx>
+                            <posy>-20</posy>
+                            <width>180</width>
+                            <height>24</height>
+                            <font>font10</font>
+                            <textcolor>FFFF0000</textcolor>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <info>Container(50).Property(Weekend1alert)</info>
+                        </control>
                         <!-- Forecast background -->
                         <control type="image">
                             <description>Section Background</description>
@@ -1439,7 +1452,7 @@
                         </control>
                         <!-- Details -->
                         <control type="group">
-                            <visible>!IsEmpty(Container(50).Property(WeekendToggle)) | IsEmpty(Container(50).Property(Weekend1outlook))</visible>
+                            <visible>[!IsEmpty(Container(50).Property(WeekendToggle)) | IsEmpty(Container(50).Property(Weekend1outlook))] + IsEmpty(Container(50).Property(Weekend1observed))</visible>
                             <!-- Forecasted wind -->
                             <control type="label">
                                 <description>wind</description>
@@ -1506,6 +1519,88 @@
                                 <label>$INFO[Container(50).Property(Weekend1sunsettitle)] $INFO[Container(50).Property(Weekend1sunset)]</label>
                             </control>
                         </control>
+                        <!-- Observed, averages and records-->
+                        <control type="group">
+                            <visible>!IsEmpty(Container(50).Property(Weekend1Observed))</visible>
+                            <!-- Observed -->
+                            <control type="label">
+                                <description>observed</description>
+                                <posx>0</posx>
+                                <posy>145</posy>
+                                <width>180</width>
+                                <height>20</height>
+                                <font>font10</font>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>$INFO[Container(50).Property(Weekend1observed)]</label>
+                            </control>
+                            <!-- Observed precipitation -->
+                            <control type="label">
+                                <description>precipitation</description>
+                                <posx>0</posx>
+                                <posy>165</posy>
+                                <width>180</width>
+                                <height>20</height>
+                                <font>font10</font>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>$INFO[Container(50).Property(Weekend1observedpreciptitle)] $INFO[Container(50).Property(Weekend1observedprecip)]</label>
+                            </control>
+                            <!-- Observed avg high -->
+                            <control type="label">
+                                <description>avg high</description>
+                                <posx>0</posx>
+                                <posy>185</posy>
+                                <width>180</width>
+                                <height>20</height>
+                                <font>font10</font>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>$INFO[Container(50).Property(Weekend1observedavghightitle)] $INFO[Container(50).Property(Weekend1observedavghigh)]</label>
+                            </control>
+                            <!-- Observed avg low -->
+                            <control type="label">
+                                <description>avg low</description>
+                                <posx>0</posx>
+                                <posy>200</posy>
+                                <width>180</width>
+                                <height>20</height>
+                                <font>font10</font>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>$INFO[Container(50).Property(Weekend1observedavglowtitle)] $INFO[Container(50).Property(Weekend1observedavglow)]</label>
+                            </control>
+                            <!-- Observed record high -->
+                            <control type="label">
+                                <description>record high</description>
+                                <posx>0</posx>
+                                <posy>220</posy>
+                                <width>180</width>
+                                <height>20</height>
+                                <font>font10</font>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>$INFO[Container(50).Property(Weekend1observedrecordhightitle)] $INFO[Container(50).Property(Weekend1observedrecordhigh)]</label>
+                            </control>
+                            <!-- Observed record low -->
+                            <control type="label">
+                                <description>record low</description>
+                                <posx>0</posx>
+                                <posy>235</posy>
+                                <width>180</width>
+                                <height>20</height>
+                                <font>font10</font>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>$INFO[Container(50).Property(Weekend1observedrecordlowtitle)] $INFO[Container(50).Property(Weekend1observedrecordlow)]</label>
+                            </control>
+                        </control>
                         <!-- Forecast outlook-->
                         <control type="textbox">
                             <description>outlook</description>
@@ -1526,6 +1621,19 @@
                     <control type="group">
                         <posx>200</posx>
                         <posy>0</posy>
+                        <!-- Alert -->
+                        <control type="label">
+                            <description>alert</description>
+                            <posx>0</posx>
+                            <posy>-20</posy>
+                            <width>180</width>
+                            <height>24</height>
+                            <font>font10</font>
+                            <textcolor>FFFF0000</textcolor>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <info>Container(50).Property(Weekend2alert)</info>
+                        </control>
                         <!-- Forecast background -->
                         <control type="image">
                             <description>Section Background</description>
@@ -1663,7 +1771,7 @@
                         </control>
                         <!-- Details -->
                         <control type="group">
-                            <visible>!IsEmpty(Container(50).Property(WeekendToggle)) | IsEmpty(Container(50).Property(Weekend2outlook))</visible>
+                            <visible>[!IsEmpty(Container(50).Property(WeekendToggle)) | IsEmpty(Container(50).Property(Weekend2outlook))] + IsEmpty(Container(50).Property(Weekend2observed))</visible>
                             <!-- Forecasted wind -->
                             <control type="label">
                                 <description>wind</description>
@@ -1730,6 +1838,88 @@
                                 <label>$INFO[Container(50).Property(Weekend2sunsettitle)] $INFO[Container(50).Property(Weekend2sunset)]</label>
                             </control>
                         </control>
+                        <!-- Observed, averages and records-->
+                        <control type="group">
+                            <visible>!IsEmpty(Container(50).Property(Weekend2Observed))</visible>
+                            <!-- Observed -->
+                            <control type="label">
+                                <description>observed</description>
+                                <posx>0</posx>
+                                <posy>145</posy>
+                                <width>180</width>
+                                <height>20</height>
+                                <font>font10</font>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>$INFO[Container(50).Property(Weekend2observed)]</label>
+                            </control>
+                            <!-- Observed precipitation -->
+                            <control type="label">
+                                <description>precipitation</description>
+                                <posx>0</posx>
+                                <posy>165</posy>
+                                <width>180</width>
+                                <height>20</height>
+                                <font>font10</font>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>$INFO[Container(50).Property(Weekend2observedpreciptitle)] $INFO[Container(50).Property(Weekend2observedprecip)]</label>
+                            </control>
+                            <!-- Observed avg high -->
+                            <control type="label">
+                                <description>avg high</description>
+                                <posx>0</posx>
+                                <posy>185</posy>
+                                <width>180</width>
+                                <height>20</height>
+                                <font>font10</font>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>$INFO[Container(50).Property(Weekend2observedavghightitle)] $INFO[Container(50).Property(Weekend2observedavghigh)]</label>
+                            </control>
+                            <!-- Observed avg low -->
+                            <control type="label">
+                                <description>avg low</description>
+                                <posx>0</posx>
+                                <posy>200</posy>
+                                <width>180</width>
+                                <height>20</height>
+                                <font>font10</font>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>$INFO[Container(50).Property(Weekend2observedavglowtitle)] $INFO[Container(50).Property(Weekend2observedavglow)]</label>
+                            </control>
+                            <!-- Observed record high -->
+                            <control type="label">
+                                <description>record high</description>
+                                <posx>0</posx>
+                                <posy>220</posy>
+                                <width>180</width>
+                                <height>20</height>
+                                <font>font10</font>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>$INFO[Container(50).Property(Weekend2observedrecordhightitle)] $INFO[Container(50).Property(Weekend2observedrecordhigh)]</label>
+                            </control>
+                            <!-- Observed record low -->
+                            <control type="label">
+                                <description>record low</description>
+                                <posx>0</posx>
+                                <posy>235</posy>
+                                <width>180</width>
+                                <height>20</height>
+                                <font>font10</font>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>$INFO[Container(50).Property(Weekend2observedrecordlowtitle)] $INFO[Container(50).Property(Weekend2observedrecordlow)]</label>
+                            </control>
+                        </control>
                         <!-- Forecast outlook-->
                         <control type="textbox">
                             <description>outlook</description>
@@ -1750,6 +1940,19 @@
                     <control type="group">
                         <posx>400</posx>
                         <posy>0</posy>
+                        <!-- Alert -->
+                        <control type="label">
+                            <description>alert</description>
+                            <posx>0</posx>
+                            <posy>-25</posy>
+                            <width>180</width>
+                            <height>24</height>
+                            <font>font10</font>
+                            <textcolor>FFFF0000</textcolor>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <info>Container(50).Property(Weekend3alert)</info>
+                        </control>
                         <!-- Forecast background -->
                         <control type="image">
                             <description>Section Background</description>
@@ -1887,7 +2090,7 @@
                         </control>
                         <!-- Details -->
                         <control type="group">
-                            <visible>!IsEmpty(Container(50).Property(WeekendToggle)) | IsEmpty(Container(50).Property(Weekend3outlook))</visible>
+                            <visible>[!IsEmpty(Container(50).Property(WeekendToggle)) | IsEmpty(Container(50).Property(Weekend3outlook))] + IsEmpty(Container(50).Property(Weekend3observed))</visible>
                             <!-- Forecasted wind -->
                             <control type="label">
                                 <description>wind</description>
@@ -1952,6 +2155,88 @@
                                 <align>center</align>
                                 <aligny>center</aligny>
                                 <label>$INFO[Container(50).Property(Weekend3sunsettitle)] $INFO[Container(50).Property(Weekend3sunset)]</label>
+                            </control>
+                        </control>
+                        <!-- Observed, averages and records-->
+                        <control type="group">
+                            <visible>!IsEmpty(Container(50).Property(Weekend3Observed))</visible>
+                            <!-- Observed -->
+                            <control type="label">
+                                <description>observed</description>
+                                <posx>0</posx>
+                                <posy>145</posy>
+                                <width>180</width>
+                                <height>20</height>
+                                <font>font10</font>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>$INFO[Container(50).Property(Weekend3observed)]</label>
+                            </control>
+                            <!-- Observed precipitation -->
+                            <control type="label">
+                                <description>precipitation</description>
+                                <posx>0</posx>
+                                <posy>165</posy>
+                                <width>180</width>
+                                <height>20</height>
+                                <font>font10</font>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>$INFO[Container(50).Property(Weekend3observedpreciptitle)] $INFO[Container(50).Property(Weekend3observedprecip)]</label>
+                            </control>
+                            <!-- Observed avg high -->
+                            <control type="label">
+                                <description>avg high</description>
+                                <posx>0</posx>
+                                <posy>185</posy>
+                                <width>180</width>
+                                <height>20</height>
+                                <font>font10</font>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>$INFO[Container(50).Property(Weekend3observedavghightitle)] $INFO[Container(50).Property(Weekend3observedavghigh)]</label>
+                            </control>
+                            <!-- Observed avg low -->
+                            <control type="label">
+                                <description>avg low</description>
+                                <posx>0</posx>
+                                <posy>200</posy>
+                                <width>180</width>
+                                <height>20</height>
+                                <font>font10</font>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>$INFO[Container(50).Property(Weekend3observedavglowtitle)] $INFO[Container(50).Property(Weekend3observedavglow)]</label>
+                            </control>
+                            <!-- Observed record high -->
+                            <control type="label">
+                                <description>record high</description>
+                                <posx>0</posx>
+                                <posy>220</posy>
+                                <width>180</width>
+                                <height>20</height>
+                                <font>font10</font>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>$INFO[Container(50).Property(Weekend3observedrecordhightitle)] $INFO[Container(50).Property(Weekend3observedrecordhigh)]</label>
+                            </control>
+                            <!-- Observed record low -->
+                            <control type="label">
+                                <description>record low</description>
+                                <posx>0</posx>
+                                <posy>235</posy>
+                                <width>180</width>
+                                <height>20</height>
+                                <font>font10</font>
+                                <textcolor>FFFFFFFF</textcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>$INFO[Container(50).Property(Weekend3observedrecordlowtitle)] $INFO[Container(50).Property(Weekend3observedrecordlow)]</label>
                             </control>
                         </control>
                         <!-- Forecast outlook-->
