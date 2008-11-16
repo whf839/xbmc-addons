@@ -31,9 +31,18 @@
                 <texture>twc-panel.png</texture>
                 <aspectratio>stretch</aspectratio>
             </control>
+            <control type="image">
+                <description>logo</description>
+                <posx>75</posx>
+                <posy>55</posy>
+                <width>42</width>
+                <height>42</height>
+                <texture>twc-logo.png</texture>
+                <aspectratio>keep</aspectratio>
+            </control>
             <control type="label">
                 <description>title</description>
-                <posx>75</posx>
+                <posx>125</posx>
                 <posy>55</posy>
                 <width>500</width>
                 <height>30</height>
