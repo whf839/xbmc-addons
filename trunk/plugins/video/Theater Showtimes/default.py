@@ -431,6 +431,6 @@ class Records:
 
 
 if ( __name__ == "__main__" ):
-    ui = GUI( "script-%s-main.xml" % ( __plugin__.replace( " ", "_" ), ), os.path.join( os.getcwd().replace( ";", "" ), "resources" ), "Default", False )
+    ui = GUI( "script-%s-main.xml" % ( __plugin__.replace( " ", "_" ), ), os.getcwd(), "Default", False )
     ui.doModal()
     del ui
