@@ -19,11 +19,11 @@ if ( __name__ == "__main__" ):
 
 	import gui
 	window = "main"
-    	filename = ""
+	filename = ""
 
 #	if len(sys.argv) > 1:
 #		filename = sys.argv[1]		
-	ui = gui.GUI( "script-%s-%s.xml" % ( __scriptname__.replace( " ", "_" ), window, ), BASE_RESOURCE_PATH, "Default")
+	ui = gui.GUI( "script-%s-%s.xml" % ( __scriptname__.replace( " ", "_" ), window, ), os.getcws(), "Default")
 #	ui.set_filepath( filename )	
 	ui.set_filepath( "" )
 	ui.doModal()
