@@ -71,7 +71,7 @@ def LOG( status, format, *args ):
 def show_settings():
     """ shows a settings window """
     import settings
-    s = settings.GUI( "script-%s-settings.xml" % ( __scriptname__.replace( " ", "_" ), ), BASE_RESOURCE_PATH, "Default" )
+    s = settings.GUI( "script-%s-settings.xml" % ( __scriptname__.replace( " ", "_" ), ), os.getcwd(), "Default" )
     s.doModal()
     del s
 

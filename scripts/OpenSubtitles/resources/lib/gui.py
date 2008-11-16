@@ -147,7 +147,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
         self.getControl( 110 ).setVisible( False )
         self.getControl( 120 ).setVisible( False )
         import settings
-        settings = settings.GUI( "script-%s-settings.xml" % ( __scriptname__.replace( " ", "_" ), ), BASE_RESOURCE_PATH, "Default" )
+        settings = settings.GUI( "script-%s-settings.xml" % ( __scriptname__.replace( " ", "_" ), ), os.getcwd(), "Default" )
         settings.doModal()
         ok = False
         if ( settings.changed ):
