@@ -28,7 +28,7 @@
                 <posy>50</posy>
                 <width>630</width>
                 <height>445</height>
-                <texture>twc-panel.png</texture>
+                <texture border="20,10,10,30">twc-panel.png</texture>
                 <aspectratio>stretch</aspectratio>
             </control>
             <control type="image">
@@ -79,8 +79,8 @@
                     <textcolor>ffffffff</textcolor>
                     <disabledcolor>60ffffff</disabledcolor>
                     <textoffsetx>17</textoffsetx>
-                    <texturenofocus>twc-button-nofocus2.png</texturenofocus>
-                    <texturefocus>twc-button-focus2.png</texturefocus>
+                    <texturenofocus border="5">twc-button-nofocus2.png</texturenofocus>
+                    <texturefocus border="5">twc-button-focus2.png</texturefocus>
                     <onleft>204</onleft>
                     <onright>201</onright>
                     <onup>3000</onup>
@@ -99,8 +99,8 @@
                     <textcolor>ffffffff</textcolor>
                     <disabledcolor>60ffffff</disabledcolor>
                     <textoffsetx>17</textoffsetx>
-                    <texturenofocus>twc-button-nofocus2.png</texturenofocus>
-                    <texturefocus>twc-button-focus2.png</texturefocus>
+                    <texturenofocus border="5">twc-button-nofocus2.png</texturenofocus>
+                    <texturefocus border="5">twc-button-focus2.png</texturefocus>
                     <onleft>200</onleft>
                     <onright>202</onright>
                     <onup>3000</onup>
@@ -119,8 +119,8 @@
                     <textcolor>ffffffff</textcolor>
                     <disabledcolor>60ffffff</disabledcolor>
                     <textoffsetx>17</textoffsetx>
-                    <texturenofocus>twc-button-nofocus2.png</texturenofocus>
-                    <texturefocus>twc-button-focus2.png</texturefocus>
+                    <texturenofocus border="5">twc-button-nofocus2.png</texturenofocus>
+                    <texturefocus border="5">twc-button-focus2.png</texturefocus>
                     <onleft>201</onleft>
                     <onright>203</onright>
                     <onup>3000</onup>
@@ -139,8 +139,8 @@
                     <textcolor>ffffffff</textcolor>
                     <disabledcolor>60ffffff</disabledcolor>
                     <textoffsetx>17</textoffsetx>
-                    <texturenofocus>twc-button-nofocus2.png</texturenofocus>
-                    <texturefocus>twc-button-focus2.png</texturefocus>
+                    <texturenofocus border="5">twc-button-nofocus2.png</texturenofocus>
+                    <texturefocus border="5">twc-button-focus2.png</texturefocus>
                     <onleft>202</onleft>
                     <onright>204</onright>
                     <onup>3000</onup>
@@ -159,8 +159,8 @@
                     <textcolor>ffffffff</textcolor>
                     <disabledcolor>60ffffff</disabledcolor>
                     <textoffsetx>17</textoffsetx>
-                    <texturenofocus>twc-button-nofocus2.png</texturenofocus>
-                    <texturefocus>twc-button-focus2.png</texturefocus>
+                    <texturenofocus border="5">twc-button-nofocus2.png</texturenofocus>
+                    <texturefocus border="5">twc-button-focus2.png</texturefocus>
                     <onleft>203</onleft>
                     <onright>200</onright>
                     <onup>3000</onup>
@@ -2279,8 +2279,8 @@
                     <textcolor>ffffffff</textcolor>
                     <disabledcolor>60ffffff</disabledcolor>
                     <textoffsetx>17</textoffsetx>
-                    <texturenofocus>twc-button-nofocus.png</texturenofocus>
-                    <texturefocus>twc-button-focus.png</texturefocus>
+                    <texturenofocus border="8">twc-button-nofocus.png</texturenofocus>
+                    <texturefocus border="8">twc-button-focus.png</texturefocus>
                     <onleft>2000</onleft>
                     <onright>2000</onright>
                     <onup>2000</onup>
