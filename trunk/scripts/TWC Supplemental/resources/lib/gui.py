@@ -22,27 +22,33 @@ class GUI( xbmcgui.WindowXMLDialog ):
     CONTROL_MAP_LIST = 500
     CONTROL_HOUR_LIST = 600
     CONTROL_10DAY_LIST = 700
-    # buttons
+    # view buttons
     CONTROL_MAP_BUTTON = 200
     CONTROL_36HOUR_BUTTON = 201
     CONTROL_HOURBYHOUR_BUTTON = 202
     CONTROL_WEEKEND_BUTTON = 203
     CONTROL_10DAY_BUTTON = 204
+    CONTROL_SETTINGS_BUTTON = 205
+    # toggle buttons
     CONTROL_WEEKEND_TOGGLE_BUTTON = 300
     CONTROL_MAP_TOGGLE_BUTTON = 301
+    # settings buttons
+    CONTROL_ANIMATED_SETTING_BUTTON = 400
+    CONTROL_METRIC_SETTING_BUTTON = 401
 
     def __init__( self, *args, **kwargs ):
         xbmcgui.WindowXMLDialog.__init__( self, *args, **kwargs )
         # set our defaults
         self._init_defaults()
+        self._init_view_status()
         # get default view
         self._get_default_view()
         # set the maps path
         self._set_maps_path()
         # get our local code, needed for localizing radars
         self._get_local_code()
-        # setup our radar client
-        self.TWCClient = TWCClient.TWCClient( self.local_code )
+        # get our new TWCClient
+        self._get_client()
 
     def onInit( self ):
         if ( self.defaultview == "36Hour" ):
@@ -68,10 +74,16 @@ class GUI( xbmcgui.WindowXMLDialog ):
         self.loading = False
         self.maps_path = False
         self.current_map = None
+
+    def _init_view_status( self ):
         self.forecast36Hour = None
         self.forecastHourByHour = None
         self.forecastWeekend = None
         self.forecast10Day = None
+
+    def _get_client( self ):
+        # setup our radar client
+        self.TWCClient = TWCClient.TWCClient( self.local_code )
 
     def _get_local_code( self ):
         try:
@@ -157,7 +169,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
     def _fetch_36_forecast( self ):
         # reset our view
-        self._reset_views( 1 )
+        self._reset_views( self.CONTROL_36HOUR_BUTTON )
         # only run this once
         if ( self.forecast36Hour is None ):
             self.forecast36Hour = True
@@ -165,7 +177,6 @@ class GUI( xbmcgui.WindowXMLDialog ):
             forecasts = self.TWCClient.fetch_36_forecast()
             # enumerate thru and set the info
             for day, forecast in enumerate( forecasts ):
-                self.setProperty( "36Hour%dtitle" % ( day + 1, ), forecast[ 0 ] )
                 self.setProperty( "36Hour%dicon" % ( day + 1, ), forecast[ 1 ] )
                 self.setProperty( "36Hour%dbrief" % ( day + 1, ), forecast[ 2 ] )
                 self.setProperty( "36Hour%dtemptitle" % ( day + 1, ), forecast[ 3 ] )
@@ -174,10 +185,11 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 self.setProperty( "36Hour%dprecip" % ( day + 1, ), forecast[ 6 ] )
                 self.setProperty( "36Hour%doutlook" % ( day + 1, ), forecast[ 7 ] )
                 self.setProperty( "36Hour%ddaylight" % ( day + 1, ), forecast[ 8 ] )
+                self.setProperty( "36Hour%dtitle" % ( day + 1, ), forecast[ 0 ] )
 
     def _fetch_hour_forecast( self ):
         # reset our view
-        self._reset_views( 2 )
+        self._reset_views( self.CONTROL_HOURBYHOUR_BUTTON )
         # only run this once
         if ( self.forecastHourByHour is None ):
             self.forecastHourByHour = True
@@ -201,7 +213,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
     def _fetch_weekend_forecast( self ):
         # reset our view
-        self._reset_views( 3 )
+        self._reset_views( self.CONTROL_WEEKEND_BUTTON )
         # only run this once
         if ( self.forecastWeekend is None ):
             self.forecastWeekend = True
@@ -209,7 +221,6 @@ class GUI( xbmcgui.WindowXMLDialog ):
             forecasts = self.TWCClient.fetch_weekend_forecast()
             # enumerate thru and set the info
             for day, forecast in enumerate( forecasts ):
-                self.setProperty( "Weekend%dday" % ( day + 1, ), forecast[ 0 ] )
                 self.setProperty( "Weekend%ddate" % ( day + 1, ), forecast[ 1 ] )
                 self.setProperty( "Weekend%dicon" % ( day + 1, ), forecast[ 2 ] )
                 self.setProperty( "Weekend%dbrief" % ( day + 1, ), forecast[ 3 ] )
@@ -242,10 +253,11 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 self.setProperty( "Weekend%dobservedrecordlowtitle" % ( day + 1, ), forecast[ 30 ] )
                 self.setProperty( "Weekend%dobservedrecordlow" % ( day + 1, ), forecast[ 31 ] )
                 self.setProperty( "Weekend%dalert" % ( day + 1, ), forecast[ 32 ] )
+                self.setProperty( "Weekend%dday" % ( day + 1, ), forecast[ 0 ] )
 
     def _fetch_10day_forecast( self ):
         # reset our view
-        self._reset_views( 4 )
+        self._reset_views( self.CONTROL_10DAY_BUTTON )
         # only run this once
         if ( self.forecast10Day is None ):
             self.forecast10Day = True
@@ -279,17 +291,24 @@ class GUI( xbmcgui.WindowXMLDialog ):
         # set the proper property
         self.setProperty( "WeekendToggle", ( "", "details", )[ self.weekendToggle ] )
 
-    def _reset_views( self, view=0 ):
-        self.setProperty( "view-Maps", ( "", "viewing", )[ view == 0 ] )
-        self.setProperty( "view-36Hour", ( "", "viewing", )[ view == 1 ] )
-        self.setProperty( "view-HourByHour", ( "", "viewing", )[ view == 2 ] )
-        self.setProperty( "view-Weekend", ( "", "viewing", )[ view == 3 ] )
-        self.setProperty( "view-10Day", ( "", "viewing", )[ view == 4 ] )
+    def _reset_views( self, view=200 ):
+        self.setProperty( "view-Maps", ( "", "viewing", )[ view == self.CONTROL_MAP_BUTTON ] )
+        self.setProperty( "view-36Hour", ( "", "viewing", )[ view == self.CONTROL_36HOUR_BUTTON ] )
+        self.setProperty( "view-HourByHour", ( "", "viewing", )[ view == self.CONTROL_HOURBYHOUR_BUTTON ] )
+        self.setProperty( "view-Weekend", ( "", "viewing", )[ view == self.CONTROL_WEEKEND_BUTTON ] )
+        self.setProperty( "view-10Day", ( "", "viewing", )[ view == self.CONTROL_10DAY_BUTTON ] )
+        self.setProperty( "view-Settings", ( "", "viewing", )[ view == self.CONTROL_SETTINGS_BUTTON ] )
 
     def _get_default_view( self ):
         # get our default view
         self.defaultview = xbmc.getInfoLabel( "Skin.String(twc-defaultview)" )
-        view = { "": 0, "Maps": 0, "36Hour": 1, "HourByHour": 2, "Weekend": 3, "10Day": 4 }[ self.defaultview ]
+        view = {   "": self.CONTROL_MAP_BUTTON,
+                        "Maps": self.CONTROL_MAP_BUTTON,
+                        "36Hour": self.CONTROL_36HOUR_BUTTON,
+                        "HourByHour": self.CONTROL_HOURBYHOUR_BUTTON,
+                        "Weekend": self.CONTROL_WEEKEND_BUTTON,
+                        "10Day": self.CONTROL_SETTINGS_BUTTON
+                    }[ self.defaultview ]
         # reset the view
         self._reset_views( view )
 
@@ -305,6 +324,31 @@ class GUI( xbmcgui.WindowXMLDialog ):
             xbmc.executebuiltin( "Skin.SetString(twc-defaultview,Weekend)" )
         elif ( xbmc.getCondVisibility( "!IsEmpty(Container(50).Property(view-10Day))" ) ):
             xbmc.executebuiltin( "Skin.SetString(twc-defaultview,10Day)" )
+
+    def _show_settings( self ):
+        # reset our view
+        self._reset_views( self.CONTROL_SETTINGS_BUTTON )
+
+    def _toggle_animated_setting( self ):
+        xbmc.executebuiltin( "Skin.ToggleSetting(twc-animated)" )
+        
+    def _toggle_metric_setting( self ):
+        xbmc.executebuiltin( "Skin.ToggleSetting(twc-metric)" )
+        # get our new TWCClient
+        self._get_client()
+        # clear cache
+        self.TWCClient.clear_cache()
+        # reset our view status
+        self._init_view_status()
+        # clear forecast visible properties
+        self._clear_forecasts()
+
+    def _clear_forecasts( self ):
+        for count in range( 1, 4 ):
+            self.setProperty( "36Hour%dtitle" % ( count, ), "" )
+            self.setProperty( "HBHHead%d" % ( count, ), "" )
+            self.setProperty( "Weekend%dday" % ( count, ), "" )
+            self.setProperty( "10DayHead%d" % ( count, ), "" )
 
     def exit_script( self ):
         if ( self.timer is not None ):
@@ -329,6 +373,12 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 self._fetch_10day_forecast()
             elif ( controlId == self.CONTROL_WEEKEND_TOGGLE_BUTTON ):
                 self._toggle_weekend()
+            elif ( controlId == self.CONTROL_SETTINGS_BUTTON ):
+                self._show_settings()
+            elif ( controlId == self.CONTROL_ANIMATED_SETTING_BUTTON ):
+                self._toggle_animated_setting()
+            elif ( controlId == self.CONTROL_METRIC_SETTING_BUTTON ):
+                self._toggle_metric_setting()
 
     def onFocus( self, controlId ):
         pass
