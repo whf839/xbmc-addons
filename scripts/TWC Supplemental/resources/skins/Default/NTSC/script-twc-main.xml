@@ -19,7 +19,7 @@
             <aspectratio>stretch</aspectratio>
         </control>
 
-        <control type="group">
+        <control type="group" id="2000">
             <animation effect="fade" reversible="true" time="300">WindowOpen</animation>
             <!-- Main dialog -->
             <control type="image">
@@ -65,12 +65,13 @@
                 <info>Weather.Location</info>
             </control>
             <!-- Main buttons ** required ** -->
-            <control type="group" id="2000">
+            <control type="group">
+                <posx>-2</posx>
                 <control type="button" id="200">
                     <description>Maps Button</description>
                     <posx>75</posx>
                     <posy>100</posy>
-                    <width>110</width>
+                    <width>95</width>
                     <height>30</height>
                     <align>center</align>
                     <aligny>center</aligny>
@@ -81,16 +82,16 @@
                     <textoffsetx>17</textoffsetx>
                     <texturenofocus border="5">twc-button-nofocus2.png</texturenofocus>
                     <texturefocus border="5">twc-button-focus2.png</texturefocus>
-                    <onleft>204</onleft>
+                    <onleft>205</onleft>
                     <onright>201</onright>
                     <onup>3000</onup>
                     <ondown>3000</ondown>
                 </control>
                 <control type="button" id="201">
                     <description>36 Hour Forecast Button</description>
-                    <posx>195</posx>
+                    <posx>175</posx>
                     <posy>100</posy>
-                    <width>110</width>
+                    <width>95</width>
                     <height>30</height>
                     <align>center</align>
                     <aligny>center</aligny>
@@ -108,9 +109,9 @@
                 </control>
                 <control type="button" id="202">
                     <description>Hour by Hour Forecast Button</description>
-                    <posx>315</posx>
+                    <posx>275</posx>
                     <posy>100</posy>
-                    <width>110</width>
+                    <width>95</width>
                     <height>30</height>
                     <align>center</align>
                     <aligny>center</aligny>
@@ -128,9 +129,9 @@
                 </control>
                 <control type="button" id="203">
                     <description>Weekend Forecast Button</description>
-                    <posx>435</posx>
+                    <posx>375</posx>
                     <posy>100</posy>
-                    <width>110</width>
+                    <width>95</width>
                     <height>30</height>
                     <align>center</align>
                     <aligny>center</aligny>
@@ -148,9 +149,9 @@
                 </control>
                 <control type="button" id="204">
                     <description>10 Day Forecast Button</description>
-                    <posx>555</posx>
+                    <posx>475</posx>
                     <posy>100</posy>
-                    <width>110</width>
+                    <width>95</width>
                     <height>30</height>
                     <align>center</align>
                     <aligny>center</aligny>
@@ -162,6 +163,26 @@
                     <texturenofocus border="5">twc-button-nofocus2.png</texturenofocus>
                     <texturefocus border="5">twc-button-focus2.png</texturefocus>
                     <onleft>203</onleft>
+                    <onright>205</onright>
+                    <onup>3000</onup>
+                    <ondown>3000</ondown>
+                </control>
+                <control type="button" id="205">
+                    <description>Settings Button</description>
+                    <posx>575</posx>
+                    <posy>100</posy>
+                    <width>95</width>
+                    <height>30</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <label>SCRIPT205</label>
+                    <font>font10</font>
+                    <textcolor>ffffffff</textcolor>
+                    <disabledcolor>60ffffff</disabledcolor>
+                    <textoffsetx>17</textoffsetx>
+                    <texturenofocus border="5">twc-button-nofocus2.png</texturenofocus>
+                    <texturefocus border="5">twc-button-focus2.png</texturefocus>
+                    <onleft>204</onleft>
                     <onright>200</onright>
                     <onup>3000</onup>
                     <ondown>3000</ondown>
@@ -180,9 +201,9 @@
             <!-- Selected tab images -->
             <control type="image">
                 <description>tab1 selected</description>
-                <posx>76</posx>
+                <posx>74</posx>
                 <posy>129</posy>
-                <width>108</width>
+                <width>93</width>
                 <height>2</height>
                 <texture>twc-solid.png</texture>
                 <aspectratio>stretch</aspectratio>
@@ -190,9 +211,9 @@
             </control>
             <control type="image">
                 <description>tab2 selected</description>
-                <posx>196</posx>
+                <posx>174</posx>
                 <posy>129</posy>
-                <width>108</width>
+                <width>93</width>
                 <height>2</height>
                 <texture>twc-solid.png</texture>
                 <aspectratio>stretch</aspectratio>
@@ -200,9 +221,9 @@
             </control>
             <control type="image">
                 <description>tab3 selected</description>
-                <posx>316</posx>
+                <posx>274</posx>
                 <posy>129</posy>
-                <width>108</width>
+                <width>93</width>
                 <height>2</height>
                 <texture>twc-solid.png</texture>
                 <aspectratio>stretch</aspectratio>
@@ -210,9 +231,9 @@
             </control>
             <control type="image">
                 <description>tab4 selected</description>
-                <posx>436</posx>
+                <posx>374</posx>
                 <posy>129</posy>
-                <width>108</width>
+                <width>93</width>
                 <height>2</height>
                 <texture>twc-solid.png</texture>
                 <aspectratio>stretch</aspectratio>
@@ -220,22 +241,30 @@
             </control>
             <control type="image">
                 <description>tab5 selected</description>
-                <posx>556</posx>
+                <posx>474</posx>
                 <posy>129</posy>
-                <width>108</width>
+                <width>93</width>
                 <height>2</height>
                 <texture>twc-solid.png</texture>
                 <aspectratio>stretch</aspectratio>
                 <visible>!IsEmpty(Container(50).Property(view-10Day))</visible>
             </control>
+            <control type="image">
+                <description>tab6 selected</description>
+                <posx>574</posx>
+                <posy>129</posy>
+                <width>93</width>
+                <height>2</height>
+                <texture>twc-solid.png</texture>
+                <aspectratio>stretch</aspectratio>
+                <visible>!IsEmpty(Container(50).Property(view-Settings))</visible>
+            </control>
         </control>
 
         <!-- Sections group -->
         <control type="group" id="3000">
-            <onup>2000</onup>
-            <ondown>2000</ondown>
             <!-- Maps section ** Required ** -->
-            <control type="group" id="1000">
+            <control type="group">
                 <visible>!IsEmpty(Container(50).Property(view-Maps))</visible>
                 <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
                 <!-- Maps list ** Required ** -->
@@ -394,7 +423,9 @@
             </control>
 
             <!-- 36 Hour forecast section ** Required ** -->
-            <control type="group" id="1010">
+            <control type="group">
+                <onup>2000</onup>
+                <ondown>2000</ondown>
                 <posx>75</posx>
                 <posy>150</posy>
                 <visible>!IsEmpty(Container(50).Property(view-36Hour))</visible>
@@ -416,7 +447,7 @@
                 </control>
                 <!-- Forecast main group -->
                 <control type="group">
-                    <visible>!IsEmpty(Container(50).Property(36Hour1title))</visible>
+                    <visible>!IsEmpty(Container(50).Property(36Hour3title))</visible>
                     <posx>7</posx>
                     <posy>3</posy>
                     <!-- Section background -->
@@ -868,7 +899,7 @@
                 </control>
             </control>
             <!-- Hour by hour forecast section ** Required ** -->
-            <control type="group" id="1020">
+            <control type="group">
                 <posx>75</posx>
                 <posy>150</posy>
                 <visible>!IsEmpty(Container(50).Property(view-HourByHour))</visible>
@@ -1272,7 +1303,7 @@
             </control>
 
             <!-- Weekend forecast section ** Required ** -->
-            <control type="group" id="1030">
+            <control type="group">
                 <posx>75</posx>
                 <posy>150</posy>
                 <visible>!IsEmpty(Container(50).Property(view-Weekend))</visible>
@@ -1289,12 +1320,62 @@
                     <align>center</align>
                     <aligny>top</aligny>
                     <label>SCRIPT103</label>
-                    <visible>IsEmpty(Container(50).Property(Weekend1day))</visible>
+                    <visible>IsEmpty(Container(50).Property(Weekend3day))</visible>
                     <animation effect="zoom" reversible="false" center="auto" start="100" end="200" time="0">WindowOpen</animation>
+                </control>
+                <!-- Details/Outlook toggle buttn -->
+                <control type="button" id="300">
+                    <description>Weekend Toggle Button</description>
+                    <posx>480</posx>
+                    <posy>275</posy>
+                    <width>110</width>
+                    <height>30</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <label></label>
+                    <font>font10</font>
+                    <textcolor>ffffffff</textcolor>
+                    <disabledcolor>60ffffff</disabledcolor>
+                    <textoffsetx>17</textoffsetx>
+                    <texturenofocus border="8">twc-button-nofocus.png</texturenofocus>
+                    <texturefocus border="8">twc-button-focus.png</texturefocus>
+                    <onleft>2000</onleft>
+                    <onright>2000</onright>
+                    <onup>2000</onup>
+                    <ondown>2000</ondown>
+                    <visible>[!IsEmpty(Container(50).Property(Weekend1outlook)) | !IsEmpty(Container(50).Property(Weekend2outlook)) | !IsEmpty(Container(50).Property(Weekend3outlook)) ] + !IsEmpty(Container(50).Property(Weekend3day))</visible> 
+                </control>
+                <!-- Details label -->
+                <control type="label">
+                    <description>details label</description>
+                    <posx>480</posx>
+                    <posy>275</posy>
+                    <width>110</width>
+                    <height>30</height>
+                    <font>font10</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <label>SCRIPT300</label>
+                    <visible>IsEmpty(Container(50).Property(WeekendToggle)) + Control.Isvisible(300)</visible>
+                </control>
+                <!-- Outlook label -->
+                <control type="label">
+                    <description>outlook label</description>
+                    <posx>480</posx>
+                    <posy>275</posy>
+                    <width>110</width>
+                    <height>30</height>
+                    <font>font10</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <label>SCRIPT301</label>
+                    <visible>!IsEmpty(Container(50).Property(WeekendToggle)) + Control.Isvisible(300)</visible>
                 </control>
                 <!-- Forecast main group -->
                 <control type="group">
-                    <visible>!IsEmpty(Container(50).Property(Weekend1day))</visible>
+                    <visible>!IsEmpty(Container(50).Property(Weekend3day))</visible>
                     <posx>7</posx>
                     <posy>3</posy>
                     <!-- Section background -->
@@ -2265,56 +2346,6 @@
                         </control>
                     </control>
                 </control>
-                <!-- Details/Outlook toggle buttn -->
-                <control type="button" id="300">
-                    <description>Weekend Toggle Button</description>
-                    <posx>480</posx>
-                    <posy>275</posy>
-                    <width>110</width>
-                    <height>30</height>
-                    <align>center</align>
-                    <aligny>center</aligny>
-                    <label></label>
-                    <font>font10</font>
-                    <textcolor>ffffffff</textcolor>
-                    <disabledcolor>60ffffff</disabledcolor>
-                    <textoffsetx>17</textoffsetx>
-                    <texturenofocus border="8">twc-button-nofocus.png</texturenofocus>
-                    <texturefocus border="8">twc-button-focus.png</texturefocus>
-                    <onleft>2000</onleft>
-                    <onright>2000</onright>
-                    <onup>2000</onup>
-                    <ondown>2000</ondown>
-                    <visible>!IsEmpty(Container(50).Property(Weekend1outlook)) | !IsEmpty(Container(50).Property(Weekend2outlook)) | !IsEmpty(Container(50).Property(Weekend3outlook))</visible> 
-                </control>
-                <!-- Details label -->
-                <control type="label">
-                    <description>details label</description>
-                    <posx>480</posx>
-                    <posy>275</posy>
-                    <width>110</width>
-                    <height>30</height>
-                    <font>font10</font>
-                    <textcolor>FFFFFFFF</textcolor>
-                    <align>center</align>
-                    <aligny>center</aligny>
-                    <label>SCRIPT300</label>
-                    <visible>IsEmpty(Container(50).Property(WeekendToggle)) + Control.Isvisible(300)</visible>
-                </control>
-                <!-- Outlook label -->
-                <control type="label">
-                    <description>outlook label</description>
-                    <posx>480</posx>
-                    <posy>275</posy>
-                    <width>110</width>
-                    <height>30</height>
-                    <font>font10</font>
-                    <textcolor>FFFFFFFF</textcolor>
-                    <align>center</align>
-                    <aligny>center</aligny>
-                    <label>SCRIPT301</label>
-                    <visible>!IsEmpty(Container(50).Property(WeekendToggle)) + Control.Isvisible(300)</visible>
-                </control>
                 <!-- User instruction label -->
                 <control type="label">
                     <description>info label</description>
@@ -2331,7 +2362,7 @@
             </control>
 
             <!-- 10 Day forecast section ** Required ** -->
-            <control type="group" id="1040">
+            <control type="group">
                 <posx>75</posx>
                 <posy>150</posy>
                 <visible>!IsEmpty(Container(50).Property(view-10Day))</visible>
@@ -2650,6 +2681,73 @@
                     <aligny>top</aligny>
                     <label>&#10;$LOCALIZE[SCRIPT56]&#10;$LOCALIZE[SCRIPT52]</label>
                 </control>
+            </control>
+            <!-- Settings section ** Required ** -->
+            <control type="group">
+                <posx>75</posx>
+                <posy>150</posy>
+                <visible>!IsEmpty(Container(50).Property(view-Settings))</visible>
+                <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
+                <control type="group">
+                    <!-- Settings 1 -->
+                    <control type="radiobutton" id="400">
+                        <description>enable animations</description>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>590</width>
+                        <height>30</height>
+                        <font>font13</font>
+                        <textcolor>FFFFFFFF</textcolor>
+                        <label>SCRIPT400</label>
+                        <align>left</align>
+                        <aligny>center</aligny>
+                        <selected>!Skin.HasSetting(twc-animated)</selected>
+                        <textoffsetx>7</textoffsetx>
+                        <textureradiofocus>twc-radiobutton-focus.png</textureradiofocus>
+                        <textureradionofocus>twc-radiobutton-nofocus.png</textureradionofocus>
+                        <texturefocus border="3">twc-input-focus.png</texturefocus>
+                        <texturenofocus>-</texturenofocus>
+                        <onup>2000</onup>
+                        <ondown>401</ondown>
+                    </control>
+                    <!-- Settings 2 -->
+                    <control type="radiobutton" id="401">
+                        <description>enable animations</description>
+                        <posx>0</posx>
+                        <posy>40</posy>
+                        <width>590</width>
+                        <height>30</height>
+                        <font>font13</font>
+                        <textcolor>FFFFFFFF</textcolor>
+                        <label>SCRIPT401</label>
+                        <align>left</align>
+                        <aligny>center</aligny>
+                        <selected>Skin.HasSetting(twc-metric)</selected>
+                        <textoffsetx>7</textoffsetx>
+                        <textureradiofocus>twc-radiobutton-focus.png</textureradiofocus>
+                        <textureradionofocus>twc-radiobutton-nofocus.png</textureradionofocus>
+                        <texturefocus border="3">twc-input-focus.png</texturefocus>
+                        <texturenofocus>-</texturenofocus>
+                        <onup>400</onup>
+                        <ondown>400</ondown>
+                    </control>
+                </control>
+                <!-- User instruction label -->
+                <control type="label">
+                    <description>info label</description>
+                    <posx>0</posx>
+                    <posy>260</posy>
+                    <width>500</width>
+                    <height>100</height>
+                    <font>font10</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <align>left</align>
+                    <aligny>top</aligny>
+                    <label>&#10;&#10;$LOCALIZE[SCRIPT52]</label>
+                </control>
+
+
+
             </control>
         </control>
     </controls>

@@ -1,0 +1,2 @@
+#LWP-Cookies-2.0
+Set-Cookie3: UserPreferences="3%7C%20%7C0%7Creal%7Cfast%7C-1%7C-1%7C-1%7C-1%7C-1%7C%20%7C%20%7C%20%7C%20%7C%20%7C-1%7CUndeclared%7C%20%7C%20%7C%20%7C%20%7C%20%7C%20%7C%20%7C%20%7C%20%7C%7C"; path="/"; domain=".weather.com"; path_spec; domain_dot; expires="2010-11-17 04:21:53Z"; version=0
