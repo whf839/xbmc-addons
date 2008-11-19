@@ -1,0 +1,5 @@
+<settings>
+   <!-- GUI  -->
+   <setting id="path" 	type="text" 	label="30420" default="/Volumes/RAID/Movies/EyeTV/EyeTV Archive"/>
+   <setting type="sep" />
+</settings>
