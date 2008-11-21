@@ -11,11 +11,14 @@ import os
 import xbmc
 import xbmcgui
 
+_ = xbmc.Language( os.getcwd() ).getLocalizedString
+
+dialog = xbmcgui.DialogProgress()
+dialog.create( _( 0 ), _( 10 ) )
+
 from threading import Timer
 
 import resources.lib.TWCClient as TWCClient
-
-_ = xbmc.Language( os.getcwd() ).getLocalizedString
 
 
 class GUI( xbmcgui.WindowXMLDialog ):
@@ -61,6 +64,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
         self._get_client()
 
     def onInit( self ):
+        dialog.close()
         # reset views
         self._reset_views( self.defaultview )
         # set script info

@@ -4,6 +4,8 @@
     <string id="1">xbmc media center</string>
     <string id="2">Nuka1195</string>
 
+    <string id="10">Loading...</string>
+
     <string id="50">TAB: toggles map fullscreen</string>
     <string id="51">INFO: sets current map as default view</string>
     <string id="52">ESC: exits script</string>
