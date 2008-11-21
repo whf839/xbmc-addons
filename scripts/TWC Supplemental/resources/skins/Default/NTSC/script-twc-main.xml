@@ -495,7 +495,7 @@
                         <height>300</height>
                         <texture>twc-contentpanel.png</texture>
                         <aspectratio>stretch</aspectratio>
-                        <visible>IsEmpty(Skin.String(twc-fanart-path))</visible>
+                        <visible>IsEmpty(Skin.String(twc-fanart-path)) | Skin.HasSetting(twc-fanart-diffuselevel0)</visible>
                     </control>
                     <!-- First 12 hour forecast -->
                     <control type="group">
@@ -1424,7 +1424,7 @@
                         <height>300</height>
                         <texture>twc-contentpanel.png</texture>
                         <aspectratio>stretch</aspectratio>
-                        <visible>IsEmpty(Skin.String(twc-fanart-path))</visible>
+                        <visible>IsEmpty(Skin.String(twc-fanart-path)) | Skin.HasSetting(twc-fanart-diffuselevel0)</visible>
                     </control>
                     <!-- Friday forecast -->
                     <control type="group">
