@@ -5,6 +5,9 @@
 """
 
 # main imports
+import sys
+import os
+
 import xbmc
 import xbmcgui
 
@@ -12,12 +15,16 @@ from threading import Timer
 
 import resources.lib.TWCClient as TWCClient
 
+_ = xbmc.Language( os.getcwd() ).getLocalizedString
+
 
 class GUI( xbmcgui.WindowXMLDialog ):
     # constants
     ACTION_EXIT_SCRIPT = ( 10, )
     ACTION_SET_DEFAULT = ( 117, )
     ACTION_TOGGLE_MAP = ( 18, )
+    ACTION_MOVEMENT_LEFT = ( 1, )
+    ACTION_MOVEMENT_RIGHT = ( 2, )
     # required control id's
     CONTROL_MAP_LIST = 500
     CONTROL_HOUR_LIST = 600
@@ -35,6 +42,9 @@ class GUI( xbmcgui.WindowXMLDialog ):
     # settings buttons
     CONTROL_ANIMATED_SETTING_BUTTON = 400
     CONTROL_METRIC_SETTING_BUTTON = 401
+    CONTROL_FANART_SETTING_BUTTON = 402
+    CONTROL_FANART_DIFFUSE_SETTING_BUTTON = 403
+    CONTROL_FANART_TYPE_SETTING_BUTTON = 404
 
     def __init__( self, *args, **kwargs ):
         xbmcgui.WindowXMLDialog.__init__( self, *args, **kwargs )
@@ -51,16 +61,23 @@ class GUI( xbmcgui.WindowXMLDialog ):
         self._get_client()
 
     def onInit( self ):
-        if ( self.defaultview == "36Hour" ):
+        # reset views
+        self._reset_views( self.defaultview )
+        # set script info
+        self._set_script_info()
+        # set default fanart diffuse level
+        self._set_diffuse_level()
+        # set default view
+        if ( self.defaultview == self.CONTROL_36HOUR_BUTTON ):
             # get our 36 hour forecast
             self._fetch_36_forecast()
-        elif ( self.defaultview == "HourByHour" ):
+        elif ( self.defaultview == self.CONTROL_HOURBYHOUR_BUTTON ):
             # get our hour by hour forecast
             self._fetch_hour_forecast()
-        elif ( self.defaultview == "Weekend" ):
+        elif ( self.defaultview == self.CONTROL_WEEKEND_BUTTON ):
             # get our hour by hour forecast
             self._fetch_weekend_forecast()
-        elif ( self.defaultview == "10Day" ):
+        elif ( self.defaultview == self.CONTROL_10DAY_BUTTON ):
             # get our hour by hour forecast
             self._fetch_10day_forecast()
         else:
@@ -74,6 +91,16 @@ class GUI( xbmcgui.WindowXMLDialog ):
         self.loading = False
         self.maps_path = False
         self.current_map = None
+
+    def _set_script_info( self ):
+        self.setProperty( "version", "%s - %s" % ( sys.modules[ "__main__" ].__version__, str( sys.modules[ "__main__" ].__svn_revision__ ) ) )
+        self.setProperty( "author", sys.modules[ "__main__" ].__author__ )
+        if ( self.defaultview == self.CONTROL_MAP_BUTTON ):
+            self.setProperty( "defaultview", "%s - %s" % ( _( self.defaultview ), xbmc.getInfoLabel( "Skin.String(twc-defaultmap)" ), ) )
+        else:
+            self.setProperty( "defaultview", _( self.defaultview ) )
+        self.setProperty( "svnurl", sys.modules[ "__main__" ].__url__ )
+        self.setProperty( "scripturl", sys.modules[ "__main__" ].__svn_url__ )
 
     def _init_view_status( self ):
         self.forecast36Hour = None
@@ -206,9 +233,9 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 listitem.setProperty( "temp", forecast[ 3 ] )
                 listitem.setProperty( "feels", forecast[ 4 ] )
                 listitem.setProperty( "precip", forecast[ 5 ] )
-                listitem.setProperty( "dew", forecast[ 6 ] )
-                listitem.setProperty( "humidity", forecast[ 7 ] )
-                listitem.setProperty( "wind", forecast[ 8 ] )
+                #listitem.setProperty( "dew", forecast[ 6 ] )
+                listitem.setProperty( "humidity", forecast[ 6 ] )
+                listitem.setProperty( "wind", forecast[ 7 ] )
                 self.getControl( self.CONTROL_HOUR_LIST ).addItem( listitem )
 
     def _fetch_weekend_forecast( self ):
@@ -301,20 +328,18 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
     def _get_default_view( self ):
         # get our default view
-        self.defaultview = xbmc.getInfoLabel( "Skin.String(twc-defaultview)" )
-        view = {   "": self.CONTROL_MAP_BUTTON,
-                        "Maps": self.CONTROL_MAP_BUTTON,
-                        "36Hour": self.CONTROL_36HOUR_BUTTON,
-                        "HourByHour": self.CONTROL_HOURBYHOUR_BUTTON,
-                        "Weekend": self.CONTROL_WEEKEND_BUTTON,
-                        "10Day": self.CONTROL_SETTINGS_BUTTON
-                    }[ self.defaultview ]
-        # reset the view
-        self._reset_views( view )
+        defaultview = xbmc.getInfoLabel( "Skin.String(twc-defaultview)" )
+        self.defaultview = { "": self.CONTROL_MAP_BUTTON,
+                                    "Maps": self.CONTROL_MAP_BUTTON,
+                                    "36Hour": self.CONTROL_36HOUR_BUTTON,
+                                    "HourByHour": self.CONTROL_HOURBYHOUR_BUTTON,
+                                    "Weekend": self.CONTROL_WEEKEND_BUTTON,
+                                    "10Day": self.CONTROL_10DAY_BUTTON
+                                    }[ defaultview ]
 
     def _set_default_view( self ):
         if ( xbmc.getCondVisibility( "!IsEmpty(Container(50).Property(view-Maps))" ) ):
-            xbmc.executebuiltin( "Skin.SetString(twc-defaultmap,%s)" % ( self.getControl( self.CONTROL_MAP_LIST ).getSelectedItem().getLabel(), ) )
+            xbmc.executebuiltin( "Skin.SetString(twc-defaultmap,%s)" % ( self.getControl( self.CONTROL_MAP_LIST ).getListItem( self.current_map ).getLabel(), ) )
             xbmc.executebuiltin( "Skin.Reset(twc-defaultview)" )
         elif ( xbmc.getCondVisibility( "!IsEmpty(Container(50).Property(view-36Hour))" ) ):
             xbmc.executebuiltin( "Skin.SetString(twc-defaultview,36Hour)" )
@@ -324,6 +349,12 @@ class GUI( xbmcgui.WindowXMLDialog ):
             xbmc.executebuiltin( "Skin.SetString(twc-defaultview,Weekend)" )
         elif ( xbmc.getCondVisibility( "!IsEmpty(Container(50).Property(view-10Day))" ) ):
             xbmc.executebuiltin( "Skin.SetString(twc-defaultview,10Day)" )
+        # necessary sleep to give Skin.String() time to update
+        xbmc.sleep(30)
+        # called so no duplicate code for setting proper self.defaultview value
+        self._get_default_view()
+        # set our new info
+        self._set_script_info()
 
     def _show_settings( self ):
         # reset our view
@@ -349,6 +380,34 @@ class GUI( xbmcgui.WindowXMLDialog ):
             self.setProperty( "HBHHead%d" % ( count, ), "" )
             self.setProperty( "Weekend%dday" % ( count, ), "" )
             self.setProperty( "10DayHead%d" % ( count, ), "" )
+
+    def _set_fanart_path( self ):
+        dialog = xbmcgui.Dialog()
+        value = dialog.browse( 0, _( 402 ), "files", "", False, False, xbmc.getInfoLabel( "Skin.String(twc-fanart-path)" ) )
+        xbmc.executebuiltin( "Skin.SetString(twc-fanart-path,%s)" % ( value, ) )
+
+    def _set_diffuse_level( self, change=0 ):
+        levels = [ "00FFFFFF", "30FFFFFF", "60FFFFFF", "90FFFFFF", "BBFFFFFF", "DDFFFFFF", "FFFFFFFF" ]
+        diffusecolor = xbmc.getInfoLabel( "Skin.String(twc-fanart-diffusecolor)" )
+        if ( diffusecolor == "" ):
+            level = 2
+        else:
+            level = levels.index( diffusecolor )
+        level += change
+        if ( level == len( levels ) ):
+            level = 0
+        elif ( level < 0 ):
+            level = len( levels ) - 1
+        diffusecolor = levels[ level ]
+        xbmc.executebuiltin( "Skin.SetString(twc-fanart-diffusecolor,%s)" % ( diffusecolor, ) )
+        for i in range( 7 ):
+            if ( diffusecolor == levels[ i ] ):
+                xbmc.executebuiltin( "Skin.SetBool(twc-fanart-diffuselevel%d)" % ( i, ) )
+            else:
+                xbmc.executebuiltin( "Skin.Reset(twc-fanart-diffuselevel%d)" % ( i, ) )
+
+    def _set_fanart_type( self ):
+        xbmc.executebuiltin( "Skin.ToggleSetting(twc-fanart-type)" )
 
     def exit_script( self ):
         if ( self.timer is not None ):
@@ -379,6 +438,12 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 self._toggle_animated_setting()
             elif ( controlId == self.CONTROL_METRIC_SETTING_BUTTON ):
                 self._toggle_metric_setting()
+            elif ( controlId == self.CONTROL_FANART_SETTING_BUTTON ):
+                self._set_fanart_path()
+            elif ( controlId == self.CONTROL_FANART_DIFFUSE_SETTING_BUTTON ):
+                self._set_diffuse_level( 1 )
+            elif ( controlId == self.CONTROL_FANART_TYPE_SETTING_BUTTON ):
+                self._set_fanart_type()
 
     def onFocus( self, controlId ):
         pass
@@ -393,3 +458,10 @@ class GUI( xbmcgui.WindowXMLDialog ):
             self._toggle_map()
         elif ( actionId in self.ACTION_SET_DEFAULT and self.toggle ):
             self._set_default_view()
+        elif ( actionId in self.ACTION_SET_DEFAULT and self.toggle ):
+            self._set_default_view()
+        elif ( self.getFocusId() == self.CONTROL_FANART_DIFFUSE_SETTING_BUTTON ):
+            if ( actionId in self.ACTION_MOVEMENT_LEFT ):
+                self._set_diffuse_level( -1 )
+            elif ( actionId in self.ACTION_MOVEMENT_RIGHT ):
+                self._set_diffuse_level( 1 )
