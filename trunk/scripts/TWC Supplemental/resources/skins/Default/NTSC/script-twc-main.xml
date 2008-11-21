@@ -3,7 +3,7 @@
     
     <coordinates>
         <system>1</system>
-        <posx>-15</posx>
+        <posx>-10</posx>
         <posy>-20</posy>
     </coordinates>
 
@@ -18,7 +18,7 @@
             <texture>twc-black.png</texture>
             <aspectratio>stretch</aspectratio>
         </control>
-
+        <!-- dialog group -->
         <control type="group" id="2000">
             <animation effect="fade" reversible="true" time="300">WindowOpen</animation>
             <!-- Main dialog -->
@@ -30,6 +30,40 @@
                 <height>445</height>
                 <texture border="20,10,10,30">twc-panel.png</texture>
                 <aspectratio>stretch</aspectratio>
+            </control>
+            <!-- Fanart multiimage -->
+            <control type="multiimage">
+                <description>fanart location</description>
+                <posx>50</posx>
+                <posy>50</posy>
+                <width>630</width>
+                <height>445</height>
+                <imagepath diffuse="twc-fanart-diffuse.png">$INFO[Skin.String(twc-fanart-path)]$INFO[Weather.Location]</imagepath>
+                <timeperimage>5000</timeperimage>
+                <pauseatend>0</pauseatend>
+                <fadetime>1000</fadetime>
+                <randomize>true</randomize>
+                <colordiffuse>$INFO[Skin.String(twc-fanart-diffusecolor)]</colordiffuse>
+                <loop>yes</loop>
+                <aspectratio>stretch</aspectratio>
+                <visible>!Skin.HasSetting(twc-fanart-type)</visible>
+            </control>
+            <!-- Fanart multiimage -->
+            <control type="multiimage">
+                <description>fanart weather conditions</description>
+                <posx>50</posx>
+                <posy>50</posy>
+                <width>630</width>
+                <height>445</height>
+                <imagepath diffuse="twc-fanart-diffuse.png">$INFO[Skin.String(twc-fanart-path)]$INFO[Weather.Conditions]</imagepath>
+                <timeperimage>5000</timeperimage>
+                <pauseatend>0</pauseatend>
+                <fadetime>1000</fadetime>
+                <randomize>true</randomize>
+                <colordiffuse>$INFO[Skin.String(twc-fanart-diffusecolor)]</colordiffuse>
+                <loop>yes</loop>
+                <aspectratio>stretch</aspectratio>
+                <visible>Skin.HasSetting(twc-fanart-type)</visible>
             </control>
             <control type="image">
                 <description>logo</description>
@@ -265,12 +299,14 @@
         <control type="group" id="3000">
             <!-- Maps section ** Required ** -->
             <control type="group">
+                <posx>75</posx>
+                <posy>150</posy>
                 <visible>!IsEmpty(Container(50).Property(view-Maps))</visible>
                 <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
                 <!-- Maps list ** Required ** -->
                 <control type="list" id="500">
-                    <posx>75</posx>
-                    <posy>150</posy>
+                    <posx>0</posx>
+                    <posy>00</posy>
                     <width>200</width>
                     <height>242</height>
                     <onleft>5000</onleft>
@@ -335,8 +371,8 @@
                 <!-- Scrollbar for maps list -->
                 <control type="button">
                     <description>Scrollbar Up Arrow</description>
-                    <posx>280</posx>
-                    <posy>150</posy>
+                    <posx>205</posx>
+                    <posy>0</posy>
                     <width>16</width>
                     <height>16</height>
                     <texturenofocus>twc-scrollbar_arrow_up.png</texturenofocus>
@@ -346,8 +382,8 @@
                 </control>
                 <control type="scrollbar" id="5000">
                     <description>Scroll Bar</description>
-                    <posx>280</posx>
-                    <posy>166</posy>
+                    <posx>205</posx>
+                    <posy>16</posy>
                     <width>16</width>
                     <height>208</height>
                     <texturesliderbackground border="4">twc-scrollbar_background.png</texturesliderbackground>
@@ -362,8 +398,8 @@
                 </control>
                 <control type="button">
                     <description>Scrollbar Down Arrow</description>
-                    <posx>280</posx>
-                    <posy>374</posy>
+                    <posx>205</posx>
+                    <posy>224</posy>
                     <width>16</width>
                     <height>16</height>
                     <texturenofocus>twc-scrollbar_arrow_down.png</texturenofocus>
@@ -374,21 +410,21 @@
                 <!-- User instruction label -->
                 <control type="label">
                     <description>info label</description>
-                    <posx>75</posx>
-                    <posy>410</posy>
+                    <posx>0</posx>
+                    <posy>255</posy>
                     <width>500</width>
                     <height>100</height>
                     <font>font10</font>
                     <textcolor>FFFFFFFF</textcolor>
                     <align>left</align>
                     <aligny>top</aligny>
-                    <label>$LOCALIZE[SCRIPT50]&#10;$LOCALIZE[SCRIPT51]&#10;$LOCALIZE[SCRIPT52]</label>
+                    <label>&#10;$LOCALIZE[SCRIPT50]&#10;$LOCALIZE[SCRIPT51]&#10;$LOCALIZE[SCRIPT52]</label>
                 </control>
                 <!-- Maps multiimage ** Required ** -->
                 <control type="multiimage">
                     <description>maps multiimage</description>
-                    <posx>305</posx>
-                    <posy>150</posy>
+                    <posx>230</posx>
+                    <posy>0</posy>
                     <width>360</width>
                     <height>243</height>
                     <info>Skin.String(TWC-MapsPath)</info>
@@ -399,13 +435,13 @@
                     <loop>yes</loop>
                     <aspectratio>keep</aspectratio>
                     <!-- animation is used for zooming map -->
-                    <animation effect="zoom" reversible="true" center="602,285" start="100" end="195" time="100" condition="!IsEmpty(Container(50).Property(Toggle))">Conditional</animation>
+                    <animation effect="zoom" reversible="true" center="532,135" start="100" end="195" time="100" condition="!IsEmpty(Container(50).Property(Toggle))">Conditional</animation>
                 </control>
                 <!-- Toggle map button -->
                 <control type="button" id="301">
                     <description>Toggle button</description>
-                    <posx>305</posx>
-                    <posy>150</posy>
+                    <posx>230</posx>
+                    <posy>0</posy>
                     <width>360</width>
                     <height>243</height>
                     <align>center</align>
@@ -418,7 +454,7 @@
                     <texturenofocus>-</texturenofocus>
                     <texturefocus>-</texturefocus>
                     <!-- animation is used for zoomed map -->
-                    <animation effect="zoom" reversible="true" center="602,285" start="100" end="195" time="100" condition="!IsEmpty(Container(50).Property(Toggle))">Conditional</animation>
+                    <animation effect="zoom" reversible="true" center="532,135" start="100" end="195" time="100" condition="!IsEmpty(Container(50).Property(Toggle))">Conditional</animation>
                 </control>
             </control>
 
@@ -459,6 +495,7 @@
                         <height>300</height>
                         <texture>twc-contentpanel.png</texture>
                         <aspectratio>stretch</aspectratio>
+                        <visible>IsEmpty(Skin.String(twc-fanart-path))</visible>
                     </control>
                     <!-- First 12 hour forecast -->
                     <control type="group">
@@ -888,14 +925,14 @@
                 <control type="label">
                     <description>info label</description>
                     <posx>0</posx>
-                    <posy>260</posy>
+                    <posy>255</posy>
                     <width>500</width>
                     <height>100</height>
                     <font>font10</font>
                     <textcolor>FFFFFFFF</textcolor>
                     <align>left</align>
                     <aligny>top</aligny>
-                    <label>&#10;$LOCALIZE[SCRIPT53]&#10;$LOCALIZE[SCRIPT52]</label>
+                    <label>&#10;&#10;$LOCALIZE[SCRIPT53]&#10;$LOCALIZE[SCRIPT52]</label>
                 </control>
             </control>
             <!-- Hour by hour forecast section ** Required ** -->
@@ -945,7 +982,7 @@
                 </control>
                 <!-- Feels like heading -->
                 <control type="label">
-                    <posx>224</posx>
+                    <posx>244</posx>
                     <posy>-8</posy>
                     <width>50</width>
                     <height>20</height>
@@ -958,7 +995,7 @@
                 </control>
                 <!-- Chance of precipitation heading -->
                 <control type="label">
-                    <posx>281</posx>
+                    <posx>321</posx>
                     <posy>-8</posy>
                     <width>50</width>
                     <height>20</height>
@@ -970,7 +1007,7 @@
                     <info>Container(50).Property(HBHHead4)</info>
                 </control>
                 <!-- Dew point heading -->
-                <control type="label">
+                <!--control type="label">
                     <posx>338</posx>
                     <posy>-8</posy>
                     <width>50</width>
@@ -981,19 +1018,19 @@
                     <aligny>center</aligny>
                     <wrapmultiline>true</wrapmultiline>
                     <info>Container(50).Property(HBHHead5)</info>
-                </control>
+                </control-->
                 <!-- Humidity heading -->
                 <control type="label">
-                    <posx>394</posx>
+                    <posx>390</posx>
                     <posy>-8</posy>
-                    <width>50</width>
+                    <width>60</width>
                     <height>20</height>
                     <font>font10</font>
                     <textcolor>DDFFFFFF</textcolor>
                     <align>center</align>
                     <aligny>center</aligny>
                     <wrapmultiline>true</wrapmultiline>
-                    <info>Container(50).Property(HBHHead6)</info>
+                    <info>Container(50).Property(HBHHead5)</info>
                 </control>
                 <!-- Wind heading -->
                 <control type="label">
@@ -1005,7 +1042,7 @@
                     <textcolor>DDFFFFFF</textcolor>
                     <align>center</align>
                     <aligny>center</aligny>
-                    <info>Container(50).Property(HBHHead7)</info>
+                    <info>Container(50).Property(HBHHead6)</info>
                 </control>
                 <!-- Forecast list ** required ** -->
                 <control type="list" id="600">
@@ -1068,7 +1105,7 @@
                             <label>$INFO[ListItem.Property(brief)]&#10;[B]$INFO[ListItem.Property(temp)][/B]</label>
                         </control>
                         <control type="label">
-                            <posx>250</posx>
+                            <posx>270</posx>
                             <posy>0</posy>
                             <width>40</width>
                             <height>56</height>
@@ -1080,7 +1117,7 @@
                             <info>ListItem.Property(feels)</info>
                         </control>
                         <control type="label">
-                            <posx>306</posx>
+                            <posx>346</posx>
                             <posy>0</posy>
                             <width>40</width>
                             <height>56</height>
@@ -1091,7 +1128,7 @@
                             <aligny>center</aligny>
                             <info>ListItem.Property(precip)</info>
                         </control>
-                        <control type="label">
+                        <!--control type="label">
                             <posx>363</posx>
                             <posy>0</posy>
                             <width>40</width>
@@ -1102,7 +1139,7 @@
                             <align>center</align>
                             <aligny>center</aligny>
                             <info>ListItem.Property(dew)</info>
-                        </control>
+                        </control-->
                         <control type="label">
                             <posx>420</posx>
                             <posy>0</posy>
@@ -1186,7 +1223,7 @@
                             <label>$INFO[ListItem.Property(brief)]&#10;[B]$INFO[ListItem.Property(temp)][/B]</label>
                         </control>
                         <control type="label">
-                            <posx>250</posx>
+                            <posx>270</posx>
                             <posy>0</posy>
                             <width>40</width>
                             <height>56</height>
@@ -1198,7 +1235,7 @@
                             <info>ListItem.Property(feels)</info>
                         </control>
                         <control type="label">
-                            <posx>306</posx>
+                            <posx>346</posx>
                             <posy>0</posy>
                             <width>40</width>
                             <height>56</height>
@@ -1209,7 +1246,7 @@
                             <aligny>center</aligny>
                             <info>ListItem.Property(precip)</info>
                         </control>
-                        <control type="label">
+                        <!--control type="label">
                             <posx>363</posx>
                             <posy>0</posy>
                             <width>40</width>
@@ -1220,7 +1257,7 @@
                             <align>center</align>
                             <aligny>center</aligny>
                             <info>ListItem.Property(dew)</info>
-                        </control>
+                        </control-->
                         <control type="label">
                             <posx>420</posx>
                             <posy>0</posy>
@@ -1291,14 +1328,14 @@
                 <control type="label">
                     <description>info label</description>
                     <posx>0</posx>
-                    <posy>260</posy>
+                    <posy>255</posy>
                     <width>500</width>
                     <height>100</height>
                     <font>font10</font>
                     <textcolor>FFFFFFFF</textcolor>
                     <align>left</align>
                     <aligny>top</aligny>
-                    <label>&#10;$LOCALIZE[SCRIPT54]&#10;$LOCALIZE[SCRIPT52]</label>
+                    <label>&#10;&#10;$LOCALIZE[SCRIPT54]&#10;$LOCALIZE[SCRIPT52]</label>
                 </control>
             </control>
 
@@ -1387,6 +1424,7 @@
                         <height>300</height>
                         <texture>twc-contentpanel.png</texture>
                         <aspectratio>stretch</aspectratio>
+                        <visible>IsEmpty(Skin.String(twc-fanart-path))</visible>
                     </control>
                     <!-- Friday forecast -->
                     <control type="group">
@@ -2350,14 +2388,14 @@
                 <control type="label">
                     <description>info label</description>
                     <posx>0</posx>
-                    <posy>260</posy>
+                    <posy>255</posy>
                     <width>500</width>
                     <height>100</height>
                     <font>font10</font>
                     <textcolor>FFFFFFFF</textcolor>
                     <align>left</align>
                     <aligny>top</aligny>
-                    <label>&#10;$LOCALIZE[SCRIPT55]&#10;$LOCALIZE[SCRIPT52]</label>
+                    <label>&#10;&#10;$LOCALIZE[SCRIPT55]&#10;$LOCALIZE[SCRIPT52]</label>
                 </control>
             </control>
 
@@ -2672,14 +2710,14 @@
                 <control type="label">
                     <description>info label</description>
                     <posx>0</posx>
-                    <posy>260</posy>
+                    <posy>255</posy>
                     <width>500</width>
                     <height>100</height>
                     <font>font10</font>
                     <textcolor>FFFFFFFF</textcolor>
                     <align>left</align>
                     <aligny>top</aligny>
-                    <label>&#10;$LOCALIZE[SCRIPT56]&#10;$LOCALIZE[SCRIPT52]</label>
+                    <label>&#10;&#10;$LOCALIZE[SCRIPT56]&#10;$LOCALIZE[SCRIPT52]</label>
                 </control>
             </control>
             <!-- Settings section ** Required ** -->
@@ -2688,66 +2726,200 @@
                 <posy>150</posy>
                 <visible>!IsEmpty(Container(50).Property(view-Settings))</visible>
                 <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
+                <!-- Settings 1 -->
+                <control type="radiobutton" id="400">
+                    <description>enable animations</description>
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>590</width>
+                    <height>30</height>
+                    <font>font13</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>SCRIPT400</label>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <selected>!Skin.HasSetting(twc-animated)</selected>
+                    <textoffsetx>7</textoffsetx>
+                    <textureradiofocus>twc-radiobutton-focus.png</textureradiofocus>
+                    <textureradionofocus>twc-radiobutton-nofocus.png</textureradionofocus>
+                    <texturefocus border="3">twc-input-focus.png</texturefocus>
+                    <texturenofocus>-</texturenofocus>
+                    <onup>2000</onup>
+                    <ondown>401</ondown>
+                </control>
+                <!-- Settings 2 -->
+                <control type="radiobutton" id="401">
+                    <description>enable animations</description>
+                    <posx>0</posx>
+                    <posy>40</posy>
+                    <width>590</width>
+                    <height>30</height>
+                    <font>font13</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>SCRIPT401</label>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <selected>Skin.HasSetting(twc-metric)</selected>
+                    <textoffsetx>7</textoffsetx>
+                    <textureradiofocus>twc-radiobutton-focus.png</textureradiofocus>
+                    <textureradionofocus>twc-radiobutton-nofocus.png</textureradionofocus>
+                    <texturefocus border="3">twc-input-focus.png</texturefocus>
+                    <texturenofocus>-</texturenofocus>
+                    <onup>400</onup>
+                    <ondown>402</ondown>
+                </control>
+                <!-- Settings 3 -->
+                <control type="button" id="402">
+                    <description>fanart path</description>
+                    <posx>0</posx>
+                    <posy>80</posy>
+                    <width>590</width>
+                    <height>30</height>
+                    <font>font13</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>SCRIPT402</label>
+                    <label2>$INFO[Skin.String(twc-fanart-path)]</label2>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <textoffsetx>7</textoffsetx>
+                    <texturefocus border="3">twc-input-focus.png</texturefocus>
+                    <texturenofocus>-</texturenofocus>
+                    <onup>401</onup>
+                    <ondown>403</ondown>
+                </control>
+                <!-- Settings 4 -->
+                <control type="button" id="403">
+                    <description>fanart fade level</description>
+                    <posx>0</posx>
+                    <posy>110</posy>
+                    <width>590</width>
+                    <height>30</height>
+                    <font>font13</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>SCRIPT403</label>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <textoffsetx>17</textoffsetx>
+                    <texturefocus border="3">twc-input-focus.png</texturefocus>
+                    <texturenofocus>-</texturenofocus>
+                    <onup>402</onup>
+                    <ondown>404</ondown>
+                </control>
                 <control type="group">
-                    <!-- Settings 1 -->
-                    <control type="radiobutton" id="400">
-                        <description>enable animations</description>
+                    <posx>413</posx>
+                    <posy>117</posy>
+                    <!-- Settings 4a -->
+                    <control type="image">
+                        <description>fanart diffuse level</description>
                         <posx>0</posx>
                         <posy>0</posy>
-                        <width>590</width>
-                        <height>30</height>
-                        <font>font13</font>
-                        <textcolor>FFFFFFFF</textcolor>
-                        <label>SCRIPT400</label>
-                        <align>left</align>
-                        <aligny>center</aligny>
-                        <selected>!Skin.HasSetting(twc-animated)</selected>
-                        <textoffsetx>7</textoffsetx>
-                        <textureradiofocus>twc-radiobutton-focus.png</textureradiofocus>
-                        <textureradionofocus>twc-radiobutton-nofocus.png</textureradionofocus>
-                        <texturefocus border="3">twc-input-focus.png</texturefocus>
-                        <texturenofocus>-</texturenofocus>
-                        <onup>2000</onup>
-                        <ondown>401</ondown>
+                        <width>167</width>
+                        <height>17</height>
+                        <texture>twc-osd_slider_bg.png</texture>
                     </control>
-                    <!-- Settings 2 -->
-                    <control type="radiobutton" id="401">
-                        <description>enable animations</description>
+                    <!-- Settings 4b -->
+                    <control type="image">
+                        <description>fanart diffuse level focused</description>
                         <posx>0</posx>
-                        <posy>40</posy>
-                        <width>590</width>
-                        <height>30</height>
-                        <font>font13</font>
-                        <textcolor>FFFFFFFF</textcolor>
-                        <label>SCRIPT401</label>
-                        <align>left</align>
-                        <aligny>center</aligny>
-                        <selected>Skin.HasSetting(twc-metric)</selected>
-                        <textoffsetx>7</textoffsetx>
-                        <textureradiofocus>twc-radiobutton-focus.png</textureradiofocus>
-                        <textureradionofocus>twc-radiobutton-nofocus.png</textureradionofocus>
-                        <texturefocus border="3">twc-input-focus.png</texturefocus>
-                        <texturenofocus>-</texturenofocus>
-                        <onup>400</onup>
-                        <ondown>400</ondown>
+                        <posy>-3</posy>
+                        <width>12</width>
+                        <height>25</height>
+                        <texture>twc-osd_slider_nibFO.png</texture>
+                        <visible>Control.HasFocus(403)</visible>
+                        <animation effect="slide" start="0,0" end="27,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel1)">Conditional</animation>
+                        <animation effect="slide" start="0,0" end="54,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel2)">Conditional</animation>
+                        <animation effect="slide" start="0,0" end="81,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel3)">Conditional</animation>
+                        <animation effect="slide" start="0,0" end="108,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel4)">Conditional</animation>
+                        <animation effect="slide" start="0,0" end="135,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel5)">Conditional</animation>
+                        <animation effect="slide" start="0,0" end="162,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel6)">Conditional</animation>
+                    </control>
+                    <!-- Settings 4b -->
+                    <control type="image">
+                        <description>fanart diffuse level not focused</description>
+                        <posx>0</posx>
+                        <posy>-3</posy>
+                        <width>12</width>
+                        <height>25</height>
+                        <texture>twc-osd_slider_nibNF.png</texture>
+                        <visible>!Control.HasFocus(403)</visible>
+                        <animation effect="slide" start="0,0" end="27,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel1)">Conditional</animation>
+                        <animation effect="slide" start="0,0" end="54,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel2)">Conditional</animation>
+                        <animation effect="slide" start="0,0" end="81,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel3)">Conditional</animation>
+                        <animation effect="slide" start="0,0" end="108,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel4)">Conditional</animation>
+                        <animation effect="slide" start="0,0" end="135,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel5)">Conditional</animation>
+                        <animation effect="slide" start="0,0" end="162,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel6)">Conditional</animation>
                     </control>
                 </control>
-                <!-- User instruction label -->
-                <control type="label">
-                    <description>info label</description>
+                <!-- Settings 5 -->
+                <control type="radiobutton" id="404">
+                    <description>enable animations</description>
                     <posx>0</posx>
-                    <posy>260</posy>
-                    <width>500</width>
+                    <posy>140</posy>
+                    <width>590</width>
+                    <height>30</height>
+                    <font>font13</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>SCRIPT404</label>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <selected>Skin.HasSetting(twc-fanart-type)</selected>
+                    <textoffsetx>17</textoffsetx>
+                    <textureradiofocus>twc-radiobutton-focus.png</textureradiofocus>
+                    <textureradionofocus>twc-radiobutton-nofocus.png</textureradionofocus>
+                    <texturefocus border="3">twc-input-focus.png</texturefocus>
+                    <texturenofocus>-</texturenofocus>
+                    <onup>403</onup>
+                    <ondown>400</ondown>
+                </control>
+                <!-- Seperator -->
+                <control type="image">
+                    <description>seperator</description>
+                    <posx>0</posx>
+                    <posy>180</posy>
+                    <width>590</width>
+                    <height>3</height>
+                    <texture>twc-sep.png</texture>
+                    <aspectratio>stretch</aspectratio>
+                </control>
+                <!-- info headers -->
+                <control type="label">
+                    <description>info headers</description>
+                    <posx>350</posx>
+                    <posy>255</posy>
+                    <width>250</width>
+                    <height>100</height>
+                    <font>font10</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <align>right</align>
+                    <aligny>top</aligny>
+                    <label>$LOCALIZE[SCRIPT600]:&#10;$LOCALIZE[SCRIPT601]:&#10;$LOCALIZE[SCRIPT602]:&#10;$LOCALIZE[SCRIPT603]:</label>
+                </control>
+                <!-- info values -->
+                <control type="label">
+                    <description>info headers</description>
+                    <posx>355</posx>
+                    <posy>255</posy>
+                    <width>240</width>
                     <height>100</height>
                     <font>font10</font>
                     <textcolor>FFFFFFFF</textcolor>
                     <align>left</align>
                     <aligny>top</aligny>
-                    <label>&#10;&#10;$LOCALIZE[SCRIPT52]</label>
+                    <label>$INFO[Container(50).Property(version)]&#10;$INFO[Container(50).Property(author)]&#10;$LOCALIZE[SCRIPT2]&#10;$INFO[Container(50).Property(defaultview)]</label>
                 </control>
-
-
-
+                <!-- User instruction label -->
+                <control type="label">
+                    <description>info label</description>
+                    <posx>0</posx>
+                    <posy>255</posy>
+                    <width>300</width>
+                    <height>100</height>
+                    <font>font10</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <align>left</align>
+                    <aligny>top</aligny>
+                    <label>&#10;&#10;&#10;$LOCALIZE[SCRIPT52]</label>
+                </control>
             </control>
         </control>
     </controls>
