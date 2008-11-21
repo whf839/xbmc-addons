@@ -379,6 +379,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
         self._clear_forecasts()
 
     def _clear_forecasts( self ):
+        # we reset these so old info does not show when user changes metric/english setting
         for count in range( 1, 4 ):
             self.setProperty( "36Hour%dtitle" % ( count, ), "" )
             self.setProperty( "HBHHead%d" % ( count, ), "" )
@@ -386,26 +387,36 @@ class GUI( xbmcgui.WindowXMLDialog ):
             self.setProperty( "10DayHead%d" % ( count, ), "" )
 
     def _set_fanart_path( self ):
+        # create the dialog object
         dialog = xbmcgui.Dialog()
+        # get the users input
         value = dialog.browse( 0, _( 402 ), "files", "", False, False, xbmc.getInfoLabel( "Skin.String(twc-fanart-path)" ) )
+        # set our skin string
         xbmc.executebuiltin( "Skin.SetString(twc-fanart-path,%s)" % ( value, ) )
 
     def _set_diffuse_level( self, change=0 ):
+        # oue fade levels 00FFFFFF is off
         levels = [ "00FFFFFF", "30FFFFFF", "60FFFFFF", "90FFFFFF", "BBFFFFFF", "DDFFFFFF", "FFFFFFFF" ]
+        # get previous setting
         diffusecolor = xbmc.getInfoLabel( "Skin.String(twc-fanart-diffusecolor)" )
+        # if no previous setting set 60FFFFFF as default (my preference)
         if ( diffusecolor == "" ):
             level = 2
         else:
             level = levels.index( diffusecolor )
+        # add the change value
         level += change
+        # make sure level is valid
         if ( level == len( levels ) ):
             level = 0
         elif ( level < 0 ):
             level = len( levels ) - 1
-        diffusecolor = levels[ level ]
-        xbmc.executebuiltin( "Skin.SetString(twc-fanart-diffusecolor,%s)" % ( diffusecolor, ) )
+        # set our skin setting
+        xbmc.executebuiltin( "Skin.SetString(twc-fanart-diffusecolor,%s)" % ( levels[ level ], ) )
+        # enumerate thru and set the proper diffuselevel
         for i in range( 7 ):
-            if ( diffusecolor == levels[ i ] ):
+            # if this is the level we are at, set true
+            if ( level == i ):
                 xbmc.executebuiltin( "Skin.SetBool(twc-fanart-diffuselevel%d)" % ( i, ) )
             else:
                 xbmc.executebuiltin( "Skin.Reset(twc-fanart-diffuselevel%d)" % ( i, ) )
@@ -414,8 +425,10 @@ class GUI( xbmcgui.WindowXMLDialog ):
         xbmc.executebuiltin( "Skin.ToggleSetting(twc-fanart-type)" )
 
     def exit_script( self ):
+        # cancel any timer
         if ( self.timer is not None ):
             self.timer.cancel()
+        # close dialog
         self.close()
 
     def onClick( self, controlId ):
