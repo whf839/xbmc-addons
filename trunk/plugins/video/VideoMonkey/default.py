@@ -994,7 +994,10 @@ class CCurrentList:
                                 try:
                                     info_rule = info.rule % (src)
                                 except:
-                                    info_rule = info.rule
+                                    try:
+                                        info_rule = info.rule % (smart_unicode(src))
+                                    except:
+                                        info_rule = info.rule
                                 reinfo = re.compile(info_rule, re.IGNORECASE + re.DOTALL + re.MULTILINE)
                                 infosearch = reinfo.search(data)
                                 try:
@@ -1002,25 +1005,85 @@ class CCurrentList:
                                 except:
                                     info_value = ''
                                 if info.id == 'extra':
-                                    tmp.extra = info.build % (info_value)
+                                    try:
+                                        tmp.extra = smart_unicode(info.build % (info_value))
+                                    except:
+                                        try:
+                                            tmp.extra = smart_unicode(info.build % (smart_unicode(info_value)))
+                                        except:
+                                            tmp.extra = smart_unicode(info.build)
                                 elif info.id == 'belonging':
-                                    tmp.related = info.build % (info_value)
+                                    try:
+                                        tmp.related = smart_unicode(info.build % (info_value))
+                                    except:
+                                        try:
+                                            tmp.related = smart_unicode(info.build % (smart_unicode(info_value)))
+                                        except:
+                                            tmp.related = smart_unicode(info.build)
                                 elif info.id == 'date':
-                                    tmp.date = info.build % (info_value)
+                                    try:
+                                        tmp.date = smart_unicode(info.build % (info_value))
+                                    except:
+                                        try:
+                                            tmp.date = smart_unicode(info.build % (smart_unicode(info_value)))
+                                        except:
+                                            tmp.date = smart_unicode(info.build)
                                 elif info.id == 'rating':
-                                    tmp.rating = info.build % (info_value)
+                                    try:
+                                        tmp.rating = smart_unicode(info.build % (info_value))
+                                    except:
+                                        try:
+                                            tmp.rating = smart_unicode(info.build % (smart_unicode(info_value)))
+                                        except:
+                                            tmp.rating = smart_unicode(info.build)
                                 elif info.id == 'genre':
-                                    tmp.genre = info.build % (info_value)
+                                    try:
+                                        tmp.genre = smart_unicode(info.build % (info_value))
+                                    except:
+                                        try:
+                                            tmp.genre = smart_unicode(info.build % (smart_unicode(info_value)))
+                                        except:
+                                            tmp.genre = smart_unicode(info.build)
                                 elif info.id == 'length':
-                                    tmp.length = info.build % (info_value)
+                                    try:
+                                        tmp.length = smart_unicode(info.build % (info_value))
+                                    except:
+                                        try:
+                                            tmp.length = smart_unicode(info.build % (smart_unicode(info_value)))
+                                        except:
+                                            tmp.length = smart_unicode(info.build)
                                 elif info.id == 'size':
-                                    tmp.size = info.build % (info_value)
+                                    try:
+                                        tmp.size = smart_unicode(info.build % (info_value))
+                                    except:
+                                        try:
+                                            tmp.size = smart_unicode(info.build % (smart_unicode(info_value)))
+                                        except:
+                                            tmp.size = smart_unicode(info.build)
                                 elif info.id == 'title':
-                                    tmp.title = info.build % (info_value)
+                                    try:
+                                        tmp.title = smart_unicode(info.build % (info_value))
+                                    except:
+                                        try:
+                                            tmp.title = smart_unicode(info.build % (smart_unicode(info_value)))
+                                        except:
+                                            tmp.title = smart_unicode(info.build)
                                 elif info.id == 'image':
-                                    tmp.thumb = info.build % (info_value)
+                                    try:
+                                        tmp.thumb = smart_unicode(info.build % (info_value))
+                                    except:
+                                        try:
+                                            tmp.thumb = smart_unicode(info.build % (smart_unicode(info_value)))
+                                        except:
+                                            tmp.thumb = smart_unicode(info.build)
                                 elif info.id == 'url':
-                                    tmp.url = info.build % (info_value)
+                                    try:
+                                        tmp.url = smart_unicode(info.build % (info_value))
+                                    except:
+                                        try:
+                                            tmp.url = smart_unicode(info.build % (smart_unicode(info_value)))
+                                        except:
+                                            tmp.url = smart_unicode(info.build)
                         tmp.extra = self.extraFormatter(tmp.extra, self.cfg_name)
                         tmp.related = self.belongingFormatter(tmp.related, self.cfg_name)
                         tmp.date = self.dateFormatter(tmp.date, self.cfg_name)
