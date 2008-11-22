@@ -225,9 +225,9 @@
             <!-- Section divider -->
             <control type="image">
                 <description>divider</description>
-                <posx>66</posx>
+                <posx>62</posx>
                 <posy>129</posy>
-                <width>610</width>
+                <width>614</width>
                 <height>2</height>
                 <texture>twc-tab.png</texture>
                 <aspectratio>stretch</aspectratio>
@@ -2804,6 +2804,7 @@
                     <texturenofocus>-</texturenofocus>
                     <onup>402</onup>
                     <ondown>404</ondown>
+                    <enable>!IsEmpty(Skin.String(twc-fanart-path))</enable>
                 </control>
                 <control type="group">
                     <posx>413</posx>
@@ -2852,13 +2853,14 @@
                 </control>
                 <!-- Settings 5 -->
                 <control type="radiobutton" id="404">
-                    <description>enable animations</description>
+                    <description>weather conditions for fanart</description>
                     <posx>0</posx>
                     <posy>140</posy>
                     <width>590</width>
                     <height>30</height>
                     <font>font13</font>
                     <textcolor>FFFFFFFF</textcolor>
+                    <disabledcolor>60ffffff</disabledcolor>
                     <label>SCRIPT404</label>
                     <align>left</align>
                     <aligny>center</aligny>
@@ -2868,6 +2870,7 @@
                     <textureradionofocus>twc-radiobutton-nofocus.png</textureradionofocus>
                     <texturefocus border="3">twc-input-focus.png</texturefocus>
                     <texturenofocus>-</texturenofocus>
+                    <enable>!IsEmpty(Skin.String(twc-fanart-path)) + !Skin.HasSetting(twc-fanart-diffuselevel0)</enable>
                     <onup>403</onup>
                     <ondown>400</ondown>
                 </control>
