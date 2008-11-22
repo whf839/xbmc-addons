@@ -2796,6 +2796,7 @@
                     <height>30</height>
                     <font>font13</font>
                     <textcolor>FFFFFFFF</textcolor>
+                    <disabledcolor>60ffffff</disabledcolor>
                     <label>SCRIPT403</label>
                     <align>left</align>
                     <aligny>center</aligny>
