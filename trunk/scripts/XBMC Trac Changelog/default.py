@@ -24,13 +24,10 @@ __credits__ = "Team XBMC"
 __version__ = "1.0"
 __svn_revision__ = 0
 
-resource_path = os.path.join( os.getcwd(), "resources" )
-
 
 class ChangelogParser:
     # TODO: make these settings
     BASE_URL = "http://xbmc.org/trac/timeline?changeset=on&max=100&daysback=90&format=rss"
-    ACTION_EXIT_SCRIPT = ( 9, 10, )
 
     def __init__( self, *args, **kwargs ):
         self.items = []
@@ -75,6 +72,7 @@ class ChangelogParser:
 
 if ( not DEBUG ):
     class GUI( xbmcgui.WindowXML ):
+        # action codes
         ACTION_EXIT_SCRIPT = ( 9, 10, )
 
         def __init__( self, *args, **kwargs ):
@@ -119,11 +117,9 @@ if ( not DEBUG ):
             pass
 
         def onAction( self, action ):
-            try:
-                if ( action in self.ACTION_EXIT_SCRIPT ):
-                    self.close()
-            except:
-                print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
+            if ( action in self.ACTION_EXIT_SCRIPT ):
+                self.close()
+
 
 if ( __name__ == "__main__" ):
     if ( not DEBUG ):
