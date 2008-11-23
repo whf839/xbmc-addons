@@ -82,7 +82,7 @@ class Main:
 
     def _get_repo_info( self ):
         # path to info file
-        repopath = xbmc.translatePath( os.path.join( os.getcwd().replace( ";", "" ), "resources", "repositories", xbmcplugin.getSetting( "repository" ), "repo.xml" ) )
+        repopath = os.path.join( os.getcwd().replace( ";", "" ), "resources", "repositories", xbmcplugin.getSetting( "repository" ), "repo.xml" )
         try:
             # grab a file object
             fileobject = open( repopath, "r" )
@@ -130,9 +130,9 @@ class Main:
                 # set the default icon
                 icon = "DefaultFolder.png"
                 # create our listitem, fixing title
-                listitem = xbmcgui.ListItem( urllib.unquote( item[ : -1 ] ).title(), iconImage=icon, thumbnailImage=thumbnail )
+                listitem = xbmcgui.ListItem( urllib.unquote( item[ : -1 ] ), iconImage=icon, thumbnailImage=thumbnail )
                 # set the title
-                listitem.setInfo( type="Video", infoLabels={ "Title": urllib.unquote( item[ : -1 ] ).title() } )
+                listitem.setInfo( type="Video", infoLabels={ "Title": urllib.unquote( item[ : -1 ] ) } )
                 # add the item to the media list
                 ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=url, listitem=listitem, isFolder=isFolder, totalItems=len( assets ) )
                 # if user cancels, call raise to exit loop
