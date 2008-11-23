@@ -220,6 +220,6 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
 
 if ( __name__ == "__main__" ):
-    ui = GUI( "script-%s-main.xml" % ( __script__.replace( " ", "_" ), ), os.path.join( os.getcwd().replace( ";", "" ), "resources" ), "Default", False )
+    ui = GUI( "script-%s-main.xml" % ( __script__.replace( " ", "_" ), ), os.getcwd(), "Default", False )
     ui.doModal()
     del ui
