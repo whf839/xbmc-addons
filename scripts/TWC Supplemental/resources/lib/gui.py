@@ -157,15 +157,22 @@ class GUI( xbmcgui.WindowXMLDialog ):
             default = xbmc.getInfoLabel( "Skin.String(twc-defaultmap)" )
             # fetch map list
             map_list = self.TWCClient.fetch_map_list()
-            # enumerate thru our map list and add map and title and check for default
-            for count, map in enumerate( map_list ):
-                # create our listitem, label 2 is not visible (in default skin)
-                listitem = xbmcgui.ListItem( map[ 1 ], map [ 0 ] )
-                # if we have a match, set our class variable
-                if ( map[ 1 ] == default ):
-                    self.current_map = count
-                # add map to our list
-                self.getControl( self.CONTROL_MAP_LIST ).addItem( listitem )
+            # lock the gui for faster updating
+            xbmcgui.lock()
+            try:
+                # enumerate thru our map list and add map and title and check for default
+                for count, map in enumerate( map_list ):
+                    # create our listitem, label 2 is not visible (in default skin)
+                    listitem = xbmcgui.ListItem( map[ 1 ], map [ 0 ] )
+                    # if we have a match, set our class variable
+                    if ( map[ 1 ] == default ):
+                        self.current_map = count
+                    # add map to our list
+                    self.getControl( self.CONTROL_MAP_LIST ).addItem( listitem )
+            except:
+                pass
+            # unlock the gui
+            xbmcgui.unlock()
         # fetch our map
         self._fetch_map( self.current_map )
 
@@ -206,17 +213,24 @@ class GUI( xbmcgui.WindowXMLDialog ):
             self.forecast36Hour = True
             # fetch 36 hour forecast
             forecasts = self.TWCClient.fetch_36_forecast()
-            # enumerate thru and set the info
-            for day, forecast in enumerate( forecasts ):
-                self.setProperty( "36Hour%dicon" % ( day + 1, ), forecast[ 1 ] )
-                self.setProperty( "36Hour%dbrief" % ( day + 1, ), forecast[ 2 ] )
-                self.setProperty( "36Hour%dtemptitle" % ( day + 1, ), forecast[ 3 ] )
-                self.setProperty( "36Hour%dtemp" % ( day + 1, ), forecast[ 4 ] )
-                self.setProperty( "36Hour%dpreciptitle" % ( day + 1, ), forecast[ 5 ] )
-                self.setProperty( "36Hour%dprecip" % ( day + 1, ), forecast[ 6 ] )
-                self.setProperty( "36Hour%doutlook" % ( day + 1, ), forecast[ 7 ] )
-                self.setProperty( "36Hour%ddaylight" % ( day + 1, ), forecast[ 8 ] )
-                self.setProperty( "36Hour%dtitle" % ( day + 1, ), forecast[ 0 ] )
+            # lock the gui for faster updating
+            xbmcgui.lock()
+            try:
+                # enumerate thru and set the info
+                for day, forecast in enumerate( forecasts ):
+                    self.setProperty( "36Hour%dicon" % ( day + 1, ), forecast[ 1 ] )
+                    self.setProperty( "36Hour%dbrief" % ( day + 1, ), forecast[ 2 ] )
+                    self.setProperty( "36Hour%dtemptitle" % ( day + 1, ), forecast[ 3 ] )
+                    self.setProperty( "36Hour%dtemp" % ( day + 1, ), forecast[ 4 ] )
+                    self.setProperty( "36Hour%dpreciptitle" % ( day + 1, ), forecast[ 5 ] )
+                    self.setProperty( "36Hour%dprecip" % ( day + 1, ), forecast[ 6 ] )
+                    self.setProperty( "36Hour%doutlook" % ( day + 1, ), forecast[ 7 ] )
+                    self.setProperty( "36Hour%ddaylight" % ( day + 1, ), forecast[ 8 ] )
+                    self.setProperty( "36Hour%dtitle" % ( day + 1, ), forecast[ 0 ] )
+            except:
+                pass
+            # unlock the gui
+            xbmcgui.unlock()
 
     def _fetch_hour_forecast( self ):
         # reset our view
@@ -224,23 +238,32 @@ class GUI( xbmcgui.WindowXMLDialog ):
         # only run this once
         if ( self.forecastHourByHour is None ):
             self.forecastHourByHour = True
+            # reset list
+            self.getControl( self.CONTROL_HOUR_LIST ).reset()
             # fetch hour by hour forecast
             headings, forecasts = self.TWCClient.fetch_hour_forecast()
-            # enumerate thru and set our heading properties
-            for count, heading in enumerate( headings ):
-                self.setProperty( "HBHHead%d" % ( count + 1, ), heading )
-            # enumerate thru and set the info
-            for forecast in forecasts:
-                listitem = xbmcgui.ListItem( forecast[ 0 ] )
-                listitem.setProperty( "icon", forecast[ 1 ] )
-                listitem.setProperty( "brief", forecast[ 2 ] )
-                listitem.setProperty( "temp", forecast[ 3 ] )
-                listitem.setProperty( "feels", forecast[ 4 ] )
-                listitem.setProperty( "precip", forecast[ 5 ] )
-                #listitem.setProperty( "dew", forecast[ 6 ] )
-                listitem.setProperty( "humidity", forecast[ 6 ] )
-                listitem.setProperty( "wind", forecast[ 7 ] )
-                self.getControl( self.CONTROL_HOUR_LIST ).addItem( listitem )
+            # lock the gui for faster updating
+            xbmcgui.lock()
+            try:
+                # enumerate thru and set our heading properties
+                for count, heading in enumerate( headings ):
+                    self.setProperty( "HBHHead%d" % ( count + 1, ), heading )
+                # enumerate thru and set the info
+                for forecast in forecasts:
+                    listitem = xbmcgui.ListItem( forecast[ 0 ] )
+                    listitem.setProperty( "icon", forecast[ 1 ] )
+                    listitem.setProperty( "brief", forecast[ 2 ] )
+                    listitem.setProperty( "temp", forecast[ 3 ] )
+                    listitem.setProperty( "feels", forecast[ 4 ] )
+                    listitem.setProperty( "precip", forecast[ 5 ] )
+                    #listitem.setProperty( "dew", forecast[ 6 ] )
+                    listitem.setProperty( "humidity", forecast[ 6 ] )
+                    listitem.setProperty( "wind", forecast[ 7 ] )
+                    self.getControl( self.CONTROL_HOUR_LIST ).addItem( listitem )
+            except:
+                pass
+            # unlock the gui
+            xbmcgui.unlock()
 
     def _fetch_weekend_forecast( self ):
         # reset our view
@@ -250,41 +273,48 @@ class GUI( xbmcgui.WindowXMLDialog ):
             self.forecastWeekend = True
             # fetch 36 hour forecast
             forecasts = self.TWCClient.fetch_weekend_forecast()
-            # enumerate thru and set the info
-            for day, forecast in enumerate( forecasts ):
-                self.setProperty( "Weekend%ddate" % ( day + 1, ), forecast[ 1 ] )
-                self.setProperty( "Weekend%dicon" % ( day + 1, ), forecast[ 2 ] )
-                self.setProperty( "Weekend%dbrief" % ( day + 1, ), forecast[ 3 ] )
-                self.setProperty( "Weekend%dhightitle" % ( day + 1, ), forecast[ 4 ] )
-                self.setProperty( "Weekend%dhightemp" % ( day + 1, ), forecast[ 5 ] )
-                self.setProperty( "Weekend%dlowtitle" % ( day + 1, ), forecast[ 6 ] )
-                self.setProperty( "Weekend%dlowtemp" % ( day + 1, ), forecast[ 7 ] )
-                self.setProperty( "Weekend%dpreciptitle" % ( day + 1, ), forecast[ 8 ] )
-                self.setProperty( "Weekend%dprecip" % ( day + 1, ), forecast[ 9 ] )
-                self.setProperty( "Weekend%dwindtitle" % ( day + 1, ), forecast[ 10 ] )
-                self.setProperty( "Weekend%dwind" % ( day + 1, ), forecast[ 11 ] )
-                self.setProperty( "Weekend%duvtitle" % ( day + 1, ), forecast[ 12 ] )
-                self.setProperty( "Weekend%duv" % ( day + 1, ), forecast[ 13 ] )
-                self.setProperty( "Weekend%dhumiditytitle" % ( day + 1, ), forecast[ 14 ] )
-                self.setProperty( "Weekend%dhumidity" % ( day + 1, ), forecast[ 15 ] )
-                self.setProperty( "Weekend%dsunrisetitle" % ( day + 1, ), forecast[ 16 ] )
-                self.setProperty( "Weekend%dsunrise" % ( day + 1, ), forecast[ 17 ] )
-                self.setProperty( "Weekend%dsunsettitle" % ( day + 1, ), forecast[ 18 ] )
-                self.setProperty( "Weekend%dsunset" % ( day + 1, ), forecast[ 19 ] )
-                self.setProperty( "Weekend%doutlook" % ( day + 1, ), forecast[ 20 ] )
-                self.setProperty( "Weekend%dobserved" % ( day + 1, ), forecast[ 21 ] )
-                self.setProperty( "Weekend%dobservedpreciptitle" % ( day + 1, ), forecast[ 22 ] )
-                self.setProperty( "Weekend%dobservedprecip" % ( day + 1, ), forecast[ 23 ] )
-                self.setProperty( "Weekend%dobservedavghightitle" % ( day + 1, ), forecast[ 24 ] )
-                self.setProperty( "Weekend%dobservedavghigh" % ( day + 1, ), forecast[ 25 ] )
-                self.setProperty( "Weekend%dobservedavglowtitle" % ( day + 1, ), forecast[ 26 ] )
-                self.setProperty( "Weekend%dobservedavglow" % ( day + 1, ), forecast[ 27 ] )
-                self.setProperty( "Weekend%dobservedrecordhightitle" % ( day + 1, ), forecast[ 28 ] )
-                self.setProperty( "Weekend%dobservedrecordhigh" % ( day + 1, ), forecast[ 29 ] )
-                self.setProperty( "Weekend%dobservedrecordlowtitle" % ( day + 1, ), forecast[ 30 ] )
-                self.setProperty( "Weekend%dobservedrecordlow" % ( day + 1, ), forecast[ 31 ] )
-                self.setProperty( "Weekend%dalert" % ( day + 1, ), forecast[ 32 ] )
-                self.setProperty( "Weekend%dday" % ( day + 1, ), forecast[ 0 ] )
+            # lock the gui for faster updating
+            xbmcgui.lock()
+            try:
+                # enumerate thru and set the info
+                for day, forecast in enumerate( forecasts ):
+                    self.setProperty( "Weekend%ddate" % ( day + 1, ), forecast[ 1 ] )
+                    self.setProperty( "Weekend%dicon" % ( day + 1, ), forecast[ 2 ] )
+                    self.setProperty( "Weekend%dbrief" % ( day + 1, ), forecast[ 3 ] )
+                    self.setProperty( "Weekend%dhightitle" % ( day + 1, ), forecast[ 4 ] )
+                    self.setProperty( "Weekend%dhightemp" % ( day + 1, ), forecast[ 5 ] )
+                    self.setProperty( "Weekend%dlowtitle" % ( day + 1, ), forecast[ 6 ] )
+                    self.setProperty( "Weekend%dlowtemp" % ( day + 1, ), forecast[ 7 ] )
+                    self.setProperty( "Weekend%dpreciptitle" % ( day + 1, ), forecast[ 8 ] )
+                    self.setProperty( "Weekend%dprecip" % ( day + 1, ), forecast[ 9 ] )
+                    self.setProperty( "Weekend%dwindtitle" % ( day + 1, ), forecast[ 10 ] )
+                    self.setProperty( "Weekend%dwind" % ( day + 1, ), forecast[ 11 ] )
+                    self.setProperty( "Weekend%duvtitle" % ( day + 1, ), forecast[ 12 ] )
+                    self.setProperty( "Weekend%duv" % ( day + 1, ), forecast[ 13 ] )
+                    self.setProperty( "Weekend%dhumiditytitle" % ( day + 1, ), forecast[ 14 ] )
+                    self.setProperty( "Weekend%dhumidity" % ( day + 1, ), forecast[ 15 ] )
+                    self.setProperty( "Weekend%dsunrisetitle" % ( day + 1, ), forecast[ 16 ] )
+                    self.setProperty( "Weekend%dsunrise" % ( day + 1, ), forecast[ 17 ] )
+                    self.setProperty( "Weekend%dsunsettitle" % ( day + 1, ), forecast[ 18 ] )
+                    self.setProperty( "Weekend%dsunset" % ( day + 1, ), forecast[ 19 ] )
+                    self.setProperty( "Weekend%doutlook" % ( day + 1, ), forecast[ 20 ] )
+                    self.setProperty( "Weekend%dobserved" % ( day + 1, ), forecast[ 21 ] )
+                    self.setProperty( "Weekend%dobservedpreciptitle" % ( day + 1, ), forecast[ 22 ] )
+                    self.setProperty( "Weekend%dobservedprecip" % ( day + 1, ), forecast[ 23 ] )
+                    self.setProperty( "Weekend%dobservedavghightitle" % ( day + 1, ), forecast[ 24 ] )
+                    self.setProperty( "Weekend%dobservedavghigh" % ( day + 1, ), forecast[ 25 ] )
+                    self.setProperty( "Weekend%dobservedavglowtitle" % ( day + 1, ), forecast[ 26 ] )
+                    self.setProperty( "Weekend%dobservedavglow" % ( day + 1, ), forecast[ 27 ] )
+                    self.setProperty( "Weekend%dobservedrecordhightitle" % ( day + 1, ), forecast[ 28 ] )
+                    self.setProperty( "Weekend%dobservedrecordhigh" % ( day + 1, ), forecast[ 29 ] )
+                    self.setProperty( "Weekend%dobservedrecordlowtitle" % ( day + 1, ), forecast[ 30 ] )
+                    self.setProperty( "Weekend%dobservedrecordlow" % ( day + 1, ), forecast[ 31 ] )
+                    self.setProperty( "Weekend%dalert" % ( day + 1, ), forecast[ 32 ] )
+                    self.setProperty( "Weekend%dday" % ( day + 1, ), forecast[ 0 ] )
+            except:
+                pass
+            # unlock the gui
+            xbmcgui.unlock()
 
     def _fetch_10day_forecast( self ):
         # reset our view
@@ -292,23 +322,32 @@ class GUI( xbmcgui.WindowXMLDialog ):
         # only run this once
         if ( self.forecast10Day is None ):
             self.forecast10Day = True
+            # reset list
+            self.getControl( self.CONTROL_10DAY_LIST ).reset()
             # fetch hour by hour forecast
             headings, forecasts = self.TWCClient.fetch_10day_forecast()
-            # enumerate thru and set our heading properties
-            for count, heading in enumerate( headings ):
-                self.setProperty( "10DayHead%d" % ( count + 1, ), heading.strip() )
-            # enumerate thru and set the info
-            for forecast in forecasts:
-                listitem = xbmcgui.ListItem( forecast[ 0 ] )
-                listitem.setProperty( "date", forecast[ 1 ] )
-                listitem.setProperty( "icon", forecast[ 2 ] )
-                listitem.setProperty( "brief", forecast[ 3 ].replace( " / ", "/" ).replace( " ", "\n" ).replace( "/", " /\n" ) )
-                listitem.setProperty( "high", forecast[ 4 ] )
-                listitem.setProperty( "low", forecast[ 5 ] )
-                listitem.setProperty( "precip", forecast[ 6 ] )
-                listitem.setProperty( "wind", forecast[ 7 ] )
-                listitem.setProperty( "speed", forecast[ 8 ] )
-                self.getControl( self.CONTROL_10DAY_LIST ).addItem( listitem )
+            # lock the gui for faster updating
+            xbmcgui.lock()
+            try:
+                # enumerate thru and set our heading properties
+                for count, heading in enumerate( headings ):
+                    self.setProperty( "10DayHead%d" % ( count + 1, ), heading.strip() )
+                # enumerate thru and set the info
+                for forecast in forecasts:
+                    listitem = xbmcgui.ListItem( forecast[ 0 ] )
+                    listitem.setProperty( "date", forecast[ 1 ] )
+                    listitem.setProperty( "icon", forecast[ 2 ] )
+                    listitem.setProperty( "brief", forecast[ 3 ].replace( " / ", "/" ).replace( " ", "\n" ).replace( "/", " /\n" ) )
+                    listitem.setProperty( "high", forecast[ 4 ] )
+                    listitem.setProperty( "low", forecast[ 5 ] )
+                    listitem.setProperty( "precip", forecast[ 6 ] )
+                    listitem.setProperty( "wind", forecast[ 7 ] )
+                    listitem.setProperty( "speed", forecast[ 8 ] )
+                    self.getControl( self.CONTROL_10DAY_LIST ).addItem( listitem )
+            except:
+                pass
+            # unlock the gui
+            xbmcgui.unlock()
 
     def _toggle_map( self ):
         # toggle map
@@ -380,11 +419,10 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
     def _clear_forecasts( self ):
         # we reset these so old info does not show when user changes metric/english setting
-        for count in range( 1, 4 ):
-            self.setProperty( "36Hour%dtitle" % ( count, ), "" )
-            self.setProperty( "HBHHead%d" % ( count, ), "" )
-            self.setProperty( "Weekend%dday" % ( count, ), "" )
-            self.setProperty( "10DayHead%d" % ( count, ), "" )
+        self.setProperty( "36Hour1title", "" )
+        self.setProperty( "HBHHead1", "" )
+        self.setProperty( "Weekend1day", "" )
+        self.setProperty( "10DayHead1", "" )
 
     def _set_fanart_path( self ):
         # create the dialog object

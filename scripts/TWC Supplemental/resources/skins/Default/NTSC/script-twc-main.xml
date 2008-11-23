@@ -483,7 +483,7 @@
                 </control>
                 <!-- Forecast main group -->
                 <control type="group">
-                    <visible>!IsEmpty(Container(50).Property(36Hour3title))</visible>
+                    <visible>!IsEmpty(Container(50).Property(36Hour1title))</visible>
                     <posx>7</posx>
                     <posy>3</posy>
                     <!-- Section background -->
@@ -956,373 +956,376 @@
                     <visible>IsEmpty(Container(50).Property(HBHHead1))</visible>
                     <animation effect="zoom" reversible="false" center="auto" start="100" end="200" time="0">WindowOpen</animation>
                 </control>
-                <!-- Time heading -->
-                <control type="label">
-                    <posx>10</posx>
-                    <posy>-8</posy>
-                    <width>45</width>
-                    <height>20</height>
-                    <font>font10</font>
-                    <textcolor>DDFFFFFF</textcolor>
-                    <align>center</align>
-                    <aligny>center</aligny>
-                    <info>Container(50).Property(HBHHead1)</info>
-                </control>
-                <!-- Condition heading -->
-                <control type="label">
-                    <posx>65</posx>
-                    <posy>-8</posy>
-                    <width>150</width>
-                    <height>20</height>
-                    <font>font10</font>
-                    <textcolor>DDFFFFFF</textcolor>
-                    <align>center</align>
-                    <aligny>center</aligny>
-                    <info>Container(50).Property(HBHHead2)</info>
-                </control>
-                <!-- Feels like heading -->
-                <control type="label">
-                    <posx>244</posx>
-                    <posy>-8</posy>
-                    <width>50</width>
-                    <height>20</height>
-                    <font>font10</font>
-                    <textcolor>DDFFFFFF</textcolor>
-                    <align>center</align>
-                    <aligny>center</aligny>
-                    <wrapmultiline>true</wrapmultiline>
-                    <info>Container(50).Property(HBHHead3)</info>
-                </control>
-                <!-- Chance of precipitation heading -->
-                <control type="label">
-                    <posx>321</posx>
-                    <posy>-8</posy>
-                    <width>50</width>
-                    <height>20</height>
-                    <font>font10</font>
-                    <textcolor>DDFFFFFF</textcolor>
-                    <align>center</align>
-                    <aligny>center</aligny>
-                    <wrapmultiline>true</wrapmultiline>
-                    <info>Container(50).Property(HBHHead4)</info>
-                </control>
-                <!-- Dew point heading -->
-                <!--control type="label">
-                    <posx>338</posx>
-                    <posy>-8</posy>
-                    <width>50</width>
-                    <height>20</height>
-                    <font>font10</font>
-                    <textcolor>DDFFFFFF</textcolor>
-                    <align>center</align>
-                    <aligny>center</aligny>
-                    <wrapmultiline>true</wrapmultiline>
-                    <info>Container(50).Property(HBHHead5)</info>
-                </control-->
-                <!-- Humidity heading -->
-                <control type="label">
-                    <posx>390</posx>
-                    <posy>-8</posy>
-                    <width>60</width>
-                    <height>20</height>
-                    <font>font10</font>
-                    <textcolor>DDFFFFFF</textcolor>
-                    <align>center</align>
-                    <aligny>center</aligny>
-                    <wrapmultiline>true</wrapmultiline>
-                    <info>Container(50).Property(HBHHead5)</info>
-                </control>
-                <!-- Wind heading -->
-                <control type="label">
-                    <posx>450</posx>
-                    <posy>-5</posy>
-                    <width>120</width>
-                    <height>20</height>
-                    <font>font10</font>
-                    <textcolor>DDFFFFFF</textcolor>
-                    <align>center</align>
-                    <aligny>center</aligny>
-                    <info>Container(50).Property(HBHHead6)</info>
-                </control>
-                <!-- Forecast list ** required ** -->
-                <control type="list" id="600">
-                    <posx>0</posx>
-                    <posy>20</posy>
-                    <width>575</width>
-                    <height>248</height>
-                    <onleft>6000</onleft>
-                    <onright>6000</onright>
-                    <onup>2000</onup>
-                    <ondown>600</ondown>
-                    <viewtype label="535">list</viewtype>
-                    <pagecontrol>6000</pagecontrol>
-                    <scrolltime>200</scrolltime>
-                    <itemlayout height="62">
-                        <control type="image">
-                            <posx>0</posx>
-                            <posy>0</posy>
-                            <width>575</width>
-                            <height>60</height>
-                            <texture border="3">twc-input-nofocus.png</texture>
-                        </control>
-                        <control type="label">
-                            <posx>33</posx>
-                            <posy>0</posy>
-                            <width>50</width>
-                            <height>56</height>
-                            <font>font10</font>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>center</align>
-                            <aligny>center</aligny>
-                            <info>ListItem.Label</info>
-                        </control>
-                        <control type="image">
-                            <posx>65</posx>
-                            <posy>4</posy>
-                            <width>150</width>
-                            <height>56</height>
-                            <texture>twc-contentpanel.png</texture>
-                        </control>
-                        <control type="image">
-                            <posx>70</posx>
-                            <posy>7</posy>
-                            <width>48</width>
-                            <height>48</height>
-                            <info>ListItem.Property(icon)</info>
-                        </control>
-                        <control type="label">
-                            <posx>165</posx>
-                            <posy>0</posy>
-                            <width>80</width>
-                            <height>56</height>
-                            <font>font10</font>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>center</align>
-                            <aligny>center</aligny>
-                            <wrapmultiline>true</wrapmultiline>
-                            <label>$INFO[ListItem.Property(brief)]&#10;[B]$INFO[ListItem.Property(temp)][/B]</label>
-                        </control>
-                        <control type="label">
-                            <posx>270</posx>
-                            <posy>0</posy>
-                            <width>40</width>
-                            <height>56</height>
-                            <font>font10</font>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>center</align>
-                            <aligny>center</aligny>
-                            <info>ListItem.Property(feels)</info>
-                        </control>
-                        <control type="label">
-                            <posx>346</posx>
-                            <posy>0</posy>
-                            <width>40</width>
-                            <height>56</height>
-                            <font>font10</font>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>center</align>
-                            <aligny>center</aligny>
-                            <info>ListItem.Property(precip)</info>
-                        </control>
-                        <!--control type="label">
-                            <posx>363</posx>
-                            <posy>0</posy>
-                            <width>40</width>
-                            <height>56</height>
-                            <font>font10</font>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>center</align>
-                            <aligny>center</aligny>
-                            <info>ListItem.Property(dew)</info>
-                        </control-->
-                        <control type="label">
-                            <posx>420</posx>
-                            <posy>0</posy>
-                            <width>40</width>
-                            <height>56</height>
-                            <font>font10</font>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>center</align>
-                            <aligny>center</aligny>
-                            <info>ListItem.Property(humidity)</info>
-                        </control>
-                        <control type="label">
-                            <posx>510</posx>
-                            <posy>0</posy>
-                            <width>110</width>
-                            <height>56</height>
-                            <font>font10</font>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>center</align>
-                            <aligny>center</aligny>
-                            <wrapmultiline>true</wrapmultiline>
-                            <info>ListItem.Property(wind)</info>
-                        </control>
-                    </itemlayout>
-                    <focusedlayout height="62">
-                        <control type="image">
-                            <posx>0</posx>
-                            <posy>0</posy>
-                            <width>575</width>
-                            <height>60</height>
-                            <texture border="3">twc-input-focus.png</texture>
-                            <visible>Control.HasFocus(600)</visible>
-                        </control>
-                        <control type="image">
-                            <posx>0</posx>
-                            <posy>0</posy>
-                            <width>575</width>
-                            <height>60</height>
-                            <texture border="3">twc-input-nofocus.png</texture>
-                            <visible>!Control.HasFocus(600)</visible>
-                        </control>
-                        <control type="label">
-                            <posx>33</posx>
-                            <posy>0</posy>
-                            <width>50</width>
-                            <height>56</height>
-                            <font>font10</font>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>center</align>
-                            <aligny>center</aligny>
-                            <info>ListItem.Label</info>
-                        </control>
-                        <control type="image">
-                            <posx>65</posx>
-                            <posy>4</posy>
-                            <width>150</width>
-                            <height>56</height>
-                            <texture>twc-contentpanel.png</texture>
-                        </control>
-                        <control type="image">
-                            <posx>70</posx>
-                            <posy>7</posy>
-                            <width>48</width>
-                            <height>48</height>
-                            <info>ListItem.Property(icon)</info>
-                        </control>
-                        <control type="label">
-                            <posx>165</posx>
-                            <posy>0</posy>
-                            <width>80</width>
-                            <height>56</height>
-                            <font>font10</font>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>center</align>
-                            <aligny>center</aligny>
-                            <wrapmultiline>true</wrapmultiline>
-                            <label>$INFO[ListItem.Property(brief)]&#10;[B]$INFO[ListItem.Property(temp)][/B]</label>
-                        </control>
-                        <control type="label">
-                            <posx>270</posx>
-                            <posy>0</posy>
-                            <width>40</width>
-                            <height>56</height>
-                            <font>font10</font>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>center</align>
-                            <aligny>center</aligny>
-                            <info>ListItem.Property(feels)</info>
-                        </control>
-                        <control type="label">
-                            <posx>346</posx>
-                            <posy>0</posy>
-                            <width>40</width>
-                            <height>56</height>
-                            <font>font10</font>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>center</align>
-                            <aligny>center</aligny>
-                            <info>ListItem.Property(precip)</info>
-                        </control>
-                        <!--control type="label">
-                            <posx>363</posx>
-                            <posy>0</posy>
-                            <width>40</width>
-                            <height>56</height>
-                            <font>font10</font>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>center</align>
-                            <aligny>center</aligny>
-                            <info>ListItem.Property(dew)</info>
-                        </control-->
-                        <control type="label">
-                            <posx>420</posx>
-                            <posy>0</posy>
-                            <width>40</width>
-                            <height>56</height>
-                            <font>font10</font>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>center</align>
-                            <aligny>center</aligny>
-                            <info>ListItem.Property(humidity)</info>
-                        </control>
-                        <control type="label">
-                            <posx>510</posx>
-                            <posy>0</posy>
-                            <width>110</width>
-                            <height>56</height>
-                            <font>font10</font>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>center</align>
-                            <aligny>center</aligny>
-                            <wrapmultiline>true</wrapmultiline>
-                            <info>ListItem.Property(wind)</info>
-                        </control>
-                    </focusedlayout>
-                </control>
-                <!-- Scrollbar for forecast list -->
-                <control type="button">
-                    <description>Scrollbar Up Arrow</description>
-                    <posx>580</posx>
-                    <posy>20</posy>
-                    <width>16</width>
-                    <height>16</height>
-                    <texturenofocus>twc-scrollbar_arrow_up.png</texturenofocus>
-                    <texturefocus>twc-scrollbar_arrow_up_focus.png</texturefocus>
-                    <onclick>PageUp(6000)</onclick>
-                    <visible>Control.IsVisible(6000)</visible>
-                </control>
-                <control type="scrollbar" id="6000">
-                    <description>Scroll Bar</description>
-                    <posx>580</posx>
-                    <posy>36</posy>
-                    <width>16</width>
-                    <height>214</height>
-                    <texturesliderbackground border="4">twc-scrollbar_background.png</texturesliderbackground>
-                    <texturesliderbar border="3">twc-scrollbar_bar.png</texturesliderbar>
-                    <texturesliderbarfocus border="3">twc-scrollbar_bar_focus.png</texturesliderbarfocus>
-                    <textureslidernib>-</textureslidernib>
-                    <textureslidernibfocus>-</textureslidernibfocus>
-                    <onleft>700</onleft>
-                    <onright>700</onright>
-                    <showonepage>false</showonepage>
-                    <orientation>vertical</orientation>
-                </control>
-                <control type="button">
-                    <description>Scrollbar Down Arrow</description>
-                    <posx>580</posx>
-                    <posy>250</posy>
-                    <width>16</width>
-                    <height>16</height>
-                    <texturenofocus>twc-scrollbar_arrow_down.png</texturenofocus>
-                    <texturefocus>twc-scrollbar_arrow_down_focus.png</texturefocus>
-                    <onclick>PageDown(6000)</onclick>
-                    <visible>Control.IsVisible(6000)</visible>
+                <control type="group">
+                    <visible>!IsEmpty(Container(50).Property(HBHHead1))</visible>
+                    <!-- Time heading -->
+                    <control type="label">
+                        <posx>10</posx>
+                        <posy>-8</posy>
+                        <width>45</width>
+                        <height>20</height>
+                        <font>font10</font>
+                        <textcolor>DDFFFFFF</textcolor>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <info>Container(50).Property(HBHHead1)</info>
+                    </control>
+                    <!-- Condition heading -->
+                    <control type="label">
+                        <posx>65</posx>
+                        <posy>-8</posy>
+                        <width>150</width>
+                        <height>20</height>
+                        <font>font10</font>
+                        <textcolor>DDFFFFFF</textcolor>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <info>Container(50).Property(HBHHead2)</info>
+                    </control>
+                    <!-- Feels like heading -->
+                    <control type="label">
+                        <posx>244</posx>
+                        <posy>-8</posy>
+                        <width>50</width>
+                        <height>20</height>
+                        <font>font10</font>
+                        <textcolor>DDFFFFFF</textcolor>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <wrapmultiline>true</wrapmultiline>
+                        <info>Container(50).Property(HBHHead3)</info>
+                    </control>
+                    <!-- Chance of precipitation heading -->
+                    <control type="label">
+                        <posx>321</posx>
+                        <posy>-8</posy>
+                        <width>50</width>
+                        <height>20</height>
+                        <font>font10</font>
+                        <textcolor>DDFFFFFF</textcolor>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <wrapmultiline>true</wrapmultiline>
+                        <info>Container(50).Property(HBHHead4)</info>
+                    </control>
+                    <!-- Dew point heading -->
+                    <!--control type="label">
+                        <posx>338</posx>
+                        <posy>-8</posy>
+                        <width>50</width>
+                        <height>20</height>
+                        <font>font10</font>
+                        <textcolor>DDFFFFFF</textcolor>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <wrapmultiline>true</wrapmultiline>
+                        <info>Container(50).Property(HBHHead5)</info>
+                    </control-->
+                    <!-- Humidity heading -->
+                    <control type="label">
+                        <posx>390</posx>
+                        <posy>-8</posy>
+                        <width>60</width>
+                        <height>20</height>
+                        <font>font10</font>
+                        <textcolor>DDFFFFFF</textcolor>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <wrapmultiline>true</wrapmultiline>
+                        <info>Container(50).Property(HBHHead5)</info>
+                    </control>
+                    <!-- Wind heading -->
+                    <control type="label">
+                        <posx>450</posx>
+                        <posy>-5</posy>
+                        <width>120</width>
+                        <height>20</height>
+                        <font>font10</font>
+                        <textcolor>DDFFFFFF</textcolor>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <info>Container(50).Property(HBHHead6)</info>
+                    </control>
+                    <!-- Forecast list ** required ** -->
+                    <control type="list" id="600">
+                        <posx>0</posx>
+                        <posy>20</posy>
+                        <width>575</width>
+                        <height>248</height>
+                        <onleft>6000</onleft>
+                        <onright>6000</onright>
+                        <onup>2000</onup>
+                        <ondown>600</ondown>
+                        <viewtype label="535">list</viewtype>
+                        <pagecontrol>6000</pagecontrol>
+                        <scrolltime>200</scrolltime>
+                        <itemlayout height="62">
+                            <control type="image">
+                                <posx>0</posx>
+                                <posy>0</posy>
+                                <width>575</width>
+                                <height>60</height>
+                                <texture border="3">twc-input-nofocus.png</texture>
+                            </control>
+                            <control type="label">
+                                <posx>33</posx>
+                                <posy>0</posy>
+                                <width>50</width>
+                                <height>56</height>
+                                <font>font10</font>
+                                <textcolor>DDFFFFFF</textcolor>
+                                <selectedcolor>FFe2ff43</selectedcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <info>ListItem.Label</info>
+                            </control>
+                            <control type="image">
+                                <posx>65</posx>
+                                <posy>4</posy>
+                                <width>150</width>
+                                <height>56</height>
+                                <texture>twc-contentpanel.png</texture>
+                            </control>
+                            <control type="image">
+                                <posx>70</posx>
+                                <posy>7</posy>
+                                <width>48</width>
+                                <height>48</height>
+                                <info>ListItem.Property(icon)</info>
+                            </control>
+                            <control type="label">
+                                <posx>165</posx>
+                                <posy>0</posy>
+                                <width>80</width>
+                                <height>56</height>
+                                <font>font10</font>
+                                <textcolor>DDFFFFFF</textcolor>
+                                <selectedcolor>FFe2ff43</selectedcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <wrapmultiline>true</wrapmultiline>
+                                <label>$INFO[ListItem.Property(brief)]&#10;[B]$INFO[ListItem.Property(temp)][/B]</label>
+                            </control>
+                            <control type="label">
+                                <posx>270</posx>
+                                <posy>0</posy>
+                                <width>40</width>
+                                <height>56</height>
+                                <font>font10</font>
+                                <textcolor>DDFFFFFF</textcolor>
+                                <selectedcolor>FFe2ff43</selectedcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <info>ListItem.Property(feels)</info>
+                            </control>
+                            <control type="label">
+                                <posx>346</posx>
+                                <posy>0</posy>
+                                <width>40</width>
+                                <height>56</height>
+                                <font>font10</font>
+                                <textcolor>DDFFFFFF</textcolor>
+                                <selectedcolor>FFe2ff43</selectedcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <info>ListItem.Property(precip)</info>
+                            </control>
+                            <!--control type="label">
+                                <posx>363</posx>
+                                <posy>0</posy>
+                                <width>40</width>
+                                <height>56</height>
+                                <font>font10</font>
+                                <textcolor>DDFFFFFF</textcolor>
+                                <selectedcolor>FFe2ff43</selectedcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <info>ListItem.Property(dew)</info>
+                            </control-->
+                            <control type="label">
+                                <posx>420</posx>
+                                <posy>0</posy>
+                                <width>40</width>
+                                <height>56</height>
+                                <font>font10</font>
+                                <textcolor>DDFFFFFF</textcolor>
+                                <selectedcolor>FFe2ff43</selectedcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <info>ListItem.Property(humidity)</info>
+                            </control>
+                            <control type="label">
+                                <posx>510</posx>
+                                <posy>0</posy>
+                                <width>110</width>
+                                <height>56</height>
+                                <font>font10</font>
+                                <textcolor>DDFFFFFF</textcolor>
+                                <selectedcolor>FFe2ff43</selectedcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <wrapmultiline>true</wrapmultiline>
+                                <info>ListItem.Property(wind)</info>
+                            </control>
+                        </itemlayout>
+                        <focusedlayout height="62">
+                            <control type="image">
+                                <posx>0</posx>
+                                <posy>0</posy>
+                                <width>575</width>
+                                <height>60</height>
+                                <texture border="3">twc-input-focus.png</texture>
+                                <visible>Control.HasFocus(600)</visible>
+                            </control>
+                            <control type="image">
+                                <posx>0</posx>
+                                <posy>0</posy>
+                                <width>575</width>
+                                <height>60</height>
+                                <texture border="3">twc-input-nofocus.png</texture>
+                                <visible>!Control.HasFocus(600)</visible>
+                            </control>
+                            <control type="label">
+                                <posx>33</posx>
+                                <posy>0</posy>
+                                <width>50</width>
+                                <height>56</height>
+                                <font>font10</font>
+                                <textcolor>DDFFFFFF</textcolor>
+                                <selectedcolor>FFe2ff43</selectedcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <info>ListItem.Label</info>
+                            </control>
+                            <control type="image">
+                                <posx>65</posx>
+                                <posy>4</posy>
+                                <width>150</width>
+                                <height>56</height>
+                                <texture>twc-contentpanel.png</texture>
+                            </control>
+                            <control type="image">
+                                <posx>70</posx>
+                                <posy>7</posy>
+                                <width>48</width>
+                                <height>48</height>
+                                <info>ListItem.Property(icon)</info>
+                            </control>
+                            <control type="label">
+                                <posx>165</posx>
+                                <posy>0</posy>
+                                <width>80</width>
+                                <height>56</height>
+                                <font>font10</font>
+                                <textcolor>DDFFFFFF</textcolor>
+                                <selectedcolor>FFe2ff43</selectedcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <wrapmultiline>true</wrapmultiline>
+                                <label>$INFO[ListItem.Property(brief)]&#10;[B]$INFO[ListItem.Property(temp)][/B]</label>
+                            </control>
+                            <control type="label">
+                                <posx>270</posx>
+                                <posy>0</posy>
+                                <width>40</width>
+                                <height>56</height>
+                                <font>font10</font>
+                                <textcolor>DDFFFFFF</textcolor>
+                                <selectedcolor>FFe2ff43</selectedcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <info>ListItem.Property(feels)</info>
+                            </control>
+                            <control type="label">
+                                <posx>346</posx>
+                                <posy>0</posy>
+                                <width>40</width>
+                                <height>56</height>
+                                <font>font10</font>
+                                <textcolor>DDFFFFFF</textcolor>
+                                <selectedcolor>FFe2ff43</selectedcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <info>ListItem.Property(precip)</info>
+                            </control>
+                            <!--control type="label">
+                                <posx>363</posx>
+                                <posy>0</posy>
+                                <width>40</width>
+                                <height>56</height>
+                                <font>font10</font>
+                                <textcolor>DDFFFFFF</textcolor>
+                                <selectedcolor>FFe2ff43</selectedcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <info>ListItem.Property(dew)</info>
+                            </control-->
+                            <control type="label">
+                                <posx>420</posx>
+                                <posy>0</posy>
+                                <width>40</width>
+                                <height>56</height>
+                                <font>font10</font>
+                                <textcolor>DDFFFFFF</textcolor>
+                                <selectedcolor>FFe2ff43</selectedcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <info>ListItem.Property(humidity)</info>
+                            </control>
+                            <control type="label">
+                                <posx>510</posx>
+                                <posy>0</posy>
+                                <width>110</width>
+                                <height>56</height>
+                                <font>font10</font>
+                                <textcolor>DDFFFFFF</textcolor>
+                                <selectedcolor>FFe2ff43</selectedcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <wrapmultiline>true</wrapmultiline>
+                                <info>ListItem.Property(wind)</info>
+                            </control>
+                        </focusedlayout>
+                    </control>
+                    <!-- Scrollbar for forecast list -->
+                    <control type="button">
+                        <description>Scrollbar Up Arrow</description>
+                        <posx>580</posx>
+                        <posy>20</posy>
+                        <width>16</width>
+                        <height>16</height>
+                        <texturenofocus>twc-scrollbar_arrow_up.png</texturenofocus>
+                        <texturefocus>twc-scrollbar_arrow_up_focus.png</texturefocus>
+                        <onclick>PageUp(6000)</onclick>
+                        <visible>Control.IsVisible(6000)</visible>
+                    </control>
+                    <control type="scrollbar" id="6000">
+                        <description>Scroll Bar</description>
+                        <posx>580</posx>
+                        <posy>36</posy>
+                        <width>16</width>
+                        <height>214</height>
+                        <texturesliderbackground border="4">twc-scrollbar_background.png</texturesliderbackground>
+                        <texturesliderbar border="3">twc-scrollbar_bar.png</texturesliderbar>
+                        <texturesliderbarfocus border="3">twc-scrollbar_bar_focus.png</texturesliderbarfocus>
+                        <textureslidernib>-</textureslidernib>
+                        <textureslidernibfocus>-</textureslidernibfocus>
+                        <onleft>700</onleft>
+                        <onright>700</onright>
+                        <showonepage>false</showonepage>
+                        <orientation>vertical</orientation>
+                    </control>
+                    <control type="button">
+                        <description>Scrollbar Down Arrow</description>
+                        <posx>580</posx>
+                        <posy>250</posy>
+                        <width>16</width>
+                        <height>16</height>
+                        <texturenofocus>twc-scrollbar_arrow_down.png</texturenofocus>
+                        <texturefocus>twc-scrollbar_arrow_down_focus.png</texturefocus>
+                        <onclick>PageDown(6000)</onclick>
+                        <visible>Control.IsVisible(6000)</visible>
+                    </control>
                 </control>
                 <!-- User instruction label -->
                 <control type="label">
@@ -1360,7 +1363,7 @@
                     <visible>IsEmpty(Container(50).Property(Weekend3day))</visible>
                     <animation effect="zoom" reversible="false" center="auto" start="100" end="200" time="0">WindowOpen</animation>
                 </control>
-                <!-- Details/Outlook toggle buttn -->
+                <!-- Details/Outlook toggle button -->
                 <control type="button" id="300">
                     <description>Weekend Toggle Button</description>
                     <posx>480</posx>
@@ -1412,7 +1415,7 @@
                 </control>
                 <!-- Forecast main group -->
                 <control type="group">
-                    <visible>!IsEmpty(Container(50).Property(Weekend3day))</visible>
+                    <visible>!IsEmpty(Container(50).Property(Weekend1day))</visible>
                     <posx>7</posx>
                     <posy>3</posy>
                     <!-- Section background -->
@@ -2420,291 +2423,294 @@
                     <visible>IsEmpty(Container(50).Property(10DayHead1))</visible>
                     <animation effect="zoom" reversible="false" center="auto" start="100" end="200" time="0">WindowOpen</animation>
                 </control>
-                <!-- Forecast conditions heading -->
-                <control type="label">
-                    <posx>60</posx>
-                    <posy>-8</posy>
-                    <width>160</width>
-                    <height>20</height>
-                    <font>font10</font>
-                    <textcolor>DDFFFFFF</textcolor>
-                    <selectedcolor>FFe2ff43</selectedcolor>
-                    <align>center</align>
-                    <aligny>center</aligny>
-                    <info>Container(50).Property(10DayHead1)</info>
-                </control>
-                <!-- High/Low heading -->
-                <control type="label">
-                    <posx>202</posx>
-                    <posy>-8</posy>
-                    <width>150</width>
-                    <height>20</height>
-                    <font>font10</font>
-                    <textcolor>DDFFFFFF</textcolor>
-                    <selectedcolor>FFe2ff43</selectedcolor>
-                    <align>center</align>
-                    <aligny>center</aligny>
-                    <label>$INFO[Container(50).Property(10DayHead2)]&#10;$INFO[Container(50).Property(10DayHead3)]</label>
-                </control>
-                <!-- Chance of precipitation heading -->
-                <control type="label">
-                    <posx>335</posx>
-                    <posy>-8</posy>
-                    <width>50</width>
-                    <height>20</height>
-                    <font>font10</font>
-                    <textcolor>DDFFFFFF</textcolor>
-                    <selectedcolor>FFe2ff43</selectedcolor>
-                    <align>center</align>
-                    <aligny>center</aligny>
-                    <wrapmultiline>true</wrapmultiline>
-                    <info>Container(50).Property(10DayHead4)</info>
-                </control>
-                <!-- Wind speed heading -->
-                <control type="label">
-                    <posx>455</posx>
-                    <posy>-8</posy>
-                    <width>70</width>
-                    <height>20</height>
-                    <font>font10</font>
-                    <textcolor>DDFFFFFF</textcolor>
-                    <selectedcolor>FFe2ff43</selectedcolor>
-                    <align>center</align>
-                    <aligny>center</aligny>
-                    <wrapmultiline>true</wrapmultiline>
-                    <info>Container(50).Property(10DayHead5)</info>
-                </control>
-                <!-- Forecast list ** required ** -->
-                <control type="list" id="700">
-                    <posx>0</posx>
-                    <posy>20</posy>
-                    <width>575</width>
-                    <height>248</height>
-                    <onleft>7000</onleft>
-                    <onright>7000</onright>
-                    <onup>2000</onup>
-                    <ondown>700</ondown>
-                    <viewtype label="535">list</viewtype>
-                    <pagecontrol>7000</pagecontrol>
-                    <scrolltime>200</scrolltime>
-                    <itemlayout height="62">
-                        <control type="image">
-                            <posx>0</posx>
-                            <posy>0</posy>
-                            <width>575</width>
-                            <height>60</height>
-                            <texture border="3">twc-input-nofocus.png</texture>
-                        </control>
-                        <control type="label">
-                            <posx>33</posx>
-                            <posy>0</posy>
-                            <width>50</width>
-                            <height>56</height>
-                            <font>font10</font>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>center</align>
-                            <aligny>center</aligny>
-                            <label>$INFO[ListItem.Label]&#10;$INFO[ListItem.Property(date)]</label>
-                        </control>
-                        <control type="image">
-                            <posx>65</posx>
-                            <posy>4</posy>
-                            <width>150</width>
-                            <height>56</height>
-                            <texture>twc-contentpanel.png</texture>
-                        </control>
-                        <control type="image">
-                            <posx>70</posx>
-                            <posy>7</posy>
-                            <width>48</width>
-                            <height>48</height>
-                            <info>ListItem.Property(icon)</info>
-                        </control>
-                        <control type="label">
-                            <posx>165</posx>
-                            <posy>0</posy>
-                            <width>80</width>
-                            <height>56</height>
-                            <font>font10</font>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>center</align>
-                            <aligny>center</aligny>
-                            <wrapmultiline>true</wrapmultiline>
-                            <label>$INFO[ListItem.Property(brief)]</label>
-                        </control>
-                        <control type="label">
-                            <posx>275</posx>
-                            <posy>0</posy>
-                            <width>50</width>
-                            <height>56</height>
-                            <font>font10</font>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>center</align>
-                            <aligny>center</aligny>
-                            <label>[B]$INFO[ListItem.Property(high)][B]&#10;$INFO[ListItem.Property(low)]</label>
-                        </control>
-                        <control type="label">
-                            <posx>360</posx>
-                            <posy>0</posy>
-                            <width>50</width>
-                            <height>56</height>
-                            <font>font10</font>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>center</align>
-                            <aligny>center</aligny>
-                            <info>ListItem.Property(precip)</info>
-                        </control>
-                        <control type="label">
-                            <posx>490</posx>
-                            <posy>0</posy>
-                            <width>150</width>
-                            <height>56</height>
-                            <font>font10</font>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>center</align>
-                            <aligny>center</aligny>
-                            <wrapmultiline>true</wrapmultiline>
-                            <label>$INFO[ListItem.Property(wind)]&#10;$INFO[ListItem.Property(speed)]</label>
-                        </control>
-                    </itemlayout>
-                    <focusedlayout height="62">
-                        <control type="image">
-                            <posx>0</posx>
-                            <posy>0</posy>
-                            <width>575</width>
-                            <height>60</height>
-                            <texture border="3">twc-input-focus.png</texture>
-                            <visible>Control.HasFocus(700)</visible>
-                        </control>
-                        <control type="image">
-                            <posx>0</posx>
-                            <posy>0</posy>
-                            <width>575</width>
-                            <height>60</height>
-                            <texture border="3">twc-input-nofocus.png</texture>
-                            <visible>!Control.HasFocus(700)</visible>
-                        </control>
-                        <control type="label">
-                            <posx>33</posx>
-                            <posy>0</posy>
-                            <width>50</width>
-                            <height>56</height>
-                            <font>font10</font>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>center</align>
-                            <aligny>center</aligny>
-                            <label>$INFO[ListItem.Label]&#10;$INFO[ListItem.Property(date)]</label>
-                        </control>
-                        <control type="image">
-                            <posx>65</posx>
-                            <posy>4</posy>
-                            <width>150</width>
-                            <height>56</height>
-                            <texture>twc-contentpanel.png</texture>
-                        </control>
-                        <control type="image">
-                            <posx>70</posx>
-                            <posy>7</posy>
-                            <width>48</width>
-                            <height>48</height>
-                            <info>ListItem.Property(icon)</info>
-                        </control>
-                        <control type="label">
-                            <posx>165</posx>
-                            <posy>0</posy>
-                            <width>80</width>
-                            <height>56</height>
-                            <font>font10</font>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>center</align>
-                            <aligny>center</aligny>
-                            <wrapmultiline>true</wrapmultiline>
-                            <label>$INFO[ListItem.Property(brief)]</label>
-                        </control>
-                        <control type="label">
-                            <posx>275</posx>
-                            <posy>0</posy>
-                            <width>50</width>
-                            <height>56</height>
-                            <font>font10</font>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>center</align>
-                            <aligny>center</aligny>
-                            <label>[B]$INFO[ListItem.Property(high)][B]&#10;$INFO[ListItem.Property(low)]</label>
-                        </control>
-                        <control type="label">
-                            <posx>360</posx>
-                            <posy>0</posy>
-                            <width>50</width>
-                            <height>56</height>
-                            <font>font10</font>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>center</align>
-                            <aligny>center</aligny>
-                            <info>ListItem.Property(precip)</info>
-                        </control>
-                        <control type="label">
-                            <posx>490</posx>
-                            <posy>0</posy>
-                            <width>150</width>
-                            <height>56</height>
-                            <font>font10</font>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>center</align>
-                            <aligny>center</aligny>
-                            <wrapmultiline>true</wrapmultiline>
-                            <label>$INFO[ListItem.Property(wind)]&#10;$INFO[ListItem.Property(speed)]</label>
-                        </control>
-                    </focusedlayout>
-                </control>
-                <!-- Scrollbar for forecast list -->
-                <control type="button">
-                    <description>Scrollbar Up Arrow</description>
-                    <posx>580</posx>
-                    <posy>20</posy>
-                    <width>16</width>
-                    <height>16</height>
-                    <texturenofocus>twc-scrollbar_arrow_up.png</texturenofocus>
-                    <texturefocus>twc-scrollbar_arrow_up_focus.png</texturefocus>
-                    <onclick>PageUp(7000)</onclick>
-                    <visible>Control.IsVisible(7000)</visible>
-                </control>
-                <control type="scrollbar" id="7000">
-                    <description>Scroll Bar</description>
-                    <posx>580</posx>
-                    <posy>36</posy>
-                    <width>16</width>
-                    <height>214</height>
-                    <texturesliderbackground border="4">twc-scrollbar_background.png</texturesliderbackground>
-                    <texturesliderbar border="3">twc-scrollbar_bar.png</texturesliderbar>
-                    <texturesliderbarfocus border="3">twc-scrollbar_bar_focus.png</texturesliderbarfocus>
-                    <textureslidernib>-</textureslidernib>
-                    <textureslidernibfocus>-</textureslidernibfocus>
-                    <onleft>600</onleft>
-                    <onright>600</onright>
-                    <showonepage>false</showonepage>
-                    <orientation>vertical</orientation>
-                </control>
-                <control type="button">
-                    <description>Scrollbar Down Arrow</description>
-                    <posx>580</posx>
-                    <posy>250</posy>
-                    <width>16</width>
-                    <height>16</height>
-                    <texturenofocus>twc-scrollbar_arrow_down.png</texturenofocus>
-                    <texturefocus>twc-scrollbar_arrow_down_focus.png</texturefocus>
-                    <onclick>PageDown(7000)</onclick>
-                    <visible>Control.IsVisible(7000)</visible>
+                <control type="group">
+                    <visible>!IsEmpty(Container(50).Property(10DayHead1))</visible>
+                    <!-- Forecast conditions heading -->
+                    <control type="label">
+                        <posx>60</posx>
+                        <posy>-8</posy>
+                        <width>160</width>
+                        <height>20</height>
+                        <font>font10</font>
+                        <textcolor>DDFFFFFF</textcolor>
+                        <selectedcolor>FFe2ff43</selectedcolor>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <info>Container(50).Property(10DayHead1)</info>
+                    </control>
+                    <!-- High/Low heading -->
+                    <control type="label">
+                        <posx>202</posx>
+                        <posy>-8</posy>
+                        <width>150</width>
+                        <height>20</height>
+                        <font>font10</font>
+                        <textcolor>DDFFFFFF</textcolor>
+                        <selectedcolor>FFe2ff43</selectedcolor>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <label>$INFO[Container(50).Property(10DayHead2)]&#10;$INFO[Container(50).Property(10DayHead3)]</label>
+                    </control>
+                    <!-- Chance of precipitation heading -->
+                    <control type="label">
+                        <posx>335</posx>
+                        <posy>-8</posy>
+                        <width>50</width>
+                        <height>20</height>
+                        <font>font10</font>
+                        <textcolor>DDFFFFFF</textcolor>
+                        <selectedcolor>FFe2ff43</selectedcolor>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <wrapmultiline>true</wrapmultiline>
+                        <info>Container(50).Property(10DayHead4)</info>
+                    </control>
+                    <!-- Wind speed heading -->
+                    <control type="label">
+                        <posx>455</posx>
+                        <posy>-8</posy>
+                        <width>70</width>
+                        <height>20</height>
+                        <font>font10</font>
+                        <textcolor>DDFFFFFF</textcolor>
+                        <selectedcolor>FFe2ff43</selectedcolor>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <wrapmultiline>true</wrapmultiline>
+                        <info>Container(50).Property(10DayHead5)</info>
+                    </control>
+                    <!-- Forecast list ** required ** -->
+                    <control type="list" id="700">
+                        <posx>0</posx>
+                        <posy>20</posy>
+                        <width>575</width>
+                        <height>248</height>
+                        <onleft>7000</onleft>
+                        <onright>7000</onright>
+                        <onup>2000</onup>
+                        <ondown>700</ondown>
+                        <viewtype label="535">list</viewtype>
+                        <pagecontrol>7000</pagecontrol>
+                        <scrolltime>200</scrolltime>
+                        <itemlayout height="62">
+                            <control type="image">
+                                <posx>0</posx>
+                                <posy>0</posy>
+                                <width>575</width>
+                                <height>60</height>
+                                <texture border="3">twc-input-nofocus.png</texture>
+                            </control>
+                            <control type="label">
+                                <posx>33</posx>
+                                <posy>0</posy>
+                                <width>50</width>
+                                <height>56</height>
+                                <font>font10</font>
+                                <textcolor>DDFFFFFF</textcolor>
+                                <selectedcolor>FFe2ff43</selectedcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>$INFO[ListItem.Label]&#10;$INFO[ListItem.Property(date)]</label>
+                            </control>
+                            <control type="image">
+                                <posx>65</posx>
+                                <posy>4</posy>
+                                <width>150</width>
+                                <height>56</height>
+                                <texture>twc-contentpanel.png</texture>
+                            </control>
+                            <control type="image">
+                                <posx>70</posx>
+                                <posy>7</posy>
+                                <width>48</width>
+                                <height>48</height>
+                                <info>ListItem.Property(icon)</info>
+                            </control>
+                            <control type="label">
+                                <posx>165</posx>
+                                <posy>0</posy>
+                                <width>80</width>
+                                <height>56</height>
+                                <font>font10</font>
+                                <textcolor>DDFFFFFF</textcolor>
+                                <selectedcolor>FFe2ff43</selectedcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <wrapmultiline>true</wrapmultiline>
+                                <label>$INFO[ListItem.Property(brief)]</label>
+                            </control>
+                            <control type="label">
+                                <posx>275</posx>
+                                <posy>0</posy>
+                                <width>50</width>
+                                <height>56</height>
+                                <font>font10</font>
+                                <textcolor>DDFFFFFF</textcolor>
+                                <selectedcolor>FFe2ff43</selectedcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>[B]$INFO[ListItem.Property(high)][B]&#10;$INFO[ListItem.Property(low)]</label>
+                            </control>
+                            <control type="label">
+                                <posx>360</posx>
+                                <posy>0</posy>
+                                <width>50</width>
+                                <height>56</height>
+                                <font>font10</font>
+                                <textcolor>DDFFFFFF</textcolor>
+                                <selectedcolor>FFe2ff43</selectedcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <info>ListItem.Property(precip)</info>
+                            </control>
+                            <control type="label">
+                                <posx>490</posx>
+                                <posy>0</posy>
+                                <width>150</width>
+                                <height>56</height>
+                                <font>font10</font>
+                                <textcolor>DDFFFFFF</textcolor>
+                                <selectedcolor>FFe2ff43</selectedcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <wrapmultiline>true</wrapmultiline>
+                                <label>$INFO[ListItem.Property(wind)]&#10;$INFO[ListItem.Property(speed)]</label>
+                            </control>
+                        </itemlayout>
+                        <focusedlayout height="62">
+                            <control type="image">
+                                <posx>0</posx>
+                                <posy>0</posy>
+                                <width>575</width>
+                                <height>60</height>
+                                <texture border="3">twc-input-focus.png</texture>
+                                <visible>Control.HasFocus(700)</visible>
+                            </control>
+                            <control type="image">
+                                <posx>0</posx>
+                                <posy>0</posy>
+                                <width>575</width>
+                                <height>60</height>
+                                <texture border="3">twc-input-nofocus.png</texture>
+                                <visible>!Control.HasFocus(700)</visible>
+                            </control>
+                            <control type="label">
+                                <posx>33</posx>
+                                <posy>0</posy>
+                                <width>50</width>
+                                <height>56</height>
+                                <font>font10</font>
+                                <textcolor>DDFFFFFF</textcolor>
+                                <selectedcolor>FFe2ff43</selectedcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>$INFO[ListItem.Label]&#10;$INFO[ListItem.Property(date)]</label>
+                            </control>
+                            <control type="image">
+                                <posx>65</posx>
+                                <posy>4</posy>
+                                <width>150</width>
+                                <height>56</height>
+                                <texture>twc-contentpanel.png</texture>
+                            </control>
+                            <control type="image">
+                                <posx>70</posx>
+                                <posy>7</posy>
+                                <width>48</width>
+                                <height>48</height>
+                                <info>ListItem.Property(icon)</info>
+                            </control>
+                            <control type="label">
+                                <posx>165</posx>
+                                <posy>0</posy>
+                                <width>80</width>
+                                <height>56</height>
+                                <font>font10</font>
+                                <textcolor>DDFFFFFF</textcolor>
+                                <selectedcolor>FFe2ff43</selectedcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <wrapmultiline>true</wrapmultiline>
+                                <label>$INFO[ListItem.Property(brief)]</label>
+                            </control>
+                            <control type="label">
+                                <posx>275</posx>
+                                <posy>0</posy>
+                                <width>50</width>
+                                <height>56</height>
+                                <font>font10</font>
+                                <textcolor>DDFFFFFF</textcolor>
+                                <selectedcolor>FFe2ff43</selectedcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <label>[B]$INFO[ListItem.Property(high)][B]&#10;$INFO[ListItem.Property(low)]</label>
+                            </control>
+                            <control type="label">
+                                <posx>360</posx>
+                                <posy>0</posy>
+                                <width>50</width>
+                                <height>56</height>
+                                <font>font10</font>
+                                <textcolor>DDFFFFFF</textcolor>
+                                <selectedcolor>FFe2ff43</selectedcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <info>ListItem.Property(precip)</info>
+                            </control>
+                            <control type="label">
+                                <posx>490</posx>
+                                <posy>0</posy>
+                                <width>150</width>
+                                <height>56</height>
+                                <font>font10</font>
+                                <textcolor>DDFFFFFF</textcolor>
+                                <selectedcolor>FFe2ff43</selectedcolor>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <wrapmultiline>true</wrapmultiline>
+                                <label>$INFO[ListItem.Property(wind)]&#10;$INFO[ListItem.Property(speed)]</label>
+                            </control>
+                        </focusedlayout>
+                    </control>
+                    <!-- Scrollbar for forecast list -->
+                    <control type="button">
+                        <description>Scrollbar Up Arrow</description>
+                        <posx>580</posx>
+                        <posy>20</posy>
+                        <width>16</width>
+                        <height>16</height>
+                        <texturenofocus>twc-scrollbar_arrow_up.png</texturenofocus>
+                        <texturefocus>twc-scrollbar_arrow_up_focus.png</texturefocus>
+                        <onclick>PageUp(7000)</onclick>
+                        <visible>Control.IsVisible(7000)</visible>
+                    </control>
+                    <control type="scrollbar" id="7000">
+                        <description>Scroll Bar</description>
+                        <posx>580</posx>
+                        <posy>36</posy>
+                        <width>16</width>
+                        <height>214</height>
+                        <texturesliderbackground border="4">twc-scrollbar_background.png</texturesliderbackground>
+                        <texturesliderbar border="3">twc-scrollbar_bar.png</texturesliderbar>
+                        <texturesliderbarfocus border="3">twc-scrollbar_bar_focus.png</texturesliderbarfocus>
+                        <textureslidernib>-</textureslidernib>
+                        <textureslidernibfocus>-</textureslidernibfocus>
+                        <onleft>600</onleft>
+                        <onright>600</onright>
+                        <showonepage>false</showonepage>
+                        <orientation>vertical</orientation>
+                    </control>
+                    <control type="button">
+                        <description>Scrollbar Down Arrow</description>
+                        <posx>580</posx>
+                        <posy>250</posy>
+                        <width>16</width>
+                        <height>16</height>
+                        <texturenofocus>twc-scrollbar_arrow_down.png</texturenofocus>
+                        <texturefocus>twc-scrollbar_arrow_down_focus.png</texturefocus>
+                        <onclick>PageDown(7000)</onclick>
+                        <visible>Control.IsVisible(7000)</visible>
+                    </control>
                 </control>
                 <!-- User instruction label -->
                 <control type="label">
