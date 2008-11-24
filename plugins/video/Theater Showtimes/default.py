@@ -10,7 +10,7 @@ __author__ = "nuka1195"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Theater%20Showtimes"
 __credits__ = "Team XBMC/Jezz_X"
-__version__ = "1.2.2"
+__version__ = "1.2.3"
 __svn_revision__ = 0
 
 #main imports
@@ -23,23 +23,12 @@ import xbmcplugin
 
 from random import randrange
 
-def _install_libraries():
-    # copy the proper libraries
-    environment = os.environ.get( "OS", "xbox" )
-    if ( environment == "Linux" or environment == "OS X" ):
-        ext = ".so"
-    else:
-        environment = "win32"
-        ext = ".pyd"
-    sql_path = xbmc.translatePath( os.path.join( os.getcwd().replace( ";", "" ), "pysqlite2", "_sqlite" + ext ) )
-    if ( not os.path.isfile( sql_path ) ):
-        platform_sql_path = xbmc.translatePath( os.path.join( os.getcwd().replace( ";", "" ), "platform libraries", environment, "_sqlite" + ext ) )
-        from shutil import copyfile
-        copyfile( platform_sql_path, sql_path )
-_install_libraries()
+# append the proper platforms folder to our path, xbox is the same as win32
+env = ( os.environ.get( "OS", "win32" ), "win32", )[ os.environ.get( "OS", "win32" ) == "xbox" ]
+sys.path.append( os.path.join( os.getcwd(), "resources", "platform_libraries", env ) )
+from pysqlite2 import dbapi2 as sqlite
 
 from showtimesAPI import IMDbClient
-from pysqlite2 import dbapi2 as sqlite
 
 
 class GUI( xbmcgui.WindowXML ):
@@ -82,13 +71,11 @@ class GUI( xbmcgui.WindowXML ):
     TRAILER_SQL = "SELECT * FROM movies WHERE movies.title LIKE ?;"
 
     def __init__( self, *args, **kwargs ):
-        #xbmcgui.lock()
         xbmcgui.WindowXML.__init__( self )
         self.startup = True
         self._get_settings()
         self._get_scraper()
         self._get_imdb_fetcher()
-        #xbmcgui.unlock()
 
     def onInit( self ):
         if ( self.startup ):
@@ -227,34 +214,37 @@ class GUI( xbmcgui.WindowXML ):
         
     def _fill_cast( self, listitem ):
         xbmcgui.lock()
-        # clear the cast list
-        self.getControl( self.CONTROL_INFO_CAST ).reset()
-        # grab the cast from the main lists listitem, we use this for actor thumbs
-        cast = xbmc.getInfoLabel( "Container(100).ListItem.Cast" )
-        # if cast exists we fill the cast list
-        if ( cast ):
-            # we set these class variables for the player
-            self.title = xbmc.getInfoLabel( "Container(100).ListItem.Title" )
-            self.genre = xbmc.getInfoLabel( "Container(100).ListItem.Genre" )
-            self.plot = xbmc.getInfoLabel( "Container(100).ListItem.Plot" )
-            self.director = xbmc.getInfoLabel( "Container(100).ListItem.Director" )
-            self.year = int( xbmc.getInfoLabel( "Container(100).ListItem.Year" ) )
-            self.trailer = xbmc.getInfoLabel( "Container(100).ListItem.Trailer" )
-            self.thumb = xbmc.getInfoImage( "Container(100).ListItem.Thumb" )
-            # we actually use the ListItem.CastAndRole infolabel to fill the list
-            role = xbmc.getInfoLabel( "Container(100).ListItem.CastAndRole" ).split( "\n" )
-            # enumerate through our cast list and set cast and role
-            for count, actor in enumerate( cast.split( "\n" ) ):
-                # create the actor cached thumb
-                actor_path = xbmc.translatePath( os.path.join( "P:\\Thumbnails", "Video", xbmc.getCacheThumbName( "actor" + actor )[ 0 ], xbmc.getCacheThumbName( "actor" + actor ) ) )
-                # if an actor thumb exists use it, else use the default thumb
-                actor_thumbnail = ( "DefaultActorBig.png", actor_path, )[ os.path.isfile( actor_path ) ]
-                # set the default icon
-                actor_icon = "DefaultActorBig.png"
-                # add the item to our cast list
-                self.getControl( self.CONTROL_INFO_CAST ).addItem( xbmcgui.ListItem( role[ count ], iconImage=actor_icon, thumbnailImage=actor_thumbnail ) )
-            # set the play trailer buttons status
-            self._set_trailer_button( self.trailer )
+        try:
+            # clear the cast list
+            self.getControl( self.CONTROL_INFO_CAST ).reset()
+            # grab the cast from the main lists listitem, we use this for actor thumbs
+            cast = xbmc.getInfoLabel( "Container(100).ListItem.Cast" )
+            # if cast exists we fill the cast list
+            if ( cast ):
+                # we set these class variables for the player
+                self.title = xbmc.getInfoLabel( "Container(100).ListItem.Title" )
+                self.genre = xbmc.getInfoLabel( "Container(100).ListItem.Genre" )
+                self.plot = xbmc.getInfoLabel( "Container(100).ListItem.Plot" )
+                self.director = xbmc.getInfoLabel( "Container(100).ListItem.Director" )
+                self.year = int( xbmc.getInfoLabel( "Container(100).ListItem.Year" ) )
+                self.trailer = xbmc.getInfoLabel( "Container(100).ListItem.Trailer" )
+                self.thumb = xbmc.getInfoImage( "Container(100).ListItem.Thumb" )
+                # we actually use the ListItem.CastAndRole infolabel to fill the list
+                role = xbmc.getInfoLabel( "Container(100).ListItem.CastAndRole" ).split( "\n" )
+                # enumerate through our cast list and set cast and role
+                for count, actor in enumerate( cast.split( "\n" ) ):
+                    # create the actor cached thumb
+                    actor_path = xbmc.translatePath( os.path.join( "P:\\Thumbnails", "Video", xbmc.getCacheThumbName( "actor" + actor )[ 0 ], xbmc.getCacheThumbName( "actor" + actor ) ) )
+                    # if an actor thumb exists use it, else use the default thumb
+                    actor_thumbnail = ( "DefaultActorBig.png", actor_path, )[ os.path.isfile( actor_path ) ]
+                    # set the default icon
+                    actor_icon = "DefaultActorBig.png"
+                    # add the item to our cast list
+                    self.getControl( self.CONTROL_INFO_CAST ).addItem( xbmcgui.ListItem( role[ count ], iconImage=actor_icon, thumbnailImage=actor_thumbnail ) )
+                # set the play trailer buttons status
+                self._set_trailer_button( self.trailer )
+        except:
+            pass
         xbmcgui.unlock()
 
     def _create_other( self, info ):
@@ -401,13 +391,16 @@ class GUI( xbmcgui.WindowXML ):
             self._show_info( controlId )
 
     def onAction( self, action ):
-        if ( action in self.ACTION_CANCEL_DIALOG ):
-            self._close_dialog()
-        elif ( action in self.ACTION_THEATER_LIST ):
-            self._show_dialog()
-        elif ( self.controlId in ( self.CONTROL_INFO_LIST, self.CONTROL_INFO_LIST_SCROLLBAR, ) ):
-            self._fill_cast( self.getControl( self.CONTROL_INFO_LIST ).getSelectedItem() )
-
+        try:
+            if ( action in self.ACTION_CANCEL_DIALOG ):
+                self._close_dialog()
+            elif ( action in self.ACTION_THEATER_LIST ):
+                self._show_dialog()
+            elif ( self.controlId in ( self.CONTROL_INFO_LIST, self.CONTROL_INFO_LIST_SCROLLBAR, ) ):
+                self._fill_cast( self.getControl( self.CONTROL_INFO_LIST ).getSelectedItem() )
+        except:
+            import traceback
+            traceback.print_exc()
 
 class Records:
     def __init__( self, *args, **kwargs ):

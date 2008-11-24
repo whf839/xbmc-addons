@@ -29,9 +29,9 @@ class _IMDbParser:
 
     # IMDb regex patterns
     pattern_title = re.compile( '<meta name="title" content="([^"]*) \(([0-9]*)\)' )
-    pattern_year = re.compile( 'a href="/Sections/Years/([0-9]*)">' )
+    pattern_year = re.compile( 'a href="/Sections/Years/([0-9]+)/">' )
     pattern_top250 = re.compile( 'Top 250: #([0-9]*)</a>' )
-    pattern_user_rating = re.compile( '<b>User Rating:</b>[^<]*<b>([0-9.]+)/10</b>[^<]*<small>\(<a href="ratings">([0-9,]+) votes</a>\)</small>' )
+    pattern_user_rating = re.compile( '<b>([0-9.]+)/10</b>[^<]*<a href="ratings" class="tn15more">([0-9,]+) votes</a>' )
     pattern_director = re.compile( '<h5>Directors?[^:]*:</h5>[\n]*(.*)' )
     pattern_director2 = re.compile( '<a href="/name/[^>]*>([^<]*)' )
     pattern_writer = re.compile( '<h5>Writers?[^:]*:</h5>[\n]*(.*)' )
@@ -47,16 +47,16 @@ class _IMDbParser:
     pattern_countries = re.compile( '<h5>Countr[ies|y]:</h5>[^>]*>([^<]*)' )
     pattern_language = re.compile( '<h5>Language:</h5>[^>]*>([^<]*)' )
     pattern_aspect_ratio = re.compile( '<h5>Aspect Ratio:</h5>([^<]*)' )
-    pattern_sound_mix = re.compile( '<h5>Sound Mix:</h5>[\n]*(.*)' )
-    pattern_sound_mix2 = re.compile( '<a href="/List[^>]*>([^<]*)' )
+    pattern_sound_mix = re.compile( 'sound-mix=[^>]+>.*\s([^<]+)' )
     pattern_certification = re.compile( '<a href="/List\?certificates=[^"]*">([^<]*)</a>[^<]*(<i>([^<]*)</i>)?' )
-    pattern_locations = re.compile( '<h5>Filming Locations:</h5>[.]*[\n]*[^>]*>(.*)' )
+    pattern_locations = re.compile( '<h5>Filming Locations:</h5>.*\s.*\s.*\s([^<]+)' )
     pattern_movie_meter = re.compile( '<h5>MOVIEmeter:.*?\n.*?\n[^"]*"([^"]*)">[^>]*>([^<]*)</span>(.*)' )
     pattern_studio = re.compile( '"/company/[^/]*/">([^<]*)</a>' )
     pattern_trivia = re.compile( '<h5>Trivia:</h5>[\n]*(.*)' )
     pattern_goofs = re.compile( '<h5>Goofs:</h5>[\n]*(.*)' )
     pattern_quotes = re.compile( '<h5>Quotes:.*?</div>', re.DOTALL )
-    pattern_quotes2 = re.compile( '/name/[^>]*>([^<]*).*?\n(\[[^\]]*\])*([^<]*)' )
+    pattern_quotes2 = re.compile( '/name/[^>]*>([^<]+)?.*\s(\[[^\]]*\])*([^<]*)' )
+    pattern_quotes3 = re.compile( '<b>([^<]+)</b>(:).*\s(.*)' )
     pattern_poster = re.compile( '<a name="poster".*?src="([^"]*)' )
     pattern_cast = re.compile( '<table class="cast">.*' )
     pattern_cast2 = re.compile( 'href="/name/nm[0-9]*/">([^<]*).*?<td class="char">(.*?)</td>' )
@@ -188,14 +188,9 @@ class _IMDbParser:
         # sound mix
         self.info.sound_mix = ""
         # the first match gets all html code
-        matches = self.pattern_sound_mix.search( htmlSource )
+        matches = self.pattern_sound_mix.findall( htmlSource )
         if ( matches ):
-            # we need to assign element 0 to a variable
-            text = matches.groups()[ 0 ]
-            # now find all sound mixes
-            matches = self.pattern_sound_mix2.findall( text )
-            if ( matches ):
-                self.info.sound_mix = self._clean_text( ' / '.join( matches ) )
+            self.info.sound_mix = self._clean_text( ' / '.join( matches ) )
 
         # certification
         self.info.certification = ""
@@ -242,8 +237,11 @@ class _IMDbParser:
         if ( matches ):
             # we need to assign element 0 to a variable
             text = matches.group()
-            # now find all sound mixes
+            # now find all quotes
             matches = self.pattern_quotes2.findall( text )
+            # if none try the other format
+            if ( not matches ):
+                matches = self.pattern_quotes3.findall( text )
             if ( matches ):
                 for actor, scene, quote in matches:
                     self.info.quotes += [ '%s%s%s - "%s"' % ( self._clean_text( actor ), ( "", " ", )[ self._clean_text( scene ) != "" ], self._clean_text( scene ), self._clean_text( quote ), ) ]
@@ -279,7 +277,7 @@ class _IMDbParser:
         # remove html source
         text = re.sub( self.pattern_clean, '', text ).strip()
         # replace entities and return iso-8859-1 unicode
-        return unicode( text.replace( "&lt;", "<" ).replace( "&gt;", ">" ).replace( "&quot;", '"' ).replace( "&#38;", "&" ).replace( "&#39;", "'" ).replace( "&amp;", "&" ), "iso-8859-1" )
+        return unicode( urllib.unquote( text ).replace( "&lt;", "<" ).replace( "&gt;", ">" ).replace( "&quot;", '"' ).replace( "&#38;", "&" ).replace( "&#39;", "'" ).replace( "&amp;", "&" ), "iso-8859-1" )
 
 
 class IMDbFetcher:
@@ -370,7 +368,7 @@ class IMDbFetcher:
 if ( __name__ == "__main__" ):
     url = [ "http://www.imdb.com/title/tt0910970/", "http://imdb.com/title/tt0997047/", "http://imdb.com/title/tt0443649/", "http://www.imdb.com/title/tt1073498/", "http://www.imdb.com/title/tt0760329/", "http://www.imdb.com/title/tt0880578/", "http://www.imdb.com/title/tt0080684/", "http://www.imdb.com/title/tt0472062/",  "http://www.imdb.com/title/tt0462499/", "http://www.imdb.com/title/tt0389790/", "http://www.imdb.com/title/tt0442933/", "http://www.imdb.com/title/tt0085106/" ]
 
-    for cnt in range( 0,1 ):
+    for cnt in range( 1,2 ):
         info = IMDbFetcher().fetch_info( url[ cnt ], "1024" )
         if ( info ):
             for attr in dir( info ):

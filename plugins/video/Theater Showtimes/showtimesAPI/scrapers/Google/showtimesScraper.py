@@ -32,8 +32,8 @@ class _TheaterListParser:
     pattern_clean = re.compile( '<.+?>' )
 
     # Theater list regex pattern
-    pattern_theater = re.compile( '<a href="(/movies\?near=.*?)<b>([^<]*)</b>[</a>]*?<br><[^>]*>([^<]*)<a href="http://maps.google.co' )
-    
+    pattern_theater = re.compile( '<a href="(/movies\?near=[^"]+)"><b dir=ltr>([^<]+)</b></a><br><font size=-1>([^<]+)<a href="http://maps.google.com/maps' )
+
     def __init__( self ):
         self.theater_list = {}
 
@@ -44,15 +44,10 @@ class _TheaterListParser:
         if ( theaters ):
             # enumerate thru the list of theaters and parse the info
             for theater in theaters:
-                # theater url: if there are more than one theater, should contain a tid value
-                if ( "&tid=" in theater[ 0 ] ):
-                    url = theater[ 0 ].split( '<a href="' )[ -1 ][ : -2 ]
-                else:
-                    url = theater[ 0 ].split( '<a href="' )[ -1 ].split( "&" )[ 0 ]
                 # split the data into address and phone parts
                 parts = theater[ 2 ].replace( "&nbsp;", " " ).split( " - " )
                 # set our _info() object
-                self.theater_list[ self._clean_text( theater[ 1 ] ) ] = _Info( trailer="", imdb="", label2=self._clean_text( parts[ 1 ] ), mpaa="", duration=self._clean_text( parts[ 0 ] ), genre="", premiered="", plot="", thumbnail="", url="http://www.google.com%s" % url )
+                self.theater_list[ self._clean_text( theater[ 1 ] ) ] = _Info( trailer="", imdb="", label2=self._clean_text( parts[ 1 ] ), mpaa="", duration=self._clean_text( parts[ 0 ] ), genre="", premiered="", plot="", thumbnail="", url="http://www.google.com%s" % theater[ 0 ] )
 
     def _clean_text( self, text ):
         # remove html source
@@ -73,8 +68,6 @@ class _ShowtimesParser_re:
     pattern_theaters = re.compile( '<a href="(/movies\?near=[^&]*&tid=[^"]*)">.*?<a href="' )
     pattern_showtimes = re.compile( '<a href="(/movies\?near=[^"]*)"><b>([^<]*)</b>[</a>]*?<br>([^<]*)<')#([^<]*)<a href="http://maps.google.co' )
     
-    #<a href="/movies?near=48161&mid=444dbdc49f2ca7c2"><b>Doomsday</b></a><br>1hr&nbsp;45min - Rated&nbsp;R - Action/Adventure/Suspense/Thriller/Horror - <a href="http://www.google.com/url?q=http://www.apple.com/trailers/universal/doomsday/&sa=X&oi=moviesa&ii=6&usg=AFQjCNElPWQ1Xshc5wRIz1D9-HhCvDjt7A" class=fl>Trailer</a> - <a href="http://www.google.com/url?q=http://www.imdb.com/title/tt0483607/&sa=X&oi=moviesi&ii=6&usg=AFQjCNH9T40ECPcFFc7BPQp5XINJe5w-9w" class=fl>IMDb</a><br>12:15&nbsp; 2:45&nbsp; 5:30&nbsp; 8:00&nbsp; 10:35pm</font>
-    #<a href="/movies?near=2830&mid=e9e66ac4af0fab81"><b>10,000 B.C.</b></a><br>1hr&nbsp;49min - Rated&nbsp;M - Drama - <a href="http://www.google.com/url?q=http://www.apple.com/trailers/wb/10000bc/&sa=X&oi=moviesa&ii=6&usg=AFQjCNHkKU_06VCg4TB6zZk4liwd3ZP3tw" class=fl>Trailer</a><br>11:30am&nbsp; 1:50&nbsp; 8:30pm</font></td><td>&nbsp;&nbsp;&nbsp;</td><td align=center>
     def __init__( self ):
         self.theaters = {}
 
@@ -82,11 +75,11 @@ class _ShowtimesParser_re:
         # find all theaters
         theaters = self.pattern_theaters.findall( htmlSource )
         # if there are theaters
+        """
         if ( theaters ):
             # enumerate thru the list of theaters and parse the info
             for theater in theaters:
                 #if ( "&tid=" in theater ):
-                print theater
                 ## theater url: if there are more than one theater, should contain a tid value
                 #if ( "&tid=" in theater[ 0 ] ):
                 #    url = theater[ 0 ].split( '<a href="' )[ -1 ][ : -2 ]
@@ -96,7 +89,7 @@ class _ShowtimesParser_re:
                 #parts = theater[ 2 ].replace( "&nbsp;", " " ).split( " - " )
                 ## set our _info() object
                 #self.theater_list[ self._clean_text( theater[ 1 ] ) ] = _Info( trailer="", imdb="", label2=self._clean_text( parts[ 1 ] ), mpaa="", duration=self._clean_text( parts[ 0 ] ), genre="", premiered="", plot="", thumbnail="", url="http://www.google.com%s" % url )
-
+        """
     def _clean_text( self, text ):
         # remove html source
         text = re.sub( self.pattern_clean, '', text ).strip()
@@ -239,14 +232,14 @@ class ShowtimesFetcher:
             if ( not debug ):
                 usock = urllib.urlopen( url )
             else:
-                usock = open( os.path.join( os.getcwd().replace( ";", "" ), "showtimes_source3c.txt" ), "r" )
+                usock = open( os.path.join( os.getcwd(), "showtimes_source3c.txt" ), "r" )
             # read source
             htmlSource = usock.read()
             # close socket
             usock.close()
             # save htmlSource to a file for testing scraper (if debugWrite)
             if ( debugWrite ):
-                file_object = open( os.path.join( os.getcwd().replace( ";", "" ), "showtimes_source3.txt" ), "w" )
+                file_object = open( os.path.join( os.getcwd().replace( ";", "" ), "showtimes_source3c.txt" ), "w" )
                 file_object.write( htmlSource )
                 file_object.close()
             # parse htmlSource for theaters
@@ -271,9 +264,9 @@ if ( __name__ == "__main__" ):
     url = [ "http://www.google.com/movies?near=detroit&tid=3de92b236832db4f", "http://www.google.com/movies?near=2830", "http://www.google.com/movies?near=90210&tid=63dad2c3a9a07013" ]
 
     for cnt in range( 2,3 ):
-        #date = "today"
-        #theaters = ShowtimesFetcher().get_theater_list( location[ cnt ] )
-        date, theaters = ShowtimesFetcher().get_selection( url[ cnt ], 0 )
+        date = "today"
+        theaters = ShowtimesFetcher().get_theater_list( location[ cnt ] )
+        #date, theaters = ShowtimesFetcher().get_selection( url[ cnt ], 0 )
         print date
         print
         if ( theaters ):

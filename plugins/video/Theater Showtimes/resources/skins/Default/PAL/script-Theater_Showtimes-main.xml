@@ -533,6 +533,13 @@
             <scrolltime>200</scrolltime>
             <itemlayout width="320" height="29">
                 <control type="image">
+                    <width>320</width>
+                    <height>29</height>
+                    <posx>0</posx>
+                    <posy>0</posy>
+					<texture border="5">showtimes-input-nofocus.png</texture>
+                </control>
+                <control type="image">
                     <posx>0</posx>
                     <posy>3</posy>
                     <width>22</width>
@@ -559,7 +566,15 @@
                     <posx>0</posx>
                     <posy>0</posy>
                     <visible>Control.HasFocus(303)</visible>
-                    <texture>list-focus.png</texture>
+					<texture border="5">showtimes-input-focus.png</texture>
+                </control>
+                <control type="image">
+                    <width>320</width>
+                    <height>29</height>
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <visible>!Control.HasFocus(303)</visible>
+					<texture border="5">showtimes-input-nofocus.png</texture>
                 </control>
                 <control type="image">
                     <posx>0</posx>
