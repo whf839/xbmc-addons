@@ -48,7 +48,6 @@ ECHO.
 ECHO Copying required files to \Build\%PluginType%\%PluginName%\ folder . . .
 XCOPY resources "BUILD\%PluginType%\%PluginName%\resources" /E /Q /I /Y /EXCLUDE:BUILD\exclude.txt
 XCOPY showtimesAPI "BUILD\%PluginType%\%PluginName%\showtimesAPI" /E /Q /I /Y /EXCLUDE:BUILD\exclude.txt
-XCOPY pysqlite2 "BUILD\%PluginType%\%PluginName%\pysqlite2" /E /Q /I /Y /EXCLUDE:BUILD\exclude.txt
 COPY default.py "BUILD\%PluginType%\%PluginName%\"
 COPY default.tbn "BUILD\%PluginType%\%PluginName%\"
 ECHO.
