@@ -73,7 +73,7 @@ class Main:
             # close socket
             usock.close()
             # eval jsonSource to a native python dictionary, correcting and stripping
-            return eval( jsonSource.strip() )
+            return eval( jsonSource.replace( "\\/", "/" ).strip() )
         except:
             # oops return an empty dictionary
             print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
