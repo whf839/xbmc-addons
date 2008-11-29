@@ -55,7 +55,7 @@
                 <posy>50</posy>
                 <width>630</width>
                 <height>445</height>
-                <imagepath diffuse="twc-fanart-diffuse.png">$INFO[Skin.String(twc-fanart-path)]$INFO[Weather.Conditions]</imagepath>
+                <imagepath diffuse="twc-fanart-diffuse.png">$INFO[Skin.String(twc-fanart-path)]$INFO[Weather.FanartCode]</imagepath>
                 <timeperimage>5000</timeperimage>
                 <pauseatend>0</pauseatend>
                 <fadetime>1000</fadetime>
@@ -241,7 +241,7 @@
                 <height>2</height>
                 <texture>twc-solid.png</texture>
                 <aspectratio>stretch</aspectratio>
-                <visible>!IsEmpty(Container(50).Property(view-Maps))</visible>
+                <visible>!IsEmpty(Window.Property(view-Maps))</visible>
             </control>
             <control type="image">
                 <description>tab2 selected</description>
@@ -251,7 +251,7 @@
                 <height>2</height>
                 <texture>twc-solid.png</texture>
                 <aspectratio>stretch</aspectratio>
-                <visible>!IsEmpty(Container(50).Property(view-36Hour))</visible>
+                <visible>!IsEmpty(Window.Property(view-36Hour))</visible>
             </control>
             <control type="image">
                 <description>tab3 selected</description>
@@ -261,7 +261,7 @@
                 <height>2</height>
                 <texture>twc-solid.png</texture>
                 <aspectratio>stretch</aspectratio>
-                <visible>!IsEmpty(Container(50).Property(view-HourByHour))</visible>
+                <visible>!IsEmpty(Window.Property(view-HourByHour))</visible>
             </control>
             <control type="image">
                 <description>tab4 selected</description>
@@ -271,7 +271,7 @@
                 <height>2</height>
                 <texture>twc-solid.png</texture>
                 <aspectratio>stretch</aspectratio>
-                <visible>!IsEmpty(Container(50).Property(view-Weekend))</visible>
+                <visible>!IsEmpty(Window.Property(view-Weekend))</visible>
             </control>
             <control type="image">
                 <description>tab5 selected</description>
@@ -281,7 +281,7 @@
                 <height>2</height>
                 <texture>twc-solid.png</texture>
                 <aspectratio>stretch</aspectratio>
-                <visible>!IsEmpty(Container(50).Property(view-10Day))</visible>
+                <visible>!IsEmpty(Window.Property(view-10Day))</visible>
             </control>
             <control type="image">
                 <description>tab6 selected</description>
@@ -291,7 +291,7 @@
                 <height>2</height>
                 <texture>twc-solid.png</texture>
                 <aspectratio>stretch</aspectratio>
-                <visible>!IsEmpty(Container(50).Property(view-Settings))</visible>
+                <visible>!IsEmpty(Window.Property(view-Settings))</visible>
             </control>
         </control>
 
@@ -301,7 +301,7 @@
             <control type="group">
                 <posx>75</posx>
                 <posy>150</posy>
-                <visible>!IsEmpty(Container(50).Property(view-Maps))</visible>
+                <visible>!IsEmpty(Window.Property(view-Maps))</visible>
                 <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
                 <!-- Maps list ** Required ** -->
                 <control type="list" id="500">
@@ -435,7 +435,7 @@
                     <loop>yes</loop>
                     <aspectratio>keep</aspectratio>
                     <!-- animation is used for zooming map -->
-                    <animation effect="zoom" reversible="true" center="532,135" start="100" end="195" time="100" condition="!IsEmpty(Container(50).Property(Toggle))">Conditional</animation>
+                    <animation effect="zoom" reversible="true" center="532,135" start="100" end="195" time="100" condition="!IsEmpty(Window.Property(Toggle))">Conditional</animation>
                 </control>
                 <!-- Toggle map button -->
                 <control type="button" id="301">
@@ -454,7 +454,7 @@
                     <texturenofocus>-</texturenofocus>
                     <texturefocus>-</texturefocus>
                     <!-- animation is used for zoomed map -->
-                    <animation effect="zoom" reversible="true" center="532,135" start="100" end="195" time="100" condition="!IsEmpty(Container(50).Property(Toggle))">Conditional</animation>
+                    <animation effect="zoom" reversible="true" center="532,135" start="100" end="195" time="100" condition="!IsEmpty(Window.Property(Toggle))">Conditional</animation>
                 </control>
             </control>
 
@@ -464,7 +464,7 @@
                 <ondown>2000</ondown>
                 <posx>75</posx>
                 <posy>150</posy>
-                <visible>!IsEmpty(Container(50).Property(view-36Hour))</visible>
+                <visible>!IsEmpty(Window.Property(view-36Hour))</visible>
                 <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
                 <!-- Loading label used to inform user when fetching info -->
                 <control type="label">
@@ -478,12 +478,12 @@
                     <aligny>top</aligny>
                     <align>center</align>
                     <label>SCRIPT101</label>
-                    <visible>IsEmpty(Container(50).Property(36Hour1title))</visible>
+                    <visible>IsEmpty(Window.Property(36Hour1title))</visible>
                     <animation effect="zoom" reversible="false" center="auto" start="100" end="200" time="0">WindowOpen</animation>
                 </control>
                 <!-- Forecast main group -->
                 <control type="group">
-                    <visible>!IsEmpty(Container(50).Property(36Hour1title))</visible>
+                    <visible>!IsEmpty(Window.Property(36Hour1title))</visible>
                     <posx>7</posx>
                     <posy>3</posy>
                     <!-- Section background -->
@@ -528,7 +528,7 @@
                             <height>24</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <info>Container(50).Property(36Hour1title)</info>
+                            <info>Window.Property(36Hour1title)</info>
                             <aligny>center</aligny>
                             <align>center</align>
                         </control>
@@ -540,7 +540,7 @@
                             <width>64</width>
                             <height>64</height>
                             <aspectratio>keep</aspectratio>
-                            <info>Container(50).Property(36Hour1icon)</info>
+                            <info>Window.Property(36Hour1icon)</info>
                         </control>
                         <!-- Brief weather outlook -->
                         <control type="label">
@@ -554,7 +554,7 @@
                             <aligny>top</aligny>
                             <align>center</align>
                             <wrapmultiline>true</wrapmultiline>
-                            <info>Container(50).Property(36Hour1brief)</info>
+                            <info>Window.Property(36Hour1brief)</info>
                         </control>
                         <!-- Forecasted temperature heading -->
                         <control type="label">
@@ -567,7 +567,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <aligny>bottom</aligny>
                             <align>center</align>
-                            <info>Container(50).Property(36Hour1temptitle)</info>
+                            <info>Window.Property(36Hour1temptitle)</info>
                         </control>
                         <!-- Forecasted temperature -->
                         <control type="label">
@@ -580,7 +580,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <aligny>top</aligny>
                             <align>center</align>
-                            <info>Container(50).Property(36Hour1temp)</info>
+                            <info>Window.Property(36Hour1temp)</info>
                             <animation effect="zoom" reversible="false" center="auto" start="100" end="170" time="0">WindowOpen</animation>
                         </control>
                         <!-- Forecasted precipitation title -->
@@ -594,7 +594,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <aligny>bottom</aligny>
                             <align>center</align>
-                            <info>Container(50).Property(36Hour1preciptitle)</info>
+                            <info>Window.Property(36Hour1preciptitle)</info>
                         </control>
                         <!-- Forecasted precipitation -->
                         <control type="label">
@@ -607,7 +607,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <aligny>top</aligny>
                             <align>center</align>
-                            <info>Container(50).Property(36Hour1precip)</info>
+                            <info>Window.Property(36Hour1precip)</info>
                             <animation effect="zoom" reversible="false" center="auto" start="100" end="150" time="0">WindowOpen</animation>
                         </control>
                         <!-- Outlook -->
@@ -621,7 +621,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>left</align>
                             <aligny>top</aligny>
-                            <info>Container(50).Property(36Hour1outlook)</info>
+                            <info>Window.Property(36Hour1outlook)</info>
                             <autoscroll time="2000" delay="6000" repeat="6000">VisibleChange</autoscroll>
                         </control>
                         <!-- Sunrise/Sunset -->
@@ -635,7 +635,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <aligny>center</aligny>
                             <align>center</align>
-                            <info>Container(50).Property(36Hour1daylight)</info>
+                            <info>Window.Property(36Hour1daylight)</info>
                         </control>
                     </control>
                     <!-- Second 12 hour forecast -->
@@ -669,7 +669,7 @@
                             <height>24</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <info>Container(50).Property(36Hour2title)</info>
+                            <info>Window.Property(36Hour2title)</info>
                             <aligny>center</aligny>
                             <align>center</align>
                         </control>
@@ -681,7 +681,7 @@
                             <width>64</width>
                             <height>64</height>
                             <aspectratio>keep</aspectratio>
-                            <info>Container(50).Property(36Hour2icon)</info>
+                            <info>Window.Property(36Hour2icon)</info>
                         </control>
                         <!-- Brief weather outlook -->
                         <control type="label">
@@ -695,7 +695,7 @@
                             <aligny>top</aligny>
                             <align>center</align>
                             <wrapmultiline>true</wrapmultiline>
-                            <info>Container(50).Property(36Hour2brief)</info>
+                            <info>Window.Property(36Hour2brief)</info>
                         </control>
                         <!-- Forecasted temperature heading -->
                         <control type="label">
@@ -708,7 +708,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <aligny>bottom</aligny>
                             <align>center</align>
-                            <info>Container(50).Property(36Hour2temptitle)</info>
+                            <info>Window.Property(36Hour2temptitle)</info>
                         </control>
                         <!-- Forecasted temperature -->
                         <control type="label">
@@ -721,7 +721,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <aligny>top</aligny>
                             <align>center</align>
-                            <info>Container(50).Property(36Hour2temp)</info>
+                            <info>Window.Property(36Hour2temp)</info>
                             <animation effect="zoom" reversible="false" center="auto" start="100" end="170" time="0">WindowOpen</animation>
                         </control>
                         <!-- Forecasted precipitation title -->
@@ -735,7 +735,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <aligny>bottom</aligny>
                             <align>center</align>
-                            <info>Container(50).Property(36Hour2preciptitle)</info>
+                            <info>Window.Property(36Hour2preciptitle)</info>
                         </control>
                         <!-- Forecasted precipitation -->
                         <control type="label">
@@ -748,7 +748,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <aligny>top</aligny>
                             <align>center</align>
-                            <info>Container(50).Property(36Hour2precip)</info>
+                            <info>Window.Property(36Hour2precip)</info>
                             <animation effect="zoom" reversible="false" center="auto" start="100" end="150" time="0">WindowOpen</animation>
                         </control>
                         <!-- Outlook -->
@@ -762,7 +762,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>left</align>
                             <aligny>top</aligny>
-                            <info>Container(50).Property(36Hour2outlook)</info>
+                            <info>Window.Property(36Hour2outlook)</info>
                             <autoscroll time="2000" delay="6000" repeat="6000">VisibleChange</autoscroll>
                         </control>
                         <!-- Sunrise/Sunset -->
@@ -776,7 +776,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <aligny>center</aligny>
                             <align>center</align>
-                            <info>Container(50).Property(36Hour2daylight)</info>
+                            <info>Window.Property(36Hour2daylight)</info>
                         </control>
                     </control>
                     <!-- Third 12 hour forecast -->
@@ -810,7 +810,7 @@
                             <height>24</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
-                            <info>Container(50).Property(36Hour3title)</info>
+                            <info>Window.Property(36Hour3title)</info>
                             <aligny>center</aligny>
                             <align>center</align>
                         </control>
@@ -822,7 +822,7 @@
                             <width>64</width>
                             <height>64</height>
                             <aspectratio>keep</aspectratio>
-                            <info>Container(50).Property(36Hour3icon)</info>
+                            <info>Window.Property(36Hour3icon)</info>
                         </control>
                         <!-- Brief weather outlook -->
                         <control type="label">
@@ -836,7 +836,7 @@
                             <aligny>top</aligny>
                             <align>center</align>
                             <wrapmultiline>true</wrapmultiline>
-                            <info>Container(50).Property(36Hour3brief)</info>
+                            <info>Window.Property(36Hour3brief)</info>
                         </control>
                         <!-- Forecasted temperature heading -->
                         <control type="label">
@@ -849,7 +849,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <aligny>bottom</aligny>
                             <align>center</align>
-                            <info>Container(50).Property(36Hour3temptitle)</info>
+                            <info>Window.Property(36Hour3temptitle)</info>
                         </control>
                         <!-- Forecasted temperature -->
                         <control type="label">
@@ -862,7 +862,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <aligny>top</aligny>
                             <align>center</align>
-                            <info>Container(50).Property(36Hour3temp)</info>
+                            <info>Window.Property(36Hour3temp)</info>
                             <animation effect="zoom" reversible="false" center="auto" start="100" end="170" time="0">WindowOpen</animation>
                         </control>
                         <!-- Forecasted precipitation title -->
@@ -876,7 +876,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <aligny>bottom</aligny>
                             <align>center</align>
-                            <info>Container(50).Property(36Hour3preciptitle)</info>
+                            <info>Window.Property(36Hour3preciptitle)</info>
                         </control>
                         <!-- Forecasted precipitation -->
                         <control type="label">
@@ -889,7 +889,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <aligny>top</aligny>
                             <align>center</align>
-                            <info>Container(50).Property(36Hour3precip)</info>
+                            <info>Window.Property(36Hour3precip)</info>
                             <animation effect="zoom" reversible="false" center="auto" start="100" end="150" time="0">WindowOpen</animation>
                         </control>
                         <!-- Outlook -->
@@ -903,7 +903,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>left</align>
                             <aligny>top</aligny>
-                            <info>Container(50).Property(36Hour3outlook)</info>
+                            <info>Window.Property(36Hour3outlook)</info>
                             <autoscroll time="2000" delay="6000" repeat="6000">VisibleChange</autoscroll>
                         </control>
                         <!-- Sunrise/Sunset -->
@@ -917,7 +917,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <aligny>center</aligny>
                             <align>center</align>
-                            <info>Container(50).Property(36Hour3daylight)</info>
+                            <info>Window.Property(36Hour3daylight)</info>
                         </control>
                     </control>
                 </control>
@@ -939,7 +939,7 @@
             <control type="group">
                 <posx>75</posx>
                 <posy>150</posy>
-                <visible>!IsEmpty(Container(50).Property(view-HourByHour))</visible>
+                <visible>!IsEmpty(Window.Property(view-HourByHour))</visible>
                 <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
                 <!-- Loading label used to inform user when fetching info -->
                 <control type="label">
@@ -953,11 +953,11 @@
                     <align>center</align>
                     <aligny>top</aligny>
                     <label>SCRIPT102</label>
-                    <visible>IsEmpty(Container(50).Property(HBHHead1))</visible>
+                    <visible>IsEmpty(Window.Property(HBHHead1))</visible>
                     <animation effect="zoom" reversible="false" center="auto" start="100" end="200" time="0">WindowOpen</animation>
                 </control>
                 <control type="group">
-                    <visible>!IsEmpty(Container(50).Property(HBHHead1))</visible>
+                    <visible>!IsEmpty(Window.Property(HBHHead1))</visible>
                     <!-- Time heading -->
                     <control type="label">
                         <posx>10</posx>
@@ -968,7 +968,7 @@
                         <textcolor>DDFFFFFF</textcolor>
                         <align>center</align>
                         <aligny>center</aligny>
-                        <info>Container(50).Property(HBHHead1)</info>
+                        <info>Window.Property(HBHHead1)</info>
                     </control>
                     <!-- Condition heading -->
                     <control type="label">
@@ -980,7 +980,7 @@
                         <textcolor>DDFFFFFF</textcolor>
                         <align>center</align>
                         <aligny>center</aligny>
-                        <info>Container(50).Property(HBHHead2)</info>
+                        <info>Window.Property(HBHHead2)</info>
                     </control>
                     <!-- Feels like heading -->
                     <control type="label">
@@ -993,7 +993,7 @@
                         <align>center</align>
                         <aligny>center</aligny>
                         <wrapmultiline>true</wrapmultiline>
-                        <info>Container(50).Property(HBHHead3)</info>
+                        <info>Window.Property(HBHHead3)</info>
                     </control>
                     <!-- Chance of precipitation heading -->
                     <control type="label">
@@ -1006,7 +1006,7 @@
                         <align>center</align>
                         <aligny>center</aligny>
                         <wrapmultiline>true</wrapmultiline>
-                        <info>Container(50).Property(HBHHead4)</info>
+                        <info>Window.Property(HBHHead4)</info>
                     </control>
                     <!-- Dew point heading -->
                     <!--control type="label">
@@ -1019,7 +1019,7 @@
                         <align>center</align>
                         <aligny>center</aligny>
                         <wrapmultiline>true</wrapmultiline>
-                        <info>Container(50).Property(HBHHead5)</info>
+                        <info>Window.Property(HBHHead5)</info>
                     </control-->
                     <!-- Humidity heading -->
                     <control type="label">
@@ -1032,7 +1032,7 @@
                         <align>center</align>
                         <aligny>center</aligny>
                         <wrapmultiline>true</wrapmultiline>
-                        <info>Container(50).Property(HBHHead5)</info>
+                        <info>Window.Property(HBHHead5)</info>
                     </control>
                     <!-- Wind heading -->
                     <control type="label">
@@ -1044,7 +1044,7 @@
                         <textcolor>DDFFFFFF</textcolor>
                         <align>center</align>
                         <aligny>center</aligny>
-                        <info>Container(50).Property(HBHHead6)</info>
+                        <info>Window.Property(HBHHead6)</info>
                     </control>
                     <!-- Forecast list ** required ** -->
                     <control type="list" id="600">
@@ -1346,7 +1346,7 @@
             <control type="group">
                 <posx>75</posx>
                 <posy>150</posy>
-                <visible>!IsEmpty(Container(50).Property(view-Weekend))</visible>
+                <visible>!IsEmpty(Window.Property(view-Weekend))</visible>
                 <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
                 <!-- Loading label used to inform user when fetching info -->
                 <control type="label">
@@ -1360,7 +1360,7 @@
                     <align>center</align>
                     <aligny>top</aligny>
                     <label>SCRIPT103</label>
-                    <visible>IsEmpty(Container(50).Property(Weekend3day))</visible>
+                    <visible>IsEmpty(Window.Property(Weekend3day))</visible>
                     <animation effect="zoom" reversible="false" center="auto" start="100" end="200" time="0">WindowOpen</animation>
                 </control>
                 <!-- Details/Outlook toggle button -->
@@ -1383,7 +1383,7 @@
                     <onright>2000</onright>
                     <onup>2000</onup>
                     <ondown>2000</ondown>
-                    <visible>[!IsEmpty(Container(50).Property(Weekend1outlook)) | !IsEmpty(Container(50).Property(Weekend2outlook)) | !IsEmpty(Container(50).Property(Weekend3outlook)) ] + !IsEmpty(Container(50).Property(Weekend3day))</visible> 
+                    <visible>[!IsEmpty(Window.Property(Weekend1outlook)) | !IsEmpty(Window.Property(Weekend2outlook)) | !IsEmpty(Window.Property(Weekend3outlook)) ] + !IsEmpty(Window.Property(Weekend3day))</visible> 
                 </control>
                 <!-- Details label -->
                 <control type="label">
@@ -1397,7 +1397,7 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <label>SCRIPT300</label>
-                    <visible>IsEmpty(Container(50).Property(WeekendToggle)) + Control.Isvisible(300)</visible>
+                    <visible>IsEmpty(Window.Property(WeekendToggle)) + Control.Isvisible(300)</visible>
                 </control>
                 <!-- Outlook label -->
                 <control type="label">
@@ -1411,11 +1411,11 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <label>SCRIPT301</label>
-                    <visible>!IsEmpty(Container(50).Property(WeekendToggle)) + Control.Isvisible(300)</visible>
+                    <visible>!IsEmpty(Window.Property(WeekendToggle)) + Control.Isvisible(300)</visible>
                 </control>
                 <!-- Forecast main group -->
                 <control type="group">
-                    <visible>!IsEmpty(Container(50).Property(Weekend1day))</visible>
+                    <visible>!IsEmpty(Window.Property(Weekend1day))</visible>
                     <posx>7</posx>
                     <posy>3</posy>
                     <!-- Section background -->
@@ -1444,7 +1444,7 @@
                             <textcolor>FFFF0000</textcolor>
                             <align>center</align>
                             <aligny>center</aligny>
-                            <info>Container(50).Property(Weekend1alert)</info>
+                            <info>Window.Property(Weekend1alert)</info>
                         </control>
                         <!-- Forecast background -->
                         <control type="image">
@@ -1475,7 +1475,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>center</align>
                             <aligny>center</aligny>
-                            <info>Container(50).Property(Weekend1day)</info>
+                            <info>Window.Property(Weekend1day)</info>
                         </control>
                         <!-- Forecast date-->
                         <control type="label">
@@ -1488,7 +1488,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>right</align>
                             <aligny>center</aligny>
-                            <info>Container(50).Property(Weekend1date)</info>
+                            <info>Window.Property(Weekend1date)</info>
                         </control>
                         <!-- Weather icon -->
                         <control type="image">
@@ -1498,7 +1498,7 @@
                             <width>64</width>
                             <height>64</height>
                             <aspectratio>keep</aspectratio>
-                            <info>Container(50).Property(Weekend1icon)</info>
+                            <info>Window.Property(Weekend1icon)</info>
                         </control>
                         <!-- Brief weather outlook -->
                         <control type="label">
@@ -1512,7 +1512,7 @@
                             <align>center</align>
                             <aligny>top</aligny>
                             <wrapmultiline>true</wrapmultiline>
-                            <info>Container(50).Property(Weekend1brief)</info>
+                            <info>Window.Property(Weekend1brief)</info>
                         </control>
                         <!-- Forecasted high temp title -->
                         <control type="label">
@@ -1525,7 +1525,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>center</align>
                             <aligny>bottom</aligny>
-                            <info>Container(50).Property(Weekend1hightitle)</info>
+                            <info>Window.Property(Weekend1hightitle)</info>
                         </control>
                         <!-- Forecasted high temp -->
                         <control type="label">
@@ -1538,7 +1538,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <aligny>top</aligny>
                             <align>center</align>
-                            <info>Container(50).Property(Weekend1hightemp)</info>
+                            <info>Window.Property(Weekend1hightemp)</info>
                             <animation effect="zoom" reversible="false" center="auto" start="100" end="170" time="0">WindowOpen</animation>
                         </control>
                         <!-- Forecasted low temp title -->
@@ -1552,7 +1552,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>center</align>
                             <aligny>bottom</aligny>
-                            <info>Container(50).Property(Weekend1lowtitle)</info>
+                            <info>Window.Property(Weekend1lowtitle)</info>
                         </control>
                         <!-- Forecasted low temp -->
                         <control type="label">
@@ -1565,7 +1565,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>center</align>
                             <aligny>top</aligny>
-                            <info>Container(50).Property(Weekend1lowtemp)</info>
+                            <info>Window.Property(Weekend1lowtemp)</info>
                             <animation effect="zoom" reversible="false" center="auto" start="100" end="150" time="0">WindowOpen</animation>
                         </control>
                         <!-- Forecasted precipitation -->
@@ -1579,11 +1579,11 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>center</align>
                             <aligny>center</aligny>
-                            <label>$INFO[Container(50).Property(Weekend1preciptitle)] $INFO[Container(50).Property(Weekend1precip)]</label>
+                            <label>$INFO[Window.Property(Weekend1preciptitle)] $INFO[Window.Property(Weekend1precip)]</label>
                         </control>
                         <!-- Details -->
                         <control type="group">
-                            <visible>[!IsEmpty(Container(50).Property(WeekendToggle)) | IsEmpty(Container(50).Property(Weekend1outlook))] + IsEmpty(Container(50).Property(Weekend1observed))</visible>
+                            <visible>[!IsEmpty(Window.Property(WeekendToggle)) | IsEmpty(Window.Property(Weekend1outlook))] + IsEmpty(Window.Property(Weekend1observed))</visible>
                             <!-- Forecasted wind -->
                             <control type="label">
                                 <description>wind</description>
@@ -1595,7 +1595,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend1windtitle)] $INFO[Container(50).Property(Weekend1wind)]</label>
+                                <label>$INFO[Window.Property(Weekend1windtitle)] $INFO[Window.Property(Weekend1wind)]</label>
                             </control>
                             <!-- Forecasted uv index -->
                             <control type="label">
@@ -1608,7 +1608,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend1uvtitle)] $INFO[Container(50).Property(Weekend1uv)]</label>
+                                <label>$INFO[Window.Property(Weekend1uvtitle)] $INFO[Window.Property(Weekend1uv)]</label>
                             </control>
                             <!-- Forecasted humidty -->
                             <control type="label">
@@ -1621,7 +1621,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend1humiditytitle)] $INFO[Container(50).Property(Weekend1humidity)]</label>
+                                <label>$INFO[Window.Property(Weekend1humiditytitle)] $INFO[Window.Property(Weekend1humidity)]</label>
                             </control>
                             <!-- Forecasted sunrise -->
                             <control type="label">
@@ -1634,7 +1634,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend1sunrisetitle)] $INFO[Container(50).Property(Weekend1sunrise)]</label>
+                                <label>$INFO[Window.Property(Weekend1sunrisetitle)] $INFO[Window.Property(Weekend1sunrise)]</label>
                             </control>
                             <!-- Forecasted sunset -->
                             <control type="label">
@@ -1647,12 +1647,12 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend1sunsettitle)] $INFO[Container(50).Property(Weekend1sunset)]</label>
+                                <label>$INFO[Window.Property(Weekend1sunsettitle)] $INFO[Window.Property(Weekend1sunset)]</label>
                             </control>
                         </control>
                         <!-- Observed, averages and records-->
                         <control type="group">
-                            <visible>!IsEmpty(Container(50).Property(Weekend1Observed))</visible>
+                            <visible>!IsEmpty(Window.Property(Weekend1Observed))</visible>
                             <!-- Observed -->
                             <control type="label">
                                 <description>observed</description>
@@ -1664,7 +1664,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend1observed)]</label>
+                                <label>$INFO[Window.Property(Weekend1observed)]</label>
                             </control>
                             <!-- Observed precipitation -->
                             <control type="label">
@@ -1677,7 +1677,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend1observedpreciptitle)] $INFO[Container(50).Property(Weekend1observedprecip)]</label>
+                                <label>$INFO[Window.Property(Weekend1observedpreciptitle)] $INFO[Window.Property(Weekend1observedprecip)]</label>
                             </control>
                             <!-- Observed avg high -->
                             <control type="label">
@@ -1690,7 +1690,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend1observedavghightitle)] $INFO[Container(50).Property(Weekend1observedavghigh)]</label>
+                                <label>$INFO[Window.Property(Weekend1observedavghightitle)] $INFO[Window.Property(Weekend1observedavghigh)]</label>
                             </control>
                             <!-- Observed avg low -->
                             <control type="label">
@@ -1703,7 +1703,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend1observedavglowtitle)] $INFO[Container(50).Property(Weekend1observedavglow)]</label>
+                                <label>$INFO[Window.Property(Weekend1observedavglowtitle)] $INFO[Window.Property(Weekend1observedavglow)]</label>
                             </control>
                             <!-- Observed record high -->
                             <control type="label">
@@ -1716,7 +1716,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend1observedrecordhightitle)] $INFO[Container(50).Property(Weekend1observedrecordhigh)]</label>
+                                <label>$INFO[Window.Property(Weekend1observedrecordhightitle)] $INFO[Window.Property(Weekend1observedrecordhigh)]</label>
                             </control>
                             <!-- Observed record low -->
                             <control type="label">
@@ -1729,7 +1729,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend1observedrecordlowtitle)] $INFO[Container(50).Property(Weekend1observedrecordlow)]</label>
+                                <label>$INFO[Window.Property(Weekend1observedrecordlowtitle)] $INFO[Window.Property(Weekend1observedrecordlow)]</label>
                             </control>
                         </control>
                         <!-- Forecast outlook-->
@@ -1743,8 +1743,8 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>left</align>
                             <aligny>top</aligny>
-                            <info>Container(50).Property(Weekend1outlook)</info>
-                            <visible>IsEmpty(Container(50).Property(WeekendToggle))</visible>
+                            <info>Window.Property(Weekend1outlook)</info>
+                            <visible>IsEmpty(Window.Property(WeekendToggle))</visible>
                             <autoscroll time="2000" delay="6000" repeat="6000">VisibleChange</autoscroll>
                         </control>
                     </control>
@@ -1763,7 +1763,7 @@
                             <textcolor>FFFF0000</textcolor>
                             <align>center</align>
                             <aligny>center</aligny>
-                            <info>Container(50).Property(Weekend2alert)</info>
+                            <info>Window.Property(Weekend2alert)</info>
                         </control>
                         <!-- Forecast background -->
                         <control type="image">
@@ -1794,7 +1794,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>center</align>
                             <aligny>center</aligny>
-                            <info>Container(50).Property(Weekend2day)</info>
+                            <info>Window.Property(Weekend2day)</info>
                         </control>
                         <!-- Forecast date-->
                         <control type="label">
@@ -1807,7 +1807,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>right</align>
                             <aligny>center</aligny>
-                            <info>Container(50).Property(Weekend2date)</info>
+                            <info>Window.Property(Weekend2date)</info>
                         </control>
                         <!-- Weather icon -->
                         <control type="image">
@@ -1817,7 +1817,7 @@
                             <width>64</width>
                             <height>64</height>
                             <aspectratio>keep</aspectratio>
-                            <info>Container(50).Property(Weekend2icon)</info>
+                            <info>Window.Property(Weekend2icon)</info>
                         </control>
                         <!-- Brief weather outlook -->
                         <control type="label">
@@ -1831,7 +1831,7 @@
                             <align>center</align>
                             <aligny>top</aligny>
                             <wrapmultiline>true</wrapmultiline>
-                            <info>Container(50).Property(Weekend2brief)</info>
+                            <info>Window.Property(Weekend2brief)</info>
                         </control>
                         <!-- Forecasted high temp title -->
                         <control type="label">
@@ -1844,7 +1844,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>center</align>
                             <aligny>bottom</aligny>
-                            <info>Container(50).Property(Weekend2hightitle)</info>
+                            <info>Window.Property(Weekend2hightitle)</info>
                         </control>
                         <!-- Forecasted high temp -->
                         <control type="label">
@@ -1857,7 +1857,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <aligny>top</aligny>
                             <align>center</align>
-                            <info>Container(50).Property(Weekend2hightemp)</info>
+                            <info>Window.Property(Weekend2hightemp)</info>
                             <animation effect="zoom" reversible="false" center="auto" start="100" end="170" time="0">WindowOpen</animation>
                         </control>
                         <!-- Forecasted low temp title -->
@@ -1871,7 +1871,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>center</align>
                             <aligny>bottom</aligny>
-                            <info>Container(50).Property(Weekend2lowtitle)</info>
+                            <info>Window.Property(Weekend2lowtitle)</info>
                         </control>
                         <!-- Forecasted low temp -->
                         <control type="label">
@@ -1884,7 +1884,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>center</align>
                             <aligny>top</aligny>
-                            <info>Container(50).Property(Weekend2lowtemp)</info>
+                            <info>Window.Property(Weekend2lowtemp)</info>
                             <animation effect="zoom" reversible="false" center="auto" start="100" end="150" time="0">WindowOpen</animation>
                         </control>
                         <!-- Forecasted precipitation -->
@@ -1898,11 +1898,11 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>center</align>
                             <aligny>center</aligny>
-                            <label>$INFO[Container(50).Property(Weekend2preciptitle)] $INFO[Container(50).Property(Weekend2precip)]</label>
+                            <label>$INFO[Window.Property(Weekend2preciptitle)] $INFO[Window.Property(Weekend2precip)]</label>
                         </control>
                         <!-- Details -->
                         <control type="group">
-                            <visible>[!IsEmpty(Container(50).Property(WeekendToggle)) | IsEmpty(Container(50).Property(Weekend2outlook))] + IsEmpty(Container(50).Property(Weekend2observed))</visible>
+                            <visible>[!IsEmpty(Window.Property(WeekendToggle)) | IsEmpty(Window.Property(Weekend2outlook))] + IsEmpty(Window.Property(Weekend2observed))</visible>
                             <!-- Forecasted wind -->
                             <control type="label">
                                 <description>wind</description>
@@ -1914,7 +1914,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend2windtitle)] $INFO[Container(50).Property(Weekend2wind)]</label>
+                                <label>$INFO[Window.Property(Weekend2windtitle)] $INFO[Window.Property(Weekend2wind)]</label>
                             </control>
                             <!-- Forecasted uv index -->
                             <control type="label">
@@ -1927,7 +1927,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend2uvtitle)] $INFO[Container(50).Property(Weekend2uv)]</label>
+                                <label>$INFO[Window.Property(Weekend2uvtitle)] $INFO[Window.Property(Weekend2uv)]</label>
                             </control>
                             <!-- Forecasted humidty -->
                             <control type="label">
@@ -1940,7 +1940,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend2humiditytitle)] $INFO[Container(50).Property(Weekend2humidity)]</label>
+                                <label>$INFO[Window.Property(Weekend2humiditytitle)] $INFO[Window.Property(Weekend2humidity)]</label>
                             </control>
                             <!-- Forecasted sunrise -->
                             <control type="label">
@@ -1953,7 +1953,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend2sunrisetitle)] $INFO[Container(50).Property(Weekend2sunrise)]</label>
+                                <label>$INFO[Window.Property(Weekend2sunrisetitle)] $INFO[Window.Property(Weekend2sunrise)]</label>
                             </control>
                             <!-- Forecasted sunset -->
                             <control type="label">
@@ -1966,12 +1966,12 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend2sunsettitle)] $INFO[Container(50).Property(Weekend2sunset)]</label>
+                                <label>$INFO[Window.Property(Weekend2sunsettitle)] $INFO[Window.Property(Weekend2sunset)]</label>
                             </control>
                         </control>
                         <!-- Observed, averages and records-->
                         <control type="group">
-                            <visible>!IsEmpty(Container(50).Property(Weekend2Observed))</visible>
+                            <visible>!IsEmpty(Window.Property(Weekend2Observed))</visible>
                             <!-- Observed -->
                             <control type="label">
                                 <description>observed</description>
@@ -1983,7 +1983,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend2observed)]</label>
+                                <label>$INFO[Window.Property(Weekend2observed)]</label>
                             </control>
                             <!-- Observed precipitation -->
                             <control type="label">
@@ -1996,7 +1996,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend2observedpreciptitle)] $INFO[Container(50).Property(Weekend2observedprecip)]</label>
+                                <label>$INFO[Window.Property(Weekend2observedpreciptitle)] $INFO[Window.Property(Weekend2observedprecip)]</label>
                             </control>
                             <!-- Observed avg high -->
                             <control type="label">
@@ -2009,7 +2009,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend2observedavghightitle)] $INFO[Container(50).Property(Weekend2observedavghigh)]</label>
+                                <label>$INFO[Window.Property(Weekend2observedavghightitle)] $INFO[Window.Property(Weekend2observedavghigh)]</label>
                             </control>
                             <!-- Observed avg low -->
                             <control type="label">
@@ -2022,7 +2022,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend2observedavglowtitle)] $INFO[Container(50).Property(Weekend2observedavglow)]</label>
+                                <label>$INFO[Window.Property(Weekend2observedavglowtitle)] $INFO[Window.Property(Weekend2observedavglow)]</label>
                             </control>
                             <!-- Observed record high -->
                             <control type="label">
@@ -2035,7 +2035,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend2observedrecordhightitle)] $INFO[Container(50).Property(Weekend2observedrecordhigh)]</label>
+                                <label>$INFO[Window.Property(Weekend2observedrecordhightitle)] $INFO[Window.Property(Weekend2observedrecordhigh)]</label>
                             </control>
                             <!-- Observed record low -->
                             <control type="label">
@@ -2048,7 +2048,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend2observedrecordlowtitle)] $INFO[Container(50).Property(Weekend2observedrecordlow)]</label>
+                                <label>$INFO[Window.Property(Weekend2observedrecordlowtitle)] $INFO[Window.Property(Weekend2observedrecordlow)]</label>
                             </control>
                         </control>
                         <!-- Forecast outlook-->
@@ -2062,8 +2062,8 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>left</align>
                             <aligny>top</aligny>
-                            <info>Container(50).Property(Weekend2outlook)</info>
-                            <visible>IsEmpty(Container(50).Property(WeekendToggle))</visible>
+                            <info>Window.Property(Weekend2outlook)</info>
+                            <visible>IsEmpty(Window.Property(WeekendToggle))</visible>
                             <autoscroll time="2000" delay="6000" repeat="6000">VisibleChange</autoscroll>
                         </control>
                     </control>
@@ -2082,7 +2082,7 @@
                             <textcolor>FFFF0000</textcolor>
                             <align>center</align>
                             <aligny>center</aligny>
-                            <info>Container(50).Property(Weekend3alert)</info>
+                            <info>Window.Property(Weekend3alert)</info>
                         </control>
                         <!-- Forecast background -->
                         <control type="image">
@@ -2113,7 +2113,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>center</align>
                             <aligny>center</aligny>
-                            <info>Container(50).Property(Weekend3day)</info>
+                            <info>Window.Property(Weekend3day)</info>
                         </control>
                         <!-- Forecast date-->
                         <control type="label">
@@ -2126,7 +2126,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>right</align>
                             <aligny>center</aligny>
-                            <info>Container(50).Property(Weekend3date)</info>
+                            <info>Window.Property(Weekend3date)</info>
                         </control>
                         <!-- Weather icon -->
                         <control type="image">
@@ -2136,7 +2136,7 @@
                             <width>64</width>
                             <height>64</height>
                             <aspectratio>keep</aspectratio>
-                            <info>Container(50).Property(Weekend3icon)</info>
+                            <info>Window.Property(Weekend3icon)</info>
                         </control>
                         <!-- Brief weather outlook -->
                         <control type="label">
@@ -2150,7 +2150,7 @@
                             <align>center</align>
                             <aligny>top</aligny>
                             <wrapmultiline>true</wrapmultiline>
-                            <info>Container(50).Property(Weekend3brief)</info>
+                            <info>Window.Property(Weekend3brief)</info>
                         </control>
                         <!-- Forecasted high temp title -->
                         <control type="label">
@@ -2163,7 +2163,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>center</align>
                             <aligny>bottom</aligny>
-                            <info>Container(50).Property(Weekend3hightitle)</info>
+                            <info>Window.Property(Weekend3hightitle)</info>
                         </control>
                         <!-- Forecasted high temp -->
                         <control type="label">
@@ -2176,7 +2176,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <aligny>top</aligny>
                             <align>center</align>
-                            <info>Container(50).Property(Weekend3hightemp)</info>
+                            <info>Window.Property(Weekend3hightemp)</info>
                             <animation effect="zoom" reversible="false" center="auto" start="100" end="170" time="0">WindowOpen</animation>
                         </control>
                         <!-- Forecasted low temp title -->
@@ -2190,7 +2190,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>center</align>
                             <aligny>bottom</aligny>
-                            <info>Container(50).Property(Weekend3lowtitle)</info>
+                            <info>Window.Property(Weekend3lowtitle)</info>
                         </control>
                         <!-- Forecasted low temp -->
                         <control type="label">
@@ -2203,7 +2203,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>center</align>
                             <aligny>top</aligny>
-                            <info>Container(50).Property(Weekend3lowtemp)</info>
+                            <info>Window.Property(Weekend3lowtemp)</info>
                             <animation effect="zoom" reversible="false" center="auto" start="100" end="150" time="0">WindowOpen</animation>
                         </control>
                         <!-- Forecasted precipitation -->
@@ -2217,11 +2217,11 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>center</align>
                             <aligny>center</aligny>
-                            <label>$INFO[Container(50).Property(Weekend3preciptitle)] $INFO[Container(50).Property(Weekend3precip)]</label>
+                            <label>$INFO[Window.Property(Weekend3preciptitle)] $INFO[Window.Property(Weekend3precip)]</label>
                         </control>
                         <!-- Details -->
                         <control type="group">
-                            <visible>[!IsEmpty(Container(50).Property(WeekendToggle)) | IsEmpty(Container(50).Property(Weekend3outlook))] + IsEmpty(Container(50).Property(Weekend3observed))</visible>
+                            <visible>[!IsEmpty(Window.Property(WeekendToggle)) | IsEmpty(Window.Property(Weekend3outlook))] + IsEmpty(Window.Property(Weekend3observed))</visible>
                             <!-- Forecasted wind -->
                             <control type="label">
                                 <description>wind</description>
@@ -2233,7 +2233,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend3windtitle)] $INFO[Container(50).Property(Weekend3wind)]</label>
+                                <label>$INFO[Window.Property(Weekend3windtitle)] $INFO[Window.Property(Weekend3wind)]</label>
                             </control>
                             <!-- Forecasted uv index -->
                             <control type="label">
@@ -2246,7 +2246,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend3uvtitle)] $INFO[Container(50).Property(Weekend3uv)]</label>
+                                <label>$INFO[Window.Property(Weekend3uvtitle)] $INFO[Window.Property(Weekend3uv)]</label>
                             </control>
                             <!-- Forecasted humidty -->
                             <control type="label">
@@ -2259,7 +2259,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend3humiditytitle)] $INFO[Container(50).Property(Weekend3humidity)]</label>
+                                <label>$INFO[Window.Property(Weekend3humiditytitle)] $INFO[Window.Property(Weekend3humidity)]</label>
                             </control>
                             <!-- Forecasted sunrise -->
                             <control type="label">
@@ -2272,7 +2272,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend3sunrisetitle)] $INFO[Container(50).Property(Weekend3sunrise)]</label>
+                                <label>$INFO[Window.Property(Weekend3sunrisetitle)] $INFO[Window.Property(Weekend3sunrise)]</label>
                             </control>
                             <!-- Forecasted sunset -->
                             <control type="label">
@@ -2285,12 +2285,12 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend3sunsettitle)] $INFO[Container(50).Property(Weekend3sunset)]</label>
+                                <label>$INFO[Window.Property(Weekend3sunsettitle)] $INFO[Window.Property(Weekend3sunset)]</label>
                             </control>
                         </control>
                         <!-- Observed, averages and records-->
                         <control type="group">
-                            <visible>!IsEmpty(Container(50).Property(Weekend3Observed))</visible>
+                            <visible>!IsEmpty(Window.Property(Weekend3Observed))</visible>
                             <!-- Observed -->
                             <control type="label">
                                 <description>observed</description>
@@ -2302,7 +2302,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend3observed)]</label>
+                                <label>$INFO[Window.Property(Weekend3observed)]</label>
                             </control>
                             <!-- Observed precipitation -->
                             <control type="label">
@@ -2315,7 +2315,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend3observedpreciptitle)] $INFO[Container(50).Property(Weekend3observedprecip)]</label>
+                                <label>$INFO[Window.Property(Weekend3observedpreciptitle)] $INFO[Window.Property(Weekend3observedprecip)]</label>
                             </control>
                             <!-- Observed avg high -->
                             <control type="label">
@@ -2328,7 +2328,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend3observedavghightitle)] $INFO[Container(50).Property(Weekend3observedavghigh)]</label>
+                                <label>$INFO[Window.Property(Weekend3observedavghightitle)] $INFO[Window.Property(Weekend3observedavghigh)]</label>
                             </control>
                             <!-- Observed avg low -->
                             <control type="label">
@@ -2341,7 +2341,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend3observedavglowtitle)] $INFO[Container(50).Property(Weekend3observedavglow)]</label>
+                                <label>$INFO[Window.Property(Weekend3observedavglowtitle)] $INFO[Window.Property(Weekend3observedavglow)]</label>
                             </control>
                             <!-- Observed record high -->
                             <control type="label">
@@ -2354,7 +2354,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend3observedrecordhightitle)] $INFO[Container(50).Property(Weekend3observedrecordhigh)]</label>
+                                <label>$INFO[Window.Property(Weekend3observedrecordhightitle)] $INFO[Window.Property(Weekend3observedrecordhigh)]</label>
                             </control>
                             <!-- Observed record low -->
                             <control type="label">
@@ -2367,7 +2367,7 @@
                                 <textcolor>FFFFFFFF</textcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>$INFO[Container(50).Property(Weekend3observedrecordlowtitle)] $INFO[Container(50).Property(Weekend3observedrecordlow)]</label>
+                                <label>$INFO[Window.Property(Weekend3observedrecordlowtitle)] $INFO[Window.Property(Weekend3observedrecordlow)]</label>
                             </control>
                         </control>
                         <!-- Forecast outlook-->
@@ -2381,8 +2381,8 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>left</align>
                             <aligny>top</aligny>
-                            <info>Container(50).Property(Weekend3outlook)</info>
-                            <visible>IsEmpty(Container(50).Property(WeekendToggle))</visible>
+                            <info>Window.Property(Weekend3outlook)</info>
+                            <visible>IsEmpty(Window.Property(WeekendToggle))</visible>
                             <autoscroll time="2000" delay="6000" repeat="6000">VisibleChange</autoscroll>
                         </control>
                     </control>
@@ -2406,7 +2406,7 @@
             <control type="group">
                 <posx>75</posx>
                 <posy>150</posy>
-                <visible>!IsEmpty(Container(50).Property(view-10Day))</visible>
+                <visible>!IsEmpty(Window.Property(view-10Day))</visible>
                 <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
                 <!-- Loading label used to inform user when fetching info -->
                 <control type="label">
@@ -2420,11 +2420,11 @@
                     <align>center</align>
                     <aligny>top</aligny>
                     <label>SCRIPT104</label>
-                    <visible>IsEmpty(Container(50).Property(10DayHead1))</visible>
+                    <visible>IsEmpty(Window.Property(10DayHead1))</visible>
                     <animation effect="zoom" reversible="false" center="auto" start="100" end="200" time="0">WindowOpen</animation>
                 </control>
                 <control type="group">
-                    <visible>!IsEmpty(Container(50).Property(10DayHead1))</visible>
+                    <visible>!IsEmpty(Window.Property(10DayHead1))</visible>
                     <!-- Forecast conditions heading -->
                     <control type="label">
                         <posx>60</posx>
@@ -2436,7 +2436,7 @@
                         <selectedcolor>FFe2ff43</selectedcolor>
                         <align>center</align>
                         <aligny>center</aligny>
-                        <info>Container(50).Property(10DayHead1)</info>
+                        <info>Window.Property(10DayHead1)</info>
                     </control>
                     <!-- High/Low heading -->
                     <control type="label">
@@ -2449,7 +2449,7 @@
                         <selectedcolor>FFe2ff43</selectedcolor>
                         <align>center</align>
                         <aligny>center</aligny>
-                        <label>$INFO[Container(50).Property(10DayHead2)]&#10;$INFO[Container(50).Property(10DayHead3)]</label>
+                        <label>$INFO[Window.Property(10DayHead2)]&#10;$INFO[Window.Property(10DayHead3)]</label>
                     </control>
                     <!-- Chance of precipitation heading -->
                     <control type="label">
@@ -2463,7 +2463,7 @@
                         <align>center</align>
                         <aligny>center</aligny>
                         <wrapmultiline>true</wrapmultiline>
-                        <info>Container(50).Property(10DayHead4)</info>
+                        <info>Window.Property(10DayHead4)</info>
                     </control>
                     <!-- Wind speed heading -->
                     <control type="label">
@@ -2477,7 +2477,7 @@
                         <align>center</align>
                         <aligny>center</aligny>
                         <wrapmultiline>true</wrapmultiline>
-                        <info>Container(50).Property(10DayHead5)</info>
+                        <info>Window.Property(10DayHead5)</info>
                     </control>
                     <!-- Forecast list ** required ** -->
                     <control type="list" id="700">
@@ -2730,7 +2730,7 @@
             <control type="group">
                 <posx>75</posx>
                 <posy>150</posy>
-                <visible>!IsEmpty(Container(50).Property(view-Settings))</visible>
+                <visible>!IsEmpty(Window.Property(view-Settings))</visible>
                 <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
                 <!-- Settings 1 -->
                 <control type="radiobutton" id="400">
@@ -2920,7 +2920,7 @@
                     <textcolor>FFFFFFFF</textcolor>
                     <align>left</align>
                     <aligny>top</aligny>
-                    <label>$INFO[Container(50).Property(version)]&#10;$INFO[Container(50).Property(author)]&#10;$LOCALIZE[SCRIPT2]&#10;$INFO[Container(50).Property(defaultview)]</label>
+                    <label>$INFO[Window.Property(version)]&#10;$INFO[Window.Property(author)]&#10;$LOCALIZE[SCRIPT2]&#10;$INFO[Window.Property(defaultview)]</label>
                 </control>
                 <!-- User instruction label -->
                 <control type="label">
