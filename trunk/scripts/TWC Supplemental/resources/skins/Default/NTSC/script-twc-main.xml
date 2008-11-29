@@ -2750,12 +2750,13 @@
                     <textureradionofocus>twc-radiobutton-nofocus.png</textureradionofocus>
                     <texturefocus border="3">twc-input-focus.png</texturefocus>
                     <texturenofocus>-</texturenofocus>
+                    <pulseonselect>false</pulseonselect>
                     <onup>2000</onup>
                     <ondown>401</ondown>
                 </control>
                 <!-- Settings 2 -->
                 <control type="radiobutton" id="401">
-                    <description>enable animations</description>
+                    <description>enable metric</description>
                     <posx>0</posx>
                     <posy>40</posy>
                     <width>590</width>
@@ -2771,6 +2772,7 @@
                     <textureradionofocus>twc-radiobutton-nofocus.png</textureradionofocus>
                     <texturefocus border="3">twc-input-focus.png</texturefocus>
                     <texturenofocus>-</texturenofocus>
+                    <pulseonselect>false</pulseonselect>
                     <onup>400</onup>
                     <ondown>402</ondown>
                 </control>
@@ -2790,6 +2792,7 @@
                     <textoffsetx>7</textoffsetx>
                     <texturefocus border="3">twc-input-focus.png</texturefocus>
                     <texturenofocus>-</texturenofocus>
+                    <pulseonselect>false</pulseonselect>
                     <onup>401</onup>
                     <ondown>403</ondown>
                 </control>
@@ -2809,6 +2812,7 @@
                     <textoffsetx>17</textoffsetx>
                     <texturefocus border="3">twc-input-focus.png</texturefocus>
                     <texturenofocus>-</texturenofocus>
+                    <pulseonselect>false</pulseonselect>
                     <onup>402</onup>
                     <ondown>404</ondown>
                     <enable>!IsEmpty(Skin.String(twc-fanart-path))</enable>
@@ -2877,6 +2881,7 @@
                     <textureradionofocus>twc-radiobutton-nofocus.png</textureradionofocus>
                     <texturefocus border="3">twc-input-focus.png</texturefocus>
                     <texturenofocus>-</texturenofocus>
+                    <pulseonselect>false</pulseonselect>
                     <enable>!IsEmpty(Skin.String(twc-fanart-path)) + !Skin.HasSetting(twc-fanart-diffuselevel0)</enable>
                     <onup>403</onup>
                     <ondown>400</ondown>
