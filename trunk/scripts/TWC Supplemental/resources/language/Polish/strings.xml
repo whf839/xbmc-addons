@@ -5,14 +5,14 @@
     <string id="2">haken</string>
 
     <string id="50">TAB: Mapa - pełny ekran</string>
-    <string id="51">INFO: Ustawia domyślną mapę</string>
+    <string id="51">INFO: Ustaw jako domyślną mapę</string>
     <string id="52">ESC: Wyjście</string>
     <string id="53">INFO: Ustaw prognozę "36 godz." jako domyślną </string>
     <string id="54">INFO: Ustaw prognozę "Godzina po godzinie" jako domyślną</string>
     <string id="55">INFO: Ustaw prognozę "Weekend" jako domyślną</string>
     <string id="56">INFO: Ustaw prognozę "10 dni" jako domyślną</string>
 
-    <string id="100">Pobierania map...</string>
+    <string id="100">Pobieranie map...</string>
     <string id="101">Pobieranie prognozy "36 godz."...</string>
     <string id="102">Pobieranie prognozy "Godzina po godzinie"...</string>
     <string id="103">Pobieranie prognozy "Weekend"...</string>
@@ -31,4 +31,12 @@
     <!-- Settings strings -->
     <string id="400">Włącz animację map</string>
     <string id="401">Jednostki metryczne</string>
+    <string id="402">Ścieżka do plików fanart</string>
+    <string id="403">- Poziom przyciemnienia</string>
+    <string id="404">- Używaj warunków pogodowych</string>
+
+    <string id="600">Wersja</string>
+    <string id="601">Autor</string>
+    <string id="602">Tłumaczenie</string>
+    <string id="603">Widok domyślny</string>
 </strings>
