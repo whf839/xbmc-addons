@@ -19,9 +19,14 @@ dialog.create( _( 0 ), _( 10 ) )
 from threading import Timer
 
 import resources.lib.TWCClient as TWCClient
+print sys.modules[ "__main__" ].window
+if ( sys.modules[ "__main__" ].window ):
+    module = xbmcgui.WindowXML
+else:
+    module = xbmcgui.WindowXMLDialog
 
 
-class GUI( xbmcgui.WindowXMLDialog ):
+class GUI( module ):
     # constants
     ACTION_EXIT_SCRIPT = ( 10, )
     ACTION_SET_DEFAULT = ( 117, )
@@ -50,7 +55,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
     CONTROL_FANART_TYPE_SETTING_BUTTON = 404
 
     def __init__( self, *args, **kwargs ):
-        xbmcgui.WindowXMLDialog.__init__( self, *args, **kwargs )
+        module.__init__( self, *args, **kwargs )
         # set our defaults
         self._init_defaults()
         self._init_view_status()
@@ -97,14 +102,14 @@ class GUI( xbmcgui.WindowXMLDialog ):
         self.current_map = None
 
     def _set_script_info( self ):
-        self.setProperty( "version", "%s - %s" % ( sys.modules[ "__main__" ].__version__, str( sys.modules[ "__main__" ].__svn_revision__ ) ) )
-        self.setProperty( "author", sys.modules[ "__main__" ].__author__ )
+        xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "version", "%s - %s" % ( sys.modules[ "__main__" ].__version__, str( sys.modules[ "__main__" ].__svn_revision__ ) ) )
+        xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "author", sys.modules[ "__main__" ].__author__ )
         if ( self.defaultview == self.CONTROL_MAP_BUTTON ):
-            self.setProperty( "defaultview", "%s - %s" % ( _( self.defaultview ), xbmc.getInfoLabel( "Skin.String(twc-defaultmap)" ), ) )
+            xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "defaultview", "%s - %s" % ( _( self.defaultview ), xbmc.getInfoLabel( "Skin.String(twc-defaultmap)" ), ) )
         else:
-            self.setProperty( "defaultview", _( self.defaultview ) )
-        self.setProperty( "svnurl", sys.modules[ "__main__" ].__url__ )
-        self.setProperty( "scripturl", sys.modules[ "__main__" ].__svn_url__ )
+            xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "defaultview", _( self.defaultview ) )
+        xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "svnurl", sys.modules[ "__main__" ].__url__ )
+        xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "scripturl", sys.modules[ "__main__" ].__svn_url__ )
 
     def _init_view_status( self ):
         self.forecast36Hour = None
@@ -184,7 +189,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
             self.timer.cancel()
             self.timer = None
         # do not refresh map if not current view
-        if ( xbmc.getCondVisibility( "IsEmpty(Container(50).Property(view-Maps))" ) ):
+        if ( xbmc.getCondVisibility( "IsEmpty(Window.Property(view-Maps))" ) ):
             return
         # get maps url name
         map = self.getControl( self.CONTROL_MAP_LIST ).getListItem( map ).getLabel2()
@@ -218,15 +223,15 @@ class GUI( xbmcgui.WindowXMLDialog ):
             try:
                 # enumerate thru and set the info
                 for day, forecast in enumerate( forecasts ):
-                    self.setProperty( "36Hour%dicon" % ( day + 1, ), forecast[ 1 ] )
-                    self.setProperty( "36Hour%dbrief" % ( day + 1, ), forecast[ 2 ] )
-                    self.setProperty( "36Hour%dtemptitle" % ( day + 1, ), forecast[ 3 ] )
-                    self.setProperty( "36Hour%dtemp" % ( day + 1, ), forecast[ 4 ] )
-                    self.setProperty( "36Hour%dpreciptitle" % ( day + 1, ), forecast[ 5 ] )
-                    self.setProperty( "36Hour%dprecip" % ( day + 1, ), forecast[ 6 ] )
-                    self.setProperty( "36Hour%doutlook" % ( day + 1, ), forecast[ 7 ] )
-                    self.setProperty( "36Hour%ddaylight" % ( day + 1, ), forecast[ 8 ] )
-                    self.setProperty( "36Hour%dtitle" % ( day + 1, ), forecast[ 0 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "36Hour%dicon" % ( day + 1, ), forecast[ 1 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "36Hour%dbrief" % ( day + 1, ), forecast[ 2 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "36Hour%dtemptitle" % ( day + 1, ), forecast[ 3 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "36Hour%dtemp" % ( day + 1, ), forecast[ 4 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "36Hour%dpreciptitle" % ( day + 1, ), forecast[ 5 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "36Hour%dprecip" % ( day + 1, ), forecast[ 6 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "36Hour%doutlook" % ( day + 1, ), forecast[ 7 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "36Hour%ddaylight" % ( day + 1, ), forecast[ 8 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "36Hour%dtitle" % ( day + 1, ), forecast[ 0 ] )
             except:
                 pass
             # unlock the gui
@@ -247,7 +252,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
             try:
                 # enumerate thru and set our heading properties
                 for count, heading in enumerate( headings ):
-                    self.setProperty( "HBHHead%d" % ( count + 1, ), heading )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "HBHHead%d" % ( count + 1, ), heading )
                 # enumerate thru and set the info
                 for forecast in forecasts:
                     listitem = xbmcgui.ListItem( forecast[ 0 ] )
@@ -278,39 +283,39 @@ class GUI( xbmcgui.WindowXMLDialog ):
             try:
                 # enumerate thru and set the info
                 for day, forecast in enumerate( forecasts ):
-                    self.setProperty( "Weekend%ddate" % ( day + 1, ), forecast[ 1 ] )
-                    self.setProperty( "Weekend%dicon" % ( day + 1, ), forecast[ 2 ] )
-                    self.setProperty( "Weekend%dbrief" % ( day + 1, ), forecast[ 3 ] )
-                    self.setProperty( "Weekend%dhightitle" % ( day + 1, ), forecast[ 4 ] )
-                    self.setProperty( "Weekend%dhightemp" % ( day + 1, ), forecast[ 5 ] )
-                    self.setProperty( "Weekend%dlowtitle" % ( day + 1, ), forecast[ 6 ] )
-                    self.setProperty( "Weekend%dlowtemp" % ( day + 1, ), forecast[ 7 ] )
-                    self.setProperty( "Weekend%dpreciptitle" % ( day + 1, ), forecast[ 8 ] )
-                    self.setProperty( "Weekend%dprecip" % ( day + 1, ), forecast[ 9 ] )
-                    self.setProperty( "Weekend%dwindtitle" % ( day + 1, ), forecast[ 10 ] )
-                    self.setProperty( "Weekend%dwind" % ( day + 1, ), forecast[ 11 ] )
-                    self.setProperty( "Weekend%duvtitle" % ( day + 1, ), forecast[ 12 ] )
-                    self.setProperty( "Weekend%duv" % ( day + 1, ), forecast[ 13 ] )
-                    self.setProperty( "Weekend%dhumiditytitle" % ( day + 1, ), forecast[ 14 ] )
-                    self.setProperty( "Weekend%dhumidity" % ( day + 1, ), forecast[ 15 ] )
-                    self.setProperty( "Weekend%dsunrisetitle" % ( day + 1, ), forecast[ 16 ] )
-                    self.setProperty( "Weekend%dsunrise" % ( day + 1, ), forecast[ 17 ] )
-                    self.setProperty( "Weekend%dsunsettitle" % ( day + 1, ), forecast[ 18 ] )
-                    self.setProperty( "Weekend%dsunset" % ( day + 1, ), forecast[ 19 ] )
-                    self.setProperty( "Weekend%doutlook" % ( day + 1, ), forecast[ 20 ] )
-                    self.setProperty( "Weekend%dobserved" % ( day + 1, ), forecast[ 21 ] )
-                    self.setProperty( "Weekend%dobservedpreciptitle" % ( day + 1, ), forecast[ 22 ] )
-                    self.setProperty( "Weekend%dobservedprecip" % ( day + 1, ), forecast[ 23 ] )
-                    self.setProperty( "Weekend%dobservedavghightitle" % ( day + 1, ), forecast[ 24 ] )
-                    self.setProperty( "Weekend%dobservedavghigh" % ( day + 1, ), forecast[ 25 ] )
-                    self.setProperty( "Weekend%dobservedavglowtitle" % ( day + 1, ), forecast[ 26 ] )
-                    self.setProperty( "Weekend%dobservedavglow" % ( day + 1, ), forecast[ 27 ] )
-                    self.setProperty( "Weekend%dobservedrecordhightitle" % ( day + 1, ), forecast[ 28 ] )
-                    self.setProperty( "Weekend%dobservedrecordhigh" % ( day + 1, ), forecast[ 29 ] )
-                    self.setProperty( "Weekend%dobservedrecordlowtitle" % ( day + 1, ), forecast[ 30 ] )
-                    self.setProperty( "Weekend%dobservedrecordlow" % ( day + 1, ), forecast[ 31 ] )
-                    self.setProperty( "Weekend%dalert" % ( day + 1, ), forecast[ 32 ] )
-                    self.setProperty( "Weekend%dday" % ( day + 1, ), forecast[ 0 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%ddate" % ( day + 1, ), forecast[ 1 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dicon" % ( day + 1, ), forecast[ 2 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dbrief" % ( day + 1, ), forecast[ 3 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dhightitle" % ( day + 1, ), forecast[ 4 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dhightemp" % ( day + 1, ), forecast[ 5 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dlowtitle" % ( day + 1, ), forecast[ 6 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dlowtemp" % ( day + 1, ), forecast[ 7 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dpreciptitle" % ( day + 1, ), forecast[ 8 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dprecip" % ( day + 1, ), forecast[ 9 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dwindtitle" % ( day + 1, ), forecast[ 10 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dwind" % ( day + 1, ), forecast[ 11 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%duvtitle" % ( day + 1, ), forecast[ 12 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%duv" % ( day + 1, ), forecast[ 13 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dhumiditytitle" % ( day + 1, ), forecast[ 14 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dhumidity" % ( day + 1, ), forecast[ 15 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dsunrisetitle" % ( day + 1, ), forecast[ 16 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dsunrise" % ( day + 1, ), forecast[ 17 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dsunsettitle" % ( day + 1, ), forecast[ 18 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dsunset" % ( day + 1, ), forecast[ 19 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%doutlook" % ( day + 1, ), forecast[ 20 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dobserved" % ( day + 1, ), forecast[ 21 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dobservedpreciptitle" % ( day + 1, ), forecast[ 22 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dobservedprecip" % ( day + 1, ), forecast[ 23 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dobservedavghightitle" % ( day + 1, ), forecast[ 24 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dobservedavghigh" % ( day + 1, ), forecast[ 25 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dobservedavglowtitle" % ( day + 1, ), forecast[ 26 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dobservedavglow" % ( day + 1, ), forecast[ 27 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dobservedrecordhightitle" % ( day + 1, ), forecast[ 28 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dobservedrecordhigh" % ( day + 1, ), forecast[ 29 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dobservedrecordlowtitle" % ( day + 1, ), forecast[ 30 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dobservedrecordlow" % ( day + 1, ), forecast[ 31 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dalert" % ( day + 1, ), forecast[ 32 ] )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%dday" % ( day + 1, ), forecast[ 0 ] )
             except:
                 pass
             # unlock the gui
@@ -331,7 +336,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
             try:
                 # enumerate thru and set our heading properties
                 for count, heading in enumerate( headings ):
-                    self.setProperty( "10DayHead%d" % ( count + 1, ), heading.strip() )
+                    xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "10DayHead%d" % ( count + 1, ), heading.strip() )
                 # enumerate thru and set the info
                 for forecast in forecasts:
                     listitem = xbmcgui.ListItem( forecast[ 0 ] )
@@ -353,21 +358,21 @@ class GUI( xbmcgui.WindowXMLDialog ):
         # toggle map
         self.toggle = not self.toggle
         # set the proper property
-        self.setProperty( "Toggle", ( "zoomed", "", )[ self.toggle ] )
+        xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Toggle", ( "zoomed", "", )[ self.toggle ] )
 
     def _toggle_weekend( self ):
         # toggle map
         self.weekendToggle = not self.weekendToggle
         # set the proper property
-        self.setProperty( "WeekendToggle", ( "", "details", )[ self.weekendToggle ] )
+        xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "WeekendToggle", ( "", "details", )[ self.weekendToggle ] )
 
     def _reset_views( self, view=200 ):
-        self.setProperty( "view-Maps", ( "", "viewing", )[ view == self.CONTROL_MAP_BUTTON ] )
-        self.setProperty( "view-36Hour", ( "", "viewing", )[ view == self.CONTROL_36HOUR_BUTTON ] )
-        self.setProperty( "view-HourByHour", ( "", "viewing", )[ view == self.CONTROL_HOURBYHOUR_BUTTON ] )
-        self.setProperty( "view-Weekend", ( "", "viewing", )[ view == self.CONTROL_WEEKEND_BUTTON ] )
-        self.setProperty( "view-10Day", ( "", "viewing", )[ view == self.CONTROL_10DAY_BUTTON ] )
-        self.setProperty( "view-Settings", ( "", "viewing", )[ view == self.CONTROL_SETTINGS_BUTTON ] )
+        xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "view-Maps", ( "", "viewing", )[ view == self.CONTROL_MAP_BUTTON ] )
+        xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "view-36Hour", ( "", "viewing", )[ view == self.CONTROL_36HOUR_BUTTON ] )
+        xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "view-HourByHour", ( "", "viewing", )[ view == self.CONTROL_HOURBYHOUR_BUTTON ] )
+        xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "view-Weekend", ( "", "viewing", )[ view == self.CONTROL_WEEKEND_BUTTON ] )
+        xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "view-10Day", ( "", "viewing", )[ view == self.CONTROL_10DAY_BUTTON ] )
+        xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "view-Settings", ( "", "viewing", )[ view == self.CONTROL_SETTINGS_BUTTON ] )
 
     def _get_default_view( self ):
         # get our default view
@@ -381,16 +386,16 @@ class GUI( xbmcgui.WindowXMLDialog ):
                                     }[ defaultview ]
 
     def _set_default_view( self ):
-        if ( xbmc.getCondVisibility( "!IsEmpty(Container(50).Property(view-Maps))" ) ):
+        if ( xbmc.getCondVisibility( "!IsEmpty(Window.Property(view-Maps))" ) ):
             xbmc.executebuiltin( "Skin.SetString(twc-defaultmap,%s)" % ( self.getControl( self.CONTROL_MAP_LIST ).getListItem( self.current_map ).getLabel(), ) )
             xbmc.executebuiltin( "Skin.Reset(twc-defaultview)" )
-        elif ( xbmc.getCondVisibility( "!IsEmpty(Container(50).Property(view-36Hour))" ) ):
+        elif ( xbmc.getCondVisibility( "!IsEmpty(Window.Property(view-36Hour))" ) ):
             xbmc.executebuiltin( "Skin.SetString(twc-defaultview,36Hour)" )
-        elif ( xbmc.getCondVisibility( "!IsEmpty(Container(50).Property(view-HourByHour))" ) ):
+        elif ( xbmc.getCondVisibility( "!IsEmpty(Window.Property(view-HourByHour))" ) ):
             xbmc.executebuiltin( "Skin.SetString(twc-defaultview,HourByHour)" )
-        elif ( xbmc.getCondVisibility( "!IsEmpty(Container(50).Property(view-Weekend))" ) ):
+        elif ( xbmc.getCondVisibility( "!IsEmpty(Window.Property(view-Weekend))" ) ):
             xbmc.executebuiltin( "Skin.SetString(twc-defaultview,Weekend)" )
-        elif ( xbmc.getCondVisibility( "!IsEmpty(Container(50).Property(view-10Day))" ) ):
+        elif ( xbmc.getCondVisibility( "!IsEmpty(Window.Property(view-10Day))" ) ):
             xbmc.executebuiltin( "Skin.SetString(twc-defaultview,10Day)" )
         # necessary sleep to give Skin.String() time to update
         xbmc.sleep(30)
@@ -419,10 +424,10 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
     def _clear_forecasts( self ):
         # we reset these so old info does not show when user changes metric/english setting
-        self.setProperty( "36Hour1title", "" )
-        self.setProperty( "HBHHead1", "" )
-        self.setProperty( "Weekend1day", "" )
-        self.setProperty( "10DayHead1", "" )
+        xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "36Hour1title", "" )
+        xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "HBHHead1", "" )
+        xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend1day", "" )
+        xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "10DayHead1", "" )
 
     def _set_fanart_path( self ):
         # create the dialog object
@@ -509,7 +514,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
         # perform action
         if ( actionId in self.ACTION_EXIT_SCRIPT and not self.loading ):
             self.exit_script()
-        elif ( actionId in self.ACTION_TOGGLE_MAP and xbmc.getCondVisibility( "!IsEmpty(Container(50).Property(view-Maps))" ) ):
+        elif ( actionId in self.ACTION_TOGGLE_MAP and xbmc.getCondVisibility( "!IsEmpty(Window.Property(view-Maps))" ) ):
             self._toggle_map()
         elif ( actionId in self.ACTION_SET_DEFAULT and self.toggle ):
             self._set_default_view()
