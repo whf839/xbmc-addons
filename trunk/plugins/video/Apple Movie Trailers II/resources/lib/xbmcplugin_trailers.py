@@ -84,6 +84,9 @@ class _Parser:
                     poster = location[ 0 ]
                 # trailer
                 trailer = re.findall( "<large[^>]*>(.*?)</large>", preview[ 0 ] )[ 0 ]
+                # replace with 1080p if quality == 1080p
+                if ( self.settings[ "quality" ] == "_1080p" ):
+                    trailer = trailer.replace( "a720p.", "h1080p." )
                 # size
                 size = long( re.findall( "filesize=\"([0-9]*)", preview[ 0 ] )[ 0 ] )
                 # add the item to our media list
@@ -194,8 +197,8 @@ class Main:
         try:
             ok = True
             # set proper source
-            base_path = self.BASE_CURRENT_SOURCE_PATH % ( self.settings[ "quality" ], )
-            base_url = self.BASE_CURRENT_URL % ( self.settings[ "quality" ], )
+            base_path = self.BASE_CURRENT_SOURCE_PATH % ( self.settings[ "quality" ].replace( "_1080p", "_720p" ), )
+            base_url = self.BASE_CURRENT_URL % ( self.settings[ "quality" ].replace( "_1080p", "_720p" ), )
             # get the source files date if it exists
             try: date = os.path.getmtime( base_path )
             except: date = 0
@@ -227,7 +230,7 @@ class Main:
     def save_xml_source( self, xmlSource ):
         try:
             # set proper source
-            base_path = self.BASE_CURRENT_SOURCE_PATH % ( self.settings[ "quality" ], )
+            base_path = self.BASE_CURRENT_SOURCE_PATH % ( self.settings[ "quality" ].replace( "_1080p", "_720p" ), )
             # if the path to the source file does not exist create it
             if ( not os.path.isdir( self.BASE_DATA_PATH ) ):
                 os.makedirs( self.BASE_DATA_PATH )
