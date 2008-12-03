@@ -134,6 +134,7 @@ class _Parser:
                 items += [ ( xbmc.getLocalizedString( 30920 ), "XBMC.PlayMedia(%s)" % ( url ), ) ]
             elif ( self.settings[ "play_mode" ] == 0 ):
                 url = video[ "trailer" ]
+                items += [ ( xbmc.getLocalizedString( 30910 ), "XBMC.RunPlugin(%s?Download_Trailer=True&trailer_url=%s)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "trailer" ] ) ), ), ) ]
                 items += [ ( xbmc.getLocalizedString( 30920 ), "XBMC.PlayMedia(%s)" % ( url ), ) ]
             else:
                 url = "%s?Download_Trailer=True&trailer_url=%s" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "trailer" ] ) ) )
@@ -197,7 +198,7 @@ class Main:
         if ( self.settings[ "play_mode" ] == 2 and self.settings[ "download_path" ] == "" ):
             self.settings[ "play_mode" ] = 1
         self.settings[ "use_title" ] = ( xbmcplugin.getSetting( "use_title" ) == "true" and self.settings[ "download_path" ] != "" )
-        self.settings[ "use_trailer" ] = ( xbmcplugin.getSetting( "use_trailer" ) == "true" and self.settings[ "use_title" ] == True and self.settings[ "play_mode" ] == 2 )
+        self.settings[ "use_trailer" ] = ( xbmcplugin.getSetting( "use_trailer" ) == "true" and self.settings[ "use_title" ] == True and self.settings[ "download_path" ] != "" )
         self.settings[ "play_existing" ] = ( xbmcplugin.getSetting( "play_existing" ) == "true" and self.settings[ "download_path" ] != "" )
         self.settings[ "fanart_image" ] = xbmcplugin.getSetting( "fanart_image" )
         self.settings[ "fanart_color1" ] = xbmcplugin.getSetting( "fanart_color1" )
