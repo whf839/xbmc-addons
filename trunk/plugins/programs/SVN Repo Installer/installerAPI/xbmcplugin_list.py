@@ -63,26 +63,51 @@ class Main:
     BASE_CACHE_PATH = os.path.join( xbmc.translatePath( "P:\\Thumbnails" ), "Pictures" )
 
     def __init__( self ):
-        # get the repository info
-        self._get_repo_info()
-        # parse sys.argv for our current url
-        self._parse_argv()
-        # get the list
-        ok = self._show_categories()
+        # if this is first run list all the repos
+        if ( sys.argv[ 2 ] == "" ):
+            ok = self._get_repos()
+        else:
+            # parse sys.argv for our current url
+            self._parse_argv()
+            # get the repository info
+            self._get_repo_info()
+            # get the list
+            ok = self._show_categories()
         # send notification we're finished, successfully or unsuccessfully
         xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=ok )
 
     def _parse_argv( self ):
         # call _Info() with our formatted argv to create the self.args object
-        if ( sys.argv[ 2 ] ):
-            exec "self.args = _Info(%s)" % ( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
-            self.args.category = urllib.unquote_plus( self.args.category )
-        else:
-            self.args = _Info( category=self.REPO_ROOT )
+        exec "self.args = _Info(%s)" % ( urllib.unquote_plus( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ) ), )
+
+    def _get_repos( self ):
+        try:
+            repos = os.listdir( os.path.join( os.getcwd().replace( ";", "" ), "resources", "repositories" ) )
+            # enumerate through the list of categories and add the item to the media list
+            for repo in repos:
+                if ( os.path.isdir( os.path.join( os.getcwd().replace( ";", "" ), "resources", "repositories", repo ) ) ):
+                    url = "%s?category='root'&repo=%s" % ( sys.argv[ 0 ], repr( urllib.quote_plus( repo ) ) )
+                    # set the default icon
+                    icon = "DefaultFolder.png"
+                    # create our listitem, fixing title
+                    listitem = xbmcgui.ListItem( repo, iconImage=icon )
+                    # set the title
+                    listitem.setInfo( type="Video", infoLabels={ "Title": repo } )
+                    # add the item to the media list
+                    ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=url, listitem=listitem, isFolder=True )
+                    # if user cancels, call raise to exit loop
+                    if ( not ok ): raise
+        except:
+            # user cancelled dialog or an error occurred
+            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
+            ok = False
+        if ( ok ):
+            xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )
+        return ok
 
     def _get_repo_info( self ):
         # path to info file
-        repopath = os.path.join( os.getcwd().replace( ";", "" ), "resources", "repositories", xbmcplugin.getSetting( "repository" ), "repo.xml" )
+        repopath = os.path.join( os.getcwd().replace( ";", "" ), "resources", "repositories", self.args.repo, "repo.xml" )
         try:
             # grab a file object
             fileobject = open( repopath, "r" )
@@ -96,6 +121,9 @@ class Main:
             self.REPO_ROOT = re.findall( '<root>([^<]*)</root>', info )[ 0 ]
             # structure of repo
             self.REPO_STRUCTURES = re.findall( '<structure name="([^"]+)" noffset="([^"]+)" install="([^"]*)" ioffset="([^"]+)" voffset="([^"]+)"', info )
+            # if category is root, set our repo root
+            if ( self.args.category == "root" ):
+                self.args.category = self.REPO_ROOT
         except:
             # oops print error message
             print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
@@ -129,13 +157,13 @@ class Main:
                 else:
                     heading = "download_url"
                     thumbnail = self._get_thumbnail( "%s%s/%sdefault.tbn" % ( self.REPO_URL, repo_url.replace( " ", "%20" ), item.replace( " ", "%20" ), ) )
-                url = '%s?%s="%s/%s"&install="%s"&ioffset=%s&voffset=%s' % ( sys.argv[ 0 ], heading, urllib.quote_plus( repo_url ), urllib.quote_plus( item ), install, ioffset, voffset, )
+                url = '%s?%s="%s/%s"&repo=%s&install="%s"&ioffset=%s&voffset=%s' % ( sys.argv[ 0 ], heading, urllib.quote_plus( repo_url ), urllib.quote_plus( item ), repr( urllib.quote_plus( self.args.repo ) ), install, ioffset, voffset, )
                 # set the default icon
                 icon = "DefaultFolder.png"
                 # create our listitem, fixing title
-                listitem = xbmcgui.ListItem( urllib.unquote( item[ : -1 ] ), iconImage=icon, thumbnailImage=thumbnail )
+                listitem = xbmcgui.ListItem( urllib.unquote_plus( item[ : -1 ] ), iconImage=icon, thumbnailImage=thumbnail )
                 # set the title
-                listitem.setInfo( type="Video", infoLabels={ "Title": urllib.unquote( item[ : -1 ] ) } )
+                listitem.setInfo( type="Video", infoLabels={ "Title": urllib.unquote_plus( item[ : -1 ] ) } )
                 # add the item to the media list
                 ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=url, listitem=listitem, isFolder=isFolder, totalItems=len( assets ) )
                 # if user cancels, call raise to exit loop
