@@ -19,7 +19,8 @@ dialog.create( _( 0 ), _( 10 ) )
 from threading import Timer
 
 import resources.lib.TWCClient as TWCClient
-print sys.modules[ "__main__" ].window
+
+# determine users preference window or dialog
 if ( sys.modules[ "__main__" ].window ):
     module = xbmcgui.WindowXML
 else:
