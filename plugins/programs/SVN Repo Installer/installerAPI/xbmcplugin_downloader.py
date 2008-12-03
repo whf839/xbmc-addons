@@ -61,10 +61,10 @@ class _Info:
 class Main:
     def __init__( self ):
         self.dialog = xbmcgui.DialogProgress()
-        # get the repository info
-        self._get_repo_info()
         # parse sys.argv for our current url
         self._parse_argv()
+        # get the repository info
+        self._get_repo_info()
         # create the script/plugin/skin title
         parts = self.args.download_url.split( "/" )
         version = ""
@@ -77,7 +77,7 @@ class Main:
 
     def _get_repo_info( self ):
         # path to info file
-        repopath = os.path.join( os.getcwd(), "resources", "repositories", xbmcplugin.getSetting( "repository" ), "repo.xml" )
+        repopath = os.path.join( os.getcwd(), "resources", "repositories", self.args.repo, "repo.xml" )
         try:
             # grab a file object
             fileobject = open( repopath, "r" )
@@ -93,8 +93,9 @@ class Main:
 
     def _parse_argv( self ):
         # call _Info() with our formatted argv to create the self.args object
-        exec "self.args = _Info(%s)" % ( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
+        exec "self.args = _Info(%s)" % ( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ), )
         self.args.download_url = urllib.unquote_plus( self.args.download_url )
+        self.args.repo = urllib.unquote_plus( self.args.repo )
 
     def _download_item( self ):
         try:
