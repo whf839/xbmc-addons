@@ -22,8 +22,6 @@ class _Parser:
     """
         Parses an xml document for videos
     """
-    # constants
-    ACTION_SHOW_INFO = 11
 
     def __init__( self, xmlSource, settings ):
         self.success = True
@@ -140,7 +138,7 @@ class _Parser:
             else:
                 url = "%s?Download_Trailer=True&trailer_url=%s" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "trailer" ] ) ) )
                 items += [ ( xbmc.getLocalizedString( 30910 ), "XBMC.RunPlugin(%s?Download_Trailer=True&trailer_url=%s)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "trailer" ] ) ), ), ) ]
-            items += [ ( xbmc.getLocalizedString( 30930 ), "XBMC.Action(%d)" % ( self.ACTION_SHOW_INFO, ), ) ]
+            items += [ ( xbmc.getLocalizedString( 30930 ), "XBMC.Action(Info)", ) ]
             # add items to listitem with replaceItems = True so only ours show
             listitem.addContextMenuItems( items, replaceItems=True )
             # add the item to the media list
