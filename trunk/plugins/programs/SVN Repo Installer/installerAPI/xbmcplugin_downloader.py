@@ -66,7 +66,12 @@ class Main:
         # parse sys.argv for our current url
         self._parse_argv()
         # create the script/plugin/skin title
-        self.title = self.args.download_url.split( "/" )[ -2 ].replace( "%20", " " )
+        parts = self.args.download_url.split( "/" )
+        version = ""
+        if ( self.args.voffset != 0 ):
+            version = " - %s" % ( parts[ self.args.voffset ].replace( "%20", " " ) )
+            del parts[ self.args.voffset ]
+        self.title = parts[ -2 ].replace( "%20", " " ) + version
         # get the list
         self._download_item()
 
@@ -96,7 +101,7 @@ class Main:
             if ( xbmcgui.Dialog().yesno( self.title, xbmc.getLocalizedString( 30000 ), "", "", xbmc.getLocalizedString( 30020 ), xbmc.getLocalizedString( 30021 ) ) ):
                 self.dialog.create( self.title, xbmc.getLocalizedString( 30002 ), xbmc.getLocalizedString( 30003 ) )
                 asset_files = []
-                folders = [ self.args.download_url ]
+                folders = [ self.args.download_url.replace( " ", "%20" ) ]
                 while folders:
                     try:
                         htmlsource = self._get_html_source( self.REPO_URL + folders[ 0 ] )
@@ -126,7 +131,14 @@ class Main:
                 items = os.path.split( url )
                 # TODO: Change this to U: for other than xbox
                 drive = xbmc.translatePath( ( "U:\\%s" % self.args.install, "Q:\\%s" % self.args.install, )[ os.environ.get( "OS", "xbox" ) == "xbox" ] )
-                path = os.path.join( drive, os.path.sep.join( items[ 0 ].split( "/" )[ self.args.ioffset : ] ).replace( "%20", " " ) )
+                # create the script/plugin/skin title
+                parts = items[ 0 ].split( "/" )
+                version = ""
+                if ( self.args.voffset != 0 ):
+                    version = " - %s" % ( parts[ self.args.voffset ], )
+                    del parts[ self.args.voffset ]
+                    parts[ self.args.voffset - 1 ] = parts[ self.args.voffset - 1 ].replace( "%20", " " ) + version
+                path = os.path.join( drive, os.path.sep.join( parts[ self.args.ioffset : ] ).replace( "%20", " " ) )
                 if ( not finished_path ): finished_path = path
                 file = items[ 1 ].replace( "%20", " " )
                 pct = int( ( float( cnt ) / len( asset_files ) ) * 100 )
@@ -157,8 +169,6 @@ class Main:
         """ parse html source for tagged version and url """
         try:
             parser = Parser( htmlsource )
-            #parser.feed( htmlsource )
-            #parser.close()
             return parser.dict
         except:
             return {}

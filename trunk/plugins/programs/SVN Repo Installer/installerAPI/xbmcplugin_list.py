@@ -95,7 +95,7 @@ class Main:
             # root of repository
             self.REPO_ROOT = re.findall( '<root>([^<]*)</root>', info )[ 0 ]
             # structure of repo
-            self.REPO_STRUCTURES = re.findall( '<structure name="([^"]+)" noffset="([^"]+)" install="([^"]*)" ioffset="([^"]+)"', info )
+            self.REPO_STRUCTURES = re.findall( '<structure name="([^"]+)" noffset="([^"]+)" install="([^"]*)" ioffset="([^"]+)" voffset="([^"]+)"', info )
         except:
             # oops print error message
             print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
@@ -116,17 +116,20 @@ class Main:
             # enumerate through the list of categories and add the item to the media list
             for item in assets:
                 isFolder = True
-                for name, noffset, install, ioffset in self.REPO_STRUCTURES:
-                    if ( repo_url.split( "/" )[ int( noffset ) ].lower() == name.lower() ):
-                        isFolder = False
-                        break
+                for name, noffset, install, ioffset, voffset in self.REPO_STRUCTURES:
+                    try:
+                        if ( repo_url.split( "/" )[ int( noffset ) ].lower() == name.lower() ):
+                            isFolder = False
+                            break
+                    except:
+                        pass
                 if ( isFolder ):
                     heading = "category"
                     thumbnail = ""
                 else:
                     heading = "download_url"
-                    thumbnail = self._get_thumbnail( "%s%s/%sdefault.tbn" % ( self.REPO_URL, repo_url, item, ) )
-                url = '%s?%s="%s/%s"&install="%s"&ioffset=%s' % ( sys.argv[ 0 ], heading, urllib.quote_plus( repo_url ), urllib.quote_plus( item ), install, ioffset, )
+                    thumbnail = self._get_thumbnail( "%s%s/%sdefault.tbn" % ( self.REPO_URL, repo_url.replace( " ", "%20" ), item.replace( " ", "%20" ), ) )
+                url = '%s?%s="%s/%s"&install="%s"&ioffset=%s&voffset=%s' % ( sys.argv[ 0 ], heading, urllib.quote_plus( repo_url ), urllib.quote_plus( item ), install, ioffset, voffset, )
                 # set the default icon
                 icon = "DefaultFolder.png"
                 # create our listitem, fixing title
