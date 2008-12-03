@@ -131,14 +131,18 @@ class _Parser:
             # check if trailer already exists if user specified
             if ( self.settings[ "play_existing" ] and os.path.isfile( filepath.encode( "utf-8" ) ) ):
                 url = filepath
+                # just add play trailer if trailer exists and user preference to always play existing
                 items += [ ( xbmc.getLocalizedString( 30920 ), "XBMC.PlayMedia(%s)" % ( url ), ) ]
             elif ( self.settings[ "play_mode" ] == 0 ):
                 url = video[ "trailer" ]
+                # we want both play and download if user preference is to stream
                 items += [ ( xbmc.getLocalizedString( 30910 ), "XBMC.RunPlugin(%s?Download_Trailer=True&trailer_url=%s)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "trailer" ] ) ), ), ) ]
                 items += [ ( xbmc.getLocalizedString( 30920 ), "XBMC.PlayMedia(%s)" % ( url ), ) ]
             else:
                 url = "%s?Download_Trailer=True&trailer_url=%s" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "trailer" ] ) ) )
+                # only add download if user prefernce is not stream
                 items += [ ( xbmc.getLocalizedString( 30910 ), "XBMC.RunPlugin(%s?Download_Trailer=True&trailer_url=%s)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "trailer" ] ) ), ), ) ]
+            # add the movie information item
             items += [ ( xbmc.getLocalizedString( 30930 ), "XBMC.Action(Info)", ) ]
             # add items to listitem with replaceItems = True so only ours show
             listitem.addContextMenuItems( items, replaceItems=True )
