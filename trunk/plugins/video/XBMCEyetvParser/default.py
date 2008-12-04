@@ -27,6 +27,11 @@ for dirpath, dirnames, filenames in os.walk(path):
                     p=re.compile('.+/(.+).eyetv')
                     m=p.match(dirpath)
                     shortdirpath=m.group(1)
+                    # match icon name
+                    p=re.compile('(.+)\.mpg')
+                    m=p.match(fqname)
+                    tbn=m.group(1)
+                    tbn=tbn+'.tiff'
                     # print shortdirpath
                     statinfo = os.stat(fqname)
                     size = statinfo.st_size
@@ -99,8 +104,10 @@ for dirpath, dirnames, filenames in os.walk(path):
                         libname=title+depisode+dsubtitle
                         # print libname
                     filePl=""
-                    icon = "defaultVideo.png"
-                    icon2 = "defaultVideoBig.png"
+                    #icon = "defaultVideo.png"
+                    #icon2 = "defaultVideoBig.png"
+                    icon = tbn
+                    icon2 = tbn
                     # title=shortdirpath
                     liz=xbmcgui.ListItem(shortdirpath, libname, iconImage=icon, thumbnailImage=icon2)
                     # liz.setInfo( type="Video", infoLabels={ "Title": libname, "Date":date, "Size":size, "Plot":plot, "Episode":episode} )
