@@ -57,6 +57,8 @@ class GUI( module ):
 
     def __init__( self, *args, **kwargs ):
         module.__init__( self, *args, **kwargs )
+        # reset views
+        self._reset_views( 0 )
         # set our defaults
         self._init_defaults()
         self._init_view_status()
@@ -71,8 +73,6 @@ class GUI( module ):
 
     def onInit( self ):
         dialog.close()
-        # reset views
-        self._reset_views( self.defaultview )
         # set script info
         self._set_script_info()
         # set default fanart diffuse level
