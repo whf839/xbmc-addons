@@ -60,10 +60,11 @@ def showMP4Links(site):
     for i in range(len(videos)):
         name=videos[i].title.contents[0]
         date=videos[i].pubdate.contents[0]
-        p=re.compile('<feedburner:origenclosurelink>(.+?)</feedburner:origenclosurelink>')
+        p=re.compile('<feedburner:origenclosurelink>.+?file=(.+?)&amp;title.+?</feedburner:origenclosurelink>')
         match=p.findall(str(videos[i]))
         for temp in match:
-            url=temp
+            url=temp.replace('%2F','/').replace('%3A',':')
+            print url
         addLink(str(i+1)+'. '+name,url,date,'')
 def showList(url):
     addDir('Play Random',url,8)
@@ -93,15 +94,15 @@ def playItem(url,name,thumb):
     match=p.findall(link)
     for a in match:
         link=getLink(a)
-    p=re.compile('<guid>(.+?)</guid>')
+    p=re.compile('<enclosure url="(.+?)" type')
     match=p.findall(link)
     for a in match:
         b.append(a)
     for i in range(len(b)):
 	p=b[i].rindex('.')
 	q=b[i].rindex('/')
-	if (b[i][q:p].isupper()):
-            url=b[i]
+	#if (b[i][q:p].isupper()):
+        url=b[i]
     addLink(name,url,'',thumb)
 	    
         
@@ -144,10 +145,6 @@ if mode==7:
     showMP4Links(url)
 if mode==8:
     playRandom(url)
-
-
-
-
 
 
 ##################
