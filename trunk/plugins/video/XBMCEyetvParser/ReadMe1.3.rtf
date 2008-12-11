@@ -1,0 +1,52 @@
+{\rtf1\mac\ansicpg10000\cocoartf824\cocoasubrtf480
+{\fonttbl\f0\fswiss\fcharset77 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww15800\viewh10440\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+
+\f0\fs24 \cf0 XBMC Eyetv Parser\
+Version 1.3\
+By Prophead\
+\
+Includes TOG (defaults to off)\
+By Nic "midgetspy" Wolfe\
+\
+XEP (XBMCEyetvParser) is a video plug-in for XBMC to view your Eyetv library from XBMC's video menu with the meta data, icons and thumbnails from Eyetv without eyetvsched files or the live tv buffer.\
+\
+1) Installation\
+	A) XBMC\
+		http://xbmc.org/wiki/?title=Plugins#XBMC_for_Mac_plugin_directories\
+		http://xbmc.org/wiki/?title=Plugins#Adding_plugins_sources_in_XBMC_GUI\
+		Set your Eyetv directory by pressing 'c' for context menu on the XBMCEyetvParser plugin, then choose Plugin Settings\
+\
+	B) Boxee\
+		http://boxee-plugins.blogspot.com/2008/12/installing-plugins-for-boxee.html\
+		Set your Eyetv directory by editing:\
+			/Applications/Boxee.app/Contents/Resources/Boxee/plugins/video/XBMCEyetvParser/resources/settings.xml\
+\
+2) Use\
+	A) XBMC\
+		Select Eyetv from the videos menu\
+		Browse and select your video to play or hit 'c' to bring up the context menu and choose movie information to see full plot summary\
+	B) Boxee\
+		Select Eyetv from the video/Internet Sources menu\
+		Browse and select your video to play\
+\
+3) Advanced Use\
+	A) TOG\
+		XEP (XBMCEyetvParser) now has integrated TOG (Thumbnail Overlay Generator) but it's disabled by default.  To enable it edit XBMCEyetvParser/default.py and set tog = 1, default is 0.  You can also edit your locations for the required Imagemagick and Ffmpeg, defaults are to the standard macports locations.  To install these packages, first install macports, then from the terminal,  sudo port install Imagemagick; sudo port install ffmpeg;\
+		The first time you use the XEP plug with TOG enabled it will take a while to generate the new (small size) thumbnails with overlays for your current Eyetv library.  Subsequent use will be very fast due to preexisting XBMC .tbn files.  Very small .tbn jpeg files will get created in your eyetv video packages, but it will not alter any original files, or impact regular Eyetv use in any way.  If you would like to remove these files the easiest way to do this is from the terminal, find /path/to/eyetv/folder -name "*.tbn" -exec rm \{\} \\;\
+\
+4) The Future\
+	Better integration with XBMC library.  This has proved difficult due to incomplete guide information currently provided by eyetv.\
+	More Infolabels\
+	More sorting options\
+	Fanart?\
+	nfo file support\
+	Live TV Buffer support\
+\
+5) Notes\
+	Sometimes XBMC caches thumbnails and icons so your changes, especially with TOG, might not be immediately apparent.  I don't really have a good solution for this other then recommend you remove those .tbn's directly from the thumbnail cache.  Perhaps the cache will periodically update, I'm not entirely certain, I'm open to ideas.\
+\
+Eyetv is a trademark of Elgato\
+}
