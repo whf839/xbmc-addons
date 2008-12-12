@@ -516,7 +516,7 @@ class CCurrentList:
         return
 
     def saveList(self):
-        f = codecs.open(os.path.join(resDir, 'entry.list'), 'w', 'utf-8')
+        f = codecs.open(str(os.path.join(resDir, 'entry.list')), 'w', 'utf-8')
         f.write('########################################################\n')
         f.write('# Added sites and live streams\n')
         f.write('########################################################\n')
@@ -577,7 +577,7 @@ class CCurrentList:
         return videoItem
 
     def loadCatcher(self, title):
-        f = codecs.open(os.path.join(resDir, 'catcher.list'), 'r', 'utf-8')
+        f = codecs.open(str(os.path.join(resDir, 'catcher.list')), 'r', 'utf-8')
         data = f.read()
         data = data.replace('\r\n', '\n')
         data = data.split('\n')
@@ -622,21 +622,21 @@ class CCurrentList:
     def loadLocal(self, filename, recursive = True, lItem = None):
         print(filename)
         try:
-            f = codecs.open(os.path.join(resDir, filename), 'r', 'utf-8')
+            f = codecs.open(str(os.path.join(resDir, filename)), 'r', 'utf-8')
             data = f.read()
             data = data.replace('\r\n', '\n')
             data = data.split('\n')
             f.close()
         except:
             try:
-                f = codecs.open(os.path.join(cacheDir, filename), 'r', 'utf-8')
+                f = codecs.open(str(os.path.join(cacheDir, filename)), 'r', 'utf-8')
                 data = f.read()
                 data = data.replace('\r\n', '\n')
                 data = data.split('\n')
                 f.close()
             except:
                 try:
-                    f = codecs.open(filename, 'r', 'utf-8')
+                    f = codecs.open(str(filename), 'r', 'utf-8')
                     data = f.read()
                     data = data.replace('\r\n', '\n')
                     data = data.split('\n')
@@ -968,7 +968,7 @@ class CCurrentList:
                     if video.action.find('directory') != -1:
                         one_found = True
                         if f == None:
-                            f = codecs.open(os.path.join(cacheDir, catfilename), 'w', 'utf-8')
+                            f = codecs.open(str(os.path.join(cacheDir, catfilename)), 'w', 'utf-8')
                         f.write('title=' + tmp.infos_values[tmp.infos_names.index('title')] + '\n')
                         for info_name in tmp.infos_names:
                             if info_name != 'url' and info_name != 'title':
@@ -1002,7 +1002,7 @@ class CCurrentList:
                     if video.action.find('directory') != -1:
                         one_found = True
                         if f == None:
-                            f = codecs.open(os.path.join(cacheDir, catfilename), 'w', 'utf-8')
+                            f = codecs.open(str(os.path.join(cacheDir, catfilename)), 'w', 'utf-8')
                         f.write('title=' + tmp.infos_values[tmp.infos_names.index('title')] + '\n')
                         for info_name in tmp.infos_names:
                             if info_name != 'url' and info_name != 'title':
