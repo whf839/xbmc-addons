@@ -34,7 +34,7 @@ XEP (XBMCEyetvParser) is a video plug-in for XBMC to view your Eyetv library fro
 \
 3) Advanced Use\
 	A) TOG\
-		XEP (XBMCEyetvParser) now has integrated TOG (Thumbnail Overlay Generator) but it's disabled by default.  To enable it edit XBMCEyetvParser/default.py and set tog = 1, default is 0.  You can also edit your locations for the required Imagemagick and Ffmpeg, defaults are to the standard macports locations.  To install these packages, first install macports, then from the terminal,  sudo port install Imagemagick; sudo port install ffmpeg;\
+		XEP (XBMCEyetvParser) now has integrated TOG (Thumbnail Overlay Generator) but it's disabled by default.  To enable it hit 'c' to bring up the context menu on the plugin, then toggle TOG to on (Boxee users must edit /Applications/Boxee.app/Contents/Resources/Boxee/plugins/XBMCEyetvParser/resources/settings.xml).  Edit XBMCEyetvParser/default.py for your locations of the required Imagemagick and Ffmpeg, defaults are to the standard macports locations.  To install these packages, first install macports, then from the terminal,  sudo port install Imagemagick; sudo port install ffmpeg;\
 		The first time you use the XEP plug with TOG enabled it will take a while to generate the new (small size) thumbnails with overlays for your current Eyetv library.  Subsequent use will be very fast due to preexisting XBMC .tbn files.  Very small .tbn jpeg files will get created in your eyetv video packages, but it will not alter any original files, or impact regular Eyetv use in any way.  If you would like to remove these files the easiest way to do this is from the terminal, find /path/to/eyetv/folder -name "*.tbn" -exec rm \{\} \\;\
 \
 4) The Future\
