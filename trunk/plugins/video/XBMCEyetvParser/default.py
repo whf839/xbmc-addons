@@ -1,20 +1,25 @@
 #!/usr/bin/env python
 
 # XBMCEyetvParser
-# version 1.3
+# version 1.31
 # by prophead
 # ThumbnailOverlayGenerator by Nic Wolfe (midgetspy)
 
-import os, re, glob, sys
-import xbmc,xbmcgui,xbmcplugin
-from datetime import datetime
-
+# user variables, these are overidden by the gui settings
+# ---------------
 # my default path
 path = '/Volumes/RAID/Movies/EyeTV/EyeTV Archive'
 
 # TOG
+# requires Imagemagick, and ffmpeg
 # 0=no thumbail overlays, 1=try thumbnail overlays
 tog = 0
+# ---------------
+
+# import modules
+import os, re, glob, sys
+import xbmc,xbmcgui,xbmcplugin
+from datetime import datetime
 
 # set settings (Eyetv folder) from the XBMC interface
 def get_settings():
@@ -26,15 +31,22 @@ def get_settings():
     except:
             print "couldn't load settings"
             pass
-settings=get_settings()
-path=settings['path']
-tog=settings['EyetvTOG']
-
-if tog == "true":
-    tog = 1
-
-
+# test for Boxee
+BoxeePath = os.getcwd()[:-1]+"/"
+p=re.compile('.+(oxee).+')
+m=p.match(BoxeePath)
+if not m:
+    # get settings from gui settings
+    settings=get_settings()
+    path=settings['path']
+    tog=settings['EyetvTOG']
+    if tog == "true":
+        tog = 1
+else:
+    print "[XBMCEyetvParser] - Boxee"
+    
 def go_tog(cmd, scandir):
+    #  TOG
     #  Author: Nic Wolfe (midgetspy)
     #  Contact: PM me on the xbmc.org forums
     #  Version: 0.3.3.EM
