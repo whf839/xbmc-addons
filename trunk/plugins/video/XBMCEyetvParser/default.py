@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # XBMCEyetvParser
-# version 1.32
+# version 1.33
 # by prophead
 # ThumbnailOverlayGenerator by Nic Wolfe (midgetspy)
 
@@ -433,8 +433,8 @@ for dirpath, dirnames, filenames in os.walk(path):
                     # print size, date
                     # open Eyetv program info xml file
                     fObj=dirpath+'/*.eyetvp'
-                    filePl=str(glob.glob(fObj))
-                    filePl = unicode( filePl, "utf-8" )
+                    filePl=unicode((str(glob.glob(fObj))), "utf-8" )
+                    # filePl = unicode( filePl, "utf-8" )
                     # print filePl                 
                     #filePl = filePl.replace("[", "")
                     #filePl = filePl.replace("]", "")
@@ -463,7 +463,8 @@ for dirpath, dirnames, filenames in os.walk(path):
                             line = line.replace("\n", "")
                             line = line.replace("\t", "")
                             pl = pl + line
-                        epg=str(pl)
+                        # epg=str(pl)
+                        epg = unicode( pl, "utf-8" )
                         # print epg
                         p=re.compile('<key>TITLE</key><string>(.*?)</string>')
                         m=p.search(epg)
@@ -493,7 +494,7 @@ for dirpath, dirnames, filenames in os.walk(path):
                             plot = plot.strip()
                         # print plot
                         libname=title+depisode+dsubtitle
-                        libname = unicode( libname, "utf-8" )
+                        # libname = unicode( libname, "utf-8" )
                         # print libname
                         p=re.compile('<key>ACTORS</key><string>(.*?)</string>')                        
                         m=p.search(epg)
