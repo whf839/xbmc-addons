@@ -1,7 +1,0 @@
-<settings>
-   <!-- GUI  -->
-   <setting id="path" 	type="folder"	option="writeable"	label="30420" default="/Volumes/RAID/Movies/EyeTV/EyeTV Archive"/>
-   <setting type="sep" />
-   <setting id="EyetvTOG" 	type="bool" 	label="30421" default="false"/>
-   <setting type="sep" />
-</settings>
