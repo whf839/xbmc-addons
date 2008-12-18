@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # XBMCEyetvParser
-# version 1.33
+# version 1.34
 # by prophead
 # ThumbnailOverlayGenerator by Nic Wolfe (midgetspy)
 
@@ -31,19 +31,21 @@ def get_settings():
     except:
             print "couldn't load settings"
             pass
-# test for Boxee
-BoxeePath = os.getcwd()[:-1]+"/"
-p=re.compile('.+(oxee).+')
-m=p.match(BoxeePath)
-if not m:
-    # get settings from gui settings
-    settings=get_settings()
-    path=settings['path']
-    tog=settings['EyetvTOG']
-    if tog == "true":
-        tog = 1
-else:
-    print "[XBMCEyetvParser] - Boxee"
+## test for Boxee
+#BoxeePath = os.getcwd()[:-1]+"/"
+#p=re.compile('.+(oxee).+')
+#m=p.match(BoxeePath)
+#if not m:
+
+# get settings from gui settings
+settings=get_settings()
+path=settings['path']
+tog=settings['EyetvTOG']
+if tog == "true":
+    tog = 1
+
+#else:
+#    print "[XBMCEyetvParser] - Boxee"
     
 def go_tog(cmd, scandir):
     #  TOG
