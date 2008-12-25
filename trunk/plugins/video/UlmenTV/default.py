@@ -7,11 +7,11 @@ import xbmc, xbmcgui, xbmcplugin
 import urllib, re
 
 __plugin__ = "UlmenTV"
-__version__ = '1.3'
+__version__ = '1.31'
 __author__ = 'bootsy [bootsy82@gmail.com] with much help from BigBellyBilly'
-__date__ = '18-12-2008'
+__date__ = '25-12-2008'
 
-DIR_USERDATA = os.path.join( "T:\\script_data", __plugin__ )
+DIR_USERDATA = os.path.join( "T:\\plugin_data", __plugin__ )
 BASE_URL = 'http://www.myspass.de'
 
 def log(msg):
@@ -51,6 +51,9 @@ def getUlmenepisodes(url,name):
 		for chname, episodes in chMatches:
 			p2Matches=p2.findall(episodes)
 			for part,thumbnail,id,name in p2Matches:
+				if thumbnail=='':
+					thumbnail='http://xbmc.svn.sourceforge.net/svnroot/xbmc/trunk/XBMC/skin/Project%20Mayhem%20III/media/defaultVideoBig.png'
+					name='Unbekannt'
 				url='http://www.myspass.de'+id
 				res.append((chname,part,thumbnail,url,name))
 
@@ -68,6 +71,9 @@ def getUlmenNewEpisodes(name):
 		p=re.compile('url\(\'(.*?)\'.*?href="(.*?)".*?title="(.*?)"', re.DOTALL + re.MULTILINE + re.IGNORECASE)
 		matches=p.findall(doc)
 		for thumbnail,id,name in matches:
+			if thumbnail=='':
+				thumbnail='http://xbmc.svn.sourceforge.net/svnroot/xbmc/trunk/XBMC/skin/Project%20Mayhem%20III/media/defaultVideoBig.png'
+				name='Unbekannt'
 			url='http://www.myspass.de'+id
 			res.append(('Neueste Videos','Folge 1/1',thumbnail,url,name))
 
