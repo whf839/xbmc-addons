@@ -437,7 +437,7 @@ for dirpath, dirnames, filenames in os.walk(path):
                     for file in os.listdir(dirpath):
                         if( re.search('.eyetvp$', file)):
                             filePl = dirpath+"/"+file
-                    print filePl+" - "+str(type(filePl))
+                    # print filePl+" - "+str(type(filePl))
 
                     # filePl = filePl.replace("\"", "")
                     # filePl = filePl.strip('[')
