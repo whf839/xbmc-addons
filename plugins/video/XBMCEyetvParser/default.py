@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # XBMCEyetvParser
-# version 1.34
+# version 1.35
 # by prophead
 # ThumbnailOverlayGenerator by Nic Wolfe (midgetspy)
 
@@ -434,19 +434,16 @@ for dirpath, dirnames, filenames in os.walk(path):
                     # %H:%M:%S")
                     # print size, date
                     # open Eyetv program info xml file
-                    fObj=dirpath+'/*.eyetvp'
-                    filePl=unicode((str(glob.glob(fObj))), "utf-8" )
-                    # filePl = unicode( filePl, "utf-8" )
-                    # print filePl                 
-                    #filePl = filePl.replace("[", "")
-                    #filePl = filePl.replace("]", "")
-                    filePl = filePl.replace("\"", "")
-                    # filePl = filePl.replace("'", "")
-                    # print filePl
-                    filePl = filePl.strip('[')
-                    filePl = filePl.strip(']')
-                    filePl = filePl.strip('\'')
-                    # print filePl
+                    for file in os.listdir(dirpath):
+                        if( re.search('.eyetvp$', file)):
+                            filePl = dirpath+"/"+file
+                    print filePl+" - "+str(type(filePl))
+
+                    # filePl = filePl.replace("\"", "")
+                    # filePl = filePl.strip('[')
+                    # filePl = filePl.strip(']')
+                    # filePl = filePl.strip('\'')
+
                     if not filePl=="":
                         title=""
                         subtitle=""
@@ -458,7 +455,7 @@ for dirpath, dirnames, filenames in os.walk(path):
                         genre=""
                         director=""
                         aired=""
-                        
+
                         file = open(filePl)
                         pl=""
                         for line in file:
@@ -497,7 +494,7 @@ for dirpath, dirnames, filenames in os.walk(path):
                         # print plot
                         libname=title+depisode+dsubtitle
                         # libname = unicode( libname, "utf-8" )
-                        # print libname
+                        libname = libname.encode( 'utf-8' )
                         p=re.compile('<key>ACTORS</key><string>(.*?)</string>')                        
                         m=p.search(epg)
                         if m:
@@ -521,8 +518,8 @@ for dirpath, dirnames, filenames in os.walk(path):
                     filePl=""
                     #icon = "defaultVideo.png"
                     #icon2 = "defaultVideoBig.png"
-                    icon = tbn
-                    icon2 = tbn
+                    icon = tbn.encode( 'utf8' )
+                    icon2 = tbn.encode( 'utf8' )
                     # title=shortdirpath
                     liz=xbmcgui.ListItem(shortdirpath, libname, iconImage=icon, thumbnailImage=icon2)
                     # liz.setInfo( type="Video", infoLabels={ "Title": libname, "Date":date, "Size":size, "Plot":plot, "Episode":episode} )
