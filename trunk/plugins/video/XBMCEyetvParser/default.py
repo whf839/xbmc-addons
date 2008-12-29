@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # XBMCEyetvParser
-# version 1.35
+# version 1.36
 # by prophead
 # ThumbnailOverlayGenerator by Nic Wolfe (midgetspy)
 
@@ -411,8 +411,6 @@ for dirpath, dirnames, filenames in os.walk(path):
                     m=p.match(fqname)
                     tbn=m.group(1)
                     tifftbn=tbn+'.tiff'
-                    # match nfo file name for future use
-                    # episodenfo=tbn+'.nfo'
                     # detect tbn /integrate with tog
                     tbn=tbn+'.tbn'
                     if os.path.isfile(tifftbn) and not os.path.isfile(tbn):
@@ -422,7 +420,6 @@ for dirpath, dirnames, filenames in os.walk(path):
                                 go_tog('-scan', togname)
                             except:
                                 print "Failed to set thumbnail overlay for:"+togname
-                                pass
                         # if TOG fails fallback to tiff tbns
                         if os.path.isfile(tifftbn) and not os.path.isfile(tbn):
                             tbn = tifftbn
@@ -455,6 +452,7 @@ for dirpath, dirnames, filenames in os.walk(path):
                         genre=""
                         director=""
                         aired=""
+                        actorlist=[]
 
                         file = open(filePl)
                         pl=""
@@ -470,7 +468,7 @@ for dirpath, dirnames, filenames in os.walk(path):
                         if m:
                             title=m.group(1)
                             title = title.strip()
-                        p=re.compile('<key>SUBTITLE</key><string>(.*?)</string>')                        
+                        p=re.compile('<key>SUBTITLE</key><string>(.*?)</string>')
                         m=p.search(epg)
                         if m:
                             subtitle=m.group(1)
@@ -478,7 +476,7 @@ for dirpath, dirnames, filenames in os.walk(path):
                             if subtitle:
                                 dsubtitle='.'+subtitle
                         # print subtitle
-                        p=re.compile('<key>EPISODENUM</key><string>(.*?)</string>')                        
+                        p=re.compile('<key>EPISODENUM</key><string>(.*?)</string>')
                         m=p.search(epg)
                         if m:
                             episode=m.group(1)
@@ -486,7 +484,7 @@ for dirpath, dirnames, filenames in os.walk(path):
                             if episode:
                                 depisode='.'+episode
                         # print episode
-                        p=re.compile('<key>DESCRIPTION</key><string>(.*?)</string>')                        
+                        p=re.compile('<key>DESCRIPTION</key><string>(.*?)</string>')
                         m=p.search(epg)
                         if m:
                             plot=m.group(1)
@@ -495,22 +493,23 @@ for dirpath, dirnames, filenames in os.walk(path):
                         libname=title+depisode+dsubtitle
                         # libname = unicode( libname, "utf-8" )
                         libname = libname.encode( 'utf-8' )
-                        p=re.compile('<key>ACTORS</key><string>(.*?)</string>')                        
+                        p=re.compile('<key>ACTORS</key><string>(.*?)</string>')
                         m=p.search(epg)
                         if m:
                             actors=m.group(1)
                             actors = actors.strip()
-                        p=re.compile('<key>CONTENT</key><string>(.*?)</string>')                        
+                            actorlist = actors.split(', ')
+                        p=re.compile('<key>CONTENT</key><string>(.*?)</string>')
                         m=p.search(epg)
                         if m:
                             genre=m.group(1)
                             genre = genre.strip()
-                        p=re.compile('<key>DIRECTOR</key><string>(.*?)</string>')                        
+                        p=re.compile('<key>DIRECTOR</key><string>(.*?)</string>')
                         m=p.search(epg)
                         if m:
                             director=m.group(1)
                             director = director.strip()
-                        p=re.compile('<date>(\d\d\d\d-\d\d-\d\d).*?\d\d:\d\d:\d\d.*?</date>')                        
+                        p=re.compile('<date>(\d\d\d\d-\d\d-\d\d).*?\d\d:\d\d:\d\d.*?</date>')
                         m=p.search(epg)
                         if m:
                             aired=m.group(1)
@@ -523,11 +522,11 @@ for dirpath, dirnames, filenames in os.walk(path):
                     # title=shortdirpath
                     liz=xbmcgui.ListItem(shortdirpath, libname, iconImage=icon, thumbnailImage=icon2)
                     # liz.setInfo( type="Video", infoLabels={ "Title": libname, "Date":date, "Size":size, "Plot":plot, "Episode":episode} )
-                    liz.setInfo( type="Video", infoLabels={ "Title": libname, "Date":date, "Size":size, "Plot":plot, "Genre":genre, "Cast":actors} )
+                    liz.setInfo( type="Video", infoLabels={ "Title": libname, "Date":date, "Size":size, "Plot":plot, "Genre":genre, "Cast":actorlist} )
                     xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=fqname,listitem=liz)
 
 #xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')                   
-#xbmcplugin.addSortMethod(int(sys.argv[1]),  3)#date
+#xbmcplugin.addSortMethod(int(sys.argv[1]), 3)#date
 #xbmcplugin.addSortMethod(int(sys.argv[1]), 10)#title
 #xbmcplugin.addSortMethod(int(sys.argv[1]),  1)#filename
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
