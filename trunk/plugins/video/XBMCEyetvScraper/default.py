@@ -483,6 +483,7 @@ for dirpath, dirnames, filenames in os.walk(path):
                         genre=""
                         director=""
                         aired=""
+                        actorlist=[]
                         
                         file = open(filePl)
                         pl=""
@@ -1009,7 +1010,9 @@ for dirpath, dirnames, filenames in os.walk(path):
                                                     episodenfofile.write('  </actor>\n')
                                         episodenfofile.write('</episodedetails>\n')
                                         episodenfofile.close()
-                                    
+
+                    actorlist = actors.split(', ')
+
                     filePl=""
                     #icon = "defaultVideo.png"
                     #icon2 = "defaultVideoBig.png"
@@ -1018,7 +1021,7 @@ for dirpath, dirnames, filenames in os.walk(path):
                     # title=shortdirpath
                     liz=xbmcgui.ListItem(shortdirpath, libname, iconImage=icon, thumbnailImage=icon2)
                     # liz.setInfo( type="Video", infoLabels={ "Title": libname, "Date":date, "Size":size, "Plot":plot, "Episode":episode} )
-                    liz.setInfo( type="Video", infoLabels={ "Title": libname, "Date":date, "Size":size, "Plot":plot, "Genre":genre, "Cast":actors} )
+                    liz.setInfo( type="Video", infoLabels={ "Title": libname, "Date":date, "Size":size, "Plot":plot, "Genre":genre, "Cast":actorlist} )
                     if LDS == 1:
                         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=dummyShowLink,listitem=liz)
                     else:
