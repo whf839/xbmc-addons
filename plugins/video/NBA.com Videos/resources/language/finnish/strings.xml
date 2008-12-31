@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>   <!--  31.12.2008 Finnish   -->
+    <string id="30000">DVD Player käytössä vakio soittimen sijaan</string>
+    <string id="30001">Lataa ja toista video</string>
+    <string id="30002">Latauspolku</string>
+    <string id="30003">Kysy latauksesta ennen toistoa</string>
+</strings>
