@@ -540,7 +540,7 @@ class CCurrentList:
         item = None
         for root, dirs, files in os.walk(resDir):
             for listname in files:
-                if self.getFileExtension(listname) == 'list':
+                if self.getFileExtension(listname) == 'list' and listname != 'catcher.list':
                     item = self.getItemFromList(listname, name)
                 if item != None:
                     return item
