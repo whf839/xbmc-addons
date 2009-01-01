@@ -1,22 +1,23 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+ï»¿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!--Language file translated with Team XBMC Translator-->
+<!--Translator: blittan-->
+<!--Email: blittan@xbmc.org-->
+<!--Date of translation: 01/01/2009-->
+<!--$Revision$-->
 <strings>
-    <!-- Update messages -->
-    <string id="30000">Vill du installera detta tillägg?</string>
-    <string id="30001"></string>
-    <string id="30002">Hämtar fillista...</string>
-    <string id="30003">Var god vänta...</string>
-    <string id="30004"></string>
-    <string id="30005">Hämtar:</string>
-    <string id="30006">Sökväg:</string>
-    <string id="30007">Fil:</string>
-    <string id="30008">Ditt nya tillägg installerades i:</string>
-
-    <string id="30020">Hoppa över</string>
-    <string id="30021">Installera</string>
-
-    <!-- settings -->
-    <string id="30500">Förråd att lista</string>
-
-    <!-- Update error messages -->
-    <string id="30030">Ett fel uppstod under installationen av tillägget!</string>
+  <string id="30000">Vill du installera detta tillÃ¤gg?</string>
+  <string id="30001">
+  </string>
+  <string id="30002">HÃ¤mtar fillista...</string>
+  <string id="30003">Var god vÃ¤nta...</string>
+  <string id="30004">
+  </string>
+  <string id="30005">HÃ¤mtar:</string>
+  <string id="30006">SÃ¶kvÃ¤g:</string>
+  <string id="30007">Fil:</string>
+  <string id="30008">Ditt nya tillÃ¤gg installerades i:</string>
+  <string id="30020">Hoppa Ã¶ver</string>
+  <string id="30021">Installera</string>
+  <string id="30030">Ett fel uppstod under installationen av tillÃ¤gget!</string>
+  <string id="30500">FÃ¶rrÃ¥d att lista</string>
 </strings>

@@ -1,66 +1,66 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+ï»¿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!--Language file translated with Team XBMC Translator-->
+<!--Translator: blittan-->
+<!--Email: blittan@xbmc.org-->
+<!--Date of translation: 01/01/2009-->
+<!--$Revision$-->
 <strings>
-    <!-- Messages and Headings-->
-    <string id="30000">Theater Showtimes</string>
-    <string id="30001">Theater Listing</string>
-    <string id="30002">Söker theaters, var god vänta...</string>
-    <string id="30003">Söker showtimes, var god vänta...</string>
-    <string id="30004">Datum</string>
-    <string id="30005">Plats</string>
-    <string id="30006">Inga showtimes hittade!</string>
-    <string id="30007">IMDb Filmdetaljer</string>
-    <string id="30008">Hämtar filmdetaljer</string>
-    <string id="30009">Var god vänta...</string>
-    <string id="30010">Spela trailer</string>
-    <string id="30011">som</string>
-    <string id="30012">Kategori</string>
-    <string id="30013">Handling</string>
-    <string id="30014">Detaljer</string>
-    <string id="30015">Rollsättning</string>
-    <string id="30016">Annat</string>
-    <string id="30017">Trailer</string>
-    <string id="30018">Film-mätare</string>
-    <string id="30019">Blunders</string>
-    <string id="30020">Trivia</string>
-    <string id="30021">Citat</string>
-    <string id="30022">Användarkommentarer</string>
-    <string id="30023">Platser</string>
-    <string id="30024">Bildförhållande</string>
-    <string id="30025">Ljudmix</string>
-    <string id="30026">Språk</string>
-    <string id="30027">Belöningar</string>
-    <string id="30028">Intyg</string>
-
-    <!-- Error messages -->
-    <string id="30100">Ingen trailer hittades för denna film.</string>
-    <string id="30101">Ingen handling hittades för denna film.</string>
-
-    <!-- Settings -->
-    <string id="30500">Postnummer/Postort eller delstat</string>
-    <string id="30510">Showtimes scraper</string>
-    <string id="30520">Dag att lista filmer för</string>
-    <string id="30521">Idag</string>
-    <string id="30522">Imorgon</string>
-    <string id="30523">Dag 3</string>
-    <string id="30524">Dag 4</string>
-    <string id="30525">Dag 5</string>
-    <string id="30526">Dag 6</string>
-    <string id="30527">Dag 7</string>
-    <string id="30528">Dag 8</string>
-    <string id="30530">Visa info på fokus</string>
-    <string id="30540">Föredragen IMDb posterstorlek</string>
-    <string id="30541">Liten</string>
-    <string id="30542">Mellan</string>
-    <string id="30543">Stor</string>
-    <string id="30550">Spela trailer knappen länkar till Apple Movie Trailers databas</string>
-    <string id="30551">- Sökväg till databas</string>
-    <string id="30560">- Föredragen trailerkvalitet</string>
-    <string id="30561">Låg</string>
-    <string id="30562">Medium</string>
-    <string id="30563">Hög</string>
-    <string id="30554">480p</string>
-    <string id="30555">720p</string>
-    <string id="30556">1080p</string>
-    <string id="30570">&#32;&#32;- Inkludera endast HD trailers</string>
-    <string id="30580">- Spela alla trailers per film</string>
+  <string id="30000">Biografvisningar</string>
+  <string id="30001">Biograflistningar</string>
+  <string id="30002">SÃ¶ker biografer, var god vÃ¤nta...</string>
+  <string id="30003">SÃ¶ker visningar, var god vÃ¤nta...</string>
+  <string id="30004">Datum</string>
+  <string id="30005">Plats</string>
+  <string id="30006">Inga visningar hittade!</string>
+  <string id="30007">IMDb Filmdetaljer</string>
+  <string id="30008">HÃ¤mtar filmdetaljer</string>
+  <string id="30009">Var god vÃ¤nta...</string>
+  <string id="30010">Spela trailer</string>
+  <string id="30011">som</string>
+  <string id="30012">Kategori</string>
+  <string id="30013">Handling</string>
+  <string id="30014">Detaljer</string>
+  <string id="30015">RollsÃ¤ttning</string>
+  <string id="30016">Annat</string>
+  <string id="30017">Trailer</string>
+  <string id="30018">Film-mÃ¤tare</string>
+  <string id="30019">Blunders</string>
+  <string id="30020">Trivia</string>
+  <string id="30021">Citat</string>
+  <string id="30022">AnvÃ¤ndarkommentarer</string>
+  <string id="30023">Platser</string>
+  <string id="30024">BildfÃ¶rhÃ¥llande</string>
+  <string id="30025">Ljudmix</string>
+  <string id="30026">SprÃ¥k</string>
+  <string id="30027">BelÃ¶ningar</string>
+  <string id="30028">Intyg</string>
+  <string id="30100">Ingen trailer hittades fÃ¶r denna film.</string>
+  <string id="30101">Ingen handling hittades fÃ¶r denna film.</string>
+  <string id="30500">Postnummer/Postort eller delstat</string>
+  <string id="30510">Visnings-skrapa</string>
+  <string id="30520">Dag att lista filmer fÃ¶r</string>
+  <string id="30521">Idag</string>
+  <string id="30522">Imorgon</string>
+  <string id="30523">Dag 3</string>
+  <string id="30524">Dag 4</string>
+  <string id="30525">Dag 5</string>
+  <string id="30526">Dag 6</string>
+  <string id="30527">Dag 7</string>
+  <string id="30528">Dag 8</string>
+  <string id="30530">Visa info pÃ¥ fokus</string>
+  <string id="30540">FÃ¶redragen IMDb posterstorlek</string>
+  <string id="30541">Liten</string>
+  <string id="30542">Mellan</string>
+  <string id="30543">Stor</string>
+  <string id="30550">Spela trailer knappen lÃ¤nkar till Apple Movie Trailers databas</string>
+  <string id="30551">- SÃ¶kvÃ¤g till databas</string>
+  <string id="30560">- FÃ¶redragen trailerkvalitet</string>
+  <string id="30561">LÃ¥g</string>
+  <string id="30562">Medium</string>
+  <string id="30563">HÃ¶g</string>
+  <string id="30564">480p</string>
+  <string id="30565">720p</string>
+  <string id="30566">1080p</string>
+  <string id="30570">  - Inkludera endast HD trailers</string>
+  <string id="30580">- Spela alla trailers per film</string>
 </strings>
