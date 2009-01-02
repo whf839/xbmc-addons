@@ -20,14 +20,25 @@ urlopen = urllib2.urlopen
 cj = cookielib.LWPCookieJar()
 Request = urllib2.Request
 
+if xbmcplugin.getSetting('use_proxy') == 'true':
+    proxy_handler = urllib2.ProxyHandler({'http':'http://' + xbmcplugin.getSetting('proxy_ipaddress') + ':' + xbmcplugin.getSetting('proxy_port')})
+else:
+    proxy_handler = None
+
 if cj != None:
     if os.path.isfile(xbmc.translatePath(os.path.join(resDir, 'cookies.lwp'))):
         cj.load(xbmc.translatePath(os.path.join(resDir, 'cookies.lwp')))
-    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-    urllib2.install_opener(opener)
+    if proxy_handler:
+        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), proxy_handler)
+    else:
+        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
 else:
-    opener = urllib2.build_opener()
-    urllib2.install_opener(opener)
+    if proxy_handler:
+        opener = urllib2.build_opener(proxy_handler)
+    else:
+        opener = urllib2.build_opener()
+
+urllib2.install_opener(opener)
 
 entitydefs = {
     'AElig':    u'\u00C6', # latin capital letter AE = latin capital ligature AE, U+00C6 ISOlat1'
