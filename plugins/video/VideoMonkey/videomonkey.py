@@ -590,15 +590,28 @@ class CCurrentList:
         for info_name in item.infos_names:
             if info_idx != url_idx and item.infos_names[info_idx].find('.once') == -1:
                 info_value = urllib.quote(item.infos_values[info_idx])
-                try:
-                    url = url + '|' + item.infos_names[info_idx] + ':' + info_value
-                except:
-                    url = url + '|' + item.infos_names[info_idx] + ':' + smart_unicode(info_value)
+                if firstInfo:
+                    firstInfo = False
+                    try:
+                        url = item.infos_names[info_idx] + ':' + info_value
+                    except:
+                        url = item.infos_names[info_idx] + ':' + smart_unicode(info_value)
+                else:
+                    try:
+                        url = url + '|' + item.infos_names[info_idx] + ':' + info_value
+                    except:
+                        url = url + '|' + item.infos_names[info_idx] + ':' + smart_unicode(info_value)
             info_idx = info_idx + 1
-        try:
-            url = url + '|' + item.infos_names[url_idx] + ':' + item.infos_values[url_idx]
-        except:
-            url = url + '|' + item.infos_names[url_idx] + ':' + smart_unicode(item.infos_values[url_idx])
+        if firstInfo:
+            try:
+                url = item.infos_names[url_idx] + ':' + item.infos_values[url_idx]
+            except:
+                url = item.infos_names[url_idx] + ':' + smart_unicode(item.infos_values[url_idx])
+        else:
+            try:
+                url = url + '|' + item.infos_names[url_idx] + ':' + item.infos_values[url_idx]
+            except:
+                url = url + '|' + item.infos_names[url_idx] + ':' + smart_unicode(item.infos_values[url_idx])
         if len(suffix) > 0:
             url = url + '.' + suffix
         return url
@@ -751,7 +764,7 @@ class CCurrentList:
                                 forward_cfg = f.read()
                                 f.close()
                                 if forward_cfg != self.cfg:
-                                    return self.loadLocal(forward_cfg, recursive, lItem)
+                                    return self.loadLocal(forward_cfg, recursive, lItem, lCatcher)
                                 return 0
                             except:
                                 pass
@@ -848,8 +861,6 @@ class CCurrentList:
                 info_value = '...'
             elif cfg_file.find('youtube') != -1: # youtube
                 info_value = info_value.replace('<b>', '').replace('</b>', '')
-            elif cfg_file.find('boysfood') != -1: # boysfood
-                info_value = info_value.replace('<font style="color:#c00000;font-weight:bold;">', '').replace('</font>', '')
         elif info_name == 'icon':
             info_value = decode(unquote_safe(info_value))
             if info_value == '':
@@ -1445,11 +1456,11 @@ class Main:
                     m_type = u'rss'
                 m_icon = m.infos_values[m.infos_names.index('icon')]
                 m_title = clean_safe(m.infos_values[m.infos_names.index('title')])
-                if m_type == u'rss' or m_type == u'search' or (m_type == u'adult_rss' and xbmcplugin.getSetting('no_adult') == 'false'):
+                if m_type == u'rss' or m_type == u'search':
                     self.addListItem(m_title, self.currentlist.codeUrl(m), m_icon, len(self.currentlist.items), m)
-                elif m_type == u'video' or (m_type == u'adult_video' and xbmcplugin.getSetting('no_adult') == 'false'):
+                elif m_type == u'video':
                     self.addListItem(m_title, self.currentlist.codeUrl(m, 'videomonkey'), m_icon, len(self.currentlist.items), m)
-                elif m_type == u'live' or (m_type == u'adult_live' and xbmcplugin.getSetting('no_adult') == 'false'):
+                elif m_type == u'live':
                     self.addListItem(m_title, m_url, m_icon, len(self.currentlist.items), m, False)
         return result
 
