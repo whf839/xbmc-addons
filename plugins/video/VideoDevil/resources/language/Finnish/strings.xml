@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings>    <!--  20.11.2008 Finnish   -->
+<strings>    <!--  3.1.2008 Finnish   -->
     <string id="30000">VideoDevil</string>
     <string id="30001">XBMC Media Center</string>
 
@@ -30,12 +30,12 @@
     <string id="30058">Korkea laatu</string>
     <string id="30059">Päivittää</string>
     <string id="30060">VideoDevil on päivitetty onnistuneesti</string>
-    <string id="30061">WARNING :This plugin contains explicit adult material.</string>
-    <string id="30062">You may enter only if you are at least 18 years of age</string>
-    <string id="30063">or at least the legal age in the jurisdiction where</string>
-    <string id="30064">you reside or from which you access this content.</string>
-    <string id="30065">Exit</string>
-    <string id="30066">Enter</string>
+    <string id="30061">Varoitus : Tämä lisäke sisältää vain aikuisille suunnattua materiaalia.</string>
+    <string id="30062">Voit käyttää sitä vain jos olet vähintään 18v vanha</string>
+    <string id="30063">tai sen ikäinen mikä on määrittelty oikeuskelpoiseksi</string>
+    <string id="30064">paikassa josta haluat käyttää sisältöä.</string>
+    <string id="30065">Poistu</string>
+    <string id="30066">Sisään</string>
 
     <string id="30100">Kategoria</string>
     <string id="30101">Alikategoria</string>
