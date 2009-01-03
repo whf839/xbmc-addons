@@ -426,7 +426,7 @@
                     <textcolor>FFFFFFFF</textcolor>
                     <align>left</align>
                     <aligny>top</aligny>
-                    <label>&#10;&#10;$LOCALIZE[SCRIPT57]&#10;$LOCALIZE[SCRIPT52]</label>
+                    <label>&#10;&#10;&#10;$LOCALIZE[SCRIPT52]</label>
                 </control>
             </control>
                 
@@ -3039,13 +3039,36 @@
                     <pulseonselect>false</pulseonselect>
                     <enable>!IsEmpty(Skin.String(twc-fanart-path)) + !Skin.HasSetting(twc-fanart-diffuselevel0)</enable>
                     <onup>403</onup>
+                    <ondown>405</ondown>
+                </control>
+                <!-- Settings 6 -->
+                <control type="radiobutton" id="405">
+                    <description>show alerts at start</description>
+                    <posx>0</posx>
+                    <posy>180</posy>
+                    <width>590</width>
+                    <height>30</height>
+                    <font>font13</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <disabledcolor>60ffffff</disabledcolor>
+                    <label>SCRIPT405</label>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <selected>!Skin.HasSetting(twc-show-alerts)</selected>
+                    <textoffsetx>7</textoffsetx>
+                    <textureradiofocus>twc-radiobutton-focus.png</textureradiofocus>
+                    <textureradionofocus>twc-radiobutton-nofocus.png</textureradionofocus>
+                    <texturefocus border="3">twc-input-focus.png</texturefocus>
+                    <texturenofocus>-</texturenofocus>
+                    <pulseonselect>false</pulseonselect>
+                    <onup>404</onup>
                     <ondown>400</ondown>
                 </control>
                 <!-- Seperator -->
                 <control type="image">
                     <description>seperator</description>
                     <posx>0</posx>
-                    <posy>180</posy>
+                    <posy>220</posy>
                     <width>590</width>
                     <height>3</height>
                     <texture>twc-sep.png</texture>
