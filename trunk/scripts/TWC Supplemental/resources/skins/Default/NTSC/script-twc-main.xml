@@ -105,7 +105,7 @@
                     <description>Maps Button</description>
                     <posx>75</posx>
                     <posy>100</posy>
-                    <width>95</width>
+                    <width>80</width>
                     <height>30</height>
                     <align>center</align>
                     <aligny>center</aligny>
@@ -113,19 +113,22 @@
                     <font>font10</font>
                     <textcolor>ffffffff</textcolor>
                     <disabledcolor>60ffffff</disabledcolor>
+                    <pulseonselect>false</pulseonselect>
                     <textoffsetx>17</textoffsetx>
-                    <texturenofocus border="5">twc-button-nofocus2.png</texturenofocus>
-                    <texturefocus border="5">twc-button-focus2.png</texturefocus>
-                    <onleft>205</onleft>
+                    <texturenofocus border="5">twc-button2-nofocus.png</texturenofocus>
+                    <texturefocus border="5">twc-button2-focus.png</texturefocus>
+                    <!--animation effect="slide" start="0,0" end="77,0" time="0" reversible="false" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation>
+                    <animation effect="zoom" reversible="false" center="auto" start="100,100" end="85,100" time="0" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation-->
+                    <onleft>206</onleft>
                     <onright>201</onright>
                     <onup>3000</onup>
                     <ondown>3000</ondown>
                 </control>
                 <control type="button" id="201">
                     <description>36 Hour Forecast Button</description>
-                    <posx>175</posx>
+                    <posx>160</posx>
                     <posy>100</posy>
-                    <width>95</width>
+                    <width>80</width>
                     <height>30</height>
                     <align>center</align>
                     <aligny>center</aligny>
@@ -133,9 +136,12 @@
                     <font>font10</font>
                     <textcolor>ffffffff</textcolor>
                     <disabledcolor>60ffffff</disabledcolor>
+                    <pulseonselect>false</pulseonselect>
                     <textoffsetx>17</textoffsetx>
-                    <texturenofocus border="5">twc-button-nofocus2.png</texturenofocus>
-                    <texturefocus border="5">twc-button-focus2.png</texturefocus>
+                    <texturenofocus border="5">twc-button2-nofocus.png</texturenofocus>
+                    <texturefocus border="5">twc-button2-focus.png</texturefocus>
+                    <!--animation effect="slide" start="0,0" end="62,0" time="0" reversible="false" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation>
+                    <animation effect="zoom" reversible="false" center="auto" start="100,100" end="85,100" time="0" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation-->
                     <onleft>200</onleft>
                     <onright>202</onright>
                     <onup>3000</onup>
@@ -143,9 +149,9 @@
                 </control>
                 <control type="button" id="202">
                     <description>Hour by Hour Forecast Button</description>
-                    <posx>275</posx>
+                    <posx>245</posx>
                     <posy>100</posy>
-                    <width>95</width>
+                    <width>80</width>
                     <height>30</height>
                     <align>center</align>
                     <aligny>center</aligny>
@@ -153,9 +159,12 @@
                     <font>font10</font>
                     <textcolor>ffffffff</textcolor>
                     <disabledcolor>60ffffff</disabledcolor>
+                    <pulseonselect>false</pulseonselect>
                     <textoffsetx>17</textoffsetx>
-                    <texturenofocus border="5">twc-button-nofocus2.png</texturenofocus>
-                    <texturefocus border="5">twc-button-focus2.png</texturefocus>
+                    <texturenofocus border="5">twc-button2-nofocus.png</texturenofocus>
+                    <texturefocus border="5">twc-button2-focus.png</texturefocus>
+                    <!--animation effect="slide" start="0,0" end="47,0" time="0" reversible="false" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation>
+                    <animation effect="zoom" reversible="false" center="auto" start="100,100" end="85,100" time="0" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation-->
                     <onleft>201</onleft>
                     <onright>203</onright>
                     <onup>3000</onup>
@@ -163,9 +172,9 @@
                 </control>
                 <control type="button" id="203">
                     <description>Weekend Forecast Button</description>
-                    <posx>375</posx>
+                    <posx>330</posx>
                     <posy>100</posy>
-                    <width>95</width>
+                    <width>80</width>
                     <height>30</height>
                     <align>center</align>
                     <aligny>center</aligny>
@@ -173,9 +182,12 @@
                     <font>font10</font>
                     <textcolor>ffffffff</textcolor>
                     <disabledcolor>60ffffff</disabledcolor>
+                    <pulseonselect>false</pulseonselect>
                     <textoffsetx>17</textoffsetx>
-                    <texturenofocus border="5">twc-button-nofocus2.png</texturenofocus>
-                    <texturefocus border="5">twc-button-focus2.png</texturefocus>
+                    <texturenofocus border="5">twc-button2-nofocus.png</texturenofocus>
+                    <texturefocus border="5">twc-button2-focus.png</texturefocus>
+                    <!--animation effect="slide" start="0,0" end="32,0" time="0" reversible="false" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation>
+                    <animation effect="zoom" reversible="false" center="auto" start="100,100" end="85,100" time="0" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation-->
                     <onleft>202</onleft>
                     <onright>204</onright>
                     <onup>3000</onup>
@@ -183,9 +195,9 @@
                 </control>
                 <control type="button" id="204">
                     <description>10 Day Forecast Button</description>
-                    <posx>475</posx>
+                    <posx>415</posx>
                     <posy>100</posy>
-                    <width>95</width>
+                    <width>80</width>
                     <height>30</height>
                     <align>center</align>
                     <aligny>center</aligny>
@@ -193,9 +205,12 @@
                     <font>font10</font>
                     <textcolor>ffffffff</textcolor>
                     <disabledcolor>60ffffff</disabledcolor>
+                    <pulseonselect>false</pulseonselect>
                     <textoffsetx>17</textoffsetx>
-                    <texturenofocus border="5">twc-button-nofocus2.png</texturenofocus>
-                    <texturefocus border="5">twc-button-focus2.png</texturefocus>
+                    <texturenofocus border="5">twc-button2-nofocus.png</texturenofocus>
+                    <texturefocus border="5">twc-button2-focus.png</texturefocus>
+                    <!--animation effect="slide" start="0,0" end="17,0" time="0" reversible="false" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation>
+                    <animation effect="zoom" reversible="false" center="auto" start="100,100" end="85,100" time="0" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation-->
                     <onleft>203</onleft>
                     <onright>205</onright>
                     <onup>3000</onup>
@@ -203,9 +218,9 @@
                 </control>
                 <control type="button" id="205">
                     <description>Settings Button</description>
-                    <posx>575</posx>
+                    <posx>500</posx>
                     <posy>100</posy>
-                    <width>95</width>
+                    <width>80</width>
                     <height>30</height>
                     <align>center</align>
                     <aligny>center</aligny>
@@ -213,90 +228,242 @@
                     <font>font10</font>
                     <textcolor>ffffffff</textcolor>
                     <disabledcolor>60ffffff</disabledcolor>
+                    <pulseonselect>false</pulseonselect>
                     <textoffsetx>17</textoffsetx>
-                    <texturenofocus border="5">twc-button-nofocus2.png</texturenofocus>
-                    <texturefocus border="5">twc-button-focus2.png</texturefocus>
+                    <texturenofocus border="5">twc-button2-nofocus.png</texturenofocus>
+                    <texturefocus border="5">twc-button2-focus.png</texturefocus>
+                    <!--animation effect="slide" start="0,0" end="2,0" time="0" reversible="false" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation>
+                    <animation effect="zoom" reversible="false" center="auto" start="100,100" end="85,100" time="0" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation-->
                     <onleft>204</onleft>
+                    <onright>206</onright>
+                    <onup>3000</onup>
+                    <ondown>3000</ondown>
+                </control>
+                <control type="button" id="206">
+                    <description>Alerts Button</description>
+                    <posx>585</posx>
+                    <posy>100</posy>
+                    <width>80</width>
+                    <height>30</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <label>SCRIPT206</label>
+                    <font>font10</font>
+                    <textcolor>$INFO[Window.Property(AlertsColor)]</textcolor>
+                    <disabledcolor>60ffffff</disabledcolor>
+                    <pulseonselect>false</pulseonselect>
+                    <textoffsetx>17</textoffsetx>
+                    <texturenofocus border="5">twc-button2-nofocus.png</texturenofocus>
+                    <texturefocus border="5">twc-button2-focus.png</texturefocus>
+                    <visible>!IsEmpty(Window.Property(Alerts))</visible>
+                    <onleft>205</onleft>
                     <onright>200</onright>
                     <onup>3000</onup>
                     <ondown>3000</ondown>
                 </control>
+                <!-- Section divider -->
+                <control type="image">
+                    <description>divider left</description>
+                    <posx>64</posx>
+                    <posy>130</posy>
+                    <width>12</width>
+                    <height>2.0</height>
+                    <texture>twc-tab.png</texture>
+                    <aspectratio>stretch</aspectratio>
+                </control>
+                <control type="image">
+                    <description>divider left</description>
+                    <posx>665</posx>
+                    <posy>130</posy>
+                    <width>14</width>
+                    <height>2.0</height>
+                    <texture>twc-tab.png</texture>
+                    <aspectratio>stretch</aspectratio>
+                </control>
+                <!-- Not selected button background images -->
+                <control type="image">
+                    <description>tab1 not selected</description>
+                    <posx>70</posx>
+                    <posy>130</posy>
+                    <width>90</width>
+                    <height>2.0</height>
+                    <texture>twc-tab.png</texture>
+                    <aspectratio>stretch</aspectratio>
+                    <visible>IsEmpty(Window.Property(view-Maps))</visible>
+                    <!--animation effect="slide" start="0,0" end="77,0" time="0" reversible="false" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation>
+                    <animation effect="zoom" reversible="false" center="auto" start="100,100" end="85,100" time="0" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation-->
+                </control>
+                <control type="image">
+                    <description>tab2 not selected</description>
+                    <posx>155</posx>
+                    <posy>130</posy>
+                    <width>90</width>
+                    <height>2.0</height>
+                    <texture>twc-tab.png</texture>
+                    <aspectratio>stretch</aspectratio>
+                    <visible>IsEmpty(Window.Property(view-36Hour))</visible>
+                    <!--animation effect="slide" start="0,0" end="62,0" time="0" reversible="false" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation>
+                    <animation effect="zoom" reversible="false" center="auto" start="100,100" end="85,100" time="0" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation-->
+                </control>
+                <control type="image">
+                    <description>tab3 not selected</description>
+                    <posx>240</posx>
+                    <posy>130</posy>
+                    <width>90</width>
+                    <height>2.0</height>
+                    <texture>twc-tab.png</texture>
+                    <aspectratio>stretch</aspectratio>
+                    <visible>IsEmpty(Window.Property(view-HourByHour))</visible>
+                    <!--animation effect="slide" start="0,0" end="47,0" time="0" reversible="false" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation>
+                    <animation effect="zoom" reversible="false" center="auto" start="100,100" end="85,100" time="0" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation-->
+                </control>
+                <control type="image">
+                    <description>tab4 not selected</description>
+                    <posx>325</posx>
+                    <posy>130</posy>
+                    <width>90</width>
+                    <height>2.0</height>
+                    <texture>twc-tab.png</texture>
+                    <aspectratio>stretch</aspectratio>
+                    <visible>IsEmpty(Window.Property(view-Weekend))</visible>
+                    <!--animation effect="slide" start="0,0" end="32,0" time="0" reversible="false" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation>
+                    <animation effect="zoom" reversible="false" center="auto" start="100,100" end="85,100" time="0" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation-->
+                </control>
+                <control type="image">
+                    <description>tab5 not selected</description>
+                    <posx>410</posx>
+                    <posy>130</posy>
+                    <width>90</width>
+                    <height>2.0</height>
+                    <texture>twc-tab.png</texture>
+                    <aspectratio>stretch</aspectratio>
+                    <visible>IsEmpty(Window.Property(view-10Day))</visible>
+                    <!--animation effect="slide" start="0,0" end="17,0" time="0" reversible="false" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation>
+                    <animation effect="zoom" reversible="false" center="auto" start="100,100" end="85,100" time="0" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation-->
+                </control>
+                <control type="image">
+                    <description>tab6 not selected</description>
+                    <posx>495</posx>
+                    <posy>130</posy>
+                    <width>90</width>
+                    <height>2.0</height>
+                    <texture>twc-tab.png</texture>
+                    <aspectratio>stretch</aspectratio>
+                    <visible>IsEmpty(Window.Property(view-Settings))</visible>
+                    <!--animation effect="slide" start="0,0" end="2,0" time="0" reversible="false" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation>
+                    <animation effect="zoom" reversible="false" center="auto" start="100,100" end="85,100" time="0" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation-->
+                </control>
+                <control type="image">
+                    <description>tab7 not selected</description>
+                    <posx>580</posx>
+                    <posy>130</posy>
+                    <width>90</width>
+                    <height>2.0</height>
+                    <texture>twc-tab.png</texture>
+                    <aspectratio>stretch</aspectratio>
+                    <visible>IsEmpty(Window.Property(view-Alerts)) | IsEmpty(Window.Property(Alerts))</visible>
+                    <!--animation effect="zoom" reversible="false" center="auto" start="100,100" end="85,100" time="0" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation-->
+                </control>
 			</control>
-            <!-- Section divider -->
-            <control type="image">
-                <description>divider</description>
-                <posx>62</posx>
-                <posy>129</posy>
-                <width>614</width>
-                <height>2</height>
-                <texture>twc-tab.png</texture>
-                <aspectratio>stretch</aspectratio>
-            </control>
-            <!-- Selected tab images -->
-            <control type="image">
-                <description>tab1 selected</description>
-                <posx>74</posx>
-                <posy>129</posy>
-                <width>93</width>
-                <height>2</height>
-                <texture>twc-solid.png</texture>
-                <aspectratio>stretch</aspectratio>
-                <visible>!IsEmpty(Window.Property(view-Maps))</visible>
-            </control>
-            <control type="image">
-                <description>tab2 selected</description>
-                <posx>174</posx>
-                <posy>129</posy>
-                <width>93</width>
-                <height>2</height>
-                <texture>twc-solid.png</texture>
-                <aspectratio>stretch</aspectratio>
-                <visible>!IsEmpty(Window.Property(view-36Hour))</visible>
-            </control>
-            <control type="image">
-                <description>tab3 selected</description>
-                <posx>274</posx>
-                <posy>129</posy>
-                <width>93</width>
-                <height>2</height>
-                <texture>twc-solid.png</texture>
-                <aspectratio>stretch</aspectratio>
-                <visible>!IsEmpty(Window.Property(view-HourByHour))</visible>
-            </control>
-            <control type="image">
-                <description>tab4 selected</description>
-                <posx>374</posx>
-                <posy>129</posy>
-                <width>93</width>
-                <height>2</height>
-                <texture>twc-solid.png</texture>
-                <aspectratio>stretch</aspectratio>
-                <visible>!IsEmpty(Window.Property(view-Weekend))</visible>
-            </control>
-            <control type="image">
-                <description>tab5 selected</description>
-                <posx>474</posx>
-                <posy>129</posy>
-                <width>93</width>
-                <height>2</height>
-                <texture>twc-solid.png</texture>
-                <aspectratio>stretch</aspectratio>
-                <visible>!IsEmpty(Window.Property(view-10Day))</visible>
-            </control>
-            <control type="image">
-                <description>tab6 selected</description>
-                <posx>574</posx>
-                <posy>129</posy>
-                <width>93</width>
-                <height>2</height>
-                <texture>twc-solid.png</texture>
-                <aspectratio>stretch</aspectratio>
-                <visible>!IsEmpty(Window.Property(view-Settings))</visible>
-            </control>
         </control>
 
         <!-- Sections group -->
         <control type="group" id="3000">
+            <!-- Alerts section ** Required ** -->
+            <control type="group">
+                <posx>75</posx>
+                <posy>150</posy>
+                <visible>!IsEmpty(Window.Property(view-Alerts))</visible>
+                <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
+                <!-- Section divider -->
+                <control type="image">
+                    <description>border</description>
+                    <posx>-5</posx>
+                    <posy>-5</posy>
+                    <width>580</width>
+                    <height>275</height>
+                    <texture border="5">twc-button-nofocus.png</texture>
+                    <colordiffuse>90FFFFFF</colordiffuse>
+                    <aspectratio>stretch</aspectratio>
+                </control>
+                <control type="textbox">
+                    <description>alert</description>
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>570</width>
+                    <height>260</height>
+                    <font>font13</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <pagecontrol>2001</pagecontrol>
+                    <scrolltime>200</scrolltime>
+                    <align>left</align>
+                    <aligny>top</aligny>
+                    <info>Window.Property(Alerts)</info>
+                    <!--autoscroll time="2000" delay="6000" repeat="6000">VisibleChange</autoscroll-->
+                </control>
+                <!-- Scrollbar for alert textbox -->
+                <control type="button" id="9999">
+                    <description>Scrollbar Up Arrow</description>
+                    <posx>580</posx>
+                    <posy>-5</posy>
+                    <width>16</width>
+                    <height>16</height>
+                    <texturenofocus>twc-scrollbar_arrow_up.png</texturenofocus>
+                    <texturefocus>twc-scrollbar_arrow_up_focus.png</texturefocus>
+                    <onclick>PageUp(2001)</onclick>
+                    <onfocus>SetFocus(2001)</onfocus>
+                    <visible>Control.IsVisible(2001)</visible>
+                    <onleft>2000</onleft>
+                    <onright>2000</onright>
+                    <onup>2000</onup>
+                    <ondown>2000</ondown>
+                </control>
+                <control type="scrollbar" id="2001">
+                    <description>Scroll Bar</description>
+                    <posx>580</posx>
+                    <posy>11</posy>
+                    <width>16</width>
+                    <height>243</height>
+                    <texturesliderbackground border="4">twc-scrollbar_background.png</texturesliderbackground>
+                    <texturesliderbar border="3">twc-scrollbar_bar.png</texturesliderbar>
+                    <texturesliderbarfocus border="3">twc-scrollbar_bar_focus.png</texturesliderbarfocus>
+                    <textureslidernib>-</textureslidernib>
+                    <textureslidernibfocus>-</textureslidernibfocus>
+                    <onleft>2000</onleft>
+                    <onright>2000</onright>
+                    <showonepage>true</showonepage>
+                    <orientation>vertical</orientation>
+                </control>
+                <control type="button" id="9998">
+                    <description>Scrollbar Down Arrow</description>
+                    <posx>580</posx>
+                    <posy>254</posy>
+                    <width>16</width>
+                    <height>16</height>
+                    <texturenofocus>twc-scrollbar_arrow_down.png</texturenofocus>
+                    <texturefocus>twc-scrollbar_arrow_down_focus.png</texturefocus>
+                    <onclick>PageDown(2001)</onclick>
+                    <visible>Control.IsVisible(2001)</visible>
+                    <onleft>2000</onleft>
+                    <onright>2000</onright>
+                    <onup>2000</onup>
+                    <ondown>2000</ondown>
+                </control>
+                <!-- User instruction label -->
+                <control type="label">
+                    <description>info label</description>
+                    <posx>0</posx>
+                    <posy>255</posy>
+                    <width>500</width>
+                    <height>100</height>
+                    <font>font10</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <align>left</align>
+                    <aligny>top</aligny>
+                    <label>&#10;&#10;$LOCALIZE[SCRIPT57]&#10;$LOCALIZE[SCRIPT52]</label>
+                </control>
+            </control>
+                
             <!-- Maps section ** Required ** -->
             <control type="group">
                 <posx>75</posx>
@@ -972,9 +1139,9 @@
                     </control>
                     <!-- Condition heading -->
                     <control type="label">
-                        <posx>65</posx>
+                        <posx>70</posx>
                         <posy>-8</posy>
-                        <width>150</width>
+                        <width>160</width>
                         <height>20</height>
                         <font>font10</font>
                         <textcolor>DDFFFFFF</textcolor>
@@ -1070,7 +1237,7 @@
                             <control type="label">
                                 <posx>33</posx>
                                 <posy>0</posy>
-                                <width>50</width>
+                                <width>60</width>
                                 <height>56</height>
                                 <font>font10</font>
                                 <textcolor>DDFFFFFF</textcolor>
@@ -1080,23 +1247,23 @@
                                 <info>ListItem.Label</info>
                             </control>
                             <control type="image">
-                                <posx>65</posx>
+                                <posx>70</posx>
                                 <posy>4</posy>
-                                <width>150</width>
+                                <width>160</width>
                                 <height>56</height>
                                 <texture>twc-contentpanel.png</texture>
                             </control>
                             <control type="image">
-                                <posx>70</posx>
+                                <posx>75</posx>
                                 <posy>7</posy>
                                 <width>48</width>
                                 <height>48</height>
                                 <info>ListItem.Property(icon)</info>
                             </control>
                             <control type="label">
-                                <posx>165</posx>
+                                <posx>175</posx>
                                 <posy>0</posy>
-                                <width>80</width>
+                                <width>90</width>
                                 <height>56</height>
                                 <font>font10</font>
                                 <textcolor>DDFFFFFF</textcolor>
@@ -1188,7 +1355,7 @@
                             <control type="label">
                                 <posx>33</posx>
                                 <posy>0</posy>
-                                <width>50</width>
+                                <width>60</width>
                                 <height>56</height>
                                 <font>font10</font>
                                 <textcolor>DDFFFFFF</textcolor>
@@ -1198,23 +1365,23 @@
                                 <info>ListItem.Label</info>
                             </control>
                             <control type="image">
-                                <posx>65</posx>
+                                <posx>70</posx>
                                 <posy>4</posy>
-                                <width>150</width>
+                                <width>160</width>
                                 <height>56</height>
                                 <texture>twc-contentpanel.png</texture>
                             </control>
                             <control type="image">
-                                <posx>70</posx>
+                                <posx>75</posx>
                                 <posy>7</posy>
                                 <width>48</width>
                                 <height>48</height>
                                 <info>ListItem.Property(icon)</info>
                             </control>
                             <control type="label">
-                                <posx>165</posx>
+                                <posx>175</posx>
                                 <posy>0</posy>
-                                <width>80</width>
+                                <width>90</width>
                                 <height>56</height>
                                 <font>font10</font>
                                 <textcolor>DDFFFFFF</textcolor>
@@ -1360,7 +1527,7 @@
                     <align>center</align>
                     <aligny>top</aligny>
                     <label>SCRIPT103</label>
-                    <visible>IsEmpty(Window.Property(Weekend3day))</visible>
+                    <visible>IsEmpty(Window.Property(Weekend1day))</visible>
                     <animation effect="zoom" reversible="false" center="auto" start="100" end="200" time="0">WindowOpen</animation>
                 </control>
                 <!-- Details/Outlook toggle button -->
@@ -1377,8 +1544,8 @@
                     <textcolor>ffffffff</textcolor>
                     <disabledcolor>60ffffff</disabledcolor>
                     <textoffsetx>17</textoffsetx>
-                    <texturenofocus border="8">twc-button-nofocus.png</texturenofocus>
-                    <texturefocus border="8">twc-button-focus.png</texturefocus>
+                    <texturenofocus border="5">twc-button-nofocus.png</texturenofocus>
+                    <texturefocus border="5">twc-button-focus.png</texturefocus>
                     <onleft>2000</onleft>
                     <onright>2000</onright>
                     <onup>2000</onup>
@@ -2427,7 +2594,7 @@
                     <visible>!IsEmpty(Window.Property(10DayHead1))</visible>
                     <!-- Forecast conditions heading -->
                     <control type="label">
-                        <posx>60</posx>
+                        <posx>70</posx>
                         <posy>-8</posy>
                         <width>160</width>
                         <height>20</height>
@@ -2503,7 +2670,7 @@
                             <control type="label">
                                 <posx>33</posx>
                                 <posy>0</posy>
-                                <width>50</width>
+                                <width>60</width>
                                 <height>56</height>
                                 <font>font10</font>
                                 <textcolor>DDFFFFFF</textcolor>
@@ -2513,23 +2680,23 @@
                                 <label>$INFO[ListItem.Label]&#10;$INFO[ListItem.Property(date)]</label>
                             </control>
                             <control type="image">
-                                <posx>65</posx>
+                                <posx>70</posx>
                                 <posy>4</posy>
-                                <width>150</width>
+                                <width>160</width>
                                 <height>56</height>
                                 <texture>twc-contentpanel.png</texture>
                             </control>
                             <control type="image">
-                                <posx>70</posx>
+                                <posx>75</posx>
                                 <posy>7</posy>
                                 <width>48</width>
                                 <height>48</height>
                                 <info>ListItem.Property(icon)</info>
                             </control>
                             <control type="label">
-                                <posx>165</posx>
+                                <posx>175</posx>
                                 <posy>0</posy>
-                                <width>80</width>
+                                <width>90</width>
                                 <height>56</height>
                                 <font>font10</font>
                                 <textcolor>DDFFFFFF</textcolor>
@@ -2566,7 +2733,7 @@
                             <control type="label">
                                 <posx>490</posx>
                                 <posy>0</posy>
-                                <width>150</width>
+                                <width>170</width>
                                 <height>56</height>
                                 <font>font10</font>
                                 <textcolor>DDFFFFFF</textcolor>
@@ -2597,7 +2764,7 @@
                             <control type="label">
                                 <posx>33</posx>
                                 <posy>0</posy>
-                                <width>50</width>
+                                <width>60</width>
                                 <height>56</height>
                                 <font>font10</font>
                                 <textcolor>DDFFFFFF</textcolor>
@@ -2607,23 +2774,23 @@
                                 <label>$INFO[ListItem.Label]&#10;$INFO[ListItem.Property(date)]</label>
                             </control>
                             <control type="image">
-                                <posx>65</posx>
+                                <posx>70</posx>
                                 <posy>4</posy>
-                                <width>150</width>
+                                <width>160</width>
                                 <height>56</height>
                                 <texture>twc-contentpanel.png</texture>
                             </control>
                             <control type="image">
-                                <posx>70</posx>
+                                <posx>75</posx>
                                 <posy>7</posy>
                                 <width>48</width>
                                 <height>48</height>
                                 <info>ListItem.Property(icon)</info>
                             </control>
                             <control type="label">
-                                <posx>165</posx>
+                                <posx>175</posx>
                                 <posy>0</posy>
-                                <width>80</width>
+                                <width>90</width>
                                 <height>56</height>
                                 <font>font10</font>
                                 <textcolor>DDFFFFFF</textcolor>
@@ -2660,7 +2827,7 @@
                             <control type="label">
                                 <posx>490</posx>
                                 <posy>0</posy>
-                                <width>150</width>
+                                <width>170</width>
                                 <height>56</height>
                                 <font>font10</font>
                                 <textcolor>DDFFFFFF</textcolor>
