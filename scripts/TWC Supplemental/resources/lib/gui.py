@@ -97,8 +97,7 @@ class GUI( module ):
         else:
             # set map list and get default map
             self._fetch_map_list()
-        # we check 36 hour as it holds any alerts
-        if ( self.defaultview != self.CONTROL_36HOUR_BUTTON and self.defaultview != self.CONTROL_ALERTS_BUTTON ):
+            # we check 36 hour as it holds any alerts
             self._fetch_36_forecast( False )
 
     def _init_defaults( self ):
@@ -226,10 +225,10 @@ class GUI( module ):
         alerts, alertscolor, forecasts = self.TWCClient.fetch_36_forecast()
         # lock the gui for faster updating
         xbmcgui.lock()
-        # set any alerts
-        xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Alerts", alerts )
-        xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "AlertsColor", alertscolor )
         try:
+            # set any alerts
+            xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Alerts", alerts )
+            xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "AlertsColor", alertscolor )
             # enumerate thru and set the info
             for day, forecast in enumerate( forecasts ):
                 xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "36Hour%dicon" % ( day + 1, ), forecast[ 1 ] )
@@ -250,10 +249,13 @@ class GUI( module ):
         # reset our view
         self._reset_views( self.CONTROL_HOURBYHOUR_BUTTON )
         # fetch hour by hour forecast
-        headings, forecasts = self.TWCClient.fetch_hour_forecast()
+        alerts, alertscolor, headings, forecasts = self.TWCClient.fetch_hour_forecast()
         # lock the gui for faster updating
         xbmcgui.lock()
         try:
+            # set any alerts
+            xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Alerts", alerts )
+            xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "AlertsColor", alertscolor )
             # reset list
             self.getControl( self.CONTROL_HOUR_LIST ).reset()
             # enumerate thru and set our heading properties
@@ -280,10 +282,13 @@ class GUI( module ):
         # reset our view
         self._reset_views( self.CONTROL_WEEKEND_BUTTON )
         # fetch 36 hour forecast
-        forecasts = self.TWCClient.fetch_weekend_forecast()
+        alerts, alertscolor, forecasts = self.TWCClient.fetch_weekend_forecast()
         # lock the gui for faster updating
         xbmcgui.lock()
         try:
+            # set any alerts
+            xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Alerts", alerts )
+            xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "AlertsColor", alertscolor )
             # enumerate thru and set the info
             for day, forecast in enumerate( forecasts ):
                 xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Weekend%ddate" % ( day + 1, ), forecast[ 1 ] )
@@ -328,10 +333,13 @@ class GUI( module ):
         # reset our view
         self._reset_views( self.CONTROL_10DAY_BUTTON )
         # fetch hour by hour forecast
-        headings, forecasts = self.TWCClient.fetch_10day_forecast()
+        alerts, alertscolor, headings, forecasts = self.TWCClient.fetch_10day_forecast()
         # lock the gui for faster updating
         xbmcgui.lock()
         try:
+            # set any alerts
+            xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "Alerts", alerts )
+            xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "AlertsColor", alertscolor )
             # reset list
             self.getControl( self.CONTROL_10DAY_LIST ).reset()
             # enumerate thru and set our heading properties
