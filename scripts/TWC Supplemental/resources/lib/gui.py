@@ -208,6 +208,9 @@ class GUI( module ):
         maps = self.TWCClient.fetch_map_urls( map )
         # fetch the images
         self.maps_path, expires = self.TWCClient.fetch_images( maps )
+        # hack incase the weather in motion link was bogus
+        if ( expires < 0 and len( maps[ 1 ] ) ):
+            self.maps_path, expires = self.TWCClient.fetch_images( ( maps[ 0 ], [], ) )
         # now set our skin string so multi image will display images 1==success, 2==failure
         self._set_maps_path( ( self.maps_path == "" ) + 1 )
         # successful so set timer thread
