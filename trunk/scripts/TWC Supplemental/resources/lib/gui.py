@@ -55,6 +55,7 @@ class GUI( module ):
     CONTROL_FANART_SETTING_BUTTON = 402
     CONTROL_FANART_DIFFUSE_SETTING_BUTTON = 403
     CONTROL_FANART_TYPE_SETTING_BUTTON = 404
+    CONTROL_SHOW_ALERTS_SETTING_BUTTON = 405
 
     def __init__( self, *args, **kwargs ):
         module.__init__( self, *args, **kwargs )
@@ -82,23 +83,31 @@ class GUI( module ):
         if ( self.defaultview == self.CONTROL_36HOUR_BUTTON ):
             # get our 36 hour forecast
             self._fetch_36_forecast()
+            self.setFocus( self.getControl( self.CONTROL_36HOUR_BUTTON ) )
         elif ( self.defaultview == self.CONTROL_HOURBYHOUR_BUTTON ):
             # get our hour by hour forecast
             self._fetch_hour_forecast()
+            self.setFocus( self.getControl( self.CONTROL_HOURBYHOUR_BUTTON ) )
         elif ( self.defaultview == self.CONTROL_WEEKEND_BUTTON ):
             # get our hour by hour forecast
             self._fetch_weekend_forecast()
+            self.setFocus( self.getControl( self.CONTROL_WEEKEND_BUTTON ) )
         elif ( self.defaultview == self.CONTROL_10DAY_BUTTON ):
             # get our hour by hour forecast
             self._fetch_10day_forecast()
-        elif ( self.defaultview == self.CONTROL_ALERTS_BUTTON ):
-            # get our alerts
-            self._show_alerts()
+            self.setFocus( self.getControl( self.CONTROL_10DAY_BUTTON ) )
         else:
             # set map list and get default map
             self._fetch_map_list()
+            self.setFocus( self.getControl( self.CONTROL_MAP_BUTTON ) )
             # we check 36 hour as it holds any alerts
             self._fetch_36_forecast( False )
+        # if any alerts show that tab if user preference
+        if ( xbmc.getCondVisibility( "!IsEmpty(Window.Property(Alerts))" ) and xbmc.getCondVisibility( "!Skin.HasSetting(twc-show-alerts)" ) ):
+            self._show_alerts()
+            # TODO: verify i can't fix this. the delay is too long for my liking
+            xbmc.sleep( 80 )
+            self.setFocus( self.getControl( self.CONTROL_ALERTS_BUTTON ) )
 
     def _init_defaults( self ):
         self.timer = None
@@ -410,10 +419,8 @@ class GUI( module ):
             xbmc.executebuiltin( "Skin.SetString(twc-defaultview,Weekend)" )
         elif ( xbmc.getCondVisibility( "!IsEmpty(Window.Property(view-10Day))" ) ):
             xbmc.executebuiltin( "Skin.SetString(twc-defaultview,10Day)" )
-        elif ( xbmc.getCondVisibility( "!IsEmpty(Window.Property(view-Alerts))" ) ):
-            xbmc.executebuiltin( "Skin.SetString(twc-defaultview,Alerts)" )
         # necessary sleep to give Skin.String() time to update
-        xbmc.sleep(30)
+        xbmc.sleep( 30 )
         # called so no duplicate code for setting proper self.defaultview value
         self._get_default_view()
         # set our new info
@@ -424,18 +431,14 @@ class GUI( module ):
         self._reset_views( self.CONTROL_SETTINGS_BUTTON )
 
     def _show_alerts( self ):
-        # we also check 36 hour as it holds any alerts
+        # we check 36 hour as it holds any alerts
         self._fetch_36_forecast( False )
-        # we set the deaful view to maps if no alert was found
-        if ( xbmc.getCondVisibility( "IsEmpty(Window.Property(Alerts))" ) ):
-            self._fetch_map_list()
-        else:
-            # reset our view
-            self._reset_views( self.CONTROL_ALERTS_BUTTON )
+        # reset our view
+        self._reset_views( self.CONTROL_ALERTS_BUTTON )
 
     def _toggle_animated_setting( self ):
         xbmc.executebuiltin( "Skin.ToggleSetting(twc-animated)" )
-        
+
     def _toggle_metric_setting( self ):
         xbmc.executebuiltin( "Skin.ToggleSetting(twc-metric)" )
         # get our new TWCClient
@@ -501,6 +504,9 @@ class GUI( module ):
     def _set_fanart_type( self ):
         xbmc.executebuiltin( "Skin.ToggleSetting(twc-fanart-type)" )
 
+    def _toggle_show_alerts( self ):
+        xbmc.executebuiltin( "Skin.ToggleSetting(twc-show-alerts)" )
+
     def exit_script( self ):
         # cancel any timer
         if ( self.timer is not None ):
@@ -546,6 +552,8 @@ class GUI( module ):
                 self._set_diffuse_level( 1 )
             elif ( controlId == self.CONTROL_FANART_TYPE_SETTING_BUTTON ):
                 self._set_fanart_type()
+            elif ( controlId == self.CONTROL_SHOW_ALERTS_SETTING_BUTTON ):
+                self._toggle_show_alerts()
 
     def onFocus( self, controlId ):
         pass
@@ -560,8 +568,6 @@ class GUI( module ):
                 self.exit_script()
             elif ( actionId in self.ACTION_TOGGLE_MAP and xbmc.getCondVisibility( "!IsEmpty(Window.Property(view-Maps))" ) ):
                 self._toggle_map()
-            elif ( actionId in self.ACTION_SET_DEFAULT and self.toggle ):
-                self._set_default_view()
             elif ( actionId in self.ACTION_SET_DEFAULT and self.toggle ):
                 self._set_default_view()
             elif ( self.getFocusId() == self.CONTROL_FANART_DIFFUSE_SETTING_BUTTON ):
