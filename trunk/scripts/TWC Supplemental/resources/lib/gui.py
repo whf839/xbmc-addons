@@ -109,7 +109,7 @@ class GUI( module ):
         self.current_map = None
 
     def _set_script_info( self ):
-        xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "version", "%s - %s" % ( sys.modules[ "__main__" ].__version__, str( sys.modules[ "__main__" ].__svn_revision__ ) ) )
+        xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "version", "%s - r%s" % ( sys.modules[ "__main__" ].__version__, str( sys.modules[ "__main__" ].__svn_revision__ ) ) )
         xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "author", sys.modules[ "__main__" ].__author__ )
         if ( self.defaultview == self.CONTROL_MAP_BUTTON ):
             xbmcgui.Window(xbmcgui.getCurrentWindowId()).setProperty( "defaultview", "%s - %s" % ( _( self.defaultview ), xbmc.getInfoLabel( "Skin.String(twc-defaultmap)" ), ) )
