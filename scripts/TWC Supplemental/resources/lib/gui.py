@@ -97,7 +97,8 @@ class GUI( module ):
         else:
             # set map list and get default map
             self._fetch_map_list()
-            # we also check 36 hour as it holds any alerts
+        # we check 36 hour as it holds any alerts
+        if ( self.defaultview != self.CONTROL_36HOUR_BUTTON and self.defaultview != self.CONTROL_ALERTS_BUTTON ):
             self._fetch_36_forecast( False )
 
     def _init_defaults( self ):
