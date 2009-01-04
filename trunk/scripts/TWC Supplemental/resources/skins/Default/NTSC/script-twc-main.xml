@@ -1585,7 +1585,6 @@
                 </control>
                 <!-- Forecast main group -->
                 <control type="group">
-                    <visible>!IsEmpty(Window.Property(Weekend1day)) + !IsEmpty(Window.Property(view-Weekend))</visible>
                     <posx>7</posx>
                     <posy>3</posy>
                     <!-- Section background -->
