@@ -117,7 +117,7 @@
                     <textoffsetx>17</textoffsetx>
                     <texturenofocus border="10">twc-tab-nofocus.png</texturenofocus>
                     <texturefocus border="10">twc-tab-focus.png</texturefocus>
-                    <onleft>206</onleft>
+                    <onleft>205</onleft>
                     <onright>201</onright>
                     <onup>3000</onup>
                     <ondown>3000</ondown>
@@ -202,7 +202,7 @@
                     <texturenofocus border="10">twc-tab-nofocus.png</texturenofocus>
                     <texturefocus border="10">twc-tab-focus.png</texturefocus>
                     <onleft>203</onleft>
-                    <onright>205</onright>
+                    <onright>206</onright>
                     <onup>3000</onup>
                     <ondown>3000</ondown>
                 </control>
@@ -222,20 +222,21 @@
                     <textoffsetx>17</textoffsetx>
                     <texturenofocus border="10">twc-tab-nofocus.png</texturenofocus>
                     <texturefocus border="10">twc-tab-focus.png</texturefocus>
-                    <onleft>204</onleft>
-                    <onright>206</onright>
+                    <onleft>206</onleft>
+                    <onright>200</onright>
                     <onup>3000</onup>
                     <ondown>3000</ondown>
+                    <animation effect="slide" start="0,0" end="85,0" time="0" reversible="false" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation>
                 </control>
                 <control type="button" id="206">
                     <description>Alerts Button</description>
-                    <posx>585</posx>
+                    <posx>500</posx>
                     <posy>100</posy>
                     <width>85</width>
                     <height>30</height>
                     <align>center</align>
                     <aligny>center</aligny>
-                    <label>SCRIPT206</label>
+                    <label>$INFO[Window.Property(AlertsLabel)]$INFO[Window.Property(AlertsCount), (,)]</label>
                     <font>font10</font>
                     <textcolor>$INFO[Window.Property(AlertsColor)]</textcolor>
                     <disabledcolor>60ffffff</disabledcolor>
@@ -244,8 +245,8 @@
                     <texturenofocus border="10">twc-tab-nofocus.png</texturenofocus>
                     <texturefocus border="10">twc-tab-focus.png</texturefocus>
                     <visible>!IsEmpty(Window.Property(Alerts))</visible>
-                    <onleft>205</onleft>
-                    <onright>200</onright>
+                    <onleft>204</onleft>
+                    <onright>205</onright>
                     <onup>3000</onup>
                     <ondown>3000</ondown>
                 </control>
@@ -339,10 +340,11 @@
                     <texture border="10">twc-tab-closed.png</texture>
                     <aspectratio>stretch</aspectratio>
                     <visible>IsEmpty(Window.Property(view-Settings))</visible>
+                    <animation effect="slide" start="0,0" end="85,0" time="0" reversible="false" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation>
                 </control>
                 <control type="image">
                     <description>tab7 not selected</description>
-                    <posx>585</posx>
+                    <posx>500</posx>
                     <posy>100</posy>
                     <width>85</width>
                     <height>30</height>
@@ -385,7 +387,7 @@
                     <align>left</align>
                     <aligny>top</aligny>
                     <info>Window.Property(Alerts)</info>
-                    <autoscroll time="2000" delay="6000" repeat="9000">VisibleChange</autoscroll>
+                    <autoscroll time="2000" delay="10000" repeat="15000">VisibleChange</autoscroll>
                     <visible>!IsEmpty(Window.Property(view-Alerts))</visible>
                 </control>
                 <!-- Scrollbar for alert textbox -->
@@ -1585,6 +1587,7 @@
                 </control>
                 <!-- Forecast main group -->
                 <control type="group">
+                    <visible>!IsEmpty(Window.Property(Weekend1day))</visible>
                     <posx>7</posx>
                     <posy>3</posy>
                     <!-- Section background -->
