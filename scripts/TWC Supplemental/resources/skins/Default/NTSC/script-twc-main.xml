@@ -771,7 +771,7 @@
                             <posx>5</posx>
                             <posy>145</posy>
                             <width>170</width>
-                            <height>85</height>
+                            <height>90</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
                             <align>left</align>
@@ -784,7 +784,7 @@
                         <control type="label">
                             <description>daylight</description>
                             <posx>0</posx>
-                            <posy>235</posy>
+                            <posy>240</posy>
                             <width>180</width>
                             <height>20</height>
                             <font>font10</font>
@@ -913,7 +913,7 @@
                             <posx>5</posx>
                             <posy>145</posy>
                             <width>170</width>
-                            <height>85</height>
+                            <height>90</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
                             <align>left</align>
@@ -926,7 +926,7 @@
                         <control type="label">
                             <description>daylight</description>
                             <posx>0</posx>
-                            <posy>235</posy>
+                            <posy>240</posy>
                             <width>180</width>
                             <height>20</height>
                             <font>font10</font>
@@ -1055,7 +1055,7 @@
                             <posx>5</posx>
                             <posy>145</posy>
                             <width>170</width>
-                            <height>85</height>
+                            <height>90</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
                             <align>left</align>
@@ -1068,7 +1068,7 @@
                         <control type="label">
                             <description>daylight</description>
                             <posx>0</posx>
-                            <posy>235</posy>
+                            <posy>240</posy>
                             <width>180</width>
                             <height>20</height>
                             <font>font10</font>
@@ -1906,9 +1906,9 @@
                         <control type="textbox">
                             <description>outlook</description>
                             <posx>5</posx>
-                            <posy>170</posy>
+                            <posy>165</posy>
                             <width>170</width>
-                            <height>85</height>
+                            <height>90</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
                             <align>left</align>
@@ -2225,9 +2225,9 @@
                         <control type="textbox">
                             <description>outlook</description>
                             <posx>5</posx>
-                            <posy>170</posy>
+                            <posy>165</posy>
                             <width>170</width>
-                            <height>85</height>
+                            <height>90</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
                             <align>left</align>
@@ -2544,9 +2544,9 @@
                         <control type="textbox">
                             <description>outlook</description>
                             <posx>5</posx>
-                            <posy>170</posy>
+                            <posy>165</posy>
                             <width>170</width>
-                            <height>85</height>
+                            <height>90</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
                             <align>left</align>
