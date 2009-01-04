@@ -100,14 +100,8 @@ class GUI( module ):
             # set map list and get default map
             self._fetch_map_list()
             self.setFocus( self.getControl( self.CONTROL_MAP_BUTTON ) )
-            # we check 36 hour as it holds any alerts
-            self._fetch_36_forecast( False )
-        # if any alerts show that tab if user preference
-        if ( xbmc.getCondVisibility( "!IsEmpty(Window.Property(Alerts))" ) and xbmc.getCondVisibility( "!Skin.HasSetting(twc-show-alerts)" ) ):
-            self._show_alerts()
-            # TODO: verify i can't fix this. the delay is too long for my liking
-            xbmc.sleep( 80 )
-            self.setFocus( self.getControl( self.CONTROL_ALERTS_BUTTON ) )
+        # check for any weather alerts
+        self._show_alerts( xbmc.getCondVisibility( "!Skin.HasSetting(twc-show-alerts)" ) )
 
     def _init_defaults( self ):
         self.timer = None
@@ -194,6 +188,8 @@ class GUI( module ):
                 pass
             # unlock the gui
             xbmcgui.unlock()
+        # we check 36 hour as it holds any alerts
+        self._fetch_36_forecast( False )
         # fetch our map
         self._fetch_map( self.current_map )
 
@@ -430,11 +426,11 @@ class GUI( module ):
         # reset our view
         self._reset_views( self.CONTROL_SETTINGS_BUTTON )
 
-    def _show_alerts( self ):
-        # we check 36 hour as it holds any alerts
-        self._fetch_36_forecast( False )
-        # reset our view
-        self._reset_views( self.CONTROL_ALERTS_BUTTON )
+    def _show_alerts( self, showView=True ):
+        if ( xbmc.getCondVisibility( "!IsEmpty(Window.Property(Alerts))" ) and showView ):
+            # reset our view
+            self._reset_views( self.CONTROL_ALERTS_BUTTON )
+            self.setFocus( self.getControl( self.CONTROL_ALERTS_BUTTON ) )
 
     def _toggle_animated_setting( self ):
         xbmc.executebuiltin( "Skin.ToggleSetting(twc-animated)" )
