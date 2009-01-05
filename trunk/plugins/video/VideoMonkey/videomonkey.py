@@ -861,6 +861,7 @@ class CCurrentList:
         return 0
 
     def infoFormatter(self, info_name, info_value, cfg_file): # Site specific info handling
+        info_value = info_value.replace('|', '-')
         if cfg_file == 'zdf.de.cfg':
             return clean_safe(info_value.replace('&nbsp;', ' ')).replace("\\'", "\'").replace('\\"', '\"')
         if info_name == 'title':
