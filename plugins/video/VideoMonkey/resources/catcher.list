@@ -78,6 +78,48 @@ quality=high
 #extension=flv
 #quality=high
 ########################################################
+title=ard.de
+target=player\.avaible_url\['microsoftmedia'\]\['1'\] *= *"([^"]+)"
+url=%s
+ext_target=HREF *= *"([^"]+)"
+extension=wmv
+quality=low
+target=player\.avaible_url\['microsoftmedia'\]\['2'\] *= *"([^"]+)"
+ext_target=HREF *= *"([^"]+)"
+extension=wmv
+quality=standard
+target=player\.avaible_url\['microsoftmedia'\]\['3'\] *= *"([^"]+)"
+ext_target=HREF *= *"([^"]+)"
+extension=wmv
+quality=high
+target=player\.avaible_url\['quicktime'\]\['1'\] *= *"([^"]+)"
+extension=mp4
+quality=low
+target=player\.avaible_url\['quicktime'\]\['2'\] *= *"([^"]+)"
+extension=mp4
+quality=standard
+target=player\.avaible_url\['quicktime'\]\['3'\] *= *"([^"]+)"
+extension=mp4
+quality=high
+target=player\.avaible_url\['realmedia'\]\['1'\] *= *"([^"]+)"
+extension=rm
+quality=low
+target=player\.avaible_url\['realmedia'\]\['2'\] *= *"([^"]+)"
+extension=rm
+quality=standard
+target=player\.avaible_url\['realmedia'\]\['3'\] *= *"([^"]+)"
+extension=rm
+quality=high
+target=player\.avaible_url\['flashmedia'\]\['1'\] *= *"([^"]+)"
+extension=flv
+quality=low
+target=player\.avaible_url\['flashmedia'\]\['2'\] *= *"([^"]+)"
+extension=flv
+quality=standard
+target=player\.avaible_url\['flashmedia'\]\['3'\] *= *"([^"]+)"
+extension=flv
+quality=high
+########################################################
 title=zdf.de
 target="assetUrl": *"([^"]+)"
 url=%s&bw=isdn&pp=wmp

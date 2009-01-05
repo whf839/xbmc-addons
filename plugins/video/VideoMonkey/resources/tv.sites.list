@@ -11,11 +11,11 @@ icon=video.monkey.image|zdf_mediathek.png
 director=ZDF mediathek
 url=zdf.de.cfg
 ########################################################
-# title=ARD mediathek (DE)
-# type=rss
-# icon=video.monkey.image|ard_mediathek.png
-# director=ARD mediathek
-# url=ard.de.cfg
+title=ARD mediathek (DE)
+type=rss
+icon=video.monkey.image|ard_mediathek.png
+director=ARD mediathek
+url=ard.de.cfg
 ########################################################
 title=arte+7
 type=rss
