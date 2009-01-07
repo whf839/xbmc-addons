@@ -1007,7 +1007,10 @@ class CCurrentList:
                 for info_name in tmp.infos_names:
                     tmp.infos_values[info_idx] = self.infoFormatter(info_name, tmp.infos_values[info_idx], self.cfg)
                     if info_name.rfind('.append') != -1:
-                        tmp.infos_values[tmp.infos_names.index(info_name[:info_name.rfind('.append')])] = tmp.infos_values[tmp.infos_names.index(info_name[:info_name.rfind('.append')])] + tmp.infos_values[info_idx]
+                        try:
+                            tmp.infos_values[tmp.infos_names.index(info_name[:info_name.rfind('.append')])] = tmp.infos_values[tmp.infos_names.index(info_name[:info_name.rfind('.append')])] + tmp.infos_values[info_idx]
+                        except:
+                            tmp.infos_values[tmp.infos_names.index(info_name[:info_name.rfind('.append')])] = tmp.infos_values[tmp.infos_names.index(info_name[:info_name.rfind('.append')])] + smart_unicode(tmp.infos_values[info_idx])
                     info_idx = info_idx + 1
                 info_idx = tmp.infos_names.index('url')
                 try:
