@@ -735,6 +735,8 @@ class CCurrentList:
             if enable_debug:
                 xbmc.output('Local file ' + str(xbmc.translatePath(os.path.join(resDir, filename))) + ' opened')
         except:
+            if enable_debug:
+                xbmc.output('File: ' + str(xbmc.translatePath(os.path.join(resDir, filename))) + ' not found')
             try:
                 f = codecs.open(str(xbmc.translatePath(os.path.join(cacheDir, filename))), 'r', 'utf-8')
                 data = f.read()
@@ -744,6 +746,8 @@ class CCurrentList:
                 if enable_debug:
                     xbmc.output('Local file ' + str(xbmc.translatePath(os.path.join(cacheDir, filename))) + ' opened')
             except:
+                if enable_debug:
+                    xbmc.output('File: ' + str(xbmc.translatePath(os.path.join(cacheDir, filename))) + ' not found')
                 try:
                     f = codecs.open(str(filename), 'r', 'utf-8')
                     data = f.read()
@@ -753,6 +757,8 @@ class CCurrentList:
                     if enable_debug:
                         xbmc.output('Local file ' + str(filename) + ' opened')
                 except:
+                    if enable_debug:
+                        xbmc.output('File: ' + str(filename) + ' not found')
                     if enable_debug:
                         traceback.print_exc(file = sys.stdout)
                     return -1
@@ -1558,6 +1564,10 @@ class Main:
             self.handle = int(sys.argv[1])
             paramstring = sys.argv[2]
             if len(paramstring) <= 2:
+                if enable_debug:
+                    xbmc.output('Cache directory: ' + str(cacheDir))
+                    xbmc.output('Resource directory: ' + str(resDir))
+                    xbmc.output('Image directory: ' + str(imgDir))
                 if not os.path.exists(cacheDir):
                     if enable_debug:
                         xbmc.output('Creating cache directory ' + str(cacheDir))
