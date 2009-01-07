@@ -40,6 +40,11 @@ else:
 
 urllib2.install_opener(opener)
 
+if xbmcplugin.getSetting('enable_debug') == 'true':
+    enable_debug = True
+else:
+    enable_debug = False
+
 entitydefs = {
     'AElig':    u'\u00C6', # latin capital letter AE = latin capital ligature AE, U+00C6 ISOlat1'
     'Aacute':   u'\u00C1', # latin capital letter A with acute, U+00C1 ISOlat1'
@@ -370,7 +375,8 @@ def decode(s):
             entity = '&' + key + ';'
             s = s.replace(entity, unichr(dic[key]))
     except:
-        traceback.print_exc(file = sys.stdout)
+        if enable_debug:
+            traceback.print_exc(file = sys.stdout)
     return s
 
 def unquote_safe(s): # unquote
@@ -380,7 +386,8 @@ def unquote_safe(s): # unquote
         for key, value in entitydefs2.iteritems():
             s = s.replace(value, key)
     except:
-        traceback.print_exc(file = sys.stdout)
+        if enable_debug:
+            traceback.print_exc(file = sys.stdout)
     return s;
 
 def quote_safe(s): # quote
@@ -390,7 +397,8 @@ def quote_safe(s): # quote
         for key, value in entitydefs2.iteritems():
             s = s.replace(key, value)
     except:
-        traceback.print_exc(file = sys.stdout)
+        if enable_debug:
+            traceback.print_exc(file = sys.stdout)
     return s;
 
 def smart_unicode(s):
@@ -420,7 +428,8 @@ def clean_safe(s):
     try:
         s = clean1(clean2(clean3(smart_unicode(s))))
     except:
-        traceback.print_exc(file = sys.stdout)
+        if enable_debug:
+            traceback.print_exc(file = sys.stdout)
     return s
 
 def first_clean_filename(s):
@@ -715,13 +724,16 @@ class CCurrentList:
         return -1
 
     def loadLocal(self, filename, recursive = True, lItem = None, lCatcher = False):
-        #print(filename)
+        if enable_debug:
+            xbmc.output(str(filename))
         try:
             f = codecs.open(str(xbmc.translatePath(os.path.join(resDir, filename))), 'r', 'utf-8')
             data = f.read()
             data = data.replace('\r\n', '\n')
             data = data.split('\n')
             f.close()
+            if enable_debug:
+                xbmc.output('Local file ' + str(xbmc.translatePath(os.path.join(resDir, filename))) + ' opened')
         except:
             try:
                 f = codecs.open(str(xbmc.translatePath(os.path.join(cacheDir, filename))), 'r', 'utf-8')
@@ -729,6 +741,8 @@ class CCurrentList:
                 data = data.replace('\r\n', '\n')
                 data = data.split('\n')
                 f.close()
+                if enable_debug:
+                    xbmc.output('Local file ' + str(xbmc.translatePath(os.path.join(cacheDir, filename))) + ' opened')
             except:
                 try:
                     f = codecs.open(str(filename), 'r', 'utf-8')
@@ -736,8 +750,11 @@ class CCurrentList:
                     data = data.replace('\r\n', '\n')
                     data = data.split('\n')
                     f.close()
+                    if enable_debug:
+                        xbmc.output('Local file ' + str(filename) + ' opened')
                 except:
-                    #traceback.print_exc(file = sys.stdout)
+                    if enable_debug:
+                        traceback.print_exc(file = sys.stdout)
                     return -1
 
         self.cfg = filename
@@ -788,10 +805,12 @@ class CCurrentList:
                             try:
                                 ret = self.loadCatcher(value)
                                 if ret != 0:
-                                    print('Error while loding catcher!')
+                                    if enable_debug:
+                                        xbmc.output('Error while loding catcher')
                                     return ret
                             except:
-                                traceback.print_exc(file = sys.stdout)
+                                if enable_debug:
+                                    traceback.print_exc(file = sys.stdout)
                                 return -1
                     elif key == 'header':
                         index = value.find('|')
@@ -883,7 +902,8 @@ class CCurrentList:
         return clean_safe(info_value)
 
     def loadRemote(self, remote_url, recursive = True, lItem = None):
-        #print(remote_url)
+        if enable_debug:
+            xbmc.output(repr(remote_url))
         if lItem == None:
             lItem = self.decodeUrl(remote_url)
         try:
@@ -918,21 +938,26 @@ class CCurrentList:
                 txheaders = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14', 'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
             else:
                 txheaders = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14', 'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.7', self.reference:self.content}
-            #f = open(xbmc.translatePath(os.path.join(cacheDir, 'page.html')), 'w')
-            #f.write('<Titel>'+ curr_url + '</Title>\n\n')
+            if enable_debug:
+                f = open(xbmc.translatePath(os.path.join(cacheDir, 'page.html')), 'w')
+                f.write('<Titel>'+ curr_url + '</Title>\n\n')
             req = Request(curr_url, None, txheaders)
             try:
                 handle = urlopen(req)
             except:
-                traceback.print_exc(file = sys.stdout)
+                if enable_debug:
+                    traceback.print_exc(file = sys.stdout)
                 return
             data = handle.read()
             #cj.save(xbmc.translatePath(os.path.join(resDir, 'cookies.lwp')), ignore_discard=True)
             cj.save(xbmc.translatePath(os.path.join(resDir, 'cookies.lwp')))
-            #f.write(data)
-            #f.close()
+            if enable_debug:
+                f.write(data)
+                f.close()
+                xbmc.output('Remote URL ' + str(curr_url) + ' opened')
         except IOError:
-            traceback.print_exc(file = sys.stdout)
+            if enable_debug:
+                traceback.print_exc(file = sys.stdout)
             return -1
 
         # Find list items
@@ -1157,10 +1182,11 @@ class Main:
                         fc = response.read()
                     else:
                         fc = response.read(source.rule.limit)
-                #f = open(xbmc.translatePath(os.path.join(cacheDir, 'catcher.html')), 'w')
-                #f.write('<Titel>'+ orig_url + '</Title>\n\n')
-                #f.write(fc)
-                #f.close()
+                if enable_debug:
+                    f = open(xbmc.translatePath(os.path.join(cacheDir, 'catcher.html')), 'w')
+                    f.write('<Titel>'+ orig_url + '</Title>\n\n')
+                    f.write(fc)
+                    f.close()
             urlsearch = re.search(source.rule.target, fc)
             match = ''
             if urlsearch:
@@ -1196,10 +1222,11 @@ class Main:
                             ext_fc = ext_response.read()
                         else:
                             ext_fc = ext_response.read(source.ext_rule.limit)
-                    #f = open(xbmc.translatePath(os.path.join(cacheDir, 'ext_catcher.html')), 'w')
-                    #f.write('<Titel>'+ match + '</Title>\n\n')
-                    #f.write(ext_fc)
-                    #f.close()
+                    if enable_debug:
+                        f = open(xbmc.translatePath(os.path.join(cacheDir, 'ext_catcher.html')), 'w')
+                        f.write('<Titel>'+ match + '</Title>\n\n')
+                        f.write(ext_fc)
+                        f.close()
                     ext_urlsearch = re.search(source.ext_rule.target, ext_fc)
                     if ext_urlsearch:
                         match = ext_urlsearch.group(1).replace('\r\n', '').replace('\n', '').lstrip().rstrip()
@@ -1300,7 +1327,8 @@ class Main:
             urllib.urlretrieve(icon, xbmc.translatePath(os.path.join(cacheDir, 'thumb.tbn')))
             icon = xbmc.translatePath(os.path.join(cacheDir, 'thumb.tbn'))
         except:
-            traceback.print_exc(file = sys.stdout)
+            if enable_debug:
+                traceback.print_exc(file = sys.stdout)
             icon = xbmc.translatePath(os.path.join(imgDir, 'video.png'))
         flv_file = url
         listitem = xbmcgui.ListItem(title, title, icon, icon)
@@ -1400,7 +1428,8 @@ class Main:
             try:
                 os.remove(file_path)
             except:
-                traceback.print_exc(file = sys.stdout)
+                if enable_debug:
+                    traceback.print_exc(file = sys.stdout)
         return None
 
     def video_report_hook(self, count, blocksize, totalsize):
@@ -1530,13 +1559,27 @@ class Main:
             paramstring = sys.argv[2]
             if len(paramstring) <= 2:
                 if not os.path.exists(cacheDir):
+                    if enable_debug:
+                        xbmc.output('Creating cache directory ' + str(cacheDir))
                     os.mkdir(cacheDir)
+                    if enable_debug:
+                        xbmc.output('Cache directory created')
                 if not os.path.exists(xbmcplugin.getSetting('download_Path')):
                     try:
+                        if enable_debug:
+                            xbmc.output('Creating download directory ' + str(xbmcplugin.getSetting('download_Path')))
                         os.mkdir(xbmcplugin.getSetting('download_Path'))
+                        if enable_debug:
+                            xbmc.output('Download directory created')
                     except:
-                        traceback.print_exc(file = sys.stdout)
+                        if enable_debug:
+                            xbmc.output('Cannot create download directory')
+                            traceback.print_exc(file = sys.stdout)
+                if enable_debug:
+                    xbmc.output('Purging cache directory')
                 self.purgeCache()
+                if enable_debug:
+                    xbmc.output('Cache directory purged')
                 result = self.parseView('sites.list')
                 del self.currentlist.items[:]
                 try:
@@ -1544,27 +1587,47 @@ class Main:
                 except:
                     pass
                 try:
+                    if enable_debug:
+                        xbmc.output('Loading version from svn')
                     urllib.urlretrieve('http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/VideoMonkey/version', os.path.join(cacheDir, 'version'))
+                    if enable_debug:
+                        xbmc.output('Version loaded from svn')
                 except:
+                    if enable_debug:
+                        xbmc.output('Cannot load version from svn')
                     pass
                 try:
+                    if enable_debug:
+                        xbmc.output('Comparing versions')
                     if filecmp.cmp(os.path.join(rootDir, 'version'), os.path.join(cacheDir, 'version')) == 0:
+                        if enable_debug:
+                            xbmc.output('Adding update notification')
                         liz = xbmcgui.ListItem(xbmc.getLocalizedString(30059), xbmc.getLocalizedString(30059), os.path.join(imgDir, 'information.png'), os.path.join(imgDir, 'information.png'))
                         xbmcplugin.addDirectoryItem(handle = int(sys.argv[1]), url = sys.argv[0] + '?url=update', listitem = liz)
                 except:
+                    if enable_debug:
+                        xbmc.output('cannot compare versions or add notification item')
                     liz = xbmcgui.ListItem(xbmc.getLocalizedString(30059), xbmc.getLocalizedString(30059), os.path.join(imgDir, 'information.png'), os.path.join(imgDir, 'information.png'))
                     xbmcplugin.addDirectoryItem(handle = int(sys.argv[1]), url = sys.argv[0] + '?url=update', listitem = liz)
                 try:
+                    if enable_debug:
+                        xbmc.output('End of directory (cache disabled)')
                     xbmcplugin.endOfDirectory(handle = int(sys.argv[1]), cacheToDisc = False)
                 except:
+                    if enable_debug:
+                        xbmc.output('Cache disabling not suuported')
                     xbmcplugin.endOfDirectory(handle = int(sys.argv[1]))
             else:
                 params = sys.argv[2]
                 currentView = params[5:]
-                print(u' ==> ' + repr(currentView))
+                if enable_debug:
+                    xbmc.output(repr(currentView))
                 if self.parseView(currentView) == 0:
                     xbmcplugin.endOfDirectory(int(sys.argv[1]))
+                    if enable_debug:
+                        xbmc.output('End of directory')
         except Exception, e:
-            traceback.print_exc(file = sys.stdout)
+            if enable_debug:
+                traceback.print_exc(file = sys.stdout)
             dialog = xbmcgui.Dialog()
             dialog.ok('VideoMonkey Error', 'Error running VideoMonkey.\n\nReason:\n' + str(e))
