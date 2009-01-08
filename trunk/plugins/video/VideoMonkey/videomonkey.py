@@ -11,9 +11,9 @@ import socket, base64
 
 rootDir = os.getcwd()
 if rootDir[-1] == ';':rootDir = rootDir[0:-1]
-cacheDir = xbmc.translatePath(os.path.join(rootDir, 'cache'))
-resDir = xbmc.translatePath(os.path.join(rootDir, 'resources'))
-imgDir = xbmc.translatePath(os.path.join(resDir, 'images'))
+cacheDir = os.path.join(rootDir, 'cache')
+resDir = os.path.join(rootDir, 'resources')
+imgDir = os.path.join(resDir, 'images')
 #socket.setdefaulttimeout(20)
 
 urlopen = urllib2.urlopen
@@ -26,8 +26,8 @@ else:
     proxy_handler = None
 
 if cj != None:
-    if os.path.isfile(xbmc.translatePath(os.path.join(resDir, 'cookies.lwp'))):
-        cj.load(xbmc.translatePath(os.path.join(resDir, 'cookies.lwp')))
+    if os.path.isfile(os.path.join(resDir, 'cookies.lwp')):
+        cj.load(os.path.join(resDir, 'cookies.lwp'))
     if proxy_handler:
         opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), proxy_handler)
     else:
@@ -528,7 +528,7 @@ class CCurrentList:
         for attempt in range(attempts):
             filename = ''.join([random.choice(chars) for i in range(length)])
             filename = prefix + filename + suffix
-            if not os.path.exists(xbmc.translatePath(os.path.join(dir, filename))):
+            if not os.path.exists(os.path.join(dir, filename)):
                 return filename
 
     def videoCount(self):
@@ -586,7 +586,7 @@ class CCurrentList:
         return
 
     def saveList(self):
-        f = codecs.open(str(xbmc.translatePath(os.path.join(resDir, 'entry.list'))), 'w', 'utf-8')
+        f = codecs.open(str(os.path.join(resDir, 'entry.list')), 'w', 'utf-8')
         f.write('########################################################\n')
         f.write('# Added sites and live streams\n')
         f.write('########################################################\n')
@@ -609,7 +609,8 @@ class CCurrentList:
         firstInfo = True
         for info_name in item.infos_names:
             if info_idx != url_idx and item.infos_names[info_idx].find('.once') == -1:
-                info_value = urllib.quote(item.infos_values[info_idx])
+                #info_value = urllib.quote(item.infos_values[info_idx])
+                info_value = item.infos_values[info_idx]
                 if firstInfo:
                     firstInfo = False
                     try:
@@ -649,7 +650,8 @@ class CCurrentList:
             sep_index = info_name_value.find(':')
             if sep_index != -1:
                 item.infos_names.append(info_name_value[:sep_index])
-                item.infos_values.append(clean_safe(urllib.unquote(info_name_value[sep_index+1:])))
+                #item.infos_values.append(clean_safe(urllib.unquote(info_name_value[sep_index+1:])))
+                item.infos_values.append(clean_safe(info_name_value[sep_index+1:]))
         try:
             type_idx = item.infos_names.index('type')
         except:
@@ -658,7 +660,7 @@ class CCurrentList:
         return item
 
     def loadCatcher(self, title):
-        f = codecs.open(str(xbmc.translatePath(os.path.join(resDir, 'catcher.list'))), 'r', 'utf-8')
+        f = codecs.open(str(os.path.join(resDir, 'catcher.list')), 'r', 'utf-8')
         data = f.read()
         data = data.replace('\r\n', '\n')
         data = data.split('\n')
@@ -727,27 +729,27 @@ class CCurrentList:
         if enable_debug:
             xbmc.output(str(filename))
         try:
-            f = codecs.open(str(xbmc.translatePath(os.path.join(resDir, filename))), 'r', 'utf-8')
+            f = codecs.open(str(os.path.join(resDir, filename)), 'r', 'utf-8')
             data = f.read()
             data = data.replace('\r\n', '\n')
             data = data.split('\n')
             f.close()
             if enable_debug:
-                xbmc.output('Local file ' + str(xbmc.translatePath(os.path.join(resDir, filename))) + ' opened')
+                xbmc.output('Local file ' + str(os.path.join(resDir, filename)) + ' opened')
         except:
             if enable_debug:
-                xbmc.output('File: ' + str(xbmc.translatePath(os.path.join(resDir, filename))) + ' not found')
+                xbmc.output('File: ' + str(os.path.join(resDir, filename)) + ' not found')
             try:
-                f = codecs.open(str(xbmc.translatePath(os.path.join(cacheDir, filename))), 'r', 'utf-8')
+                f = codecs.open(str(os.path.join(cacheDir, filename)), 'r', 'utf-8')
                 data = f.read()
                 data = data.replace('\r\n', '\n')
                 data = data.split('\n')
                 f.close()
                 if enable_debug:
-                    xbmc.output('Local file ' + str(xbmc.translatePath(os.path.join(cacheDir, filename))) + ' opened')
+                    xbmc.output('Local file ' + str(os.path.join(cacheDir, filename)) + ' opened')
             except:
                 if enable_debug:
-                    xbmc.output('File: ' + str(xbmc.translatePath(os.path.join(cacheDir, filename))) + ' not found')
+                    xbmc.output('File: ' + str(os.path.join(cacheDir, filename)) + ' not found')
                 try:
                     f = codecs.open(str(filename), 'r', 'utf-8')
                     data = f.read()
@@ -782,7 +784,7 @@ class CCurrentList:
                     if value[:index] == 'video.monkey.locale':
                         value = ' ' + xbmc.getLocalizedString(int(value[index+1:])) + ' '
                     elif value[:index] == 'video.monkey.image':
-                        value = xbmc.translatePath(os.path.join(imgDir, value[index+1:]))
+                        value = os.path.join(imgDir, value[index+1:])
                     if key == 'start':
                         self.start = value
                     elif key == 'player':
@@ -794,7 +796,7 @@ class CCurrentList:
                         skill_file = filename[:filename.find('.')] + '.lnk'
                         if self.skill.find('redirect') != -1:
                             try:
-                                f = open(str(xbmc.translatePath(os.path.join(resDir, skill_file))), 'r')
+                                f = open(str(os.path.join(resDir, skill_file)), 'r')
                                 forward_cfg = f.read()
                                 f.close()
                                 if forward_cfg != self.cfg:
@@ -803,7 +805,7 @@ class CCurrentList:
                             except:
                                 pass
                         elif self.skill.find('store') != -1:
-                            f = open(str(xbmc.translatePath(os.path.join(resDir, skill_file))), 'w')
+                            f = open(str(os.path.join(resDir, skill_file)), 'w')
                             f.write(self.cfg)
                             f.close()
                     elif key == 'catcher':
@@ -901,7 +903,7 @@ class CCurrentList:
         elif info_name == 'icon':
             info_value = decode(unquote_safe(info_value))
             if info_value == '':
-                info_value = xbmc.translatePath(os.path.join(imgDir, 'video.png'))
+                info_value = os.path.join(imgDir, 'video.png')
         elif info_name.find('context.') != -1:
             if info_value != '':
                 info_value = cfg_file + '|' + info_value
@@ -923,7 +925,7 @@ class CCurrentList:
                 try:
                     if lItem.infos_values[lItem.infos_names.index('type')] == u'search':
                         try:
-                            f = open(xbmc.translatePath(os.path.join(cacheDir, 'search')), 'r')
+                            f = open(os.path.join(cacheDir, 'search'), 'r')
                             curr_phrase = urllib.unquote_plus(f.read())
                             f.close()
                         except:
@@ -932,7 +934,7 @@ class CCurrentList:
                         if search_phrase == '':
                             return -1
                         xbmc.sleep(10)
-                        f = open(xbmc.translatePath(os.path.join(cacheDir, 'search')), 'w')
+                        f = open(os.path.join(cacheDir, 'search'), 'w')
                         f.write(search_phrase)
                         f.close()
                         curr_url = curr_url % (search_phrase)
@@ -945,7 +947,7 @@ class CCurrentList:
             else:
                 txheaders = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14', 'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.7', self.reference:self.content}
             if enable_debug:
-                f = open(xbmc.translatePath(os.path.join(cacheDir, 'page.html')), 'w')
+                f = open(os.path.join(cacheDir, 'page.html'), 'w')
                 f.write('<Titel>'+ curr_url + '</Title>\n\n')
             req = Request(curr_url, None, txheaders)
             try:
@@ -955,8 +957,8 @@ class CCurrentList:
                     traceback.print_exc(file = sys.stdout)
                 return
             data = handle.read()
-            #cj.save(xbmc.translatePath(os.path.join(resDir, 'cookies.lwp')), ignore_discard=True)
-            cj.save(xbmc.translatePath(os.path.join(resDir, 'cookies.lwp')))
+            #cj.save(os.path.join(resDir, 'cookies.lwp'), ignore_discard=True)
+            cj.save(os.path.join(resDir, 'cookies.lwp'))
             if enable_debug:
                 f.write(data)
                 f.close()
@@ -1071,7 +1073,7 @@ class CCurrentList:
                     if item_rule.skill.find('directory') != -1:
                         one_found = True
                         if f == None:
-                            f = codecs.open(str(xbmc.translatePath(os.path.join(cacheDir, catfilename))), 'w', 'utf-8')
+                            f = codecs.open(str(os.path.join(cacheDir, catfilename)), 'w', 'utf-8')
                         try:
                             f.write('title=' + tmp.infos_values[tmp.infos_names.index('title')] + '\n')
                         except:
@@ -1111,7 +1113,7 @@ class CCurrentList:
                     if item_rule.skill.find('directory') != -1:
                         one_found = True
                         if f == None:
-                            f = codecs.open(str(xbmc.translatePath(os.path.join(cacheDir, catfilename))), 'w', 'utf-8')
+                            f = codecs.open(str(os.path.join(cacheDir, catfilename)), 'w', 'utf-8')
                         f.write('title=' + tmp.infos_values[tmp.infos_names.index('title')] + '\n')
                         for info_name in tmp.infos_names:
                             if info_name != 'url' and info_name != 'title':
@@ -1189,7 +1191,7 @@ class Main:
                     else:
                         fc = response.read(source.rule.limit)
                 if enable_debug:
-                    f = open(xbmc.translatePath(os.path.join(cacheDir, 'catcher.html')), 'w')
+                    f = open(os.path.join(cacheDir, 'catcher.html'), 'w')
                     f.write('<Titel>'+ orig_url + '</Title>\n\n')
                     f.write(fc)
                     f.close()
@@ -1229,7 +1231,7 @@ class Main:
                         else:
                             ext_fc = ext_response.read(source.ext_rule.limit)
                     if enable_debug:
-                        f = open(xbmc.translatePath(os.path.join(cacheDir, 'ext_catcher.html')), 'w')
+                        f = open(os.path.join(cacheDir, 'ext_catcher.html'), 'w')
                         f.write('<Titel>'+ match + '</Title>\n\n')
                         f.write(ext_fc)
                         f.close()
@@ -1324,18 +1326,18 @@ class Main:
         try:
             icon = videoItem.infos_values[videoItem.infos_names.index('icon')]
         except:
-            icon = xbmc.translatePath(os.path.join(imgDir, 'video.png'))
+            icon = os.path.join(imgDir, 'video.png')
         try:
             title = videoItem.infos_values[videoItem.infos_names.index('title')]
         except:
             title = '...'
         try:
-            urllib.urlretrieve(icon, xbmc.translatePath(os.path.join(cacheDir, 'thumb.tbn')))
-            icon = xbmc.translatePath(os.path.join(cacheDir, 'thumb.tbn'))
+            urllib.urlretrieve(icon, os.path.join(cacheDir, 'thumb.tbn'))
+            icon = os.path.join(cacheDir, 'thumb.tbn')
         except:
             if enable_debug:
                 traceback.print_exc(file = sys.stdout)
-            icon = xbmc.translatePath(os.path.join(imgDir, 'video.png'))
+            icon = os.path.join(imgDir, 'video.png')
         flv_file = url
         listitem = xbmcgui.ListItem(title, title, icon, icon)
         listitem.setInfo('video', {'Title':title})
@@ -1381,7 +1383,7 @@ class Main:
         xbmc.sleep(200)
 
     def downloadMovie(self, url, title):
-        file_path = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension))
+        file_path = os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension)
         if os.path.isfile(file_path):
             file_path = self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '_', suffix = self.videoExtension)
         try:
@@ -1389,7 +1391,7 @@ class Main:
             return file_path
         except IOError:
             title = first_clean_filename(title)
-            file_path = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension))
+            file_path = os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension)
             if os.path.isfile(file_path):
                 file_path = self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '_', suffix = self.videoExtension)
             try:
@@ -1397,7 +1399,7 @@ class Main:
                 return file_path
             except IOError:
                 title = second_clean_filename(title)
-                file_path = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension))
+                file_path = os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension)
                 if os.path.isfile(file_path):
                     file_path = self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '_', suffix = self.videoExtension)
                 try:
@@ -1405,7 +1407,7 @@ class Main:
                     return file_path
                 except IOError:
                     title = third_clean_filename(title)
-                    file_path = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension))
+                    file_path = os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension)
                     if os.path.isfile(file_path):
                         file_path = self.currentlist.randomFilename(dir = xbmcplugin.getSetting('download_Path'), suffix = self.videoExtension)
                     try:
@@ -1413,7 +1415,7 @@ class Main:
                         return file_path
                     except IOError:
                         title = self.currentlist.randomFilename()
-                        file_path = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension))
+                        file_path = os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension)
                         if os.path.isfile(file_path):
                             file_path = self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '_', suffix = self.videoExtension)
                         try:
@@ -1557,7 +1559,7 @@ class Main:
     def purgeCache(self):
         for root, dirs, files in os.walk(cacheDir , topdown = False):
             for name in files:
-                os.remove(xbmc.translatePath(os.path.join(root, name)))
+                os.remove(os.path.join(root, name))
 
     def run(self):
         try:
