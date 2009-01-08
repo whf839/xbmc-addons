@@ -32,6 +32,7 @@
 
     <string id="300">Details</string>
     <string id="301">Outlook</string>
+    <string id="302">Video</string>
 
     <!-- Settings strings -->
     <string id="400">Enable animated maps</string>
