@@ -8,19 +8,20 @@
     </coordinates>
 
     <controls>
-        <!-- Background Shadow -->
-        <control type="image">
-            <description>backdrop</description>
-            <posx>15</posx>
-            <posy>20</posy>
-            <width>720</width>
-            <height>480</height>
-            <texture>twc-black.png</texture>
-            <aspectratio>stretch</aspectratio>
-        </control>
         <!-- dialog group -->
         <control type="group" id="2000">
+            <visible>!VideoPlayer.IsFullscreen</visible>
             <animation effect="fade" reversible="true" time="300">WindowOpen</animation>
+            <!-- Background Shadow -->
+            <control type="image">
+                <description>backdrop</description>
+                <posx>15</posx>
+                <posy>20</posy>
+                <width>720</width>
+                <height>480</height>
+                <texture>twc-black.png</texture>
+                <aspectratio>stretch</aspectratio>
+            </control>
             <!-- Main dialog -->
             <control type="image">
                 <description>pad</description>
@@ -222,6 +223,7 @@
                     <textoffsetx>17</textoffsetx>
                     <texturenofocus border="10">twc-tab-nofocus.png</texturenofocus>
                     <texturefocus border="10">twc-tab-focus.png</texturefocus>
+                    <onfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibNF.png)</onfocus>
                     <onleft>206</onleft>
                     <onright>200</onright>
                     <onup>3000</onup>
@@ -245,6 +247,7 @@
                     <texturenofocus border="10">twc-tab-nofocus.png</texturenofocus>
                     <texturefocus border="10">twc-tab-focus.png</texturefocus>
                     <visible>!IsEmpty(Window.Property(Alerts))</visible>
+                    <onfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibNF.png)</onfocus>
                     <onleft>204</onleft>
                     <onright>205</onright>
                     <onup>3000</onup>
@@ -611,6 +614,29 @@
                 <posy>150</posy>
                 <visible>!IsEmpty(Window.Property(view-36Hour))</visible>
                 <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
+                <!-- Video button -->
+                <control type="button" id="302">
+                    <description>Video Button</description>
+                    <posx>480</posx>
+                    <posy>275</posy>
+                    <width>110</width>
+                    <height>30</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <label>SCRIPT302</label>
+                    <font>font10</font>
+                    <textcolor>ffffffff</textcolor>
+                    <disabledcolor>60ffffff</disabledcolor>
+                    <textoffsetx>17</textoffsetx>
+                    <texturenofocus border="10">twc-button-nofocus.png</texturenofocus>
+                    <texturefocus border="10">twc-button-focus.png</texturefocus>
+                    <onclick>XBMC.PlayMedia($INFO[Window.Property(Video)])</onclick>
+                    <onleft>2000</onleft>
+                    <onright>2000</onright>
+                    <onup>2000</onup>
+                    <ondown>2000</ondown>
+                    <visible>!IsEmpty(Window.Property(Video)) + !IsEmpty(Window.Property(view-36Hour))</visible>
+                </control>
                 <control type="button">
                     <description>dummy button so can't lose navigation</description>
                     <posx>0</posx>
@@ -622,6 +648,7 @@
                     <onright>2000</onright>
                     <onup>2000</onup>
                     <ondown>2000</ondown>
+                    <visible>!Control.IsVisible(302)</visible>
                 </control>
                 <!-- Loading label used to inform user when fetching info -->
                 <control type="label">
@@ -1558,6 +1585,7 @@
                     <aligny>center</aligny>
                     <label>SCRIPT300</label>
                     <visible>IsEmpty(Window.Property(WeekendToggle)) + Control.Isvisible(300)</visible>
+                    <animation effect="slide" start="0,0" end="-115,0" time="0" reversible="false" condition="!IsEmpty(Window.Property(Video))">Conditional</animation>
                 </control>
                 <!-- Outlook label -->
                 <control type="label">
@@ -1572,6 +1600,7 @@
                     <aligny>center</aligny>
                     <label>SCRIPT301</label>
                     <visible>!IsEmpty(Window.Property(WeekendToggle)) + Control.Isvisible(300)</visible>
+                    <animation effect="slide" start="0,0" end="-115,0" time="0" reversible="false" condition="!IsEmpty(Window.Property(Video))">Conditional</animation>
                 </control>
                 <control type="button">
                     <description>dummy button so can't lose navigation</description>
@@ -2985,6 +3014,8 @@
                     <texturefocus border="3">twc-input-focus.png</texturefocus>
                     <texturenofocus>-</texturenofocus>
                     <pulseonselect>false</pulseonselect>
+                    <onfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibFO.png)</onfocus>
+                    <onunfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibNF.png)</onunfocus>
                     <onup>402</onup>
                     <ondown>404</ondown>
                     <enable>!IsEmpty(Skin.String(twc-fanart-path))</enable>
@@ -3003,29 +3034,12 @@
                     </control>
                     <!-- Settings 4b -->
                     <control type="image">
-                        <description>fanart diffuse level focused</description>
-                        <posx>0</posx>
-                        <posy>-3</posy>
-                        <width>12</width>
-                        <height>25</height>
-                        <texture>twc-osd_slider_nibFO.png</texture>
-                        <visible>Control.HasFocus(403)</visible>
-                        <animation effect="slide" start="0,0" end="27,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel1)">Conditional</animation>
-                        <animation effect="slide" start="0,0" end="54,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel2)">Conditional</animation>
-                        <animation effect="slide" start="0,0" end="81,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel3)">Conditional</animation>
-                        <animation effect="slide" start="0,0" end="108,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel4)">Conditional</animation>
-                        <animation effect="slide" start="0,0" end="135,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel5)">Conditional</animation>
-                        <animation effect="slide" start="0,0" end="162,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel6)">Conditional</animation>
-                    </control>
-                    <!-- Settings 4b -->
-                    <control type="image">
                         <description>fanart diffuse level not focused</description>
                         <posx>0</posx>
                         <posy>-3</posy>
                         <width>12</width>
                         <height>25</height>
-                        <texture>twc-osd_slider_nibNF.png</texture>
-                        <visible>!Control.HasFocus(403)</visible>
+                        <texture>$INFO[Window.Property(twc-fadelevel-gfx)]</texture>
                         <animation effect="slide" start="0,0" end="27,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel1)">Conditional</animation>
                         <animation effect="slide" start="0,0" end="54,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel2)">Conditional</animation>
                         <animation effect="slide" start="0,0" end="81,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel3)">Conditional</animation>

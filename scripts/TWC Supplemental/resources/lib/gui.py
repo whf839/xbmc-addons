@@ -49,6 +49,7 @@ class GUI( module ):
     # toggle buttons
     CONTROL_WEEKEND_TOGGLE_BUTTON = 300
     CONTROL_MAP_TOGGLE_BUTTON = 301
+    CONTROL_PLAY_VIDEO_BUTTON = 302
     # settings buttons
     CONTROL_ANIMATED_SETTING_BUTTON = 400
     CONTROL_METRIC_SETTING_BUTTON = 401
@@ -244,17 +245,22 @@ class GUI( module ):
         xbmcgui.Window( self.CURRENT_WINDOW ).setProperty( "AlertsCount", ( "", str( alertscount ), )[ alertscount > 1 ] )
         xbmcgui.Window( self.CURRENT_WINDOW ).setProperty( "AlertsLabel", _( self.CONTROL_ALERTS_BUTTON * ( 10, 1, )[ alertscount > 1 ] ) )
 
+    def _set_video( self, video_url ):
+        xbmcgui.Window( self.CURRENT_WINDOW ).setProperty( "Video", video_url )
+
     def _fetch_36_forecast( self, showView=True ):
         # reset our view
         if ( showView ):
             self._reset_views( self.CONTROL_36HOUR_BUTTON )
         # fetch 36 hour forecast
-        alerts, alertscolor, alertscount, forecasts = self.TWCClient.fetch_36_forecast()
+        alerts, alertscolor, alertscount, forecasts, video = self.TWCClient.fetch_36_forecast()
         # lock the gui for faster updating
         xbmcgui.lock()
         try:
             # set any alerts
             self._set_alerts( alerts, alertscolor, alertscount )
+            # set video
+            self._set_video( video )
             # enumerate thru and set the info
             for day, forecast in enumerate( forecasts ):
                 xbmcgui.Window( self.CURRENT_WINDOW ).setProperty( "36Hour%dicon" % ( day + 1, ), forecast[ 1 ] )
@@ -464,7 +470,6 @@ class GUI( module ):
         self._fetch_36_forecast( False )
 
     def _clear_forecasts( self ):
-        # TODO: when a newer xbmc is released, eliminate the except block
         # we reset these so old info does not show when user changes metric/english setting
         try:
             xbmcgui.Window(xbmcgui.getCurrentWindowId()).clearProperty( "36Hour1title" )
@@ -523,7 +528,7 @@ class GUI( module ):
         if ( self.timer is not None ):
             self.timer.cancel()
         # TODO: remove this if dialogs get properties
-        # we call this as dialogs do not support properl properties
+        # we call this as dialogs do not support properties
         try:
             xbmcgui.Window( self.CURRENT_WINDOW ).clearProperties()
         except:
