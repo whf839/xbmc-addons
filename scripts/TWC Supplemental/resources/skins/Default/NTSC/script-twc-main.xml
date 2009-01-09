@@ -1,5 +1,7 @@
 <window>
     <defaultcontrol>2000</defaultcontrol>
+    <allowoverlay>false</allowoverlay>
+    <zorder>1</zorder>
     
     <coordinates>
         <system>1</system>
@@ -389,6 +391,7 @@
                     <scrolltime>200</scrolltime>
                     <align>left</align>
                     <aligny>top</aligny>
+                    <spinheight>-5</spinheight>
                     <info>Window.Property(Alerts)</info>
                     <autoscroll time="2000" delay="10000" repeat="15000">VisibleChange</autoscroll>
                     <visible>!IsEmpty(Window.Property(view-Alerts))</visible>
@@ -805,6 +808,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>left</align>
                             <aligny>top</aligny>
+                            <spinheight>-5</spinheight>
                             <info>Window.Property(36Hour1outlook)</info>
                             <autoscroll time="2000" delay="6000" repeat="6000">VisibleChange</autoscroll>
                             <visible>!IsEmpty(Window.Property(36Hour1title)) + !IsEmpty(Window.Property(view-36Hour))</visible>
@@ -945,6 +949,7 @@
                             <height>90</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
+                            <spinheight>-5</spinheight>
                             <align>left</align>
                             <aligny>top</aligny>
                             <info>Window.Property(36Hour2outlook)</info>
@@ -1087,6 +1092,7 @@
                             <height>90</height>
                             <font>font10</font>
                             <textcolor>FFFFFFFF</textcolor>
+                            <spinheight>-5</spinheight>
                             <align>left</align>
                             <aligny>top</aligny>
                             <info>Window.Property(36Hour3outlook)</info>
@@ -1585,7 +1591,6 @@
                     <aligny>center</aligny>
                     <label>SCRIPT300</label>
                     <visible>IsEmpty(Window.Property(WeekendToggle)) + Control.Isvisible(300)</visible>
-                    <animation effect="slide" start="0,0" end="-115,0" time="0" reversible="false" condition="!IsEmpty(Window.Property(Video))">Conditional</animation>
                 </control>
                 <!-- Outlook label -->
                 <control type="label">
@@ -1600,7 +1605,6 @@
                     <aligny>center</aligny>
                     <label>SCRIPT301</label>
                     <visible>!IsEmpty(Window.Property(WeekendToggle)) + Control.Isvisible(300)</visible>
-                    <animation effect="slide" start="0,0" end="-115,0" time="0" reversible="false" condition="!IsEmpty(Window.Property(Video))">Conditional</animation>
                 </control>
                 <control type="button">
                     <description>dummy button so can't lose navigation</description>
@@ -1944,6 +1948,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>left</align>
                             <aligny>top</aligny>
+                            <spinheight>-5</spinheight>
                             <info>Window.Property(Weekend1outlook)</info>
                             <visible>IsEmpty(Window.Property(WeekendToggle)) + !IsEmpty(Window.Property(Weekend1day)) + !IsEmpty(Window.Property(view-Weekend))</visible>
                             <autoscroll time="2000" delay="6000" repeat="6000">VisibleChange</autoscroll>
@@ -2263,6 +2268,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>left</align>
                             <aligny>top</aligny>
+                            <spinheight>-5</spinheight>
                             <info>Window.Property(Weekend2outlook)</info>
                             <visible>IsEmpty(Window.Property(WeekendToggle)) + !IsEmpty(Window.Property(Weekend2day)) + !IsEmpty(Window.Property(view-Weekend))</visible>
                             <autoscroll time="2000" delay="6000" repeat="6000">VisibleChange</autoscroll>
@@ -2582,6 +2588,7 @@
                             <textcolor>FFFFFFFF</textcolor>
                             <align>left</align>
                             <aligny>top</aligny>
+                            <spinheight>-5</spinheight>
                             <info>Window.Property(Weekend3outlook)</info>
                             <autoscroll time="2000" delay="6000" repeat="6000">VisibleChange</autoscroll>
                             <visible>IsEmpty(Window.Property(WeekendToggle)) + !IsEmpty(Window.Property(Weekend1day)) + !IsEmpty(Window.Property(view-Weekend))</visible>
