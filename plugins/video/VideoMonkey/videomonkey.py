@@ -613,26 +613,14 @@ class CCurrentList:
                 info_value = item.infos_values[info_idx]
                 if firstInfo:
                     firstInfo = False
-                    try:
-                        url = item.infos_names[info_idx] + ':' + info_value
-                    except:
-                        url = item.infos_names[info_idx] + ':' + smart_unicode(info_value)
+                    url = smart_unicode(item.infos_names[info_idx]) + ':' + smart_unicode(info_value)
                 else:
-                    try:
-                        url = url + '|' + item.infos_names[info_idx] + ':' + info_value
-                    except:
-                        url = url + '|' + item.infos_names[info_idx] + ':' + smart_unicode(info_value)
+                    url = smart_unicode(url) + '|' + smart_unicode(item.infos_names[info_idx]) + ':' + smart_unicode(info_value)
             info_idx = info_idx + 1
         if firstInfo:
-            try:
-                url = item.infos_names[url_idx] + ':' + item.infos_values[url_idx]
-            except:
-                url = item.infos_names[url_idx] + ':' + smart_unicode(item.infos_values[url_idx])
+            url = smart_unicode(item.infos_names[url_idx]) + ':' + smart_unicode(item.infos_values[url_idx])
         else:
-            try:
-                url = url + '|' + item.infos_names[url_idx] + ':' + item.infos_values[url_idx]
-            except:
-                url = url + '|' + item.infos_names[url_idx] + ':' + smart_unicode(item.infos_values[url_idx])
+            url = smart_unicode(url) + '|' + smart_unicode(item.infos_names[url_idx]) + ':' + smart_unicode(item.infos_values[url_idx])
         if len(suffix) > 0:
             url = url + '.' + suffix
         return url
@@ -904,9 +892,6 @@ class CCurrentList:
             info_value = decode(unquote_safe(info_value))
             if info_value == '':
                 info_value = os.path.join(imgDir, 'video.png')
-        elif info_name.find('context.') != -1:
-            if info_value != '':
-                info_value = cfg_file + '|' + info_value
         return clean_safe(info_value)
 
     def loadRemote(self, remote_url, recursive = True, lItem = None):
@@ -1000,10 +985,7 @@ class CCurrentList:
                     try:
                         info_idx = tmp.infos_names.index(info.name)
                         if info.build.find('%s') != -1:
-                            try:
-                                tmp.infos_values[info_idx] = smart_unicode(info.build % tmp.infos_values[info_idx])
-                            except:
-                                tmp.infos_values[info_idx] = smart_unicode(info.build % smart_unicode(tmp.infos_values[info_idx]))
+                            tmp.infos_values[info_idx] = smart_unicode(info.build % smart_unicode(tmp.infos_values[info_idx]))
                         continue
                     except:
                         pass
@@ -1011,27 +993,18 @@ class CCurrentList:
                         info_rule = info.rule
                         if info.rule.find('%s') != -1:
                             src = tmp.infos_values[tmp.infos_names.index(info.src)]
-                            try:
-                                info_rule = info.rule % (src)
-                            except:
-                                info_rule = info.rule % (smart_unicode(src))
+                            info_rule = info.rule % (smart_unicode(src))
                         infosearch = re.search(info_rule, data)
                         if infosearch:
                             info_value = infosearch.group(1).lstrip().rstrip()
                             if info.build.find('%s') != -1:
-                                try:
-                                    info_value = info.build % (info_value)
-                                except:
-                                    info_value = info.build % (smart_unicode(info_value))
+                                info_value = info.build % (smart_unicode(info_value))
                         elif info.default != '':
                             info_value = info.default
                     else:
                         if info.build.find('%s') != -1:
                             src = tmp.infos_values[tmp.infos_names.index(info.src)]
-                            try:
-                                info_value = info.build % (src)
-                            except:
-                                info_value = info.build % (smart_unicode(src))
+                            info_value = info.build % (smart_unicode(src))
                         else:
                             info_value = info.build
                     tmp.infos_names.append(info.name)
@@ -1040,16 +1013,10 @@ class CCurrentList:
                 for info_name in tmp.infos_names:
                     tmp.infos_values[info_idx] = self.infoFormatter(info_name, tmp.infos_values[info_idx], self.cfg)
                     if info_name.rfind('.append') != -1:
-                        try:
-                            tmp.infos_values[tmp.infos_names.index(info_name[:info_name.rfind('.append')])] = tmp.infos_values[tmp.infos_names.index(info_name[:info_name.rfind('.append')])] + tmp.infos_values[info_idx]
-                        except:
-                            tmp.infos_values[tmp.infos_names.index(info_name[:info_name.rfind('.append')])] = tmp.infos_values[tmp.infos_names.index(info_name[:info_name.rfind('.append')])] + smart_unicode(tmp.infos_values[info_idx])
+                        tmp.infos_values[tmp.infos_names.index(info_name[:info_name.rfind('.append')])] = smart_unicode(tmp.infos_values[tmp.infos_names.index(info_name[:info_name.rfind('.append')])]) + smart_unicode(tmp.infos_values[info_idx])
                     info_idx = info_idx + 1
                 info_idx = tmp.infos_names.index('url')
-                try:
-                    tmp.infos_values[info_idx] = smart_unicode(item_rule.url_build % (tmp.infos_values[info_idx]))
-                except:
-                    tmp.infos_values[info_idx] = smart_unicode(item_rule.url_build % (smart_unicode(tmp.infos_values[info_idx])))
+                tmp.infos_values[info_idx] = smart_unicode(item_rule.url_build % (smart_unicode(tmp.infos_values[info_idx])))
                 if item_rule.skill.find('append') != -1:
                     if curr_url[len(curr_url) - 1] == '?':
                         tmp.infos_values[info_idx] = curr_url + tmp.infos_values[info_idx]
@@ -1468,8 +1435,9 @@ class Main:
             url = url[:len(url) - 12]
             lItem.infos_values[lItem.infos_names.index('url')] = url
             cfg_file = lItem.infos_values[lItem.infos_names.index('cfg')]
-            self.currentlist.loadLocal(cfg_file, False, lItem, True)
-            lItem.infos_values[lItem.infos_names.index('url')] = self.getDirectLink(lItem.infos_values[lItem.infos_names.index('url')])
+            if lItem.infos_values[lItem.infos_names.index('type')] == 'video':
+                self.currentlist.loadLocal(cfg_file, False, lItem, True)
+                lItem.infos_values[lItem.infos_names.index('url')] = self.getDirectLink(lItem.infos_values[lItem.infos_names.index('url')])
             lItem.infos_values[lItem.infos_names.index('url')] = self.TargetFormatter(lItem.infos_values[lItem.infos_names.index('url')], cfg_file)
             if ext == 'videomonkey':
                 result = self.playVideo(lItem)
@@ -1505,14 +1473,14 @@ class Main:
                 try:
                     m_type = m.infos_values[m.infos_names.index('type')]
                 except:
-                    m_type = u'rss'
+                    m_type = 'rss'
                 m_icon = m.infos_values[m.infos_names.index('icon')]
                 m_title = clean_safe(m.infos_values[m.infos_names.index('title')])
-                if m_type == u'rss' or m_type == u'search':
+                if m_type == 'rss' or m_type == 'search':
                     self.addListItem(m_title, self.currentlist.codeUrl(m), m_icon, len(self.currentlist.items), m)
-                elif m_type == u'video':
+                elif m_type.find('video') != -1:
                     self.addListItem(m_title, self.currentlist.codeUrl(m, 'videomonkey'), m_icon, len(self.currentlist.items), m)
-                elif m_type == u'live':
+                elif m_type == 'live':
                     self.addListItem(m_title, m_url, m_icon, len(self.currentlist.items), m, False)
         return result
 
@@ -1540,7 +1508,10 @@ class Main:
         for video_info_name in lItem.infos_names:
             if video_info_name.find('context.') != -1:
                 try:
-                    action = 'XBMC.RunPlugin(%s)' % (sys.argv[0] + '?url=' + lItem.infos_values[lItem.infos_names.index(video_info_name)])
+                    cItem = lItem
+                    cItem.infos_values[lItem.infos_names.index('url')] = lItem.infos_values[lItem.infos_names.index(video_info_name)]
+                    cItem.infos_values[lItem.infos_names.index('type')] = 'rss'
+                    action = 'XBMC.RunPlugin(%s)' % (sys.argv[0] + '?url=' + self.currentlist.codeUrl(cItem))
                     liz.addContextMenuItems([(video_info_name[video_info_name.find('.') + 1:], action)])
                 except:
                     pass
