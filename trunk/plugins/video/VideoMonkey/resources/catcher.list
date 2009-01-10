@@ -140,7 +140,7 @@ info=ab DSL-2000
 extension=asf
 quality=high
 ########################################################
-title=alphacentauri.de
+title=br.de
 target=player\.avaible\_url\['flashmedia'\]\['1'\] = "(http://[^"]+)";
 url=%s
 extension=flv
