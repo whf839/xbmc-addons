@@ -17,11 +17,11 @@ icon=video.monkey.image|ard_mediathek.png
 director=ARD mediathek
 url=ard.de.cfg
 ########################################################
-title=arte+7
+title=arte
 type=rss
-icon=video.monkey.image|arte_plus7.png
-director=arte+7
-url=arteplus7.cfg
+icon=video.monkey.image|arte.png
+director=arte
+url=arte.cfg
 ########################################################
 title=BR-online (DE)
 type=rss
