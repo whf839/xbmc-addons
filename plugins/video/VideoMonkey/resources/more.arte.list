@@ -1,13 +1,13 @@
 ﻿########################################################
-# arte+7 country specific sites
+# arte country specific sites
 ########################################################
-title=arte+7 (DE)
+title=arte (DE)
 type=rss
 icon=video.monkey.image|de.png
-url=arteplus7.de.cfg
+url=arte.de.cfg
 ########################################################
-title=arte+7 (FR)
+title=arte (FR)
 type=rss
 icon=video.monkey.image|fr.png
-url=arteplus7.fr.cfg
+url=arte.fr.cfg
 ########################################################
