@@ -1,8 +1,9 @@
 # XBMC Video Plugin
 # NBA.com Videos
-# Updated: 12/18/08 - 1:56PM
-# ver. 1.01
+# Updated: 01/10/08
+# ver. 1.02
 # Author: stacked < http://xbmc.org/forum/member.php?u=26908 >
+# Changelog & More Info: http://xbmc.org/forum/showthread.php?t=42321
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 
@@ -28,30 +29,46 @@ def showTeams():
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u2,li2,True)
 		
 def showCategories():
-		url="http://www.nba.com/video/teams/index.html"
+		nba=['bos', 'njn', 'nyk', 'phi', 'tor', 'chi', 'cle', 'det', 'ind', 'mil', 'atl', 'cha', 'mia', 'orl', 'was', 'dal', 'hou', 'mem', 'noh', 'sas', 'den', 'min', 'por', 'okc', 'uth', 'gsw', 'lac', 'lal', 'pho', 'sac']
+		teams=['Boston Celtics', 'New Jersey Nets', 'New York Knicks', 'Philadelphia 76ers', 'Toronto Raptors', 'Chicago Bulls', 'Cleveland Cavaliers', 'Detroit Pistons', 'Indiana Pacers', 'Milwaukee Bucks', 'Atlanta Hawks', 'Charlotte Bobcats', 'Miami Heat', 'Orlando Magic', 'Washington Wizards', 'Dallas Mavericks', 'Houston Rockets', 'Memphis Grizzlies', 'New Orleans Hornets', 'San Antonio Spurs','Denver Nuggets', 'Minnesota Timberwolves', 'Portland Trail Blazers', 'Oklahoma City Thunder', 'Utah Jazz', 'Golden State Warriors', 'Los Angeles Clippers', 'Los Angeles Lakers', 'Phoenix Suns', 'Sacramento Kings' ]         
+		x=0
+		url="http://www.nba.com/rss/"
 		f=urllib2.urlopen(url)
 		a=f.read()
 		f.close()
-		p=re.compile('team&amp;q=(.+?)">(.+?)</option>')
+		p=re.compile('"http://www.nba.com/media/(.+?).gif"')
 		match=p.findall(a)
-		for url,name in match:
-			url = 'http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/teams/video_nba_'+url+'_tab1.txt'
-			li=xbmcgui.ListItem(name)
+		for thumb in match:
+			url = 'http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/teams/video_nba_'+nba[x].upper()+'_tab1.txt'
+			name=teams[x]
+			if (nba[x] == 'noh'):
+				nba[x] = 'nor'
+			thumb = 'http://assets.espn.go.com/i/teamlogos/nba/lrg/trans/'+nba[x]+'.gif'
+			li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
 			u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+			x=x+1
 
 def showCategories2():
-		url="http://www.nba.com/video/teams/index.html"
+		nba=['bos', 'njn', 'nyk', 'phi', 'tor', 'chi', 'cle', 'det', 'ind', 'mil', 'atl', 'cha', 'mia', 'orl', 'was', 'dal', 'hou', 'mem', 'noh', 'sas', 'den', 'min', 'por', 'okc', 'uth', 'gsw', 'lac', 'lal', 'pho', 'sac']
+		teams=['Boston Celtics', 'New Jersey Nets', 'New York Knicks', 'Philadelphia 76ers', 'Toronto Raptors', 'Chicago Bulls', 'Cleveland Cavaliers', 'Detroit Pistons', 'Indiana Pacers', 'Milwaukee Bucks', 'Atlanta Hawks', 'Charlotte Bobcats', 'Miami Heat', 'Orlando Magic', 'Washington Wizards', 'Dallas Mavericks', 'Houston Rockets', 'Memphis Grizzlies', 'New Orleans Hornets', 'San Antonio Spurs','Denver Nuggets', 'Minnesota Timberwolves', 'Portland Trail Blazers', 'Oklahoma City Thunder', 'Utah Jazz', 'Golden State Warriors', 'Los Angeles Clippers', 'Los Angeles Lakers', 'Phoenix Suns', 'Sacramento Kings' ]         
+		x=0
+		url="http://www.nba.com/rss/"
 		f=urllib2.urlopen(url)
 		a=f.read()
 		f.close()
-		p=re.compile('team&amp;q=(.+?)">(.+?)</option>')
+		p=re.compile('"http://www.nba.com/media/(.+?).gif"')
 		match=p.findall(a)
-		for url,name in match:
-			url = 'http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/teams/video_nba_'+url+'_tab2.txt'
-			li=xbmcgui.ListItem(name)
+		for thumb in match:
+			url = 'http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/teams/video_nba_'+nba[x].upper()+'_tab2.txt'
+			name=teams[x]
+			if (nba[x] == 'noh'):
+				nba[x] = 'nor'
+			thumb = 'http://assets.espn.go.com/i/teamlogos/nba/lrg/trans/'+nba[x]+'.gif'
+			li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
 			u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+			x=x+1
 
 def showList(url,page):
 		thisurl=url
