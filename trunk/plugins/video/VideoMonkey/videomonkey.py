@@ -749,7 +749,6 @@ class CCurrentList:
                 except:
                     if enable_debug:
                         xbmc.output('File: ' + str(filename) + ' not found')
-                    if enable_debug:
                         traceback.print_exc(file = sys.stdout)
                     return -1
 
@@ -1439,6 +1438,10 @@ class Main:
                 self.currentlist.loadLocal(cfg_file, False, lItem, True)
                 lItem.infos_values[lItem.infos_names.index('url')] = self.getDirectLink(lItem.infos_values[lItem.infos_names.index('url')])
             lItem.infos_values[lItem.infos_names.index('url')] = self.TargetFormatter(lItem.infos_values[lItem.infos_names.index('url')], cfg_file)
+            try:
+                self.videoExtension = '.' + lItem.infos_values[lItem.infos_names.index('extension')]
+            except:
+                pass
             if ext == 'videomonkey':
                 result = self.playVideo(lItem)
             else:
@@ -1515,10 +1518,12 @@ class Main:
                     liz.addContextMenuItems([(video_info_name[video_info_name.find('.') + 1:], action)])
                 except:
                     pass
-            if video_info_name.find('.append') == -1 and video_info_name != 'url' and video_info_name != 'title' and video_info_name != 'icon' and video_info_name != 'type':
+            if video_info_name.find('.append') == -1 and video_info_name != 'url' and video_info_name != 'title' and video_info_name != 'icon' and video_info_name != 'type' and video_info_name != 'extension' and video_info_name.find('.tmp') == -1 and video_info_name.find('.append') == -1 and video_info_name.find('context.') == -1:
                 try:
                     if video_info_name.find('.int') != -1:
                         liz.setInfo(type = 'Video', infoLabels = {capitalize(video_info_name[:video_info_name.find('.int')]): int(lItem.infos_values[lItem.infos_names.index(video_info_name)])})
+                    elif video_info_name.find('.once') != -1:
+                        liz.setInfo(type = 'Video', infoLabels = {capitalize(video_info_name[:video_info_name.find('.once')]): lItem.infos_values[lItem.infos_names.index(video_info_name)]})
                     else:
                         liz.setInfo(type = 'Video', infoLabels = {capitalize(video_info_name): lItem.infos_values[lItem.infos_names.index(video_info_name)]})
                 except:
