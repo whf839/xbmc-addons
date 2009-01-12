@@ -17,7 +17,7 @@ icon=video.monkey.image|ard_mediathek.png
 director=ARD mediathek
 url=ard.de.cfg
 ########################################################
-title=arte
+title=arte tv
 type=rss
 icon=video.monkey.image|arte.png
 director=arte
@@ -34,4 +34,10 @@ type=rss
 icon=video.monkey.image|sf_tv.png
 director=Schweizer Fernsehen
 url=sf.tv.cfg
+########################################################
+title=fxguide tv (EN)
+type=rss
+icon=video.monkey.image|fxguide.png
+director=fxguide
+url=fxguide.com.cfg
 ########################################################
