@@ -42,6 +42,7 @@ urllib2.install_opener(opener)
 
 if xbmcplugin.getSetting('enable_debug') == 'true':
     enable_debug = True
+    xbmc.output('VideoMonkey debug logging enabled')
 else:
     enable_debug = False
 
@@ -1118,6 +1119,8 @@ class CCurrentList:
 
 class Main:
     def __init__(self):
+        if enable_debug:
+            xbmc.output('Initializing VideoMonkey')
         self.pDialog = None
         self.curr_file = ''
         self.urlList = []
@@ -1125,6 +1128,8 @@ class Main:
         self.selectionList = []
         self.videoExtension = '.flv'
         self.currentlist = CCurrentList()
+        if enable_debug:
+            xbmc.output('VideoMonkey initialized')
         self.run()
 
     def getDirectLink(self, orig_url):
@@ -1343,17 +1348,25 @@ class Main:
             player_type = xbmc.PLAYER_CORE_DVDPLAYER
 
         if flv_file != None and os.path.isfile(flv_file):
+            if enable_debug:
+                xbmc.output('Play: ' + str(flv_file))
             xbmc.Player(player_type).play(str(flv_file), listitem)
         else:
+            if enable_debug:
+                xbmc.output('Play: ' + str(url))
             xbmc.Player(player_type).play(str(url), listitem)
         xbmc.sleep(200)
 
     def downloadMovie(self, url, title):
+        if enable_debug:
+            xbmc.output('Trying to download video ' + str(url))
         file_path = os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension)
         if os.path.isfile(file_path):
             file_path = self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '_', suffix = self.videoExtension)
         try:
             urllib.urlretrieve(url, file_path, self.video_report_hook)
+            if enable_debug:
+                xbmc.output('Video ' + str(url) + ' downloaded to ' + repr(file_path))
             return file_path
         except IOError:
             title = first_clean_filename(title)
@@ -1362,6 +1375,8 @@ class Main:
                 file_path = self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '_', suffix = self.videoExtension)
             try:
                 urllib.urlretrieve(url, file_path, self.video_report_hook)
+                if enable_debug:
+                    xbmc.output('Video ' + str(url) + ' downloaded to ' + repr(file_path))
                 return file_path
             except IOError:
                 title = second_clean_filename(title)
@@ -1370,6 +1385,8 @@ class Main:
                     file_path = self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '_', suffix = self.videoExtension)
                 try:
                     urllib.urlretrieve(url, file_path, self.video_report_hook)
+                    if enable_debug:
+                        xbmc.output('Video ' + str(url) + ' downloaded to ' + repr(file_path))
                     return file_path
                 except IOError:
                     title = third_clean_filename(title)
@@ -1378,6 +1395,8 @@ class Main:
                         file_path = self.currentlist.randomFilename(dir = xbmcplugin.getSetting('download_Path'), suffix = self.videoExtension)
                     try:
                         urllib.urlretrieve(url, file_path, self.video_report_hook)
+                        if enable_debug:
+                            xbmc.output('Video ' + str(url) + ' downloaded to ' + repr(file_path))
                         return file_path
                     except IOError:
                         title = self.currentlist.randomFilename()
@@ -1386,6 +1405,8 @@ class Main:
                             file_path = self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '_', suffix = self.videoExtension)
                         try:
                             urllib.urlretrieve(url, file_path, self.video_report_hook)
+                            if enable_debug:
+                                xbmc.output('Video ' + str(url) + ' downloaded to ' + repr(file_path))
                             return file_path
                         except:
                             pass
@@ -1538,6 +1559,8 @@ class Main:
                 os.remove(os.path.join(root, name))
 
     def run(self):
+        if enable_debug:
+            xbmc.output('VideoMonkey running')
         try:
             self.handle = int(sys.argv[1])
             paramstring = sys.argv[2]
@@ -1568,12 +1591,10 @@ class Main:
                 self.purgeCache()
                 if enable_debug:
                     xbmc.output('Cache directory purged')
-                result = self.parseView('sites.list')
+                if xbmcplugin.getSetting('custom_entry') == 'false':
+                    self.parseView('sites.list')
                 del self.currentlist.items[:]
-                try:
-                    self.parseView('entry.list')
-                except:
-                    pass
+                self.parseView('entry.list')
                 try:
                     if enable_debug:
                         xbmc.output('Loading version from svn')
