@@ -28,7 +28,7 @@ class Main:
         self.pDialog = xbmcgui.DialogProgress()
         self.pDialog.create('VideoMonkey - ' + xbmc.getLocalizedString(30059), '', xbmc.getLocalizedString(30051))
         for name in resvn.findall(fc):
-            if name != '../' and name != 'dummy':
+            if name != '../' and name != 'default.py' and name != 'dummy':
                 new_url = url + name.replace(' ', '%20')
                 if name.endswith('/'):
                     new_url = url + name.replace(' ', '%20')
