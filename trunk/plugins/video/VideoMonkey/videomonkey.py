@@ -1593,7 +1593,7 @@ class Main:
                     xbmc.output('Cache directory purged')
                 if xbmcplugin.getSetting('custom_entry') == 'false':
                     self.parseView('sites.list')
-                del self.currentlist.items[:]
+                    del self.currentlist.items[:]
                 self.parseView('entry.list')
                 try:
                     if enable_debug:
