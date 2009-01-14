@@ -1552,7 +1552,7 @@ class Main:
                 try:
                     if enable_debug:
                         xbmc.output('Loading version from svn')
-                    urllib.urlretrieve('http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/VideoMonkey/version', os.path.join(cacheDir, 'version'))
+                    urllib.urlretrieve('http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/VideoDevil/version', os.path.join(cacheDir, 'version'))
                     if enable_debug:
                         xbmc.output('Version loaded from svn')
                 except:
