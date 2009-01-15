@@ -176,3 +176,12 @@ target=player\.avaible\_url\['microsoftmedia'\]\['2'\] = "(http://[^"]+)";
 extension=wmv
 quality=high
 ########################################################
+title=tve.es
+target=so.addVariable\("parseFile", "(/alacarta/player/\d+.xml)"\);
+url=%s
+build=http://www.rtve.es%s
+ext_target=rtmp://stream.rtve.es/stream(/resources/alacarta/flv/.+?.flv)
+ext_build=http://www.rtve.es%s
+extension=flv
+quality=standard
+########################################################
