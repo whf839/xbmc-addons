@@ -1022,6 +1022,11 @@ class CCurrentList:
                         tmp.infos_values[info_idx] = curr_url + tmp.infos_values[info_idx]
                     else:
                         tmp.infos_values[info_idx] = curr_url + '&' + tmp.infos_values[info_idx]
+                if item_rule.skill.find('param') != -1:
+                    if curr_url.rfind('?') == -1:
+                        tmp.infos_values[info_idx] = curr_url + '?' + tmp.infos_values[info_idx]
+                    else:
+                        tmp.infos_values[info_idx] = curr_url[:curr_url.rfind('?')] + '?' + tmp.infos_values[info_idx]
                 if item_rule.skill.find('space') != -1:
                     try:
                         tmp.infos_values[tmp.infos_names.index('title')] = ' ' + tmp.infos_values[tmp.infos_names.index('title')].lstrip().rstrip() + ' '
@@ -1510,7 +1515,12 @@ class Main:
 
     def addListItem(self, title, url, icon, totalItems, lItem, isDir = True):
         u = sys.argv[0] + '?url=' + url
-        liz = xbmcgui.ListItem(title, title, icon, icon)
+        if isDir and self.currentlist.getFileExtension(url) == 'videomonkey':
+            liz = xbmcgui.ListItem(title, title, os.path.join(imgDir, 'video.png'), icon)
+        elif isDir:
+            liz = xbmcgui.ListItem(title, title, os.path.join(imgDir, 'sites.png'), icon)
+        else:
+            liz = xbmcgui.ListItem(title, title, os.path.join(imgDir, 'station.png'), icon)
         if isDir and self.currentlist.getFileExtension(url) == 'videomonkey' and self.currentlist.skill.find('nodownload') == -1:
             action = 'XBMC.RunPlugin(%s.dwnldmonkey)' % u[:len(u)-12]
             try:
@@ -1611,12 +1621,12 @@ class Main:
                     if filecmp.cmp(os.path.join(rootDir, 'version'), os.path.join(cacheDir, 'version')) == 0:
                         if enable_debug:
                             xbmc.output('Adding update notification')
-                        liz = xbmcgui.ListItem(xbmc.getLocalizedString(30059), xbmc.getLocalizedString(30059), os.path.join(imgDir, 'information.png'), os.path.join(imgDir, 'information.png'))
+                        liz = xbmcgui.ListItem(xbmc.getLocalizedString(30059), xbmc.getLocalizedString(30059), os.path.join(imgDir, 'update.png'), os.path.join(imgDir, 'update.png'))
                         xbmcplugin.addDirectoryItem(handle = int(sys.argv[1]), url = sys.argv[0] + '?url=update', listitem = liz)
                 except:
                     if enable_debug:
                         xbmc.output('cannot compare versions or add notification item')
-                    liz = xbmcgui.ListItem(xbmc.getLocalizedString(30059), xbmc.getLocalizedString(30059), os.path.join(imgDir, 'information.png'), os.path.join(imgDir, 'information.png'))
+                    liz = xbmcgui.ListItem(xbmc.getLocalizedString(30059), xbmc.getLocalizedString(30059), os.path.join(imgDir, 'update.png'), os.path.join(imgDir, 'update.png'))
                     xbmcplugin.addDirectoryItem(handle = int(sys.argv[1]), url = sys.argv[0] + '?url=update', listitem = liz)
                 try:
                     if enable_debug:
