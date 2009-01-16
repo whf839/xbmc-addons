@@ -414,7 +414,8 @@ for dirpath, dirnames, filenames in os.walk(path):
                     # detect tbn /integrate with tog
                     tbn=tbn+'.tbn'
                     if os.path.isfile(tifftbn) and not os.path.isfile(tbn):
-                        togname = fqname.replace("'", "\'")
+                        togname = fqname.encode( 'utf-8' )
+                        togname = togname.replace("'", "\'")
                         if tog == 1:
                             try:
                                 go_tog('-scan', togname)
