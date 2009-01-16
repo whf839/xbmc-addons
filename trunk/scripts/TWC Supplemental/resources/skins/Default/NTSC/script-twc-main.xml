@@ -459,7 +459,7 @@
                 <!-- Maps list ** Required ** -->
                 <control type="list" id="500">
                     <posx>0</posx>
-                    <posy>00</posy>
+                    <posy>0</posy>
                     <width>200</width>
                     <height>242</height>
                     <onleft>5000</onleft>
