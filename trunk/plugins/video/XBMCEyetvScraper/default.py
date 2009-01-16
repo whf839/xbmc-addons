@@ -438,7 +438,8 @@ for dirpath, dirnames, filenames in os.walk(path):
                     tbn=tbn+'.tbn'
                     if os.path.isfile(tifftbn) and not os.path.isfile(tbn):
                         # convert Unicode string to regular string
-                        togname = str(fqname)
+                        # togname = str(fqname)
+                        togname = fqname.encode( 'utf-8' )
                         togname = togname.replace("'", "\'")
                         if tog == 1:
                             try:
@@ -547,7 +548,7 @@ for dirpath, dirnames, filenames in os.walk(path):
                             aired = aired.strip()
                         
                         # linked directory support
-                        if LDS == 1:    
+                        if LDS == 1:
                             # build dummy dir
                             if not os.path.isdir(dummy):
                                 os.mkdir(dummy)
