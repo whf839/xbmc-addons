@@ -2,10 +2,9 @@ from string import *
 import xbmcplugin
 import sys, os.path
 import urllib,urllib2, filecmp
-import re, random, string
+import re, random, string, shutil
 import xbmc, xbmcgui
 import re, os, time, datetime, traceback
-import shutil, codecs
 import cookielib, htmlentitydefs
 import socket, base64
 
@@ -587,19 +586,19 @@ class CCurrentList:
         return
 
     def saveList(self):
-        f = codecs.open(str(os.path.join(resDir, 'entry.list')), 'w', 'utf-8')
-        f.write('########################################################\n')
-        f.write('# Added sites and live streams\n')
-        f.write('########################################################\n')
-        f.write('skill=remove\n')
-        f.write('########################################################\n')
+        f = open(str(os.path.join(resDir, 'entry.list')), 'w')
+        f.write(smart_unicode('########################################################\n').encode('utf-8'))
+        f.write(smart_unicode('#             Added sites and live streams             #\n').encode('utf-8'))
+        f.write(smart_unicode('########################################################\n').encode('utf-8'))
+        f.write(smart_unicode('skill=remove\n').encode('utf-8'))
+        f.write(smart_unicode('########################################################\n').encode('utf-8'))
         for item in self.items:
-            f.write('title=' + item.infos_values[item.infos_names.index('title')] + '\n')
+            f.write(smart_unicode('title=' + item.infos_values[item.infos_names.index('title')] + '\n').encode('utf-8'))
             for info_name in item.infos_names:
                 if info_name != 'url' and info_name != 'title':
-                    f.write(info_name + '=' + item.infos_values[item.infos_names.index(info_name)] + '\n')
-            f.write('url=' + item.infos_values[item.infos_names.index('url')] + '\n')
-            f.write('########################################################\n')
+                    f.write(smart_unicode(info_name + '=' + item.infos_values[item.infos_names.index(info_name)] + '\n').encode('utf-8'))
+            f.write(smart_unicode('url=' + item.infos_values[item.infos_names.index('url')] + '\n').encode('utf-8'))
+            f.write(smart_unicode('########################################################\n').encode('utf-8'))
         f.close()
         return
 
@@ -649,8 +648,8 @@ class CCurrentList:
         return item
 
     def loadCatcher(self, title):
-        f = codecs.open(str(os.path.join(resDir, 'catcher.list')), 'r', 'utf-8')
-        data = f.read()
+        f = open(str(os.path.join(resDir, 'catcher.list')), 'r')
+        data = smart_unicode(f.read())
         data = data.replace('\r\n', '\n')
         data = data.split('\n')
         f.close()
@@ -718,8 +717,8 @@ class CCurrentList:
         if enable_debug:
             xbmc.output(str(filename))
         try:
-            f = codecs.open(str(os.path.join(resDir, filename)), 'r', 'utf-8')
-            data = f.read()
+            f = open(str(os.path.join(resDir, filename)), 'r')
+            data = smart_unicode(f.read())
             data = data.replace('\r\n', '\n')
             data = data.split('\n')
             f.close()
@@ -729,8 +728,8 @@ class CCurrentList:
             if enable_debug:
                 xbmc.output('File: ' + str(os.path.join(resDir, filename)) + ' not found')
             try:
-                f = codecs.open(str(os.path.join(cacheDir, filename)), 'r', 'utf-8')
-                data = f.read()
+                f = open(str(os.path.join(cacheDir, filename)), 'r')
+                data = smart_unicode(f.read())
                 data = data.replace('\r\n', '\n')
                 data = data.split('\n')
                 f.close()
@@ -740,8 +739,8 @@ class CCurrentList:
                 if enable_debug:
                     xbmc.output('File: ' + str(os.path.join(cacheDir, filename)) + ' not found')
                 try:
-                    f = codecs.open(str(filename), 'r', 'utf-8')
-                    data = f.read()
+                    f = open(str(filename), 'r')
+                    data = smart_unicode(f.read())
                     data = data.replace('\r\n', '\n')
                     data = data.split('\n')
                     f.close()
@@ -1045,15 +1044,18 @@ class CCurrentList:
                     if item_rule.skill.find('directory') != -1:
                         one_found = True
                         if f == None:
-                            f = codecs.open(str(os.path.join(cacheDir, catfilename)), 'w', 'utf-8')
+                            f = open(str(os.path.join(cacheDir, catfilename)), 'w')
+                            f.write(smart_unicode('########################################################\n').encode('utf-8'))
+                            f.write(smart_unicode('#                    Temporary file                    #\n').encode('utf-8'))
+                            f.write(smart_unicode('########################################################\n').encode('utf-8'))
                         try:
-                            f.write('title=' + tmp.infos_values[tmp.infos_names.index('title')] + '\n')
+                            f.write(smart_unicode('title=' + tmp.infos_values[tmp.infos_names.index('title')] + '\n').encode('utf-8'))
                         except:
-                            f.write('title=...\n')
+                            f.write(smart_unicode('title=...\n').encode('utf-8'))
                         for info_name in tmp.infos_names:
                             if info_name != 'url' and info_name != 'title':
-                                f.write(info_name + '=' + tmp.infos_values[tmp.infos_names.index(info_name)] + '\n')
-                        f.write('url=' + tmp.infos_values[tmp.infos_names.index('url')] + '\n')
+                                f.write(smart_unicode(info_name + '=' + tmp.infos_values[tmp.infos_names.index(info_name)] + '\n').encode('utf-8'))
+                        f.write(smart_unicode('url=' + tmp.infos_values[tmp.infos_names.index('url')] + '\n').encode('utf-8'))
                     else:
                         self.items.append(tmp)
                     if item_rule.skill.find('lock') != -1:
@@ -1085,12 +1087,15 @@ class CCurrentList:
                     if item_rule.skill.find('directory') != -1:
                         one_found = True
                         if f == None:
-                            f = codecs.open(str(os.path.join(cacheDir, catfilename)), 'w', 'utf-8')
-                        f.write('title=' + tmp.infos_values[tmp.infos_names.index('title')] + '\n')
+                            f = open(str(os.path.join(cacheDir, catfilename)), 'w')
+                            f.write(smart_unicode('########################################################\n').encode('utf-8'))
+                            f.write(smart_unicode('#                    Temporary file                    #\n').encode('utf-8'))
+                            f.write(smart_unicode('########################################################\n').encode('utf-8'))
+                        f.write(smart_unicode('title=' + tmp.infos_values[tmp.infos_names.index('title')] + '\n').encode('utf-8'))
                         for info_name in tmp.infos_names:
                             if info_name != 'url' and info_name != 'title':
-                                f.write(info_name + '=' + tmp.infos_values[tmp.infos_names.index(info_name)] + '\n')
-                        f.write('url=' + tmp.infos_values[tmp.infos_names.index('url')] + '\n')
+                                f.write(smart_unicode(info_name + '=' + tmp.infos_values[tmp.infos_names.index(info_name)] + '\n').encode('utf-8'))
+                        f.write(smart_unicode('url=' + tmp.infos_values[tmp.infos_names.index('url')] + '\n').encode('utf-8'))
                     else:
                         self.items.append(tmp)
                     if item_rule.skill.find('lock') != -1:
@@ -1119,6 +1124,7 @@ class CCurrentList:
                 if item_rule.skill.find('lock') != -1:
                     lock = True
             if f != None:
+                f.write(smart_unicode('########################################################\n').encode('utf-8'))
                 f.close()
         return 0
 
@@ -1634,7 +1640,7 @@ class Main:
                     xbmcplugin.endOfDirectory(handle = int(sys.argv[1]), cacheToDisc = False)
                 except:
                     if enable_debug:
-                        xbmc.output('Cache disabling not suuported')
+                        xbmc.output('Cache disabling not supported')
                     xbmcplugin.endOfDirectory(handle = int(sys.argv[1]))
             else:
                 params = sys.argv[2]
