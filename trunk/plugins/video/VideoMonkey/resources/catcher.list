@@ -23,7 +23,7 @@
 # Catcher sites
 ########################################################
 title=2video.de
-target=<div id=\"box\">[^<]*<h2>Download</h2>[^<]*<p><a href=\"([^\"]+)\" target=\"_blank\">
+target=<div id="box">[^<]*<h2>Download</h2>[^<]*<p><a href="([^"]+)" target="_blank">
 url=http://www.2video.de/index.php?dl=%s&skill=download
 quality=standard
 ########################################################
@@ -48,7 +48,7 @@ header=Referer|http://www.atrapavideo.com/en/
 quality=standard
 ########################################################
 title=degrab.de
-target=Klick auf den <a href=\"([^\"]+)\"
+target=Klick auf den.+?<a href="([^"]+)"
 url=http://www.degrab.de/?url=%s
 action=unquote
 quality=standard
@@ -66,7 +66,7 @@ ext_limit=500
 extension=wmv
 quality=standard
 target=availableFormats\[\d]\["format"] = "WMV";\n    availableFormats\[\d]\["quality"] = "HQ";\n    availableFormats\[\d]\["url"] = "(.+?)\?
-ext_target=HREF="(.*?)"
+ext_target=HREF *= *"(.*?)"
 ext_limit=500
 extension=wmv
 quality=high
