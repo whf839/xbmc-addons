@@ -7,9 +7,9 @@ import xbmc, xbmcgui, xbmcplugin
 import urllib, re
 
 __plugin__ = "UlmenTV"
-__version__ = '1.31'
+__version__ = '1.32'
 __author__ = 'bootsy [bootsy82@gmail.com] with much help from BigBellyBilly'
-__date__ = '25-12-2008'
+__date__ = '17-01-2009'
 
 DIR_USERDATA = os.path.join( "T:\\plugin_data", __plugin__ )
 BASE_URL = 'http://www.myspass.de'
@@ -88,7 +88,7 @@ def fetchVideoLink(url):
 	doc=f.read()
 	f.close()
 	if doc:
-		p=re.compile('<div align="center" style=".+?">.+? <a href="(.+?)" rel="nofollow"', re.DOTALL + re.MULTILINE + re.IGNORECASE)
+		p=re.compile('<div style=.+? <a href="(.+?)" rel="nofollow" style=".+?">.+?</a></div>', re.DOTALL + re.MULTILINE + re.IGNORECASE)
 		matches=p.findall(doc)
 		url=matches[0]
 	return url	
