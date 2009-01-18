@@ -47,3 +47,9 @@ icon=video.monkey.image|tve.png
 director=TVE a la Carta
 url=tve.es.cfg
 ########################################################
+title=Computer:club² (DE)
+type=rss
+icon=video.monkey.image|cc2.png
+director=Computer:club²
+url=cc2.de.cfg
+########################################################
