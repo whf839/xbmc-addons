@@ -185,3 +185,18 @@ ext_build=http://www.rtve.es%s
 extension=flv
 quality=standard
 ########################################################
+title=cc2.de
+target=swf\?file=(http://[^\&]+)
+url=%s
+info=Flash
+extension=flv
+quality=standard
+target=<a href="([^"]+)">MP4 H.264
+info=MP4 H.264
+extension=mp4
+quality=standard
+target=<a href="([^"]+)">AVI Xvid
+info=AVI Xvid
+extension=avi
+quality=high
+########################################################
