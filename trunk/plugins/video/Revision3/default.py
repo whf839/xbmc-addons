@@ -11,7 +11,9 @@ def showCategoriesA():
 		quality=xbmcplugin.getSetting('quality')
 		quality=xbmc.getLocalizedString(30000+5+int(quality))
 		url='http://revision3.com/shows/'
-		f=urllib2.urlopen(url)
+		req = urllib2.Request(url)
+		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5')
+		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
 		p=re.compile('<div class="page">(.+?)<h3 class="archive">', re.DOTALL)
@@ -29,7 +31,9 @@ def showCategoriesA():
 			x=x+1
 
 def showListA(url):
-		f=urllib2.urlopen(url)
+		req = urllib2.Request(url)
+		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5')
+		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
 		p=re.compile('<item>(.+?)<title>(.+?)</title>', re.DOTALL)
@@ -104,7 +108,9 @@ def playVideoA(url, name):
 
 def showCategories():
 		url='http://revision3.com/shows/'
-		f=urllib2.urlopen(url)
+		req = urllib2.Request(url)
+		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5')
+		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
 		p=re.compile('<div class="page">(.+?)<h3 class="archive">', re.DOTALL)
@@ -121,7 +127,9 @@ def showCategories():
 			x=x+1
 
 def newShow(url):
-		f=urllib2.urlopen(url)
+		req = urllib2.Request(url)
+		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5')
+		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
 		p=re.compile(': <a href="(.+?)">(.+?)</a></h1>')
@@ -141,7 +149,9 @@ def newShow(url):
 def showList(url):
 		newShow(url)
 		url=url+'/page/all/#episodes'
-		f=urllib2.urlopen(url)
+		req = urllib2.Request(url)
+		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5')
+		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
 		p=re.compile('<div class="pagination">(.+?)<!-- end pagination_bottom -->', re.DOTALL)
@@ -167,7 +177,9 @@ def showList(url):
 
 def showList2(url):
 	quality=xbmcplugin.getSetting('quality')
-	f=urllib2.urlopen(url)
+	req = urllib2.Request(url)
+	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5')
+	f=urllib2.urlopen(req)
 	a=f.read()
 	f.close()
 	p=re.compile('href="(.+?)" title="Download"><img')
