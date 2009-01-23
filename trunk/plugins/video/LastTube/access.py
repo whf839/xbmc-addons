@@ -38,7 +38,7 @@ def getArtist(xml):
         return artist[0]
 
 def getTrack(xml):
-    p=re.compile('<track>(.*)</track>')
+    p=re.compile('<track.+?>(.*)</track>')
     match=p.findall(xml)
     for track in match:
         return track
@@ -55,9 +55,11 @@ def getVideoInfo(mode):
     response = urllib2.urlopen(req)
     link=response.read()
     response.close()
+    print link
     url=getUrl(link)
     artist=getArtist(link)
     track=getTrack(link)
     thumb=getThumb(link)
     info=[url,artist,track,thumb]
+    print info
     return info
