@@ -38,7 +38,7 @@ def getArtist(xml):
         return artist[0]
 
 def getTrack(xml):
-    p=re.compile('<track.+?>(.*)</track>')
+    p=re.compile('\">(.*)</track>')
     match=p.findall(xml)
     for track in match:
         return track

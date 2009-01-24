@@ -50,8 +50,8 @@ if ( __name__ == "__main__" ):
         global genre
         
         playlist = xbmc.PlayList(1)
-        listitem = xbmcgui.ListItem(artist+" - "+title, thumbnailImage=thumb)
-        listitem.setInfo('video', {'Title': artist+" - "+title, 'Genre': genre+' radio on LastTube'})
+        listitem = xbmcgui.ListItem(artist+" - "+str(title), thumbnailImage=thumb)
+        listitem.setInfo('video', {'Title': artist+" - "+str(title), 'Genre': genre+' radio on LastTube'})
         listitem.setProperty('startedBy','LastTube')
         playlist.add(url, listitem)
 
