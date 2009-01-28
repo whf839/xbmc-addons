@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+
+	<!-- account labels -->    <string id="30000">Käyttäjänimi</string>
+    <string id="30001">Salasana</string>
+
+    <!-- settings labels -->
+    <string id="30030">Latausmuoto</string>
+    <string id="30031">Tilapäinen</string>
+    <string id="30032">Tallenna</string>
+    <string id="30040">- Tallennuskansio</string>
+
+    <!-- messages -->
+    <string id="30500">Ladataan: %s</string>
+    <string id="30501">Tallennetaan: %s</string>
+    <string id="30502">Kansioon: %s</string>
+    <string id="30503">Kopioidaan: %s</string>
+
+	<!-- context menu labels -->
+    <string id="30910">Lataa esittely</string>
+</strings>
