@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+    <strings>  <!--  29.1.2009 Finnish   -->
+    <string id="30000">TED Talks - Ideas Worth Spreading</string>
+
+    <string id="30001">Haku</string>
+    <string id="30002">Lisää suosikkeihin</string>
+    
+    <string id="30003">Selaa aihepiireittäin</string>
+    <string id="30004">Joka vuosi, the TED (Technology, Entertainment, Design) kokous, isännöi joitakin maailman mielenkiintoisimmista ihmisistä: Luotetut puhujat käytäntöjä rikkovat persoonat, ikonit ja älyköt. Nämä podcastit (saatavana myös ääni muodossa) tallentavat epätavallisimmat esitykset toimitetttuna TED-lavalta.</string>
+
+    <string id="30010">Toista satunnaisesti</string>
+    <string id="30020">Lataa</string>
+	
+    <string id="30030">Selaa aihepiireittäin</string>
+    <string id="30031">Selaa kaikista</string>
+    <string id="30032">Suosikit</string>
+    <string id="30033">Selaa puhujittain</string>
+    
+    <!--Settings-->
+    
+    <string id="30040">Toistotapa</string>   
+    <string id="30050">DVDPlayer </string>
+    <string id="30060">MPlayer</string>
+	
+    <string id="30070">Videokuvan laatu</string>
+    <string id="30071">Normaali</string>
+    <string id="30072">Suuri tarkkuus(480p)</string>
+    <string id="30073">Ääni </string>
+	
+    <string id="30074">Ladataanko ohjelma katsomisen sijaan?</string>
+    <string id="30075">Latauspolku</string>  
+	
+</strings>
