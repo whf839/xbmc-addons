@@ -19,7 +19,7 @@ from xml.sax.saxutils import unescape
 class Parser:
     """ Parser Class: grabs all tag versions and urls """
     # regexpressions
-    revision_regex = re.compile( '<h2>Revision ([0-9]*): ([^<]*)</h2>' )
+    revision_regex = re.compile( '<h2>.+?Revision ([0-9]*): ([^<]*)</h2>' )
     asset_regex = re.compile( '<li><a href="([^"]*)">([^"]*)</a></li>' )
 
     def __init__( self, htmlSource ):
