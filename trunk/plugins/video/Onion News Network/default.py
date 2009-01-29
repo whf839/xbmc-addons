@@ -67,7 +67,7 @@ def showMP4Links(site):
             print url
         addLink(str(i+1)+'. '+name,url,date,'')
 def showList(url):
-    addDir('Play Random',url,8)
+    addDir(xbmc.getLocalizedString(30007),url,8)
     tree=BeautifulSoup(getLink(url))
     videos=tree.findAll('li')
     for i in range(len(videos)):
@@ -130,13 +130,13 @@ try:
 except:
     pass
 if mode==None or url==None or len(url)<1:
-    addDir('1. All Videos','http://theonion.com/content/onn/ajax_videolist/onn',1)
-    addDir('2. Most Viewed','http://theonion.com/content/onn/ajax_videolist/most_viewed',1)
-    addDir('3. O-Span','http://theonion.com/content/onn/ajax_videolist/ospan',1)
-    addDir('4. In The Know','http://theonion.com/content/onn/ajax_videolist/in_the_know',1)
-    addDir('5. Election \'08','http://theonion.com/content/onn/ajax_videolist/wftwh',1)
-    addDir('6. Today Now','http://theonion.com/content/onn/ajax_videolist/today_now',1)
-    addDir('7. 25 Most Recent (mp4)','http://feeds.theonion.com/onionnewsnetwork',7)
+    addDir('1. '+xbmc.getLocalizedString(30000),'http://theonion.com/content/onn/ajax_videolist/onn',1)
+    addDir('2. '+xbmc.getLocalizedString(30001),'http://theonion.com/content/onn/ajax_videolist/most_viewed',1)
+    addDir('3. '+xbmc.getLocalizedString(30002),'http://theonion.com/content/onn/ajax_videolist/ospan',1)
+    addDir('4. '+xbmc.getLocalizedString(30003),'http://theonion.com/content/onn/ajax_videolist/in_the_know',1)
+    addDir('5. '+xbmc.getLocalizedString(30004),'http://theonion.com/content/onn/ajax_videolist/wftwh',1)
+    addDir('6. '+xbmc.getLocalizedString(30005),'http://theonion.com/content/onn/ajax_videolist/today_now',1)
+    addDir('7. '+xbmc.getLocalizedString(30006),'http://feeds.theonion.com/onionnewsnetwork',7)
 if mode==1:
     showList(url)
 if mode==2:
