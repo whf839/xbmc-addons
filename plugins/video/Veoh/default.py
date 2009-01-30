@@ -68,9 +68,10 @@ def SEARCH(dur):
                 purl=re.compile('fullPreviewHashPath="(.+?)"').findall(link)
                 thumbnail=re.compile('fullHighResImagePath="(.+?)"').findall(link)
                 name=re.compile('\r\n\ttitle="(.+?)"\r\n\tdateAdded=".+?"').findall(link)
+                ipod=re.compile('ipodUrl="(.+?)"').findall(link)
                 for i in range(0,len(perma)):
                         addLink(name[i]+' Dur: '+length[i],purl[i],thumbnail[i])
-                        addLink2(name[i]+'-Original File'+' Dur: '+length[i],'http://127.0.0.1:64653/'+perma[i]+"?.avi")
+                        addLink2(name[i]+'-full mp4'+' Dur: '+length[i],ipod[i])
                 if last>100: addDir(" NEXT PAGE",'http://www.veoh.com/rest/v2/execute.xml?method=veoh.search.video&userQuery="'+encode+'"&contentSource=veoh'+dur+'&offset=100&safe=false&maxResults=100&apiKey=08344E97-13CE-E0BE-28AA-B8F7D686DD07',3,"")
                 else: pass
                 
@@ -114,16 +115,17 @@ def INDEX(url):
         thumbnail=re.compile('fullHighResImagePath="(.+?)"').findall(link)
         name=re.compile('\r\n\ttitle="(.+?)"\r\n\tdateAdded=".+?"').findall(link)
         collection=re.compile('channel collectionId="(.+?)"').findall(link)
+        ipod=re.compile('ipodUrl="(.+?)"').findall(link)
         if len(collection)>0 and url.find('getSubscriptions')>0:
                 for i in range(0,len(perma)):
                         addDir(perma[i],'http://www.veoh.com/rest/v2/execute.xml?method=veoh.collection.getVideos&collectionId='+collection[i]+'&maxResults=100&apiKey=5697781E-1C60-663B-FFD8-9B49D2B56D36',3,'')
         else:
                 for i in range(0,len(perma)):
                         if url.find('collection')>0:
-                                addLink2(name[i]+'-Original File','http://127.0.0.1:64653/'+perma[i]+"?.avi")
+                                addLink2(name[i]+'-Full mp4',ipod[i])
                         else:
                                 addLink(name[i]+' Dur: '+length[i],purl[i],thumbnail[i])
-                                addLink2(name[i]+'-Original File'+' Dur: '+length[i],'http://127.0.0.1:64653/'+perma[i]+"?.avi")
+                                addLink2(name[i]+'-Full mp4'+' Dur: '+length[i],ipod[i])
                 if last>100: addDir(" NEXT PAGE",'http://www.veoh.com/rest/v2/execute.xml?method=veoh.search.video&userQuery="'+query[0]+'"&contentSource=veoh'+dur+'&offset=100&safe=false&maxResults=100&apiKey=08344E97-13CE-E0BE-28AA-B8F7D686DD07',3,"")
                 else: pass
 
