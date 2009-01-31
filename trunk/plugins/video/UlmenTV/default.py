@@ -7,9 +7,9 @@ import xbmc, xbmcgui, xbmcplugin
 import urllib, re
 
 __plugin__ = "UlmenTV"
-__version__ = '1.32'
+__version__ = '1.33'
 __author__ = 'bootsy [bootsy82@gmail.com] with much help from BigBellyBilly'
-__date__ = '17-01-2009'
+__date__ = '31-01-2009'
 
 DIR_USERDATA = os.path.join( "T:\\plugin_data", __plugin__ )
 BASE_URL = 'http://www.myspass.de'
@@ -88,7 +88,7 @@ def fetchVideoLink(url):
 	doc=f.read()
 	f.close()
 	if doc:
-		p=re.compile('<div style=.+? <a href="(.+?)" rel="nofollow" style=".+?">.+?</a></div>', re.DOTALL + re.MULTILINE + re.IGNORECASE)
+		p=re.compile('<div style=.+? <a href="(.+?)" rel="nofollow".+?">.+?</a></div>', re.DOTALL + re.MULTILINE + re.IGNORECASE)
 		matches=p.findall(doc)
 		url=matches[0]
 	return url	
@@ -189,7 +189,7 @@ def showShows(url,name):
 			show=name
 		else:
 			show = "%s - %s - %s" % (chname, part, name)
-		addLink(show,url,img)        
+		addLink(show,url,img)     
 	dialogProgress.close()
 
 #######################################################################################################################    
