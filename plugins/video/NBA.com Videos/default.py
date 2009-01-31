@@ -15,7 +15,7 @@ def showRoot():
 		li3=xbmcgui.ListItem("What's New")
 		u3=sys.argv[0]+"?mode=2&url="+urllib.quote_plus(url)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u3,li3,True)
-		url2="http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/video_channel_top_plays.txt"
+		url2="http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/channels/video_channel_topplays.txt"
 		li4=xbmcgui.ListItem("Top Plays")
 		u4=sys.argv[0]+"?mode=2&url="+urllib.quote_plus(url2)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u4,li4,True)
