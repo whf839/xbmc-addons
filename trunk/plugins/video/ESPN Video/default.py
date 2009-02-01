@@ -87,7 +87,8 @@ def showCategoriesB():
 			url='http://espn.go.com/video/beta/libraryPlaylist?categoryid='+num
 			test=info[x][2]
 			test=test.replace('<img src="http://assets.espn.go.com/i/in.gif"> ','')
-			name=test[:-5]
+			name=test[:-4]
+			name=name.replace('(','')
 			if (name=='The Latest'):
 				name = '> The Latest'
 			name=name.replace('<BR>',' ')
@@ -116,7 +117,8 @@ def showCategoriesA():
 			num=num.replace(')','')
 			url='http://espn.go.com/video/beta/libraryPlaylist?categoryid='+num
 			test=info[x][2]
-			name=test[:-5]
+			name=test[:-4]
+			name=name.replace('(','')
 			if (name=='The Latest'):
 				name = '> The Latest'
 			name=name.replace('<BR>',' ')
@@ -144,7 +146,8 @@ def showCategories():
 			num=num.replace(')','')
 			url='http://espn.go.com/video/beta/libraryPlaylist?categoryid='+num
 			test=info[x][2]
-			name=test[:-5]
+			name=test[:-4]
+			name=name.replace('(','')
 			if (name=='The Latest'):
 				name = '> The Latest'
 			name=name.replace('<BR>',' ')
