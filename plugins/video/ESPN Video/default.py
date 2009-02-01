@@ -84,7 +84,7 @@ def showCategoriesB():
 			num=num.replace('\'','')
 			num=num.replace('(','')
 			num=num.replace(')','')
-			url='http://sports.espn.go.com/broadband/mpf/config/player/playlist.xml?id='+num
+			url='http://espn.go.com/video/beta/libraryPlaylist?categoryid='+num
 			test=info[x][2]
 			test=test.replace('<img src="http://assets.espn.go.com/i/in.gif"> ','')
 			name=test[:-5]
@@ -92,7 +92,7 @@ def showCategoriesB():
 				name = '> The Latest'
 			name=name.replace('<BR>',' ')
 			li=xbmcgui.ListItem(name)
-			u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
+			u=sys.argv[0]+"?mode=8&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 			x=x+1
 
@@ -114,14 +114,14 @@ def showCategoriesA():
 			num=num.replace('\'','')
 			num=num.replace('(','')
 			num=num.replace(')','')
-			url='http://sports.espn.go.com/broadband/mpf/config/player/playlist.xml?id='+num
+			url='http://espn.go.com/video/beta/libraryPlaylist?categoryid='+num
 			test=info[x][2]
 			name=test[:-5]
 			if (name=='The Latest'):
 				name = '> The Latest'
 			name=name.replace('<BR>',' ')
 			li=xbmcgui.ListItem(name)
-			u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
+			u=sys.argv[0]+"?mode=8&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 			x=x+1
 
@@ -142,16 +142,42 @@ def showCategories():
 			num=num.replace('\'','')
 			num=num.replace('(','')
 			num=num.replace(')','')
-			url='http://sports.espn.go.com/broadband/mpf/config/player/playlist.xml?id='+num
+			url='http://espn.go.com/video/beta/libraryPlaylist?categoryid='+num
 			test=info[x][2]
 			name=test[:-5]
 			if (name=='The Latest'):
 				name = '> The Latest'
 			name=name.replace('<BR>',' ')
 			li=xbmcgui.ListItem(name)
-			u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
+			u=sys.argv[0]+"?mode=8&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 			x=x+1
+
+def showListB(url,name):
+		thisurl=url
+		req = urllib2.Request(url+'&pageNum='+str(int(page))+'&assetURL=http://assets.espn.go.com')
+		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5')
+		f=urllib2.urlopen(req)
+		a=f.read()
+		f.close()
+		p=re.compile('<h5>(.+?)</h5>')
+		r=re.compile('<a href="clip\?id=(.+?)&categoryid=(.+?)"><img src="(.+?)"')
+		title=p.findall(a)
+		thumbs=r.findall(a)
+		x=0
+		for url2 in thumbs:
+			name=title[x]
+			url='http://sports.espn.go.com/broadband/mpf/config/player/playlist.xml?id=' + thumbs[x][0]
+			thumb=thumbs[x][2]
+			name1 = str(int(x+1))+'. '+name
+			li=xbmcgui.ListItem(name1, iconImage=thumb, thumbnailImage=thumb)
+			li.setInfo( type="Video", infoLabels={ "Title": name1 } )
+			u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
+			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
+			x=x+1
+		li=xbmcgui.ListItem("Next Page")
+		u=sys.argv[0]+"?mode=8&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(thisurl)+"&page="+str(int(page)+1)
+		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
 def showList(url,name):
 		req = urllib2.Request(url)
@@ -167,23 +193,9 @@ def showList(url,name):
 		info=o.findall(a)
 		flv=q.findall(a)
 		thumbs=r.findall(a)
-		x=0
-		for url2 in flv:
-			name=title[x]
-			name=name.replace('<i>','')
-			name=name.replace('</i>','')
-			url='http://seavideo-ak.espn.go.com/motion/' + url2
-			thumb='http://assets.espn.go.com' + thumbs[x]
-			name1 = str(int(x+1))+'. '+name
-			if (len(info) == len(flv)):
-				name2 = name1+' - '+info[x]
-			else:
-				name2 = name1
-			li=xbmcgui.ListItem(name2, iconImage=thumb, thumbnailImage=thumb)
-			li.setInfo( type="Video", infoLabels={ "Title": name2 } )
-			u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
-			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
-			x=x+1
+		url='http://seavideo-ak.espn.go.com/motion/' + flv[0]
+		name=title[0]
+		playVideo(url, name)
 			
 def playVideo(url, name):
 	vid = url
@@ -256,7 +268,7 @@ params=get_params()
 mode=None
 name=None
 url=None
-page=1
+page=0
 try:
         url=urllib.unquote_plus(params["url"])
 except:
@@ -290,6 +302,8 @@ elif mode==6:
 	showCategoriesC()
 elif mode==7:
 	RSS(url)
+elif mode==8:
+	showListB(url, name)
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
