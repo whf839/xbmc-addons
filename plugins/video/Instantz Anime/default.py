@@ -1,4 +1,4 @@
-import urllib,urllib2,re,xbmcplugin,xbmcgui,base64
+import urllib,urllib2,re,xbmcplugin,xbmcgui
 
 def INDEX():
         req = urllib2.Request('http://www.instantz.net')
@@ -7,6 +7,14 @@ def INDEX():
         eps=re.compile(r'<a style="font-weight:lighter;font-size:11px;" class="navigation" href="(.+?)">(.+?)</a><br>').findall(response)
         for url,name in eps:
                 addDir(name,url,1,"")
+def IPOD(url):
+        try:
+                req = urllib2.Request(url)
+                req.add_header('User-Agent', 'Mozilla/5.0 (iPod; U; CPU like Mac OS X; en) AppleWebKit?/420.1 (KHTML, like Gecko) Version/3.0 Mobile/3A101a Safari/419.3')
+                ipod = urllib2.urlopen(req)
+                addLink('Full unrestricted mp4',ipod.url,'')
+        except:
+                addLink('Video not available in mp4 format','http://novid.com','')
         
 def VIDS(url):        
         req = urllib2.Request(url)
@@ -21,9 +29,10 @@ def VIDEO(url,name):
         req = urllib2.Request('http://www.veoh.com/rest/v2/execute.xml?method=veoh.video.findByPermalink&permalink=%s&apiKey=5697781E-1C60-663B-FFD8-9B49D2B56D36'%url)
         req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
         response = urllib2.urlopen(req).read()
-        bit=re.compile('fullPreviewHashPath="(.+?)"').findall(response)
-        addLink(name,bit[0],"")
-        addLink(name+' -Avi','http://127.0.0.1:64653/'+url,"")
+        flash=re.compile('fullPreviewHashPath="(.+?)"').findall(response)
+        ipod=re.compile('ipodUrl="(.+?)"').findall(response)
+        if flash: addLink(name,flash[0],"")
+        if ipod: addDir(name+' -Mp4 Full',ipod[0],3,"")
                 
 def get_params():
         param=[]
@@ -90,5 +99,8 @@ elif mode==1:
 elif mode==2:
         print "GET INDEX OF PAGE : "+url
         VIDEO(url,name)
+elif mode==3:
+        print "GET INDEX OF PAGE : "+url
+        IPOD(url)
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
