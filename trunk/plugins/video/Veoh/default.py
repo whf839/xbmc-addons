@@ -1,8 +1,14 @@
-import urllib2,urllib,re,xbmcplugin,xbmcgui,os,base64
-
+import urllib2,urllib,re,xbmcplugin,xbmcgui,os
 # Veoh 2008.
 
-
+def IPOD(url):
+    try:
+        req = urllib2.Request(url)
+        req.add_header('User-Agent', 'Mozilla/5.0 (iPod; U; CPU like Mac OS X; en) AppleWebKit?/420.1 (KHTML, like Gecko) Version/3.0 Mobile/3A101a Safari/419.3')
+        ipod = urllib2.urlopen(req)
+        addLink2('Full unrestricted mp4',ipod.url)
+    except:
+        addLink2('Video not available in mp4 format','http://novid.com')
 
 def CATS():
         if xbmcplugin.getSetting("Clear Previous Searches") == "true":
@@ -70,8 +76,8 @@ def SEARCH(dur):
                 name=re.compile('\r\n\ttitle="(.+?)"\r\n\tdateAdded=".+?"').findall(link)
                 ipod=re.compile('ipodUrl="(.+?)"').findall(link)
                 for i in range(0,len(perma)):
-                        addLink(name[i]+' Dur: '+length[i],purl[i],thumbnail[i])
-                        addLink2(name[i]+'-full mp4'+' Dur: '+length[i],ipod[i])
+                        addLink('%s Dur: %s '%(name[i],length[i]),purl[i],thumbnail[i])
+                        addDir('%s - FULL MP4'%name[i],ipod[i],4,'')
                 if last>100: addDir(" NEXT PAGE",'http://www.veoh.com/rest/v2/execute.xml?method=veoh.search.video&userQuery="'+encode+'"&contentSource=veoh'+dur+'&offset=100&safe=false&maxResults=100&apiKey=08344E97-13CE-E0BE-28AA-B8F7D686DD07',3,"")
                 else: pass
                 
@@ -99,7 +105,6 @@ def INDEX(url):
         else:
                 dur="&minLength=0"
                 
-        flash=[]      
         query=re.compile('userQuery=(.+?)&').findall(url)
         numb=re.compile('<videoList offset="(.+?)"').findall(url)
         req = urllib2.Request(url)
@@ -122,10 +127,10 @@ def INDEX(url):
         else:
                 for i in range(0,len(perma)):
                         if url.find('collection')>0:
-                                addLink2(name[i]+'-Full mp4',ipod[i])
+                                addDir('%s - Full MP4'%name[i],ipod[i],4,'')
                         else:
-                                addLink(name[i]+' Dur: '+length[i],purl[i],thumbnail[i])
-                                addLink2(name[i]+'-Full mp4'+' Dur: '+length[i],ipod[i])
+                                addLink('%s Dur: %s '%(name[i],length[i]),purl[i],thumbnail[i])
+                                addDir('%s - Full MP4'%name[i],ipod[i],4,'')
                 if last>100: addDir(" NEXT PAGE",'http://www.veoh.com/rest/v2/execute.xml?method=veoh.search.video&userQuery="'+query[0]+'"&contentSource=veoh'+dur+'&offset=100&safe=false&maxResults=100&apiKey=08344E97-13CE-E0BE-28AA-B8F7D686DD07',3,"")
                 else: pass
 
@@ -200,6 +205,9 @@ elif mode==2:
         PREVSEARCH()
 elif mode==3:
         INDEX(url)
+elif mode==4:
+        IPOD(url)
+
 
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
