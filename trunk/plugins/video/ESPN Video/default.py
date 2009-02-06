@@ -148,7 +148,7 @@ def showCategories():
 			test=info[x][2]
 			name=test[:-4]
 			name=name.replace('(','')
-			if (name=='The Latest'):
+			if (name=='The Latest '):
 				name = '> The Latest'
 			name=name.replace('<BR>',' ')
 			li=xbmcgui.ListItem(name)
