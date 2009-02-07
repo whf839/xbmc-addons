@@ -24,8 +24,8 @@ class Main:
 
     # base paths
     BASE_PLUGIN_THUMBNAIL_PATH = os.path.join( os.getcwd(), "thumbnails" )
-    BASE_AUTH_FILE_PATH = "/".join( [ "special://home", "plugin_data", "pictures", os.path.basename( os.getcwd() ), "authfile.txt" ] )
-    BASE_PRESETS_PATH = "/".join( [ "special://home", "plugin_data", "pictures", os.path.basename( os.getcwd() ) ] )
+    BASE_AUTH_FILE_PATH = "/".join( [ "special://profile", "plugin_data", "pictures", os.path.basename( os.getcwd() ), "authfile.txt" ] )
+    BASE_PRESETS_PATH = "/".join( [ "special://profile", "plugin_data", "pictures", os.path.basename( os.getcwd() ) ] )
 
     # flickr client
     client = FlickrClient( True, True )
