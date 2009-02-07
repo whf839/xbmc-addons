@@ -2,7 +2,7 @@
 # National Geographic
 # Date: 02/07/09
 # Author: stacked < http://xbmc.org/forum/member.php?u=26908 >
-# Changelog & More Info: 
+# Changelog & More Info: http://xbmc.org/forum/showthread.php?t=45132
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 
