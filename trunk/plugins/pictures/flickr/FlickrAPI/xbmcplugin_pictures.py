@@ -118,9 +118,9 @@ class Main:
                 #if ( self.settings[ "full_details" ] ):
                 #thumbnail = ""
                 #else:
-                thumbnail = "DefaultFolder.png"
+                thumbnail = "DefaultFolderBig.png"
                 # set the default icon
-                icon = "DefaultFolder.png"
+                icon = "DefaultFolderBig.png"
                 # hack to correct \u0000 characters, TODO: find why unicode() isn't working
                 exec 'title=u"%s (%s)"' % ( photoset[ "title" ][ "_content" ].replace( '"', '\\"' ), photoset[ "photos" ], )
                 exec 'description=u"%s"' % ( photoset[ "description" ][ "_content" ].replace( '"', '\\"' ), )
@@ -139,7 +139,7 @@ class Main:
             for contact in contacts[ "photos" ][ "photo" ]:
                 thumbnail_url = self.BASE_THUMBNAIL_URL % ( contact[ "farm" ], contact[ "server" ], contact[ "id" ], contact[ "secret" ], )
                 # set the default icon
-                icon = "DefaultFolder.png"
+                icon = "DefaultFolderBig.png"
                 # hack to correct \u0000 characters, TODO: find why unicode() isn't working
                 exec 'title=u"%s"' % ( contact[ "username" ].replace( '"', '\\"' ), )
                 exec 'description=u"%s"' % ( contact[ "title" ].replace( '"', '\\"' ), )
@@ -159,9 +159,9 @@ class Main:
                 #if ( self.settings[ "full_details" ] ):
                 #    thumbnail = ""
                 #else:
-                thumbnail = "DefaultFolder.png"
+                thumbnail = "DefaultFolderBig.png"
                 # set the default icon
-                icon = "DefaultFolder.png"
+                icon = "DefaultFolderBig.png"
                 # hack to correct \u0000 characters, TODO: find why unicode() isn't working
                 exec 'title=u"%s"' % ( group[ "name" ].replace( '"', '\\"' ), )
                 # create the callback url
@@ -223,7 +223,7 @@ class Main:
             # get our previous and/or next page item
             items = self._get_pages( xbmc.getLocalizedString( 30905 ), groups[ "groups" ][ "page" ], groups[ "groups" ][ "pages" ], groups[ "groups" ][ "perpage" ], groups[ "groups" ][ "total" ] )
 
-            self.query_thumbnail = "DefaultFolder.png"
+            self.query_thumbnail = "DefaultFolderBig.png"
             
             # enumerate through and add the group to our _Info object
             for group in groups[ "groups" ][ "group" ]:
@@ -233,9 +233,9 @@ class Main:
                 #if ( self.settings[ "full_details" ] ):
                 #    thumbnail = ""
                 #else:
-                thumbnail = "DefaultFolder.png"
+                thumbnail = "DefaultFolderBig.png"
                 # set the default icon
-                icon = "DefaultFolder.png"
+                icon = "DefaultFolderBig.png"
                 # hack to correct \u0000 characters, TODO: find why unicode() isn't working
                 exec 'title=u"%s"' % ( group[ "name" ].replace( '"', '\\"' ), )
                 # create the callback url
@@ -327,7 +327,7 @@ class Main:
             # we set the thumb so XBMC does not try and cache the next pictures
             thumbnail_url = os.path.join( self.BASE_PLUGIN_THUMBNAIL_PATH, "next.png" )
             # set the default icon
-            icon = "DefaultFolder.png"
+            icon = "DefaultFolderBig.png"
             # add the folder item to our _Info() object list
             items += [ _Info( title="%s (%d-%d)" % ( title, start_index, end_index, ), url=url, icon=icon, thumbnail_url=thumbnail_url, isFolder=True ) ]
         # if we are on page 2 or more, we add our previous page folder
@@ -342,7 +342,7 @@ class Main:
             # we set the thumb so XBMC does not try and cache the previous pictures
             thumbnail_url = os.path.join( self.BASE_PLUGIN_THUMBNAIL_PATH, "previous.png" )
             # set the default icon
-            icon = "DefaultFolder.png"
+            icon = "DefaultFolderBig.png"
             # add the folder item to our _Info() object list
             items += [ _Info( title=u"%s (%d-%d)" % ( title, start_index, end_index, ), url=url, icon=icon, thumbnail_url=thumbnail_url, isFolder=True ) ]
         return items

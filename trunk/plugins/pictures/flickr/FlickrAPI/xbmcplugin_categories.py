@@ -166,7 +166,7 @@ class Main:
                 # check for a valid custom thumbnail for the current method
                 thumbnail = thumbnail or self._get_thumbnail( method )
                 # set the default icon
-                icon = "defaultfolder.png"
+                icon = "defaultfolderBig.png"
                 # only need to add label, icon and thumbnail, setInfo() and addSortMethod() takes care of label2
                 listitem=xbmcgui.ListItem( ltitle, iconImage=icon, thumbnailImage=thumbnail )
                 # set special properties
@@ -202,5 +202,5 @@ class Main:
             thumbnail = os.path.join( self.BASE_PLUGIN_THUMBNAIL_PATH, method + ".png" )
             # use a default thumbnail if a custom thumbnail does not exists
             if ( not os.path.isfile( thumbnail ) ):
-                thumbnail = "defaultfolder.png"
+                thumbnail = "DefaultFolderBig.png"
         return thumbnail
