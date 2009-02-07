@@ -21,7 +21,7 @@ class Main:
     # base paths
     BASE_SKIN_THUMBNAIL_PATH = "/".join( [ "special://xbmc", xbmc.getSkinDir(), "media", sys.modules[ "__main__" ].__plugin__ ] )
     BASE_PLUGIN_THUMBNAIL_PATH = os.path.join( os.getcwd(), "thumbnails" )
-    BASE_PRESETS_PATH = "/".join( [ "special://home", "plugin_data", "pictures", os.path.basename( os.getcwd() ) ] )
+    BASE_PRESETS_PATH = "/".join( [ "special://profile", "plugin_data", "pictures", os.path.basename( os.getcwd() ) ] )
 
     def __init__( self ):
         # create the settings folder for presets
