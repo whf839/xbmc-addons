@@ -48,7 +48,7 @@ header=Referer|http://www.atrapavideo.com/en/
 quality=standard
 ########################################################
 title=degrab.de
-target=Klick auf den.+?<a href="([^"]+)"
+target=Download Link.+?<a href="([^"]+)"
 url=http://www.degrab.de/?url=%s
 action=unquote
 quality=standard
