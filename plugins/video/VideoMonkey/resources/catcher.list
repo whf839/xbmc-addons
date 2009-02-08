@@ -153,6 +153,13 @@ ext_build=http%s
 extension=wmv
 quality=high
 ########################################################
+title=kino.de
+target=flashvars.initItemXML *= *"([^"]+)
+url=%s
+ext_target=<url>([^<]+)</url> 
+extension=flv
+quality=high
+########################################################
 title=zdf.de
 target="assetUrl": *"([^"]+)"
 url=%s&bw=isdn&pp=wmp
