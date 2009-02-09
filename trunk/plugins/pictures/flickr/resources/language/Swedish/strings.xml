@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <!-- Plugin strings -->
+    <string id="30900">Flickr tillägg</string>
+    <string id="30901">AnvändarId är ogiltigt!</string>
+    <string id="30902">Kontrollera dina inställningar.</string>
+    <string id="30903">Foton sök nyckelord</string>
+    <string id="30904">Grupper sök nyckelord</string>
+    <string id="30905">*Grupper</string>
+    <string id="30906">Foton</string>
+
+    <!-- Category strings -->
+    <string id="30950">Mina fotoserier</string>
+    <string id="30951">Nyligen uppladdade</string>
+    <string id="30952">Mina foton</string>
+    <string id="30953">Intressanthet</string>
+    <string id="30954">Mina favoriter</string>
+    <string id="30955">Mina kontakter</string>
+    <string id="30956">Mina grupper</string>
+    <string id="30957">Sök grupper...</string>
+    <string id="30958">Sök foton...</string>
+    <string id="30959">Sök grupper</string>
+    <string id="30960">Sök foton</string>
+
+    <!-- Plugin settings strings -->
+    <string id="30000">Flickr användarnamn eller e-post adress</string>
+    <string id="30010">Authentication token</string>
+    <string id="30020">Avskildshetsfilter (fotoserier)</string>
+    <string id="30021">Publika foton</string>
+    <string id="30022">Privata foton synliga för vänner</string>
+    <string id="30023">Privata foton synliga för familj</string>
+    <string id="30024">Privata foton synliga för vänner &amp; familj</string>
+    <string id="30025">Totalt privata foton</string>
+    <string id="30030">Säker sökmetod (grupp &amp; foton)</string>
+    <string id="30031">Säker</string>
+    <string id="30032">Moderat</string>
+    <string id="30033">Begränsad</string>
+    <string id="30040">Antal foton per sida</string>
+    <string id="30050">Inkludera fler detaljer (kommer att sakta ner resultaten)</string>
+    <string id="30150">Antal sökningar att spara</string>
+    <string id="30160">Intressanthetsdatum (valfritt)</string>
+
+    <!-- Advanced search strings -->
+    <string id="30060">Avancerad fotosökning</string>
+    <string id="30070">- Användarnamn eller e-post att söka (valfritt)</string>
+    <string id="30080">- Taggar (valfritt)</string>
+    <string id="30090">&#32;&#32;- Taggläge</string>
+    <string id="30091">Vilken som helst</string>
+    <string id="30092">Alla</string>
+    <string id="30100">- Fotosök nyckelord (valfritt)</string>
+    <string id="30110">- Innhållstyp (valfritt)</string>
+    <string id="30111">endast foton</string>
+    <string id="30112">endast skärmdumpar</string>
+    <string id="30113">endast 'annat'</string>
+    <string id="30114">foton och skärmdumpar</string>
+    <string id="30115">skärmdumpar och 'annat'</string>
+    <string id="30116">foton och 'annat'</string>
+    <string id="30117">foton, skärmdumpar, och 'annat' (alla)</string>
+    <string id="30120">- Maskin taggar (valfritt)</string>
+    <string id="30130">&#32;&#32;- Maskin taggsläge</string>
+    <string id="30131">Vilken som helst</string>
+    <string id="30132">Alla</string>
+    <string id="30140">Gruppid (valfritt)</string>
+</strings>
