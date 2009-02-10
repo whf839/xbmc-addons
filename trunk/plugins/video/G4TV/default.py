@@ -160,13 +160,14 @@ def getRSSLink(url):
 		f.close()
 		#p=re.compile('<item>\r\n\t\t\t<title>(.+?)</title>', re.DOTALL)
 		p=re.compile('<item>(.+?)<title>(.+?)</title>', re.DOTALL)
-		o=re.compile('<link>http://www.podtrac.com/pts/redirect.mp4\?(.+?)</link>')
+		o=re.compile('<link>http://www.podtrac.com/pts/redirect.mp4(.+?)</link>')
 		match=p.findall(a)
 		URLS=o.findall(a)
 		x=0
-		for url in URLS:
+		for add in URLS:
 			names = match[x][1]
 			name = str(int(x+1))+'. '+names
+			url='http://www.podtrac.com/pts/redirect.mp4'+add
 			li=xbmcgui.ListItem(name)
 			li.setInfo( type="Video", infoLabels={ "Title": name } )
 			u=sys.argv[0]+"?mode=8&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
