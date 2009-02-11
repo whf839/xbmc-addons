@@ -122,11 +122,7 @@ def cleanNames(string):
     try:
         string = string.replace("'","").replace(unicode(u'\u201c'), '"').replace(unicode(u'\u201d'), '"').replace(unicode(u'\u2019'),'\'').replace('&amp;','&').replace('&quot;','"')
         return string
-        print 'tranlsated -- >'
-        print string
     except:
-        'translated -- >'
-        print string
         return string
 
 
