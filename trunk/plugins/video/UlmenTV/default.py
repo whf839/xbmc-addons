@@ -5,13 +5,16 @@
 import sys, os, os.path
 import xbmc, xbmcgui, xbmcplugin
 import urllib, re
+from shutil import rmtree
 
 __plugin__ = "UlmenTV"
-__version__ = '1.33'
+__version__ = '1.34'
 __author__ = 'bootsy [bootsy82@gmail.com] with much help from BigBellyBilly'
-__date__ = '31-01-2009'
+__date__ = '12-02-2009'
 
-DIR_USERDATA = os.path.join( "T:\\plugin_data", __plugin__ )
+#DIR_USERDATA = "/".join( ["special://masterprofile","plugin_data", __plugin__] )      # T:// - new drive
+DIR_USERDATA = "/".join( ["T:","plugin_data","video", __plugin__] )  # translatePath() will convert to new special://
+DIR_USERDATA_OLD = "/".join( ["T:","plugin_data", __plugin__] )  # translatePath() will convert to new special://
 BASE_URL = 'http://www.myspass.de'
 
 def log(msg):
@@ -73,6 +76,7 @@ def getUlmenNewEpisodes(name):
 		for thumbnail,id,name in matches:
 			if thumbnail=='':
 				thumbnail='http://xbmc.svn.sourceforge.net/svnroot/xbmc/trunk/XBMC/skin/Project%20Mayhem%20III/media/defaultVideoBig.png'
+			if name=='':
 				name='Unbekannt'
 			url='http://www.myspass.de'+id
 			res.append(('Neueste Videos','Folge 1/1',thumbnail,url,name))
@@ -113,6 +117,7 @@ def fetchBinary(url):
 	fn = ''
 	try:
 		fn = os.path.join(DIR_USERDATA, os.path.basename(url))
+		fn = xbmc.translatePath(fn)
 		fn = xbmc.makeLegalFilename(fn)
 		log('fetchBinary() url=%s fn=%s' % (url,fn))
 		if not os.path.isfile(fn):
@@ -131,9 +136,6 @@ def fetchBinary(url):
 	else:
 		return ''
 	
-# - url = sys.argv[ 0 ]
-# - handle = sys.argv[ 1 ]
-# - params =  sys.argv[ 2 ]
 def get_params():
 	""" extract params from argv[2] to make a dict (key=value) """
 	log("get_params() argv[2]=%s" % sys.argv[2])
@@ -189,7 +191,7 @@ def showShows(url,name):
 			show=name
 		else:
 			show = "%s - %s - %s" % (chname, part, name)
-		addLink(show,url,img)     
+		addLink(show,url,img)
 	dialogProgress.close()
 
 #######################################################################################################################    
@@ -197,9 +199,18 @@ def showShows(url,name):
 #######################################################################################################################
 try:
 	# used to save thumbnail images
-	os.makedirs(DIR_USERDATA)
-	log("created " + DIR_USERDATA)
+	d = xbmc.translatePath(DIR_USERDATA)
+	os.makedirs( d )
+	log("created " + d)
 except: pass
+			
+try:
+	# used to remove old thumbnails + folder
+	d = xbmc.translatePath(DIR_USERDATA_OLD)
+	rmtree(d, ignore_errors=True)
+	log("removed " + d)
+except: pass
+
 
 params=get_params()
 url=None
