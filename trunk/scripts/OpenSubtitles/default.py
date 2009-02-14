@@ -23,7 +23,7 @@ if ( __name__ == "__main__" ):
 
 #	if len(sys.argv) > 1:
 #		filename = sys.argv[1]		
-	ui = gui.GUI( "script-%s-%s.xml" % ( __scriptname__.replace( " ", "_" ), window, ), os.getcws(), "Default")
+	ui = gui.GUI( "script-%s-%s.xml" % ( __scriptname__.replace( " ", "_" ), window, ), os.getcwd(), "Default")
 #	ui.set_filepath( filename )	
 	ui.set_filepath( "" )
 	ui.doModal()
