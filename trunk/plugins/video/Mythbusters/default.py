@@ -167,14 +167,14 @@ def decrypt(str1, key1, key2):
 
 
 def INDEX():
-        req = urllib2.Request('http://www.toonsurfer.110mb.com/mythbusters.htm')
+        req = urllib2.Request('http://toonsurfer.50webs.com/mythbusters.htm')
         req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
         response = urllib2.urlopen(req)
         link=response.read();response.close()
         match=re.compile('<A href=".(.+?)" >(.+?)</A>').findall(link)
         del match[0];del match[131:133]
         for url,name in match:
-                addDir('Season '+re.sub('/',' ',url[:2])+' - '+name,'http://www.toonsurfer.110mb.com'+url,1,'')
+                addDir('Season '+re.sub('/',' ',url[:2])+' - '+name,'http://toonsurfer.50webs.com'+url,1,'')
 
 def VIDEO(url):
         req = urllib2.Request(url)
