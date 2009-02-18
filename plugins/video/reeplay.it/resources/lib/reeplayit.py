@@ -12,7 +12,7 @@ from pprint import pprint
 __scriptname__ = sys.modules[ "__main__" ].__scriptname__
 __title__ = "reeplayitLib"
 __author__ = 'BigBellyBilly [BigBellyBilly@gmail.com]'
-__date__ = '12-02-2009'
+__date__ = '18-02-2009'
 xbmc.output("Imported From: " + __scriptname__ + " title: " + __title__ + " Date: " + __date__)
 
 DIR_HOME = sys.modules[ "__main__" ].DIR_HOME
@@ -27,7 +27,7 @@ from bbbSkinGUILib import TextBoxDialogXML
 class ReeplayitLib:
 	""" Reeplay.it data gatherer / store """
 
-	URL_BASE = "http://staging.reeplay.it/"        # LIVE: "http://reeplay.it/" DEV: http://staging.reeplay.it
+	URL_BASE = "http://reeplay.it/"        # LIVE: "http://reeplay.it/" DEV: http://staging.reeplay.it
 
 	def __init__(self, user, pwd, pageSize=50, highVQ=True, docType='xml'):
 		debug("ReeplayitLib().__init__ %s pageSize=%d highVQ=%s docType=%s" % (user,pageSize,highVQ,docType))

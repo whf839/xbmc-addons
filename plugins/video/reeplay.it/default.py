@@ -24,7 +24,7 @@ __scriptname__ = __plugin__
 __version__ = '0.1'
 __author__ = 'BigBellyBilly [BigBellyBilly@gmail.com]'
 __svn_url__ = "http://xbmc-scripting.googlecode.com/svn/trunk/reeplay.it"
-__date__ = '17-02-2009'
+__date__ = '18-02-2009'
 xbmc.output(__scriptname__ + " Version: " + __version__ + " Date: " + __date__)
 
 # Shared resources
@@ -264,7 +264,8 @@ class ReeplayitPlugin:
 												self.PARAM_PLS_COUNT, plsCount, \
 												self.PARAM_PLS_PAGE, nextPage )
 
-				li = xbmcgui.ListItem(title)
+				tbn = os.path.join( DIR_RESOURCES, "next.png")
+				li = xbmcgui.ListItem(title, "", tbn, tbn )
 				ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), \
 							url=li_url, listitem=li, isFolder=True, totalItems=0)
 
