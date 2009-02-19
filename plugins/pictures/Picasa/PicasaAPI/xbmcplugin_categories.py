@@ -46,8 +46,9 @@ class Main:
             exec "self.args = _Info(%s)" % ( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
 
     def authenticate( self ):
+        # if this is first run open settings
+        self.openSettings()
         # authentication is not permanent, so do this only when first launching plugin
-        self.email = xbmcplugin.getSetting( "user_email" )
         if ( not sys.argv[ 2 ] ):
             # get the users settings
             password = xbmcplugin.getSetting( "user_password" )
@@ -70,6 +71,20 @@ class Main:
                     except:
                         import traceback
                         traceback.print_exc()
+
+    def openSettings( self ):
+        try:
+            # is this the first time plugin was run and user has not set email
+            if ( not sys.argv[ 2 ] and xbmcplugin.getSetting( "user_email" ) == "" and xbmcplugin.getSetting( "runonce" ) == "" ):
+                # set runonce
+                xbmcplugin.setSetting( "runonce", "1" )
+                # open settings
+                xbmcplugin.openSettings( sys.argv[ 0 ] )
+        except:
+            # new methods not in build
+            pass
+        # we need to get the users email
+        self.email = xbmcplugin.getSetting( "user_email" )
 
     def get_categories( self, root=True ):
         try:
