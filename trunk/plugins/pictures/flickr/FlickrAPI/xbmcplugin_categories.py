@@ -53,6 +53,8 @@ class Main:
         try:
             self.user_id = ""
             self.user_nsid = ""
+            # if this is first run open settings
+            self.openSettings()
             # get the users id
             userid = xbmcplugin.getSetting( "user_id" )
             # if user did not edit settings, return
@@ -78,6 +80,18 @@ class Main:
         if ( not ok ):
             xbmcgui.Dialog().ok( xbmc.getLocalizedString( 30900 ), xbmc.getLocalizedString( 30901 ), xbmc.getLocalizedString( 30902 ) )
         return ok
+
+    def openSettings( self ):
+        try:
+            # is this the first time plugin was run and user has not set email
+            if ( not sys.argv[ 2 ] and xbmcplugin.getSetting( "user_id" ) == "" and xbmcplugin.getSetting( "runonce" ) == "" ):
+                # set runonce
+                xbmcplugin.setSetting( "runonce", "1" )
+                # open settings
+                xbmcplugin.openSettings( sys.argv[ 0 ] )
+        except:
+            # new methods not in build
+            pass
 
     def _get_root_categories( self, root=True ):
         try:
