@@ -35,7 +35,7 @@ class GUI( module ):
     ACTION_MOVEMENT_LEFT = ( 1, )
     ACTION_MOVEMENT_RIGHT = ( 2, )
     # required control id's
-    CONTROL_MAP_LIST = 500
+    CONTROL_MAP_LISTS = ( 500, 501, 502, )
     CONTROL_HOUR_LIST = 600
     CONTROL_10DAY_LIST = 700
     # view buttons
@@ -53,10 +53,11 @@ class GUI( module ):
     # settings buttons
     CONTROL_ANIMATED_SETTING_BUTTON = 400
     CONTROL_METRIC_SETTING_BUTTON = 401
-    CONTROL_FANART_SETTING_BUTTON = 402
-    CONTROL_FANART_DIFFUSE_SETTING_BUTTON = 403
-    CONTROL_FANART_TYPE_SETTING_BUTTON = 404
-    CONTROL_SHOW_ALERTS_SETTING_BUTTON = 405
+    CONTROL_SHOW_ALERTS_SETTING_BUTTON = 402
+    CONTROL_MAPS_LIST_SETTING_BUTTONS = ( 403, 404, 405, )
+    CONTROL_FANART_SETTING_BUTTON = 406
+    CONTROL_FANART_TYPE_SETTING_BUTTON = 407
+    CONTROL_FANART_DIFFUSE_SETTING_BUTTON = 408
 
     def __init__( self, *args, **kwargs ):
         module.__init__( self, *args, **kwargs )
@@ -71,6 +72,8 @@ class GUI( module ):
         self._get_local_code()
         # get our new TWCClient
         self._get_client()
+        # set default map list settings
+        self._set_default_maplists()
 
     def onInit( self ):
         dialog.close()
@@ -86,23 +89,23 @@ class GUI( module ):
         if ( self.defaultview == self.CONTROL_36HOUR_BUTTON ):
             # get our 36 hour forecast
             self._fetch_36_forecast()
-            self.setFocus( self.getControl( self.CONTROL_36HOUR_BUTTON ) )
+            #self.setFocus( self.getControl( self.CONTROL_36HOUR_BUTTON ) )
         elif ( self.defaultview == self.CONTROL_HOURBYHOUR_BUTTON ):
             # get our hour by hour forecast
             self._fetch_hour_forecast()
-            self.setFocus( self.getControl( self.CONTROL_HOURBYHOUR_BUTTON ) )
+            #self.setFocus( self.getControl( self.CONTROL_HOURBYHOUR_BUTTON ) )
         elif ( self.defaultview == self.CONTROL_WEEKEND_BUTTON ):
             # get our hour by hour forecast
             self._fetch_weekend_forecast()
-            self.setFocus( self.getControl( self.CONTROL_WEEKEND_BUTTON ) )
+            #self.setFocus( self.getControl( self.CONTROL_WEEKEND_BUTTON ) )
         elif ( self.defaultview == self.CONTROL_10DAY_BUTTON ):
             # get our hour by hour forecast
             self._fetch_10day_forecast()
-            self.setFocus( self.getControl( self.CONTROL_10DAY_BUTTON ) )
+            #self.setFocus( self.getControl( self.CONTROL_10DAY_BUTTON ) )
         else:
             # set map list and get default map
             self._fetch_map_list()
-            self.setFocus( self.getControl( self.CONTROL_MAP_BUTTON ) )
+            #self.setFocus( self.getControl( self.CONTROL_MAP_BUTTON ) )
         # check for any weather alerts
         self._show_alerts( xbmc.getCondVisibility( "!Skin.HasSetting(twc-show-alerts)" ) )
 
@@ -123,6 +126,17 @@ class GUI( module ):
         self.loading = False
         self.maps_path = False
         self.current_map = None
+
+    def _set_default_maplists( self ):
+        if ( xbmc.getInfoLabel( "Skin.String(twc-maplist1-category)" ) == "" ):
+            xbmc.executebuiltin( "Skin.SetString(twc-maplist1-category,%s)" % ( self.TWCClient.BASE_MAPS[ 0 ][ 0 ], ) )
+            xbmc.executebuiltin( "Skin.SetString(twc-maplist1-title,%s)" % ( self.TWCClient.BASE_MAPS[ 0 ][ 2 ], ) )
+        if ( xbmc.getInfoLabel( "Skin.String(twc-maplist2-category)" ) == "" ):
+            xbmc.executebuiltin( "Skin.SetString(twc-maplist2-category,%s)" %  ( self.TWCClient.BASE_MAPS[ 2 ][ 0 ], ) )
+            xbmc.executebuiltin( "Skin.SetString(twc-maplist2-title,%s)" % ( self.TWCClient.BASE_MAPS[ 2 ][ 2 ], ) )
+        if ( xbmc.getInfoLabel( "Skin.String(twc-maplist3-category)" ) == "" ):
+            xbmc.executebuiltin( "Skin.SetString(twc-maplist3-category,%s)" % ( self.TWCClient.BASE_MAPS[ 37 ][ 0 ], ) )
+            xbmc.executebuiltin( "Skin.SetString(twc-maplist3-title,%s)" % ( self.TWCClient.BASE_MAPS[ 37 ][ 2 ], ) )
 
     def _set_script_info( self ):
         self.CURRENT_WINDOW.setProperty( "version", "%s - r%s" % ( sys.modules[ "__main__" ].__version__, str( sys.modules[ "__main__" ].__svn_revision__ ) ) )
@@ -145,26 +159,7 @@ class GUI( module ):
         self.TWCClient = TWCClient.TWCClient( self.local_code )
 
     def _get_local_code( self ):
-        try:
-            t = 0
-            while t < 5:
-                # grab the current location
-                location = xbmc.getInfoLabel( "Weather.Location" )
-                # if successful break out of loop
-                if ( location.lower() != "busy" ):
-                    break
-                t += 1
-                xbmc.sleep( 500 )
-            # loop thru and compare location with the three saved locations
-            for count in range( 1, 4 ):
-                # grab a saved location
-                preset = xbmc.executehttpapi( "getguisetting(3,weather.areacode%d)" % ( count, ) ).replace( "<li>", "" )
-                # if location is same as saved location, we have our local code
-                if ( preset.split( " - " )[ 1 ] == location ):
-                    self.local_code = preset.split( " - " )[ 0 ]
-                    break
-        except Exception, e:
-            print str( e )
+        self.local_code = xbmc.getInfoLabel( "Window(Weather).Property(AreaCode)" )
 
     def _set_maps_path( self, path=0 ):
         if ( path == 0 ):
@@ -179,36 +174,56 @@ class GUI( module ):
         self._reset_views()
         # only run this once
         if ( self.current_map is None ):
+            ### clear our maplist exists properties
+            ##for count in range( len( self.CONTROL_MAP_LISTS ) ):
+            ##    self.CURRENT_WINDOW.clearProperty( "maplist%d" % ( count + 1, ) )
             # initialize current map
             self.current_map = 0
+            self.current_maplist = self.CONTROL_MAP_LISTS[ 0 ]
             # get the users default map
             default = xbmc.getInfoLabel( "Skin.String(twc-defaultmap)" )
-            # fetch map list
-            map_list = self.TWCClient.fetch_map_list()
-            # lock the gui for faster updating
-            xbmcgui.lock()
-            try:
-                # enumerate thru our map list and add map and title and check for default
-                for count, map in enumerate( map_list ):
-                    # create our listitem, label 2 is not visible (in default skin)
-                    listitem = xbmcgui.ListItem( map[ 1 ], map [ 0 ] )
-                    # if we have a match, set our class variable
-                    if ( map[ 1 ] == default ):
-                        self.current_map = count
-                    # add map to our list
-                    self.getControl( self.CONTROL_MAP_LIST ).addItem( listitem )
-            except:
-                pass
+            map_lists = 1
+           # set number of map lists, only the US has multiple
+            map_lists = len( self.CONTROL_MAP_LISTS )
+            # enumurate thru map lists and fetch map list
+            for maplist_count in range( map_lists ):
+                # what is users preference
+                map = xbmc.getInfoLabel( "Skin.String(twc-maplist%d-category)" % ( maplist_count + 1, ) )
+                # check for users preferemce
+                for count, mapc in enumerate( self.TWCClient.BASE_MAPS ):
+                    # found it, no need to continue
+                    if ( mapc[ 0 ] == map ):
+                        break
+                # set map list tab exists
+                self.CURRENT_WINDOW.setProperty( "maplist%d" % ( maplist_count + 1, ), "1" )
+                # fetch map list
+                map_list = self.TWCClient.fetch_map_list( count )
+                # lock the gui for faster updating
+                ##xbmcgui.lock()
+                try:
+                    # reset our map list
+                    self.getControl( self.CONTROL_MAP_LISTS[ maplist_count ] ).reset()
+                    # enumerate thru our map list and add map and title and check for default
+                    for count, map in enumerate( map_list ):
+                        # create our listitem, label 2 is not visible (in default skin)
+                        listitem = xbmcgui.ListItem( map[ 1 ], map [ 0 ] )
+                        # if we have a match, set our class variable
+                        if ( map[ 1 ] == default ):
+                            self.current_map = count
+                            self.current_maplist = self.CONTROL_MAP_LISTS[ maplist_count ]
+                        # add map to our list
+                        self.getControl( self.CONTROL_MAP_LISTS[ maplist_count ] ).addItem( listitem )
+                except:
+                    break
             # unlock the gui
-            xbmcgui.unlock()
-        # we check 36 hour as it holds any alerts
-        self._fetch_36_forecast( False )
-        # fetch our map
-        self._fetch_map( self.current_map )
+            ##xbmcgui.unlock()
+            # fetch our map
+            self._fetch_map( self.current_map, self.current_maplist )
 
-    def _fetch_map( self, map ):
+    def _fetch_map( self, map, controlId ):
         # set the current map
         self.current_map = map
+        self.current_maplist = controlId
         # cancel any timer
         if ( self.timer is not None ):
             self.timer.cancel()
@@ -217,23 +232,25 @@ class GUI( module ):
         if ( xbmc.getCondVisibility( "IsEmpty(Window.Property(view-Maps))" ) ):
             return
         # get maps url name
-        map = self.getControl( self.CONTROL_MAP_LIST ).getListItem( map ).getLabel2()
+        map = self.getControl( controlId ).getListItem( map ).getLabel2()
         # make sure user can't keep selecting maps
         self.loading = True
         # we set our skin setting to defaultimages while downloading
         self._set_maps_path()
         # fetch the available map urls
-        maps = self.TWCClient.fetch_map_urls( map )
+        maps = self.TWCClient.fetch_map_urls( map, controlId - self.CONTROL_MAP_LISTS[ 0 ] )
         # fetch the images
         self.maps_path, expires = self.TWCClient.fetch_images( maps )
         # hack incase the weather in motion link was bogus
         if ( expires < 0 and len( maps[ 1 ] ) ):
             self.maps_path, expires = self.TWCClient.fetch_images( ( maps[ 0 ], [], ) )
+        # we check 36 hour as it holds any alerts
+        self._fetch_36_forecast( False )
         # now set our skin string so multi image will display images 1==success, 2==failure
         self._set_maps_path( ( self.maps_path == "" ) + 1 )
         # successful so set timer thread
         if ( self.maps_path != "" and expires > 0 ):
-            self.timer = Timer( expires, self._fetch_map,( self.current_map, ) )
+            self.timer = Timer( expires, self._fetch_map, ( self.current_map, controlId, ) )
             self.timer.start()
         # reset loading status
         self.loading = False
@@ -253,7 +270,7 @@ class GUI( module ):
         if ( showView ):
             self._reset_views( self.CONTROL_36HOUR_BUTTON )
         # fetch 36 hour forecast
-        alerts, alertscolor, alertscount, forecasts, video = self.TWCClient.fetch_36_forecast()
+        alerts, alertscolor, alertscount, forecasts, video = self.TWCClient.fetch_36_forecast( self.CURRENT_WINDOW.getProperty( "Video" ) )
         # lock the gui for faster updating
         xbmcgui.lock()
         try:
@@ -282,11 +299,11 @@ class GUI( module ):
         self._reset_views( self.CONTROL_HOURBYHOUR_BUTTON )
         # fetch hour by hour forecast
         alerts, alertscolor, alertscount, headings, forecasts = self.TWCClient.fetch_hour_forecast()
-        # lock the gui for faster updating
-        xbmcgui.lock()
         try:
             # set any alerts
             self._set_alerts( alerts, alertscolor, alertscount )
+            # lock the gui for faster updating
+            xbmcgui.lock()
             # reset list
             self.getControl( self.CONTROL_HOUR_LIST ).reset()
             # enumerate thru and set our heading properties
@@ -352,7 +369,7 @@ class GUI( module ):
                 self.CURRENT_WINDOW.setProperty( "Weekend%dobservedrecordhigh" % ( day + 1, ), forecast[ 29 ] )
                 self.CURRENT_WINDOW.setProperty( "Weekend%dobservedrecordlowtitle" % ( day + 1, ), forecast[ 30 ] )
                 self.CURRENT_WINDOW.setProperty( "Weekend%dobservedrecordlow" % ( day + 1, ), forecast[ 31 ] )
-                self.CURRENT_WINDOW.setProperty( "Weekend%dalert" % ( day + 1, ), forecast[ 32 ] )
+                ##self.CURRENT_WINDOW.setProperty( "Weekend%dalert" % ( day + 1, ), forecast[ 32 ] )
                 self.CURRENT_WINDOW.setProperty( "Weekend%dday" % ( day + 1, ), forecast[ 0 ] )
         except:
             pass
@@ -426,7 +443,7 @@ class GUI( module ):
 
     def _set_default_view( self ):
         if ( xbmc.getCondVisibility( "!IsEmpty(Window.Property(view-Maps))" ) ):
-            xbmc.executebuiltin( "Skin.SetString(twc-defaultmap,%s)" % ( self.getControl( self.CONTROL_MAP_LIST ).getListItem( self.current_map ).getLabel(), ) )
+            xbmc.executebuiltin( "Skin.SetString(twc-defaultmap,%s)" % ( self.getControl( self.current_maplist ).getListItem( self.current_map ).getLabel(), ) )
             xbmc.executebuiltin( "Skin.Reset(twc-defaultview)" )
         elif ( xbmc.getCondVisibility( "!IsEmpty(Window.Property(view-36Hour))" ) ):
             xbmc.executebuiltin( "Skin.SetString(twc-defaultview,36Hour)" )
@@ -517,6 +534,15 @@ class GUI( module ):
     def _toggle_show_alerts( self ):
         xbmc.executebuiltin( "Skin.ToggleSetting(twc-show-alerts)" )
 
+    def _choose_map_list( self, maplist ):
+        dialog = xbmcgui.Dialog()
+        choice = dialog.select( _( 450 ), [ title for title, url, tabtitle in self.TWCClient.BASE_MAPS ] )
+        if ( choice != -1 ):
+            xbmc.executebuiltin( "Skin.SetString(twc-maplist%d-category,%s)" % ( maplist - 402, self.TWCClient.BASE_MAPS[ choice ][ 0 ], ) )
+            xbmc.executebuiltin( "Skin.SetString(twc-maplist%d-title,%s)" % ( maplist - 402, self.TWCClient.BASE_MAPS[ choice ][ 2 ], ) )
+            self.current_map = None
+            self._fetch_map_list()
+
     def exit_script( self ):
         # cancel any timer
         if ( self.timer is not None ):
@@ -531,8 +557,8 @@ class GUI( module ):
         if ( controlId == self.CONTROL_MAP_TOGGLE_BUTTON ):
             self._toggle_map()
         elif ( self.toggle ):
-            if ( controlId == self.CONTROL_MAP_LIST and not self.loading ):
-                self._fetch_map( self.getControl( self.CONTROL_MAP_LIST ).getSelectedPosition() )
+            if ( controlId in self.CONTROL_MAP_LISTS and not self.loading ):
+                self._fetch_map( self.getControl( controlId ).getSelectedPosition(), controlId )
             elif ( controlId == self.CONTROL_MAP_BUTTON ):
                 self._fetch_map_list()
             elif ( controlId == self.CONTROL_36HOUR_BUTTON ):
@@ -561,6 +587,9 @@ class GUI( module ):
                 self._set_fanart_type()
             elif ( controlId == self.CONTROL_SHOW_ALERTS_SETTING_BUTTON ):
                 self._toggle_show_alerts()
+            elif ( controlId in self.CONTROL_MAPS_LIST_SETTING_BUTTONS ):
+                self._choose_map_list( controlId )
+            
             #elif ( controlId == self.CONTROL_PLAY_VIDEO_BUTTON ):
             #    xbmc.Player().play( self.CURRENT_WINDOW.getProperty( "Video" ), xbmcgui.ListItem( "Weather Video" ) )
 

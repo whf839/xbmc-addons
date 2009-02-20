@@ -456,110 +456,472 @@
                 <posy>150</posy>
                 <visible>!IsEmpty(Window.Property(view-Maps))</visible>
                 <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
-                <!-- Maps list ** Required ** -->
-                <control type="list" id="500">
-                    <posx>0</posx>
-                    <posy>0</posy>
-                    <width>200</width>
-                    <height>242</height>
-                    <onleft>5000</onleft>
-                    <onright>5000</onright>
-                    <onup>2000</onup>
-                    <ondown>500</ondown>
-                    <viewtype label="535">list</viewtype>
-                    <pagecontrol>5000</pagecontrol>
-                    <scrolltime>200</scrolltime>
-                    <itemlayout height="22">
-                        <control type="image">
-                            <width>200</width>
-                            <height>20</height>
-                            <posx>0</posx>
-                            <posy>0</posy>
-                            <texture border="3">twc-input-nofocus.png</texture>
-                        </control>
-                        <control type="label">
-                            <posx>5</posx>
-                            <posy>0</posy>
-                            <width>190</width>
-                            <height>20</height>
-                            <font>font10</font>
-                            <aligny>center</aligny>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>left</align>
-                            <info>ListItem.Label</info>
-                        </control>
-                    </itemlayout>
-                    <focusedlayout height="22">
-                        <control type="image">
-                            <width>200</width>
-                            <height>20</height>
-                            <posx>0</posx>
-                            <posy>0</posy>
-                            <visible>Control.HasFocus(500)</visible>
-                            <texture border="3">twc-input-focus.png</texture>
-                        </control>
-                        <control type="image">
-                            <width>200</width>
-                            <height>20</height>
-                            <posx>0</posx>
-                            <posy>0</posy>
-                            <visible>!Control.HasFocus(500)</visible>
-                            <texture border="3">twc-input-nofocus.png</texture>
-                        </control>
-                        <control type="label">
-                            <posx>5</posx>
-                            <posy>0</posy>
-                            <width>190</width>
-                            <height>20</height>
-                            <font>font10</font>
-                            <aligny>center</aligny>
-                            <textcolor>DDFFFFFF</textcolor>
-                            <selectedcolor>FFe2ff43</selectedcolor>
-                            <align>left</align>
-                            <info>ListItem.Label</info>
-                        </control>
-                    </focusedlayout>
+                <!-- Main buttons ** required ** -->
+                <control type="group" id="5200">
+                    <posx>-2</posx>
+                    <control type="button" id="5201">
+                        <description>Map List Button</description>
+                        <posx>-6</posx>
+                        <posy>-5</posy>
+                        <width>80</width>
+                        <height>25</height>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <label>$INFO[Skin.String(twc-maplist1-title)]</label>
+                        <font>font10</font>
+                        <textcolor>ffffffff</textcolor>
+                        <disabledcolor>60ffffff</disabledcolor>
+                        <pulseonselect>false</pulseonselect>
+                        <textoffsetx>17</textoffsetx>
+                        <texturenofocus border="10">twc-tab-nofocus.png</texturenofocus>
+                        <texturefocus border="10">twc-tab-focus.png</texturefocus>
+                        <onleft>5203</onleft>
+                        <onright>5202</onright>
+                        <onup>2000</onup>
+                        <ondown>5100</ondown>
+                        <visible>!IsEmpty(Window.Property(MapList1))</visible>
+                        <onclick>SetProperty(view-Maps1,1)</onclick>
+                        <onclick>SetProperty(view-Maps2,)</onclick>
+                        <onclick>SetProperty(view-Maps3,)</onclick>
+                    </control>
+                    <control type="button" id="5202">
+                        <description>Map List Button</description>
+                        <posx>74</posx>
+                        <posy>-5</posy>
+                        <width>80</width>
+                        <height>25</height>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <label>$INFO[Skin.String(twc-maplist2-title)]</label>
+                        <font>font10</font>
+                        <textcolor>ffffffff</textcolor>
+                        <disabledcolor>60ffffff</disabledcolor>
+                        <pulseonselect>false</pulseonselect>
+                        <textoffsetx>17</textoffsetx>
+                        <texturenofocus border="10">twc-tab-nofocus.png</texturenofocus>
+                        <texturefocus border="10">twc-tab-focus.png</texturefocus>
+                        <onleft>5201</onleft>
+                        <onright>5203</onright>
+                        <onup>2000</onup>
+                        <ondown>5100</ondown>
+                        <visible>!IsEmpty(Window.Property(MapList2))</visible>
+                        <onclick>SetProperty(view-Maps1,)</onclick>
+                        <onclick>SetProperty(view-Maps2,1)</onclick>
+                        <onclick>SetProperty(view-Maps3,)</onclick>
+                    </control>
+                    <control type="button" id="5203">
+                        <description>Map List Button</description>
+                        <posx>154</posx>
+                        <posy>-5</posy>
+                        <width>80</width>
+                        <height>25</height>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <label>$INFO[Skin.String(twc-maplist3-title)]</label>
+                        <font>font10</font>
+                        <textcolor>ffffffff</textcolor>
+                        <disabledcolor>60ffffff</disabledcolor>
+                        <pulseonselect>false</pulseonselect>
+                        <textoffsetx>17</textoffsetx>
+                        <texturenofocus border="10">twc-tab-nofocus.png</texturenofocus>
+                        <texturefocus border="10">twc-tab-focus.png</texturefocus>
+                        <wrapmultiline>true</wrapmultiline>
+                        <onleft>5202</onleft>
+                        <onright>5201</onright>
+                        <onup>2000</onup>
+                        <ondown>5100</ondown>
+                        <visible>!IsEmpty(Window.Property(MapList3))</visible>
+                        <onclick>SetProperty(view-Maps1,)</onclick>
+                        <onclick>SetProperty(view-Maps2,)</onclick>
+                        <onclick>SetProperty(view-Maps3,1)</onclick>
+                    </control>
+                    <!-- Not selected button background images -->
+                    <control type="image">
+                        <description>tab1 not selected</description>
+                        <posx>-6</posx>
+                        <posy>0</posy>
+                        <width>80</width>
+                        <height>20</height>
+                        <texture border="10">twc-tab-closed.png</texture>
+                        <aspectratio>stretch</aspectratio>
+                        <visible>!IsEmpty(Window.Property(view-Maps2)) | !IsEmpty(Window.Property(view-Maps3))</visible>
+                    </control>
+                    <control type="image">
+                        <description>tab2 not selected</description>
+                        <posx>74</posx>
+                        <posy>0</posy>
+                        <width>80</width>
+                        <height>20</height>
+                        <texture border="10">twc-tab-closed.png</texture>
+                        <aspectratio>stretch</aspectratio>
+                        <visible>IsEmpty(Window.Property(view-Maps2)) + !IsEmpty(Window.Property(MapList2))</visible>
+                    </control>
+                    <control type="image">
+                        <description>tab3 not selected</description>
+                        <posx>154</posx>
+                        <posy>0</posy>
+                        <width>80</width>
+                        <height>20</height>
+                        <texture border="10">twc-tab-closed.png</texture>
+                        <aspectratio>stretch</aspectratio>
+                        <visible>IsEmpty(Window.Property(view-Maps3)) + !IsEmpty(Window.Property(MapList3))</visible>
+                    </control>
+
+                    <!-- Section background -->
+                    <control type="image">
+                        <description>left side divider</description>
+                        <posx>-7</posx>
+                        <posy>-12</posy>
+                        <width>1</width>
+                        <height>260</height>
+                        <texture border="0,32,0,0">twc-tab-sep.png</texture>
+                        <aspectratio>stretch</aspectratio>
+                    </control>
+                    <control type="image">
+                        <description>right side divider</description>
+                        <posx>233</posx>
+                        <posy>-12</posy>
+                        <width>1</width>
+                        <height>260</height>
+                        <texture border="0,32,0,0">twc-tab-sep.png</texture>
+                        <aspectratio>stretch</aspectratio>
+                    </control>
+                    <control type="image">
+                        <description>bottom divider</description>
+                        <posx>-7</posx>
+                        <posy>216</posy>
+                        <width>239</width>
+                        <height>32</height>
+                        <texture>twc-tab-sep.png</texture>
+                        <aspectratio>stretch</aspectratio>
+                    </control>
                 </control>
-                <!-- Scrollbar for maps list -->
-                <control type="button">
-                    <description>Scrollbar Up Arrow</description>
-                    <posx>205</posx>
-                    <posy>0</posy>
-                    <width>16</width>
-                    <height>16</height>
-                    <texturenofocus>twc-scrollbar_arrow_up.png</texturenofocus>
-                    <texturefocus>twc-scrollbar_arrow_up_focus.png</texturefocus>
-                    <onclick>PageUp(5000)</onclick>
-                    <visible>Control.IsVisible(5000)</visible>
+                <control type="group" id="5100">
+                    <!-- Local maps list ** Required ** -->
+                    <control type="group">
+                        <visible>IsEmpty(Window.Property(view-Maps2)) + IsEmpty(Window.Property(view-Maps3))</visible>
+                        <control type="list" id="500">
+                            <posx>-5</posx>
+                            <posy>25</posy>
+                            <width>210</width>
+                            <height>220</height>
+                            <onleft>5000</onleft>
+                            <onright>5000</onright>
+                            <onup>5200</onup>
+                            <ondown>500</ondown>
+                            <viewtype label="535">list</viewtype>
+                            <pagecontrol>5000</pagecontrol>
+                            <scrolltime>200</scrolltime>
+                            <itemlayout height="22">
+                                <control type="image">
+                                    <width>210</width>
+                                    <height>20</height>
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <texture border="3">twc-input-nofocus.png</texture>
+                                </control>
+                                <control type="label">
+                                    <posx>5</posx>
+                                    <posy>0</posy>
+                                    <width>200</width>
+                                    <height>20</height>
+                                    <font>font10</font>
+                                    <aligny>center</aligny>
+                                    <textcolor>DDFFFFFF</textcolor>
+                                    <selectedcolor>FFe2ff43</selectedcolor>
+                                    <align>left</align>
+                                    <info>ListItem.Label</info>
+                                </control>
+                            </itemlayout>
+                            <focusedlayout height="22">
+                                <control type="image">
+                                    <width>210</width>
+                                    <height>20</height>
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <visible>Control.HasFocus(500)</visible>
+                                    <texture border="3">twc-input-focus.png</texture>
+                                </control>
+                                <control type="image">
+                                    <width>210</width>
+                                    <height>20</height>
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <visible>!Control.HasFocus(500)</visible>
+                                    <texture border="3">twc-input-nofocus.png</texture>
+                                </control>
+                                <control type="label">
+                                    <posx>5</posx>
+                                    <posy>0</posy>
+                                    <width>200</width>
+                                    <height>20</height>
+                                    <font>font10</font>
+                                    <aligny>center</aligny>
+                                    <textcolor>DDFFFFFF</textcolor>
+                                    <selectedcolor>FFe2ff43</selectedcolor>
+                                    <align>left</align>
+                                    <info>ListItem.Label</info>
+                                </control>
+                            </focusedlayout>
+                        </control>
+                        <!-- Scrollbar for maps list -->
+                        <control type="button">
+                            <description>Scrollbar Up Arrow</description>
+                            <posx>210</posx>
+                            <posy>25</posy>
+                            <width>16</width>
+                            <height>16</height>
+                            <texturenofocus>twc-scrollbar_arrow_up.png</texturenofocus>
+                            <texturefocus>twc-scrollbar_arrow_up_focus.png</texturefocus>
+                            <onclick>PageUp(5000)</onclick>
+                            <visible>Control.IsVisible(5000)</visible>
+                        </control>
+                        <control type="scrollbar" id="5000">
+                            <description>Scroll Bar</description>
+                            <posx>210</posx>
+                            <posy>41</posy>
+                            <width>16</width>
+                            <height>186</height>
+                            <texturesliderbackground border="4">twc-scrollbar_background.png</texturesliderbackground>
+                            <texturesliderbar border="3">twc-scrollbar_bar.png</texturesliderbar>
+                            <texturesliderbarfocus border="3">twc-scrollbar_bar_focus.png</texturesliderbarfocus>
+                            <textureslidernib>-</textureslidernib>
+                            <textureslidernibfocus>-</textureslidernibfocus>
+                            <onleft>500</onleft>
+                            <onright>500</onright>
+                            <showonepage>true</showonepage>
+                            <orientation>vertical</orientation>
+                        </control>
+                        <control type="button">
+                            <description>Scrollbar Down Arrow</description>
+                            <posx>210</posx>
+                            <posy>227</posy>
+                            <width>16</width>
+                            <height>16</height>
+                            <texturenofocus>twc-scrollbar_arrow_down.png</texturenofocus>
+                            <texturefocus>twc-scrollbar_arrow_down_focus.png</texturefocus>
+                            <onclick>PageDown(5000)</onclick>
+                            <visible>Control.IsVisible(5000)</visible>
+                        </control>
+                    </control>
+
+                    <!-- National maps list ** Required ** -->
+                    <control type="group">
+                        <visible>!IsEmpty(Window.Property(view-Maps2))</visible>
+                        <control type="list" id="501">
+                            <posx>-5</posx>
+                            <posy>25</posy>
+                            <width>210</width>
+                            <height>220</height>
+                            <onleft>5010</onleft>
+                            <onright>5010</onright>
+                            <onup>5200</onup>
+                            <ondown>501</ondown>
+                            <viewtype label="535">list</viewtype>
+                            <pagecontrol>5010</pagecontrol>
+                            <scrolltime>200</scrolltime>
+                            <itemlayout height="22">
+                                <control type="image">
+                                    <width>210</width>
+                                    <height>20</height>
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <texture border="3">twc-input-nofocus.png</texture>
+                                </control>
+                                <control type="label">
+                                    <posx>5</posx>
+                                    <posy>0</posy>
+                                    <width>200</width>
+                                    <height>20</height>
+                                    <font>font10</font>
+                                    <aligny>center</aligny>
+                                    <textcolor>DDFFFFFF</textcolor>
+                                    <selectedcolor>FFe2ff43</selectedcolor>
+                                    <align>left</align>
+                                    <info>ListItem.Label</info>
+                                </control>
+                            </itemlayout>
+                            <focusedlayout height="22">
+                                <control type="image">
+                                    <width>210</width>
+                                    <height>20</height>
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <visible>Control.HasFocus(501)</visible>
+                                    <texture border="3">twc-input-focus.png</texture>
+                                </control>
+                                <control type="image">
+                                    <width>210</width>
+                                    <height>20</height>
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <visible>!Control.HasFocus(501)</visible>
+                                    <texture border="3">twc-input-nofocus.png</texture>
+                                </control>
+                                <control type="label">
+                                    <posx>5</posx>
+                                    <posy>0</posy>
+                                    <width>200</width>
+                                    <height>20</height>
+                                    <font>font10</font>
+                                    <aligny>center</aligny>
+                                    <textcolor>DDFFFFFF</textcolor>
+                                    <selectedcolor>FFe2ff43</selectedcolor>
+                                    <align>left</align>
+                                    <info>ListItem.Label</info>
+                                </control>
+                            </focusedlayout>
+                        </control>
+                        <!-- Scrollbar for maps list -->
+                        <control type="button">
+                            <description>Scrollbar Up Arrow</description>
+                            <posx>210</posx>
+                            <posy>25</posy>
+                            <width>16</width>
+                            <height>16</height>
+                            <texturenofocus>twc-scrollbar_arrow_up.png</texturenofocus>
+                            <texturefocus>twc-scrollbar_arrow_up_focus.png</texturefocus>
+                            <onclick>PageUp(5010)</onclick>
+                            <visible>Control.IsVisible(5010)</visible>
+                        </control>
+                        <control type="scrollbar" id="5010">
+                            <description>Scroll Bar</description>
+                            <posx>210</posx>
+                            <posy>41</posy>
+                            <width>16</width>
+                            <height>186</height>
+                            <texturesliderbackground border="4">twc-scrollbar_background.png</texturesliderbackground>
+                            <texturesliderbar border="3">twc-scrollbar_bar.png</texturesliderbar>
+                            <texturesliderbarfocus border="3">twc-scrollbar_bar_focus.png</texturesliderbarfocus>
+                            <textureslidernib>-</textureslidernib>
+                            <textureslidernibfocus>-</textureslidernibfocus>
+                            <onleft>501</onleft>
+                            <onright>501</onright>
+                            <showonepage>true</showonepage>
+                            <orientation>vertical</orientation>
+                        </control>
+                        <control type="button">
+                            <description>Scrollbar Down Arrow</description>
+                            <posx>210</posx>
+                            <posy>227</posy>
+                            <width>16</width>
+                            <height>16</height>
+                            <texturenofocus>twc-scrollbar_arrow_down.png</texturenofocus>
+                            <texturefocus>twc-scrollbar_arrow_down_focus.png</texturefocus>
+                            <onclick>PageDown(5010)</onclick>
+                            <visible>Control.IsVisible(5010)</visible>
+                        </control>
+                    </control>
+
+                    <!-- Travel maps list ** Required ** -->
+                    <control type="group">
+                        <visible>!IsEmpty(Window.Property(view-Maps3))</visible>
+                        <control type="list" id="502">
+                            <posx>-5</posx>
+                            <posy>25</posy>
+                            <width>210</width>
+                            <height>220</height>
+                            <onleft>5020</onleft>
+                            <onright>5020</onright>
+                            <onup>5200</onup>
+                            <ondown>502</ondown>
+                            <viewtype label="535">list</viewtype>
+                            <pagecontrol>5020</pagecontrol>
+                            <scrolltime>200</scrolltime>
+                            <itemlayout height="22">
+                                <control type="image">
+                                    <width>210</width>
+                                    <height>20</height>
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <texture border="3">twc-input-nofocus.png</texture>
+                                </control>
+                                <control type="label">
+                                    <posx>5</posx>
+                                    <posy>0</posy>
+                                    <width>200</width>
+                                    <height>20</height>
+                                    <font>font10</font>
+                                    <aligny>center</aligny>
+                                    <textcolor>DDFFFFFF</textcolor>
+                                    <selectedcolor>FFe2ff43</selectedcolor>
+                                    <align>left</align>
+                                    <info>ListItem.Label</info>
+                                </control>
+                            </itemlayout>
+                            <focusedlayout height="22">
+                                <control type="image">
+                                    <width>210</width>
+                                    <height>20</height>
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <visible>Control.HasFocus(502)</visible>
+                                    <texture border="3">twc-input-focus.png</texture>
+                                </control>
+                                <control type="image">
+                                    <width>210</width>
+                                    <height>20</height>
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <visible>!Control.HasFocus(502)</visible>
+                                    <texture border="3">twc-input-nofocus.png</texture>
+                                </control>
+                                <control type="label">
+                                    <posx>5</posx>
+                                    <posy>0</posy>
+                                    <width>200</width>
+                                    <height>20</height>
+                                    <font>font10</font>
+                                    <aligny>center</aligny>
+                                    <textcolor>DDFFFFFF</textcolor>
+                                    <selectedcolor>FFe2ff43</selectedcolor>
+                                    <align>left</align>
+                                    <info>ListItem.Label</info>
+                                </control>
+                            </focusedlayout>
+                        </control>
+                        <!-- Scrollbar for maps list -->
+                        <control type="button">
+                            <description>Scrollbar Up Arrow</description>
+                            <posx>210</posx>
+                            <posy>25</posy>
+                            <width>16</width>
+                            <height>16</height>
+                            <texturenofocus>twc-scrollbar_arrow_up.png</texturenofocus>
+                            <texturefocus>twc-scrollbar_arrow_up_focus.png</texturefocus>
+                            <onclick>PageUp(5020)</onclick>
+                            <visible>Control.IsVisible(5020)</visible>
+                        </control>
+                        <control type="scrollbar" id="5020">
+                            <description>Scroll Bar</description>
+                            <posx>210</posx>
+                            <posy>41</posy>
+                            <width>16</width>
+                            <height>186</height>
+                            <texturesliderbackground border="4">twc-scrollbar_background.png</texturesliderbackground>
+                            <texturesliderbar border="3">twc-scrollbar_bar.png</texturesliderbar>
+                            <texturesliderbarfocus border="3">twc-scrollbar_bar_focus.png</texturesliderbarfocus>
+                            <textureslidernib>-</textureslidernib>
+                            <textureslidernibfocus>-</textureslidernibfocus>
+                            <onleft>502</onleft>
+                            <onright>502</onright>
+                            <showonepage>true</showonepage>
+                            <orientation>vertical</orientation>
+                        </control>
+                        <control type="button">
+                            <description>Scrollbar Down Arrow</description>
+                            <posx>210</posx>
+                            <posy>227</posy>
+                            <width>16</width>
+                            <height>16</height>
+                            <texturenofocus>twc-scrollbar_arrow_down.png</texturenofocus>
+                            <texturefocus>twc-scrollbar_arrow_down_focus.png</texturefocus>
+                            <onclick>PageDown(5020)</onclick>
+                            <visible>Control.IsVisible(5020)</visible>
+                        </control>
+                    </control>
                 </control>
-                <control type="scrollbar" id="5000">
-                    <description>Scroll Bar</description>
-                    <posx>205</posx>
-                    <posy>16</posy>
-                    <width>16</width>
-                    <height>208</height>
-                    <texturesliderbackground border="4">twc-scrollbar_background.png</texturesliderbackground>
-                    <texturesliderbar border="3">twc-scrollbar_bar.png</texturesliderbar>
-                    <texturesliderbarfocus border="3">twc-scrollbar_bar_focus.png</texturesliderbarfocus>
-                    <textureslidernib>-</textureslidernib>
-                    <textureslidernibfocus>-</textureslidernibfocus>
-                    <onleft>500</onleft>
-                    <onright>500</onright>
-                    <showonepage>false</showonepage>
-                    <orientation>vertical</orientation>
-                </control>
-                <control type="button">
-                    <description>Scrollbar Down Arrow</description>
-                    <posx>205</posx>
-                    <posy>224</posy>
-                    <width>16</width>
-                    <height>16</height>
-                    <texturenofocus>twc-scrollbar_arrow_down.png</texturenofocus>
-                    <texturefocus>twc-scrollbar_arrow_down_focus.png</texturefocus>
-                    <onclick>PageDown(5000)</onclick>
-                    <visible>Control.IsVisible(5000)</visible>
-                </control>
+
                 <!-- User instruction label -->
                 <control type="label">
                     <description>info label</description>
@@ -576,8 +938,8 @@
                 <!-- Maps multiimage ** Required ** -->
                 <control type="multiimage">
                     <description>maps multiimage</description>
-                    <posx>230</posx>
-                    <posy>0</posy>
+                    <posx>235</posx>
+                    <posy>12</posy>
                     <width>360</width>
                     <height>243</height>
                     <info>Skin.String(TWC-MapsPath)</info>
@@ -587,14 +949,15 @@
                     <randomize>false</randomize>
                     <loop>yes</loop>
                     <aspectratio>keep</aspectratio>
+                    <aligny>center</aligny>
                     <!-- animation is used for zooming map -->
-                    <animation effect="zoom" reversible="true" center="532,135" start="100" end="195" time="100" condition="!IsEmpty(Window.Property(Toggle))">Conditional</animation>
+                    <animation effect="zoom" reversible="true" center="542,158" start="100" end="195" time="100" condition="!IsEmpty(Window.Property(Toggle))">Conditional</animation>
                 </control>
                 <!-- Toggle map button -->
                 <control type="button" id="301">
                     <description>Toggle button</description>
-                    <posx>230</posx>
-                    <posy>0</posy>
+                    <posx>235</posx>
+                    <posy>12</posy>
                     <width>360</width>
                     <height>243</height>
                     <align>center</align>
@@ -607,7 +970,7 @@
                     <texturenofocus>-</texturenofocus>
                     <texturefocus>-</texturefocus>
                     <!-- animation is used for zoomed map -->
-                    <animation effect="zoom" reversible="true" center="532,135" start="100" end="195" time="100" condition="!IsEmpty(Window.Property(Toggle))">Conditional</animation>
+                    <animation effect="zoom" reversible="true" center="542,158" start="100" end="195" time="100" condition="!IsEmpty(Window.Property(Toggle))">Conditional</animation>
                 </control>
             </control>
 
@@ -2940,172 +3303,246 @@
                 <posy>150</posy>
                 <visible>!IsEmpty(Window.Property(view-Settings))</visible>
                 <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
-                <!-- Settings 1 -->
-                <control type="radiobutton" id="400">
-                    <description>enable animations</description>
+                
+                
+                
+                
+                
+                
+                <control type="grouplist" id="9000">
                     <posx>0</posx>
                     <posy>0</posy>
                     <width>590</width>
-                    <height>30</height>
-                    <font>font13</font>
-                    <textcolor>FFFFFFFF</textcolor>
-                    <label>SCRIPT400</label>
-                    <align>left</align>
-                    <aligny>center</aligny>
-                    <selected>!Skin.HasSetting(twc-animated)</selected>
-                    <textoffsetx>7</textoffsetx>
-                    <textureradiofocus>twc-radiobutton-focus.png</textureradiofocus>
-                    <textureradionofocus>twc-radiobutton-nofocus.png</textureradionofocus>
-                    <texturefocus border="3">twc-input-focus.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
-                    <pulseonselect>false</pulseonselect>
+                    <height>245</height>
+                    <itemgap>5</itemgap>
+                    <pagecontrol>-</pagecontrol>
+                    <onleft>2000</onleft>
+                    <onright>2000</onright>
                     <onup>2000</onup>
-                    <ondown>401</ondown>
-                </control>
-                <!-- Settings 2 -->
-                <control type="radiobutton" id="401">
-                    <description>enable metric</description>
-                    <posx>0</posx>
-                    <posy>40</posy>
-                    <width>590</width>
-                    <height>30</height>
-                    <font>font13</font>
-                    <textcolor>FFFFFFFF</textcolor>
-                    <label>SCRIPT401</label>
-                    <align>left</align>
-                    <aligny>center</aligny>
-                    <selected>Skin.HasSetting(twc-metric)</selected>
-                    <textoffsetx>7</textoffsetx>
-                    <textureradiofocus>twc-radiobutton-focus.png</textureradiofocus>
-                    <textureradionofocus>twc-radiobutton-nofocus.png</textureradionofocus>
-                    <texturefocus border="3">twc-input-focus.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
-                    <pulseonselect>false</pulseonselect>
-                    <onup>400</onup>
-                    <ondown>402</ondown>
-                </control>
-                <!-- Settings 3 -->
-                <control type="button" id="402">
-                    <description>fanart path</description>
-                    <posx>0</posx>
-                    <posy>80</posy>
-                    <width>590</width>
-                    <height>30</height>
-                    <font>font13</font>
-                    <textcolor>FFFFFFFF</textcolor>
-                    <label>SCRIPT402</label>
-                    <label2>$INFO[Skin.String(twc-fanart-path)]</label2>
-                    <align>left</align>
-                    <aligny>center</aligny>
-                    <textoffsetx>7</textoffsetx>
-                    <texturefocus border="3">twc-input-focus.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
-                    <pulseonselect>false</pulseonselect>
-                    <onup>401</onup>
-                    <ondown>403</ondown>
-                </control>
-                <!-- Settings 4 -->
-                <control type="button" id="403">
-                    <description>fanart fade level</description>
-                    <posx>0</posx>
-                    <posy>110</posy>
-                    <width>590</width>
-                    <height>30</height>
-                    <font>font13</font>
-                    <textcolor>FFFFFFFF</textcolor>
-                    <disabledcolor>60ffffff</disabledcolor>
-                    <label>SCRIPT403</label>
-                    <align>left</align>
-                    <aligny>center</aligny>
-                    <textoffsetx>17</textoffsetx>
-                    <texturefocus border="3">twc-input-focus.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
-                    <pulseonselect>false</pulseonselect>
-                    <onfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibFO.png)</onfocus>
-                    <onunfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibNF.png)</onunfocus>
-                    <onup>402</onup>
-                    <ondown>404</ondown>
-                    <enable>!IsEmpty(Skin.String(twc-fanart-path))</enable>
-                </control>
-                <control type="group">
-                    <posx>413</posx>
-                    <posy>117</posy>
-                    <!-- Settings 4a -->
-                    <control type="image">
-                        <description>fanart diffuse level</description>
+                    <ondown>9000</ondown>
+
+                    <!-- Settings 1 -->
+                    <control type="radiobutton" id="400">
+                        <description>enable animations</description>
                         <posx>0</posx>
                         <posy>0</posy>
-                        <width>167</width>
-                        <height>17</height>
-                        <texture>twc-osd_slider_bg.png</texture>
+                        <width>590</width>
+                        <height>30</height>
+                        <font>font13</font>
+                        <textcolor>FFFFFFFF</textcolor>
+                        <label>SCRIPT400</label>
+                        <align>left</align>
+                        <aligny>center</aligny>
+                        <selected>!Skin.HasSetting(twc-animated)</selected>
+                        <textoffsetx>7</textoffsetx>
+                        <textureradiofocus>twc-radiobutton-focus.png</textureradiofocus>
+                        <textureradionofocus>twc-radiobutton-nofocus.png</textureradionofocus>
+                        <texturefocus border="3">twc-input-focus.png</texturefocus>
+                        <texturenofocus>-</texturenofocus>
+                        <pulseonselect>false</pulseonselect>
                     </control>
-                    <!-- Settings 4b -->
-                    <control type="image">
-                        <description>fanart diffuse level not focused</description>
+                    <!-- Settings 2 -->
+                    <control type="radiobutton" id="401">
+                        <description>enable metric</description>
                         <posx>0</posx>
-                        <posy>-3</posy>
-                        <width>12</width>
-                        <height>25</height>
-                        <texture>$INFO[Window.Property(twc-fadelevel-gfx)]</texture>
-                        <animation effect="slide" start="0,0" end="27,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel1)">Conditional</animation>
-                        <animation effect="slide" start="0,0" end="54,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel2)">Conditional</animation>
-                        <animation effect="slide" start="0,0" end="81,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel3)">Conditional</animation>
-                        <animation effect="slide" start="0,0" end="108,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel4)">Conditional</animation>
-                        <animation effect="slide" start="0,0" end="135,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel5)">Conditional</animation>
-                        <animation effect="slide" start="0,0" end="162,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel6)">Conditional</animation>
+                        <posy>0</posy>
+                        <width>590</width>
+                        <height>30</height>
+                        <font>font13</font>
+                        <textcolor>FFFFFFFF</textcolor>
+                        <label>SCRIPT401</label>
+                        <align>left</align>
+                        <aligny>center</aligny>
+                        <selected>Skin.HasSetting(twc-metric)</selected>
+                        <textoffsetx>7</textoffsetx>
+                        <textureradiofocus>twc-radiobutton-focus.png</textureradiofocus>
+                        <textureradionofocus>twc-radiobutton-nofocus.png</textureradionofocus>
+                        <texturefocus border="3">twc-input-focus.png</texturefocus>
+                        <texturenofocus>-</texturenofocus>
+                        <pulseonselect>false</pulseonselect>
                     </control>
-                </control>
-                <!-- Settings 5 -->
-                <control type="radiobutton" id="404">
-                    <description>weather conditions for fanart</description>
-                    <posx>0</posx>
-                    <posy>140</posy>
-                    <width>590</width>
-                    <height>30</height>
-                    <font>font13</font>
-                    <textcolor>FFFFFFFF</textcolor>
-                    <disabledcolor>60ffffff</disabledcolor>
-                    <label>SCRIPT404</label>
-                    <align>left</align>
-                    <aligny>center</aligny>
-                    <selected>Skin.HasSetting(twc-fanart-type)</selected>
-                    <textoffsetx>17</textoffsetx>
-                    <textureradiofocus>twc-radiobutton-focus.png</textureradiofocus>
-                    <textureradionofocus>twc-radiobutton-nofocus.png</textureradionofocus>
-                    <texturefocus border="3">twc-input-focus.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
-                    <pulseonselect>false</pulseonselect>
-                    <enable>!IsEmpty(Skin.String(twc-fanart-path)) + !Skin.HasSetting(twc-fanart-diffuselevel0)</enable>
-                    <onup>403</onup>
-                    <ondown>405</ondown>
-                </control>
-                <!-- Settings 6 -->
-                <control type="radiobutton" id="405">
-                    <description>show alerts at start</description>
-                    <posx>0</posx>
-                    <posy>180</posy>
-                    <width>590</width>
-                    <height>30</height>
-                    <font>font13</font>
-                    <textcolor>FFFFFFFF</textcolor>
-                    <disabledcolor>60ffffff</disabledcolor>
-                    <label>SCRIPT405</label>
-                    <align>left</align>
-                    <aligny>center</aligny>
-                    <selected>!Skin.HasSetting(twc-show-alerts)</selected>
-                    <textoffsetx>7</textoffsetx>
-                    <textureradiofocus>twc-radiobutton-focus.png</textureradiofocus>
-                    <textureradionofocus>twc-radiobutton-nofocus.png</textureradionofocus>
-                    <texturefocus border="3">twc-input-focus.png</texturefocus>
-                    <texturenofocus>-</texturenofocus>
-                    <pulseonselect>false</pulseonselect>
-                    <onup>404</onup>
-                    <ondown>400</ondown>
+
+                    <!-- Settings 3 -->
+                    <control type="radiobutton" id="402">
+                        <description>show alerts at start</description>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>590</width>
+                        <height>30</height>
+                        <font>font13</font>
+                        <textcolor>FFFFFFFF</textcolor>
+                        <disabledcolor>60ffffff</disabledcolor>
+                        <label>SCRIPT402</label>
+                        <align>left</align>
+                        <aligny>center</aligny>
+                        <selected>!Skin.HasSetting(twc-show-alerts)</selected>
+                        <textoffsetx>7</textoffsetx>
+                        <textureradiofocus>twc-radiobutton-focus.png</textureradiofocus>
+                        <textureradionofocus>twc-radiobutton-nofocus.png</textureradionofocus>
+                        <texturefocus border="3">twc-input-focus.png</texturefocus>
+                        <texturenofocus>-</texturenofocus>
+                        <pulseonselect>false</pulseonselect>
+                    </control>
+
+                    <!-- Settings 4 -->
+                    <control type="button" id="403">
+                        <description>map list #1 category</description>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>590</width>
+                        <height>30</height>
+                        <font>font13</font>
+                        <textcolor>FFFFFFFF</textcolor>
+                        <disabledcolor>60ffffff</disabledcolor>
+                        <label>SCRIPT403</label>
+                        <align>left</align>
+                        <aligny>center</aligny>
+                        <label2>$INFO[Skin.String(twc-maplist1-category)]</label2>
+                        <textoffsetx>7</textoffsetx>
+                        <texturefocus border="3">twc-input-focus.png</texturefocus>
+                        <texturenofocus>-</texturenofocus>
+                        <pulseonselect>false</pulseonselect>
+                    </control>
+
+                    <!-- Settings 5 -->
+                    <control type="button" id="404">
+                        <description>map list #2 category</description>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>590</width>
+                        <height>30</height>
+                        <font>font13</font>
+                        <textcolor>FFFFFFFF</textcolor>
+                        <disabledcolor>60ffffff</disabledcolor>
+                        <label>SCRIPT404</label>
+                        <align>left</align>
+                        <aligny>center</aligny>
+                        <label2>$INFO[Skin.String(twc-maplist2-category)]</label2>
+                        <textoffsetx>7</textoffsetx>
+                        <texturefocus border="3">twc-input-focus.png</texturefocus>
+                        <texturenofocus>-</texturenofocus>
+                        <pulseonselect>false</pulseonselect>
+                    </control>
+
+                    <!-- Settings 6 -->
+                    <control type="button" id="405">
+                        <description>map list #3 category</description>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>590</width>
+                        <height>30</height>
+                        <font>font13</font>
+                        <textcolor>FFFFFFFF</textcolor>
+                        <disabledcolor>60ffffff</disabledcolor>
+                        <label>SCRIPT405</label>
+                        <align>left</align>
+                        <aligny>center</aligny>
+                        <label2>$INFO[Skin.String(twc-maplist3-category)]</label2>
+                        <textoffsetx>7</textoffsetx>
+                        <texturefocus border="3">twc-input-focus.png</texturefocus>
+                        <texturenofocus>-</texturenofocus>
+                        <pulseonselect>false</pulseonselect>
+                    </control>
+
+                    <!-- Settings 7 -->
+                    <control type="button" id="406">
+                        <description>fanart path</description>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>590</width>
+                        <height>30</height>
+                        <font>font13</font>
+                        <textcolor>FFFFFFFF</textcolor>
+                        <label>SCRIPT406</label>
+                        <label2>$INFO[Skin.String(twc-fanart-path)]</label2>
+                        <align>left</align>
+                        <aligny>center</aligny>
+                        <textoffsetx>7</textoffsetx>
+                        <texturefocus border="3">twc-input-focus.png</texturefocus>
+                        <texturenofocus>-</texturenofocus>
+                        <pulseonselect>false</pulseonselect>
+                    </control>
+                    <!-- Settings 8 -->
+                    <control type="radiobutton" id="407">
+                        <description>weather conditions for fanart</description>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>590</width>
+                        <height>30</height>
+                        <font>font13</font>
+                        <textcolor>FFFFFFFF</textcolor>
+                        <disabledcolor>60ffffff</disabledcolor>
+                        <label>SCRIPT407</label>
+                        <align>left</align>
+                        <aligny>center</aligny>
+                        <selected>Skin.HasSetting(twc-fanart-type)</selected>
+                        <textoffsetx>17</textoffsetx>
+                        <textureradiofocus>twc-radiobutton-focus.png</textureradiofocus>
+                        <textureradionofocus>twc-radiobutton-nofocus.png</textureradionofocus>
+                        <texturefocus border="3">twc-input-focus.png</texturefocus>
+                        <texturenofocus>-</texturenofocus>
+                        <pulseonselect>false</pulseonselect>
+                        <enable>!IsEmpty(Skin.String(twc-fanart-path))</enable>
+                    </control>
+
+                    <!-- Settings 9 -->
+                    <control type="group" id="9001">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>590</width>
+                        <height>30</height>
+                    <onup>9000</onup>
+                    <ondown>9000</ondown>
+                        <control type="button" id="408">
+                            <description>fanart fade level</description>
+                            <posx>0</posx>
+                            <posy>0</posy>
+                            <width>590</width>
+                            <height>30</height>
+                            <font>font13</font>
+                            <textcolor>FFFFFFFF</textcolor>
+                            <disabledcolor>60ffffff</disabledcolor>
+                            <label>SCRIPT408</label>
+                            <align>left</align>
+                            <aligny>center</aligny>
+                            <textoffsetx>17</textoffsetx>
+                            <texturefocus border="3">twc-input-focus.png</texturefocus>
+                            <texturenofocus>-</texturenofocus>
+                            <pulseonselect>false</pulseonselect>
+                            <onfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibFO.png)</onfocus>
+                            <onunfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibNF.png)</onunfocus>
+                            <enable>!IsEmpty(Skin.String(twc-fanart-path))</enable>
+                        </control>
+                        <!-- Settings 9a -->
+                        <control type="image">
+                            <description>fanart diffuse level</description>
+                            <posx>413</posx>
+                            <posy>5</posy>
+                            <width>167</width>
+                            <height>17</height>
+                            <texture>twc-osd_slider_bg.png</texture>
+                        </control>
+                        <!-- Settings 9b -->
+                        <control type="image">
+                            <description>fanart diffuse level not focused</description>
+                            <posx>413</posx>
+                            <posy>2</posy>
+                            <width>12</width>
+                            <height>25</height>
+                            <texture>$INFO[Window.Property(twc-fadelevel-gfx)]</texture>
+                            <animation effect="slide" start="0,0" end="27,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel1)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="54,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel2)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="81,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel3)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="108,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel4)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="135,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel5)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="162,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel6)">Conditional</animation>
+                        </control>
+                    </control>
                 </control>
                 <!-- Seperator -->
                 <control type="image">
                     <description>seperator</description>
-                    <posx>-50</posx>
+                    <posx>-45</posx>
                     <posy>220</posy>
                     <width>700</width>
                     <height>30</height>
