@@ -130,8 +130,8 @@ class Main:
             finished_path = ""
             for cnt, url in enumerate( asset_files ):
                 items = os.path.split( url )
-                # TODO: Change this to U: for other than xbox
-                drive = xbmc.translatePath( ( "U:\\%s" % self.args.install, "Q:\\%s" % self.args.install, )[ os.environ.get( "OS", "xbox" ) == "xbox" ] )
+                # base path
+                drive = xbmc.translatePath( "/".join( [ "special://home", self.args.install ] ) )
                 # create the script/plugin/skin title
                 parts = items[ 0 ].split( "/" )
                 version = ""

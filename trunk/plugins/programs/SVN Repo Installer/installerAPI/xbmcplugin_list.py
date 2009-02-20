@@ -60,7 +60,7 @@ class _Info:
 
 class Main:
     # base path
-    BASE_CACHE_PATH = os.path.join( xbmc.translatePath( "P:\\Thumbnails" ), "Pictures" )
+    BASE_CACHE_PATH = xbmc.translatePath( "/".join( [ "special://profile", "Thumbnails", "Pictures" ] ) )
 
     def __init__( self ):
         # if this is first run list all the repos
@@ -82,10 +82,10 @@ class Main:
 
     def _get_repos( self ):
         try:
-            repos = os.listdir( os.path.join( os.getcwd().replace( ";", "" ), "resources", "repositories" ) )
+            repos = os.listdir( os.path.join( os.getcwd(), "resources", "repositories" ) )
             # enumerate through the list of categories and add the item to the media list
             for repo in repos:
-                if ( os.path.isdir( os.path.join( os.getcwd().replace( ";", "" ), "resources", "repositories", repo ) ) ):
+                if ( os.path.isdir( os.path.join( os.getcwd(), "resources", "repositories", repo ) ) ):
                     url = "%s?category='root'&repo=%s" % ( sys.argv[ 0 ], repr( urllib.quote_plus( repo ) ) )
                     # set the default icon
                     icon = "DefaultFolder.png"
@@ -107,7 +107,7 @@ class Main:
 
     def _get_repo_info( self ):
         # path to info file
-        repopath = os.path.join( os.getcwd().replace( ";", "" ), "resources", "repositories", self.args.repo, "repo.xml" )
+        repopath = os.path.join( os.getcwd(), "resources", "repositories", self.args.repo, "repo.xml" )
         try:
             # grab a file object
             fileobject = open( repopath, "r" )
