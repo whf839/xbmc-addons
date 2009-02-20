@@ -470,7 +470,7 @@ class GUI( module ):
         if ( xbmc.getCondVisibility( "!IsEmpty(Window.Property(Alerts))" ) and showView ):
             # reset our view
             self._reset_views( self.CONTROL_ALERTS_BUTTON )
-            self.setFocus( self.getControl( self.CONTROL_ALERTS_BUTTON ) )
+            #self.setFocus( self.getControl( self.CONTROL_ALERTS_BUTTON ) )
 
     def _toggle_animated_setting( self ):
         xbmc.executebuiltin( "Skin.ToggleSetting(twc-animated)" )
@@ -591,7 +591,6 @@ class GUI( module ):
                 self._toggle_show_alerts()
             elif ( controlId in self.CONTROL_MAPS_LIST_SETTING_BUTTONS ):
                 self._choose_map_list( controlId )
-            
             #elif ( controlId == self.CONTROL_PLAY_VIDEO_BUTTON ):
             #    xbmc.Player().play( self.CURRENT_WINDOW.getProperty( "Video" ), xbmcgui.ListItem( "Weather Video" ) )
 
