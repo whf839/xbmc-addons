@@ -23,7 +23,7 @@ def showRoot():
 def showCategoriesC():
 		url='http://espnradio.espn.go.com/espnradio/podcast/index'
 		req = urllib2.Request(url)
-		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5')
+		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.6) Gecko/2009011913 Firefox/3.0.6')
 		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
@@ -48,7 +48,7 @@ def showCategoriesC():
 
 def RSS(url):
 		req = urllib2.Request(url)
-		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5')
+		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.6) Gecko/2009011913 Firefox/3.0.6')
 		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
@@ -70,7 +70,7 @@ def RSS(url):
 def showCategoriesB():
 		url='http://espn.go.com/video/'
 		req = urllib2.Request(url)
-		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5')
+		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.6) Gecko/2009011913 Firefox/3.0.6')
 		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
@@ -101,7 +101,7 @@ def showCategoriesB():
 def showCategoriesA():
 		url='http://espn.go.com/video/'
 		req = urllib2.Request(url)
-		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5')
+		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.6) Gecko/2009011913 Firefox/3.0.6')
 		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
@@ -130,7 +130,7 @@ def showCategoriesA():
 def showCategories():
 		url='http://espn.go.com/video/'
 		req = urllib2.Request(url)
-		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5')
+		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.6) Gecko/2009011913 Firefox/3.0.6')
 		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
@@ -159,19 +159,19 @@ def showCategories():
 def showListB(url,name):
 		thisurl=url
 		req = urllib2.Request(url+'&pageNum='+str(int(page))+'&assetURL=http://assets.espn.go.com')
-		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5')
+		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.6) Gecko/2009011913 Firefox/3.0.6')
 		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
 		p=re.compile('<h5>(.+?)</h5>')
-		r=re.compile('<a href="clip\?id=(.+?)&categoryid=(.+?)"><img src="(.+?)"')
+		r=re.compile('<a href="http://(insider.)?espn.go.com/video/clip\?id=(.+?)&categoryid=(.+?)"><img src="(.+?)"')
 		title=p.findall(a)
 		thumbs=r.findall(a)
 		x=0
 		for url2 in thumbs:
 			name=title[x]
-			url='http://sports.espn.go.com/broadband/mpf/config/player/playlist.xml?id=' + thumbs[x][0]
-			thumb=thumbs[x][2]
+			url='http://sports.espn.go.com/broadband/mpf/config/player/playlist.xml?id=' + thumbs[x][1]
+			thumb=thumbs[x][3]
 			name1 = str(int(x+1))+'. '+name
 			li=xbmcgui.ListItem(name1, iconImage=thumb, thumbnailImage=thumb)
 			li.setInfo( type="Video", infoLabels={ "Title": name1 } )
@@ -184,7 +184,7 @@ def showListB(url,name):
 
 def showList(url,name):
 		req = urllib2.Request(url)
-		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5')
+		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.6) Gecko/2009011913 Firefox/3.0.6')
 		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
