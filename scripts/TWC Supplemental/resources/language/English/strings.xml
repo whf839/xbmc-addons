@@ -37,10 +37,15 @@
     <!-- Settings strings -->
     <string id="400">Enable animated maps</string>
     <string id="401">Use metric values</string>
-    <string id="402">Weather fanart path</string>
-    <string id="403">- Fade level</string>
-    <string id="404">- Use weather condition</string>
-    <string id="405">Open alerts tab by default</string>
+    <string id="402">Open alerts tab by default</string>
+    <string id="403">Map List #1 category</string>
+    <string id="404">Map List #2 category</string>
+    <string id="405">Map List #3 category</string>
+    <string id="406">Weather fanart path</string>
+    <string id="407">- Use weather condition</string>
+    <string id="408">- Fade level</string>
+
+    <string id="450">Choose map list</string>
 
     <string id="600">Version</string>
     <string id="601">Author</string>
