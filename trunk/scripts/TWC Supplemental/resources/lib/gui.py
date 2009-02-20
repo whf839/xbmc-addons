@@ -169,9 +169,10 @@ class GUI( module ):
         elif ( path == 2 ):
             xbmc.executebuiltin( "Skin.SetString(twc-mapspath,weather.com/default)" )
 
-    def _fetch_map_list( self ):
+    def _fetch_map_list( self, updateview=True ):
         # reset our view
-        self._reset_views()
+        if ( updateview ):
+            self._reset_views()
         # only run this once
         if ( self.current_map is None ):
             ### clear our maplist exists properties
@@ -218,7 +219,8 @@ class GUI( module ):
             # unlock the gui
             ##xbmcgui.unlock()
             # fetch our map
-            self._fetch_map( self.current_map, self.current_maplist )
+            if ( updateview ):
+                self._fetch_map( self.current_map, self.current_maplist )
 
     def _fetch_map( self, map, controlId ):
         # set the current map
@@ -541,7 +543,7 @@ class GUI( module ):
             xbmc.executebuiltin( "Skin.SetString(twc-maplist%d-category,%s)" % ( maplist - 402, self.TWCClient.BASE_MAPS[ choice ][ 0 ], ) )
             xbmc.executebuiltin( "Skin.SetString(twc-maplist%d-title,%s)" % ( maplist - 402, self.TWCClient.BASE_MAPS[ choice ][ 2 ], ) )
             self.current_map = None
-            self._fetch_map_list()
+            self._fetch_map_list( False )
 
     def exit_script( self ):
         # cancel any timer
