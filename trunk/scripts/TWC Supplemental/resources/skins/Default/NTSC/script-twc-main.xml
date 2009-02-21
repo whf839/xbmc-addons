@@ -209,6 +209,7 @@
                     <onup>3000</onup>
                     <ondown>3000</ondown>
                 </control>
+                <!-- used if first time script is run in a skin -->
                 <control type="button" id="205">
                     <description>Settings Button</description>
                     <posx>500</posx>
@@ -225,12 +226,41 @@
                     <textoffsetx>17</textoffsetx>
                     <texturenofocus border="10">twc-tab-nofocus.png</texturenofocus>
                     <texturefocus border="10">twc-tab-focus.png</texturefocus>
-                    <onfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibNF.png)</onfocus>
+                    <onclick>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibNF.png)</onclick>
+                    <onclick>Skin.SetString(twc-fanart-diffusecolor,60FFFFFF)</onclick>
+                    <onclick>Skin.SetString(twc-fanart-diffusebutton,4082)</onclick>
+                    <onclick>SetFocus(2000)</onclick>
                     <onleft>206</onleft>
                     <onright>200</onright>
                     <onup>3000</onup>
                     <ondown>3000</ondown>
                     <animation effect="slide" start="0,0" end="85,0" time="0" reversible="false" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation>
+                    <visible>IsEmpty(Skin.String(twc-fanart-diffusebutton))</visible>
+                </control>
+                <!-- used if script has already run in a skin -->
+                <control type="button" id="205">
+                    <description>Settings Button</description>
+                    <posx>500</posx>
+                    <posy>100</posy>
+                    <width>85</width>
+                    <height>30</height>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <label>SCRIPT205</label>
+                    <font>font10</font>
+                    <textcolor>ffffffff</textcolor>
+                    <disabledcolor>60ffffff</disabledcolor>
+                    <pulseonselect>false</pulseonselect>
+                    <textoffsetx>17</textoffsetx>
+                    <texturenofocus border="10">twc-tab-nofocus.png</texturenofocus>
+                    <texturefocus border="10">twc-tab-focus.png</texturefocus>
+                    <onclick>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibNF.png)</onclick>
+                    <onleft>206</onleft>
+                    <onright>200</onright>
+                    <onup>3000</onup>
+                    <ondown>3000</ondown>
+                    <animation effect="slide" start="0,0" end="85,0" time="0" reversible="false" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation>
+                    <visible>!IsEmpty(Skin.String(twc-fanart-diffusebutton))</visible>
                 </control>
                 <control type="button" id="206">
                     <description>Alerts Button</description>
@@ -1045,7 +1075,7 @@
                         <height>300</height>
                         <texture>twc-contentpanel.png</texture>
                         <aspectratio>stretch</aspectratio>
-                        <visible>IsEmpty(Skin.String(twc-fanart-path)) | Skin.HasSetting(twc-fanart-diffuselevel0)</visible>
+                        <visible>IsEmpty(Skin.String(twc-fanart-path)) | StringCompare(Skin.String(twc-fanart-diffusecolor),00FFFFFF)</visible>
                     </control>
                     <!-- First 12 hour forecast -->
                     <control type="group">
@@ -1995,7 +2025,7 @@
                         <height>300</height>
                         <texture>twc-contentpanel.png</texture>
                         <aspectratio>stretch</aspectratio>
-                        <visible>IsEmpty(Skin.String(twc-fanart-path)) | Skin.HasSetting(twc-fanart-diffuselevel0)</visible>
+                        <visible>IsEmpty(Skin.String(twc-fanart-path)) | StringCompare(Skin.String(twc-fanart-diffusecolor),00FFFFFF)</visible>
                     </control>
                     <!-- Friday forecast -->
                     <control type="group">
@@ -3303,12 +3333,7 @@
                 <posy>150</posy>
                 <visible>!IsEmpty(Window.Property(view-Settings))</visible>
                 <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
-                
-                
-                
-                
-                
-                
+                <!-- Settings group -->
                 <control type="grouplist" id="9000">
                     <posx>0</posx>
                     <posy>0</posy>
@@ -3320,8 +3345,7 @@
                     <onright>2000</onright>
                     <onup>2000</onup>
                     <ondown>9000</ondown>
-
-                    <!-- Settings 1 -->
+                    <!-- Setting 1 -->
                     <control type="radiobutton" id="400">
                         <description>enable animations</description>
                         <posx>0</posx>
@@ -3341,7 +3365,7 @@
                         <texturenofocus>-</texturenofocus>
                         <pulseonselect>false</pulseonselect>
                     </control>
-                    <!-- Settings 2 -->
+                    <!-- Setting 2 -->
                     <control type="radiobutton" id="401">
                         <description>enable metric</description>
                         <posx>0</posx>
@@ -3362,7 +3386,7 @@
                         <pulseonselect>false</pulseonselect>
                     </control>
 
-                    <!-- Settings 3 -->
+                    <!-- Setting 3 -->
                     <control type="radiobutton" id="402">
                         <description>show alerts at start</description>
                         <posx>0</posx>
@@ -3384,7 +3408,7 @@
                         <pulseonselect>false</pulseonselect>
                     </control>
 
-                    <!-- Settings 4 -->
+                    <!-- Setting 4 -->
                     <control type="button" id="403">
                         <description>map list #1 category</description>
                         <posx>0</posx>
@@ -3404,7 +3428,7 @@
                         <pulseonselect>false</pulseonselect>
                     </control>
 
-                    <!-- Settings 5 -->
+                    <!-- Setting 5 -->
                     <control type="button" id="404">
                         <description>map list #2 category</description>
                         <posx>0</posx>
@@ -3424,7 +3448,7 @@
                         <pulseonselect>false</pulseonselect>
                     </control>
 
-                    <!-- Settings 6 -->
+                    <!-- Setting 6 -->
                     <control type="button" id="405">
                         <description>map list #3 category</description>
                         <posx>0</posx>
@@ -3444,7 +3468,7 @@
                         <pulseonselect>false</pulseonselect>
                     </control>
 
-                    <!-- Settings 7 -->
+                    <!-- Setting 7 -->
                     <control type="button" id="406">
                         <description>fanart path</description>
                         <posx>0</posx>
@@ -3461,8 +3485,10 @@
                         <texturefocus border="3">twc-input-focus.png</texturefocus>
                         <texturenofocus>-</texturenofocus>
                         <pulseonselect>false</pulseonselect>
+                        <onclick>Skin.SetPath(twc-fanart-path)</onclick>
                     </control>
-                    <!-- Settings 8 -->
+
+                    <!-- Setting 8 -->
                     <control type="radiobutton" id="407">
                         <description>weather conditions for fanart</description>
                         <posx>0</posx>
@@ -3483,16 +3509,17 @@
                         <texturenofocus>-</texturenofocus>
                         <pulseonselect>false</pulseonselect>
                         <enable>!IsEmpty(Skin.String(twc-fanart-path))</enable>
+                        <onclick>Skin.ToggleSetting(twc-fanart-type)</onclick>
                     </control>
 
-                    <!-- Settings 9 -->
+                    <!-- Setting 9 -->
                     <control type="group" id="9001">
                         <posx>0</posx>
                         <posy>0</posy>
                         <width>590</width>
                         <height>30</height>
-                    <onup>9000</onup>
-                    <ondown>9000</ondown>
+                        <onup>9000</onup>
+                        <ondown>9000</ondown>
                         <control type="button" id="408">
                             <description>fanart fade level</description>
                             <posx>0</posx>
@@ -3506,16 +3533,161 @@
                             <align>left</align>
                             <aligny>center</aligny>
                             <textoffsetx>17</textoffsetx>
-                            <texturefocus border="3">twc-input-focus.png</texturefocus>
+                            <texturefocus>-</texturefocus>
                             <texturenofocus>-</texturenofocus>
                             <pulseonselect>false</pulseonselect>
                             <onfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibFO.png)</onfocus>
+                            <onfocus>SetFocus($INFO[Skin.String(twc-fanart-diffusebutton)])</onfocus>
                             <onunfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibNF.png)</onunfocus>
                             <enable>!IsEmpty(Skin.String(twc-fanart-path))</enable>
                         </control>
+                        <!-- diffuse level buttons -->
+                        <control type="button" id="4080">
+                            <description>fanart fade level off</description>
+                            <posx>0</posx>
+                            <posy>0</posy>
+                            <width>590</width>
+                            <height>30</height>
+                            <label> </label>
+                            <texturefocus>-</texturefocus>
+                            <texturenofocus>-</texturenofocus>
+                            <onfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibFO.png)</onfocus>
+                            <onfocus>Skin.SetString(twc-fanart-diffusecolor,00FFFFFF)</onfocus>
+                            <onfocus>Skin.SetString(twc-fanart-diffusebutton,4080)</onfocus>
+                            <onunfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibNF.png)</onunfocus>
+                            <onleft>4080</onleft>
+                            <onright>4081</onright>
+                            <onup>407</onup>
+                            <ondown>400</ondown>
+                            <enable>!IsEmpty(Skin.String(twc-fanart-path))</enable>
+                        </control>
+                        <control type="button" id="4081">
+                            <description>fanart fade level 1</description>
+                            <posx>0</posx>
+                            <posy>0</posy>
+                            <width>590</width>
+                            <height>30</height>
+                            <label> </label>
+                            <texturefocus>-</texturefocus>
+                            <texturenofocus>-</texturenofocus>
+                            <onfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibFO.png)</onfocus>
+                            <onfocus>Skin.SetString(twc-fanart-diffusecolor,30FFFFFF)</onfocus>
+                            <onfocus>Skin.SetString(twc-fanart-diffusebutton,4081)</onfocus>
+                            <onunfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibNF.png)</onunfocus>
+                            <onleft>4080</onleft>
+                            <onright>4082</onright>
+                            <onup>407</onup>
+                            <ondown>400</ondown>
+                            <enable>!IsEmpty(Skin.String(twc-fanart-path))</enable>
+                        </control>
+                        <control type="button" id="4082">
+                            <description>fanart fade level 2</description>
+                            <posx>0</posx>
+                            <posy>0</posy>
+                            <width>590</width>
+                            <height>30</height>
+                            <label> </label>
+                            <texturefocus>-</texturefocus>
+                            <texturenofocus>-</texturenofocus>
+                            <onfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibFO.png)</onfocus>
+                            <onfocus>Skin.SetString(twc-fanart-diffusecolor,60FFFFFF)</onfocus>
+                            <onfocus>Skin.SetString(twc-fanart-diffusebutton,4082)</onfocus>
+                            <onunfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibNF.png)</onunfocus>
+                            <onleft>4081</onleft>
+                            <onright>4083</onright>
+                            <onup>407</onup>
+                            <ondown>400</ondown>
+                            <enable>!IsEmpty(Skin.String(twc-fanart-path))</enable>
+                        </control>
+                        <control type="button" id="4083">
+                            <description>fanart fade level 3</description>
+                            <posx>0</posx>
+                            <posy>0</posy>
+                            <width>590</width>
+                            <height>30</height>
+                            <label> </label>
+                            <texturefocus>-</texturefocus>
+                            <texturenofocus>-</texturenofocus>
+                            <onfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibFO.png)</onfocus>
+                            <onfocus>Skin.SetString(twc-fanart-diffusecolor,90FFFFFF)</onfocus>
+                            <onfocus>Skin.SetString(twc-fanart-diffusebutton,4083)</onfocus>
+                            <onunfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibNF.png)</onunfocus>
+                            <onleft>4082</onleft>
+                            <onright>4084</onright>
+                            <onup>407</onup>
+                            <ondown>400</ondown>
+                            <enable>!IsEmpty(Skin.String(twc-fanart-path))</enable>
+                        </control>
+                        <control type="button" id="4084">
+                            <description>fanart fade level 4</description>
+                            <posx>0</posx>
+                            <posy>0</posy>
+                            <width>590</width>
+                            <height>30</height>
+                            <label> </label>
+                            <texturefocus>-</texturefocus>
+                            <texturenofocus>-</texturenofocus>
+                            <onfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibFO.png)</onfocus>
+                            <onfocus>Skin.SetString(twc-fanart-diffusecolor,BBFFFFFF)</onfocus>
+                            <onfocus>Skin.SetString(twc-fanart-diffusebutton,4084)</onfocus>
+                            <onunfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibNF.png)</onunfocus>
+                            <onleft>4083</onleft>
+                            <onright>4085</onright>
+                            <onup>407</onup>
+                            <ondown>400</ondown>
+                            <enable>!IsEmpty(Skin.String(twc-fanart-path))</enable>
+                        </control>
+                        <control type="button" id="4085">
+                            <description>fanart fade level 5</description>
+                            <posx>0</posx>
+                            <posy>0</posy>
+                            <width>590</width>
+                            <height>30</height>
+                            <label> </label>
+                            <texturefocus>-</texturefocus>
+                            <texturenofocus>-</texturenofocus>
+                            <onfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibFO.png)</onfocus>
+                            <onfocus>Skin.SetString(twc-fanart-diffusecolor,DDFFFFFF)</onfocus>
+                            <onfocus>Skin.SetString(twc-fanart-diffusebutton,4085)</onfocus>
+                            <onunfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibNF.png)</onunfocus>
+                            <onleft>4084</onleft>
+                            <onright>4086</onright>
+                            <onup>407</onup>
+                            <ondown>400</ondown>
+                            <enable>!IsEmpty(Skin.String(twc-fanart-path))</enable>
+                        </control>
+                        <control type="button" id="4086">
+                            <description>fanart fade level 6</description>
+                            <posx>0</posx>
+                            <posy>0</posy>
+                            <width>590</width>
+                            <height>30</height>
+                            <label> </label>
+                            <texturefocus>-</texturefocus>
+                            <texturenofocus>-</texturenofocus>
+                            <onfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibFO.png)</onfocus>
+                            <onfocus>Skin.SetString(twc-fanart-diffusecolor,FFFFFFFF)</onfocus>
+                            <onfocus>Skin.SetString(twc-fanart-diffusebutton,4086)</onfocus>
+                            <onunfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibNF.png)</onunfocus>
+                            <onleft>4085</onleft>
+                            <onright>4086</onright>
+                            <onup>407</onup>
+                            <ondown>400</ondown>
+                            <enable>!IsEmpty(Skin.String(twc-fanart-path))</enable>
+                        </control>
+                        <!-- Settings 9 focused texture -->
+                        <control type="image">
+                            <description>fanart diffuse level scale</description>
+                            <posx>0</posx>
+                            <posy>0</posy>
+                            <width>590</width>
+                            <height>30</height>
+                            <texture border="3">twc-input-focus.png</texture>
+                            <visible>Control.HasFocus(408) | Control.HasFocus(4080) | Control.HasFocus(4081) | Control.HasFocus(4082) | Control.HasFocus(4083) | Control.HasFocus(4084) | Control.HasFocus(4085) | Control.HasFocus(4086)</visible>
+                        </control>
                         <!-- Settings 9a -->
                         <control type="image">
-                            <description>fanart diffuse level</description>
+                            <description>fanart diffuse level scale</description>
                             <posx>413</posx>
                             <posy>5</posy>
                             <width>167</width>
@@ -3524,18 +3696,18 @@
                         </control>
                         <!-- Settings 9b -->
                         <control type="image">
-                            <description>fanart diffuse level not focused</description>
+                            <description>fanart diffuse level nib</description>
                             <posx>413</posx>
                             <posy>2</posy>
                             <width>12</width>
                             <height>25</height>
                             <texture>$INFO[Window.Property(twc-fadelevel-gfx)]</texture>
-                            <animation effect="slide" start="0,0" end="27,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel1)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="54,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel2)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="81,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel3)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="108,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel4)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="135,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel5)">Conditional</animation>
-                            <animation effect="slide" start="0,0" end="162,0" time="0" reversible="false" condition="Skin.HasSetting(twc-fanart-diffuselevel6)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="27,0" time="0" reversible="false" condition="StringCompare(Skin.String(twc-fanart-diffusecolor),30FFFFFF)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="54,0" time="0" reversible="false" condition="StringCompare(Skin.String(twc-fanart-diffusecolor),60FFFFFF)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="81,0" time="0" reversible="false" condition="StringCompare(Skin.String(twc-fanart-diffusecolor),90FFFFFF)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="108,0" time="0" reversible="false" condition="StringCompare(Skin.String(twc-fanart-diffusecolor),BBFFFFFF)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="135,0" time="0" reversible="false" condition="StringCompare(Skin.String(twc-fanart-diffusecolor),DDFFFFFF)">Conditional</animation>
+                            <animation effect="slide" start="0,0" end="162,0" time="0" reversible="false" condition="StringCompare(Skin.String(twc-fanart-diffusecolor),FFFFFFFF)">Conditional</animation>
                         </control>
                     </control>
                 </control>

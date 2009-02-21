@@ -83,8 +83,6 @@ class GUI( module ):
         self._reset_views( 0 )
         # set script info
         self._set_script_info()
-        # set default fanart diffuse level
-        self._set_diffuse_level()
         # set default view
         if ( self.defaultview == self.CONTROL_36HOUR_BUTTON ):
             # get our 36 hour forecast
@@ -495,44 +493,6 @@ class GUI( module ):
         self.CURRENT_WINDOW.clearProperty( "Weekend1day" )
         self.CURRENT_WINDOW.clearProperty( "10DayHead1" )
 
-    def _set_fanart_path( self ):
-        # create the dialog object
-        dialog = xbmcgui.Dialog()
-        # get the users input
-        value = dialog.browse( 0, _( 402 ), "files", "", False, False, xbmc.getInfoLabel( "Skin.String(twc-fanart-path)" ) )
-        # set our skin string
-        xbmc.executebuiltin( "Skin.SetString(twc-fanart-path,%s)" % ( value, ) )
-
-    def _set_diffuse_level( self, change=0 ):
-        # oue fade levels 00FFFFFF is off
-        levels = [ "00FFFFFF", "30FFFFFF", "60FFFFFF", "90FFFFFF", "BBFFFFFF", "DDFFFFFF", "FFFFFFFF" ]
-        # get previous setting
-        diffusecolor = xbmc.getInfoLabel( "Skin.String(twc-fanart-diffusecolor)" )
-        # if no previous setting set 60FFFFFF as default (my preference)
-        if ( diffusecolor == "" ):
-            level = 2
-        else:
-            level = levels.index( diffusecolor )
-        # add the change value
-        level += change
-        # make sure level is valid
-        if ( level == len( levels ) ):
-            level = 0
-        elif ( level < 0 ):
-            level = len( levels ) - 1
-        # set our skin setting
-        xbmc.executebuiltin( "Skin.SetString(twc-fanart-diffusecolor,%s)" % ( levels[ level ], ) )
-        # enumerate thru and set the proper diffuselevel
-        for i in range( 7 ):
-            # if this is the level we are at, set true
-            if ( level == i ):
-                xbmc.executebuiltin( "Skin.SetBool(twc-fanart-diffuselevel%d)" % ( i, ) )
-            else:
-                xbmc.executebuiltin( "Skin.Reset(twc-fanart-diffuselevel%d)" % ( i, ) )
-
-    def _set_fanart_type( self ):
-        xbmc.executebuiltin( "Skin.ToggleSetting(twc-fanart-type)" )
-
     def _toggle_show_alerts( self ):
         xbmc.executebuiltin( "Skin.ToggleSetting(twc-show-alerts)" )
 
@@ -581,12 +541,6 @@ class GUI( module ):
                 self._toggle_animated_setting()
             elif ( controlId == self.CONTROL_METRIC_SETTING_BUTTON ):
                 self._toggle_metric_setting()
-            elif ( controlId == self.CONTROL_FANART_SETTING_BUTTON ):
-                self._set_fanart_path()
-            elif ( controlId == self.CONTROL_FANART_DIFFUSE_SETTING_BUTTON ):
-                self._set_diffuse_level( 1 )
-            elif ( controlId == self.CONTROL_FANART_TYPE_SETTING_BUTTON ):
-                self._set_fanart_type()
             elif ( controlId == self.CONTROL_SHOW_ALERTS_SETTING_BUTTON ):
                 self._toggle_show_alerts()
             elif ( controlId in self.CONTROL_MAPS_LIST_SETTING_BUTTONS ):
@@ -609,10 +563,5 @@ class GUI( module ):
                 self._toggle_map()
             elif ( actionId in self.ACTION_SET_DEFAULT and self.toggle ):
                 self._set_default_view()
-            elif ( self.getFocusId() == self.CONTROL_FANART_DIFFUSE_SETTING_BUTTON ):
-                if ( actionId in self.ACTION_MOVEMENT_LEFT ):
-                    self._set_diffuse_level( -1 )
-                elif ( actionId in self.ACTION_MOVEMENT_RIGHT ):
-                    self._set_diffuse_level( 1 )
         except:
             pass
