@@ -56,7 +56,7 @@ def modes( ):
 if ( __name__ == "__main__" ):
         if os.environ.get( 'OS', 'xbox' ) == 'xbox':
             xbmcgui.Dialog().ok(xbmc.getLocalizedString(30098),xbmc.getLocalizedString(30099))
-        elif os.path.isdir(xbmcplugin.getSetting("gnash_path")):
+        elif os.path.exists(xbmcplugin.getSetting("gnash_path")):
             modes ( )
         else:
             xbmcgui.Dialog().ok(xbmc.getLocalizedString(30100),xbmcplugin.getSetting("gnash_path"),xbmc.getLocalizedString(30101),xbmc.getLocalizedString(30102))
