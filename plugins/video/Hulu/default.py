@@ -5,12 +5,15 @@
 import sys
 import os
 import urllib
+import xbmc
+import xbmcgui
+import xbmcplugin
 
 import resources.lib.common as common
 
 #plugin constants
-__plugin__ = "Let's Watch Hulu"
-__author__ = "rwparris2"
+__plugin__ = "Hulu"
+__authors__ = "rwparris2, retalogic"
 __url__ = "http://code.google.com/p/rwparris2-xbmc-plugin/"
 __svn_url__ = "http://rwparris2-xbmc-plugins.googlecode.com/svn/trunk/plugins/video/Lets%20Watch%20Hulu/"
 __credits__ = "zoltar12 for the original hulu plugin, BlueCop for h264 & flv url changes"
@@ -51,8 +54,11 @@ def modes( ):
 
 
 if ( __name__ == "__main__" ):
-        #common.login ( )
-        modes ( )
-        #os.remove(common.COOKIEFILE)
-        
+        if os.environ.get( 'OS', 'xbox' ) == 'xbox':
+            xbmcgui.Dialog().ok(xbmc.getLocalizedString(30098),xbmc.getLocalizedString(30099))
+        elif os.path.isdir(xbmcplugin.getSetting("gnash_path")):
+            modes ( )
+        else:
+            xbmcgui.Dialog().ok(xbmc.getLocalizedString(30100),xbmcplugin.getSetting("gnash_path"),xbmc.getLocalizedString(30101),xbmc.getLocalizedString(30102))
+            
 sys.modules.clear()

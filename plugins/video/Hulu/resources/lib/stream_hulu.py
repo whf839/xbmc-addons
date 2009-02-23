@@ -4,7 +4,7 @@ import xbmcplugin
 import common
 import re
 import sys
-from dec import hulu_decrypt
+from decswf import hulu_decrypt
 from BeautifulSoup import BeautifulSoup, BeautifulStoneSoup
 
 class Main:
