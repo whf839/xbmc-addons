@@ -160,8 +160,8 @@ class Main:
     BASE_CURRENT_URL = "http://www.apple.com/trailers/home/xml/current%s.xml"
 
     # base paths
-    BASE_DATA_PATH = os.path.join( xbmc.translatePath( "P:\\plugin_data" ), "video", sys.modules[ "__main__" ].__plugin__ )
-    BASE_CURRENT_SOURCE_PATH = os.path.join( xbmc.translatePath( "P:\\plugin_data" ), "video", sys.modules[ "__main__" ].__plugin__, "current%s.xml" )
+    BASE_DATA_PATH = os.path.join( xbmc.translatePath( "special://profile/" ), "plugin_data", "video", os.path.basename( os.getcwd() ) )
+    BASE_CURRENT_SOURCE_PATH = os.path.join( xbmc.translatePath( "special://profile/" ), "plugin_data", "video", os.path.basename( os.getcwd() ), "current%s.xml" )
 
     def __init__( self ):
         # get users preference
