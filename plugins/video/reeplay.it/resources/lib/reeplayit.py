@@ -259,7 +259,7 @@ class ReeplayitLib:
 				fn = os.path.join( DIR_CACHE, videoName )
 				if not stream:
 					self.debug("download video")
-					dialogProgress.update(0,  __lang__(223), title)
+					dialogProgress.update(0,  __lang__(223))
 					if not self.retrieve(videoURL, fn=fn):
 						deleteFile(fn)	# delete incase of partial DL
 						fn = ''
@@ -297,7 +297,7 @@ class ReeplayitLib:
 			if not self.isPluginAuth:
 				debug("http authenticate ...")
 				# This is for Plugin; as it won't have done Auth. before getVideo() call
-				dialogProgress.update(0, __lang__(209), title)
+				dialogProgress.update(0, __lang__(209), title)  # loggin in
 				if not self.retrieve(self.URL_PLAYLISTS):
 					dialogProgress.close()
 					messageOK("Error", __lang__(108))	# auth failed.
@@ -305,7 +305,7 @@ class ReeplayitLib:
 					return None
 				self.isPluginAuth = True
 			# video info not cached, download
-			dialogProgress.update(0, __lang__(222), title)
+			dialogProgress.update(0, __lang__(222), title)  # download info
 			data = self.retrieve(infoUrl)
 			saveData(data, docFN)
 
@@ -519,7 +519,7 @@ def deleteScriptCache(deleteVideos=True, deleteData=True):
 			fn, ext = os.path.splitext(f)
 			if ext in deleteExts:
 				deleteFN = os.path.join( DIR_CACHE, f )
-#				deleteFile(deleteFN)
+				deleteFile(deleteFN)
 	except:
 		handleException("deleteScriptCache()")
 
