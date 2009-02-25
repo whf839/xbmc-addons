@@ -77,7 +77,8 @@ class UpdatePlugin:
 							if item[-1] == "/":
 								folders.append( ("%s/%s" % (folders[ 0 ], item)) )
 							else:
-								script_files.append( ("%s/%s" % (folders[ 0 ], item)).replace('//','/') )
+								file = "%s/%s" % (folders[ 0 ], item)
+								script_files.append( file.replace('//','/') )
 					else:
 						xbmc.output("no htmlsource found")
 						raise
@@ -246,15 +247,14 @@ if __name__ == "__main__":
 		version = sys.argv[3]
 		lang_path = xbmc.translatePath( "/".join( ["Q:", "plugins", pluginType, pluginName] ) )
 		xbmc.output("UpdatePlugin() lang_path=%s" % lang_path)
-		up = UpdatePlugin(xbmc.Language( lang_path ).getLocalizedString, pluginName, pluginType)
+		__lang__ = xbmc.Language( lang_path ).getLocalizedString
+		up = UpdatePlugin(__lang__, pluginName, pluginType)
 		up.removeOriginal()
 		up.downloadVersion(version)
-#		cmd = "xbmc.ReplaceWindow(videofiles,%s)" % pluginName
+#		cmd = "XBMC.RunPlugin(plugin://%s/%s/)" % (pluginType, pluginName )
 #		xbmc.output("Updated relaunch cmd=" + cmd)
 #		xbmc.executebuiltin(cmd)
-		cmd = "XBMC.RunPlugin(plugin://%s/%s/)" % (pluginType, pluginName )
-		xbmc.output("Updated relaunch cmd=" + cmd)
-		xbmc.executebuiltin(cmd)
+		xbmcgui.Dialog().ok(pluginName, __lang__(1015), "v"+version)
 	except:
 		traceback.print_exc()
-		xbmcgui.Dialog().ok( "Update Error", "failed to start script update from backup copy!", str( sys.exc_info()[ 1 ] ))
+		xbmcgui.Dialog().ok( "Update Error", "failed to start update from backup copy!", str( sys.exc_info()[ 1 ] ))

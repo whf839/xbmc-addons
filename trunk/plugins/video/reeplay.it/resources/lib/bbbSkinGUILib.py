@@ -63,8 +63,6 @@ class TextBoxDialogXML( xbmcgui.WindowXML ):
 		try:
 			buttonCode =  action.getButtonCode()
 			actionID   =  action.getId()
-			if not actionID:
-				actionID = buttonCode
 		except: return
 		if actionID in EXIT_CODES or buttonCode in EXIT_CODES:
 			self.close()

@@ -21,10 +21,10 @@ from pprint import pprint
 
 __plugin__ = "reeplay.it"
 __scriptname__ = __plugin__
-__version__ = '0.1'
+__version__ = '1.0'
 __author__ = 'BigBellyBilly [BigBellyBilly@gmail.com]'
 __svn_url__ = "http://xbmc-scripting.googlecode.com/svn/trunk/reeplay.it"
-__date__ = '18-02-2009'
+__date__ = '25-02-2009'
 xbmc.output(__scriptname__ + " Version: " + __version__ + " Date: " + __date__)
 
 # Shared resources
@@ -32,7 +32,7 @@ DIR_HOME= os.getcwd().replace(';','')
 DIR_RESOURCES = os.path.join( DIR_HOME, "resources" )
 DIR_RESOURCES_LIB = os.path.join( DIR_RESOURCES, "lib" )
 DIR_USERDATA = '/'.join( ["T:", "plugin_data", "video", __scriptname__] )
-DIR_CACHE = '/'.join( [ DIR_USERDATA, "cache"] )
+DIR_CACHE = xbmc.translatePath('/'.join( [ DIR_USERDATA, "cache"] ))
 sys.path.insert(0, xbmc.translatePath(DIR_RESOURCES_LIB) )
 
 # Load Language using xbmc builtin
@@ -44,7 +44,6 @@ except:
 	print e
 	xbmcgui.Dialog().ok("XBMC Language Error", "Install a newer XBMC build.", e)
 
-import update
 from bbbLib import *
 import reeplayit
 
@@ -73,8 +72,8 @@ class ReeplayitPlugin:
 			pprint (sys.argv)
 
 		if not sys.argv or len(sys.argv) < 3:
-			debug("< __init__() too few argv args %s" % sys.argv)
 			xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=False)
+			debug("< __init__() too few argv args %s" % sys.argv)
 			return
 
 		# allow access to readme/changelog which dont rely on any settings
@@ -87,6 +86,7 @@ class ReeplayitPlugin:
 
 		# load settings - ensuring all ok
 		if not self.loadSettings():
+			xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=False)
 			debug("< settings incomplete, exiting script")
 			return
 
@@ -99,21 +99,22 @@ class ReeplayitPlugin:
 
 
 		if ( not sys.argv[ 2 ] ):
+			# check for svn update
+			if self.settings.get(self.settings.SETTING_CHECK_UPDATE):	# check for update ?
+				if checkUpdate(False, False):
+					xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=False)
+					return
+
 			# new session clear cache of data and maybe videos
 			deleteVideos = self.settings.get(self.settings.SETTING_DELETE_VIDEOS)
 			reeplayit.deleteScriptCache(deleteVideos, deleteData=True)
 
-			# check for svn update
-			if self.settings.get(self.settings.SETTING_CHECK_UPDATE):	# check for update ?
-				if updatePlugin(False, False):
-					xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=False)
-					return
-
+			# get category
 			self.getPlaylists()
 		else:
 			# extract URL params and act accordingly
 			try:
-				paramDict = self._getParams()
+#				paramDict = self._getParams()
 				if paramDict.has_key(self.PARAM_PLS_ID):
 					title = unescape(paramDict[self.PARAM_TITLE])
 					count = int(paramDict[self.PARAM_PLS_COUNT])
@@ -149,15 +150,14 @@ class ReeplayitPlugin:
 		self.settings = reeplayit.ReeplayitSettings()
 		success = self.settings.check()
 		if not success:
-			messageOK(__lang__(0), __lang__(107))
 			# call settings menu - if xbmc builds has feature
 			try:
 				xbmcplugin.openSettings(sys.argv[0])
+				success = self.settings.check()
 			except:
+				# builtin missing from build - inform user to use ContextMenu for settings
 				traceback.print_exc()
-			xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=False)
-#			if xbmcgui.Dialog().yesno(__lang__(0),__lang__(107)):	# edit now? otherwise exit
-#				xbmc.executebuiltin("xbmc.ActivateWindow(contextmenu)")
+				messageOK(__lang__(0), __lang__(107))
 
 		self.debug( "< loadSettings() success=%s" % success)
 		return success
@@ -267,7 +267,7 @@ class ReeplayitPlugin:
 				tbn = os.path.join( DIR_RESOURCES, "next.png")
 				li = xbmcgui.ListItem(title, "", tbn, tbn )
 				ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), \
-							url=li_url, listitem=li, isFolder=True, totalItems=0)
+							url=li_url, listitem=li, isFolder=True, totalItems=videoCount)
 
 			# for each video , extract info and store to a ListItem
 			for li in self.reeplayitLib.videoListItems:
@@ -363,7 +363,6 @@ class ReeplayitPlugin:
 			if xbmcgui.Dialog().yesno(__lang__(0), __lang__(234), "","", __lang__(236), __lang__(235)):
 				xbmcPlaylist.shuffle()
 			playMedia(xbmcPlaylist)
-#			xbmc.executebuiltin("Container.Refresh")
 		except "Empty":
 			self.debug("Empty raised")
 			messageOK(__lang__(0), __lang__(105))		# no videos
@@ -375,10 +374,11 @@ class ReeplayitPlugin:
 
 
 ######################################################################################
-def updatePlugin(silent=False, notifyNotFound=False):
-	debug( "> updatePlugin() silent=%s" % silent)
+def checkUpdate( silent=False, notifyNotFound=False):
+	debug( "> checkUpdate() silent=%s" % silent)
 
 	updated = False
+	import update
 	up = update.UpdatePlugin(__lang__, __plugin__, "video")
 	version = up.getLatestVersion(silent)
 	debug("Current Version: %s Tag Version: %s" % (__version__,version))
@@ -396,7 +396,7 @@ def updatePlugin(silent=False, notifyNotFound=False):
 #		dialogOK(__lang__(0), __lang__(1030))				# no tagged ver found
 
 	del up
-	debug( "< updatePlugin() updated=%s" % updated)
+	debug( "< checkUpdate() updated=%s" % updated)
 	return updated
 
 #######################################################################################################################    
@@ -425,4 +425,4 @@ for m in moduleList:
 try:
 	del dialogProgress
 except: pass
-sys.modules.clear()
+#sys.modules.clear()
