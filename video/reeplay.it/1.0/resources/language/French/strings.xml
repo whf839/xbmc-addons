@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <string id="0">reeplay.it</string>
+
+    <!-- Error messages -->
+    <string id="100">Erreur!</string>
+    <string id="101">Impossible d'ouvrir le fichier!</string>
+    <string id="102">Echec lors du téléargement!</string>
+    <string id="103">Téléargement Annulé</string>
+    <string id="104">Aucune Playlist trouvée!</string>
+    <string id="105">Aucune Videos trouvée!</string>
+    <string id="106">Echec lors du téléchargement dela vidéo!</string>
+    <string id="107">Paramètres du compte utilisateur manquantes[CR]Voulez vous les saisir?</string>
+    <string id="108">Echec Autorisation ![CR]Merci de modifier les Paramètres du Compte Utilisateur</string>
+    <string id="109">Echec lors de la lecture de la Vidéo!</string>
+
+    <!-- General -->
+    <string id="200">Oui</string>
+    <string id="201">Non</string>
+    <string id="202">Annuler</string>
+    <string id="203">Sortir</string>
+    <string id="204">Menu</string>
+    <string id="205">Veuillez patienter ...</string>
+    <string id="206">Succes</string>
+    <string id="207">Téléchargement ...</string>
+    <string id="208">Recherche ....</string>
+    <string id="209">Connection ...</string>
+    <string id="210">Parcours ...</string>
+    <string id="211">Montrer Tout</string>
+    <string id="215">Téléchargement des Playlists ...</string>
+    <string id="217">Téléchargement du contenu de la Playlist ...</string>
+    <string id="219">Page:</string>
+    <string id="221">Page Suivante</string>
+    <string id="222">Téléchargement des informations sur la Vidéo ...</string>
+    <string id="223">Téléchargement de la Vidéo...</string>
+    <string id="233">Jouer la Playlist</string>
+    <string id="234">Ordre de Lecture?</string>
+    <string id="235">Aléatoire</string>
+    <string id="236">Séquentiel</string>
+
+    <!-- menu options -->
+    <string id="30000">Voir le Readme du Script</string>
+    <string id="30001">Voir le ChangeLog du Script</string>
+    <string id="30002">Vérifier les mises a jour du script au Démarrage?</string>
+    <string id="30003">Nom Utilisateur:</string>
+    <string id="30004">Mot de Passe:</string>
+    <string id="30005">Vidéos Par Page:</string>
+	<!-- please update thse -->
+<!--    <string id="30006">Qualité Vidéo:</string>
+    <string id="30007">Supprimer du Cache lors de la sortie:</string>
+    <string id="30008">Mode Playback:</string> -->
+
+    <!-- Update messages -->
+    <string id="1000">Votre version est à jour.</string>
+    <string id="1001">Vérification des mises à jour du script...</string>
+    <string id="1002">est plus recent</string>
+    <string id="1003">Voulez vous mettre à jour?</string>
+    <string id="1004">Récupération de la liste des fichiers...</string>
+    <string id="1005">Veuillez patienter...</string>
+    <string id="1006">Version</string>
+    <string id="1007">Récupération:</string>
+    <string id="1008">Chemin:</string>
+    <string id="1009">Fichier:</string>
+    <string id="1010">Script mis à jour, redémarrage.</string>
+    <string id="1015">Plugin installé.</string>
+    <string id="1016">Dans plugins, faites 'Ajouter Source' afin de terminer l'installation.</string>
+
+    <!-- Update error messages -->
+    <string id="1030">Aucune version avec Tag trouvée!</string>
+    <string id="1031">Erreur lors de la mise à jour du script!</string>
+
+</strings>
