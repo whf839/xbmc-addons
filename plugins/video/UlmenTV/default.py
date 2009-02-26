@@ -4,18 +4,29 @@
 
 import sys, os, os.path
 import xbmc, xbmcgui, xbmcplugin
-import urllib, re
-from shutil import rmtree
+import urllib, re, time
+from shutil import rmtree, copy
+import traceback
 
 __plugin__ = "UlmenTV"
-__version__ = '1.34'
+__version__ = '1.35'
 __author__ = 'bootsy [bootsy82@gmail.com] with much help from BigBellyBilly'
-__date__ = '12-02-2009'
+__date__ = '26-02-2009'
 
-#DIR_USERDATA = "/".join( ["special://masterprofile","plugin_data", __plugin__] )      # T:// - new drive
-DIR_USERDATA = "/".join( ["T:","plugin_data","video", __plugin__] )  # translatePath() will convert to new special://
-DIR_USERDATA_OLD = "/".join( ["T:","plugin_data", __plugin__] )  # translatePath() will convert to new special://
+#DIR_USERDATA = "/".join( ["special://masterprofile","plugin_data","video", __plugin__] )      # T:// - new drive
+DIR_USERDATA = "/".join( ["T:"+os.sep,"plugin_data","video", __plugin__] )  # translatePath() will convert to new special://
+DIR_USERDATA_OLD = "/".join( ["T:"+os.sep,"plugin_data", __plugin__] )  # translatePath() will convert to new special://
 BASE_URL = 'http://www.myspass.de'
+SVN_URL = 'http://xbmc-addons.googlecode.com/svn/tags/plugins/video/' + __plugin__
+
+# TODO: use special:// equiv. - for now stick with translatePath() cos it converts to special:// equiv.
+local_base_dir = "/".join( ['Q:','plugins', 'video'] )
+local_dir = xbmc.translatePath( "/".join( [local_base_dir, __plugin__] ) )
+backup_base_dir = xbmc.translatePath( "/".join( [local_base_dir,'.backups'] ) )
+local_backup_dir = os.path.join( backup_base_dir, __plugin__ )
+
+print 'local dir: ' + local_dir
+print 'backup dir: ' + local_backup_dir
 
 def log(msg):
 	if isinstance(msg,list):
@@ -24,20 +35,133 @@ def log(msg):
 	else:
 		xbmc.output(str(msg))
 
+def errorOK(title="", msg=""):
+	e = str( sys.exc_info()[ 1 ] )
+	log(e)
+	if not title:
+		title = __plugin__
+	if not msg:
+		msg = "ERROR!"
+	xbmcgui.Dialog().ok( title, msg, e )
+	
 dialogProgress = xbmcgui.DialogProgress()
+
+def updateCheck(version=""):
+	""" update plugin from svn - only works against a single file """
+	log("> updateCheck() version=" + version)
+
+	isUpdating = False
+
+	def _parseHTMLSource( htmlsource ):
+		""" parse html source for tagged version and url """
+		log( "_parseHTMLSource()" )
+		try:
+			url = re.search('Revision \d+:(.*?)<', htmlsource, re.IGNORECASE).group(1).strip()
+			tagList = re.compile('<li><a href="(.*?)"', re.MULTILINE+re.IGNORECASE+re.DOTALL).findall(htmlsource)
+			if tagList[0] == "../":
+				del tagList[0]
+			return tagList, url
+		except:
+			return None, None
+
+	def _getLatestVersion():
+		""" checks for latest tag version """
+		version = "-1"
+		try:
+			# get version tags
+			htmlsource = getURL( SVN_URL )
+			if htmlsource:
+				tagList, url = _parseHTMLSource( htmlsource )
+				if tagList:
+					version = tagList[-1].replace("/","")  # remove trailing /
+		except:
+			errorOK()
+		log( "_getLatestVersion() version=%s" % version )
+		return version
+
+
+	# main processing of checking
+	try:
+		dialogProgress.create(__plugin__)
+		path = os.getcwd().replace(';','')
+		log('current path:' + path)
+		if not version or path == local_dir:
+			dialogProgress.update(0, "Checking for new version...")
+			# get svn version and check if newer
+			SVN_V = _getLatestVersion()
+
+			currVerMsg = 'Current Version: ' + __version__
+			newVerMsg = 'SVN Version: ' + SVN_V
+
+			if SVN_V != -1 and SVN_V > __version__ and \
+				xbmcgui.Dialog().yesno(__plugin__,"New version available! ",  currVerMsg, newVerMsg, "Cancel", "Update"):
+				dialogProgress.update(0, "Making backup ...")
+
+				file = 'default.py'
+				dest = os.path.join( local_backup_dir,file )
+				src = os.path.join( local_dir,file )
+
+				try:
+					os.makedirs( local_backup_dir )
+					log("created " + local_backup_dir)
+				except:
+					# exists, remove file
+					try:
+						os.remove(dest)
+						log("removed " + dest)
+					except: pass
+
+				try:
+					# copy to backup
+					log("copy file from=" + src)
+					copy(src, dest)
+				except:
+					errorOK(msg="Failed to backup file")
+				else:
+					dialogProgress.update(100, "Issuing update ...")
+					cmd = "XBMC.RunPlugin(plugin://%s/%s/%s?updating=%s)" % ('video', '.backups', __plugin__,SVN_V )
+					log("cmd=" + cmd)
+					xbmc.executebuiltin(cmd)
+					isUpdating = True
+		elif version or path == local_backup_dir:
+			dialogProgress.update(0, "Installing update ...")
+			file = 'default.py'
+			src = "/".join( [SVN_URL,version,file] )
+			dest = os.path.join( local_dir,file )
+
+			try:
+				# remove orig
+				os.remove(dest)
+				log("remove orig dir=" + dest)
+			except: pass
+
+			log("urlretrieve src=%s dest=%s" % (src, dest))
+			urllib.urlretrieve( src,  dest)
+
+			dialogProgress.update(100)
+			xbmcgui.Dialog().ok(__plugin__, "Update completed!", 'Please restart plugin')
+			log('Update complete')
+			isUpdating = True
+
+		dialogProgress.close()
+	except:
+		dialogProgress.close()
+		errorOK(msg="Update Failed!")
+
+	log("< updateCheck() isUpdating=%s" % isUpdating)
+	return isUpdating
 
 # Get all Categories.
 def getUlmenCats():
 	log("> getUlmenCats()")
 	res=[]
 	url = BASE_URL + "/de/ulmentv/index.html"
-	doc = fetchText(url)
+	doc = getURL(url)
 	if doc:
 		p=re.compile('class="(?:active|inactive).*?href="(.*?)">(.*?)</a', re.DOTALL + re.MULTILINE + re.IGNORECASE)
 		matches=p.findall(doc)
 		for url,name in matches:
 			res.append((url, name.replace('<br />',' ')))
-
 		log(res)
 	log("< getUlmenCats()")
 	return res
@@ -46,7 +170,7 @@ def getUlmenCats():
 def getUlmenepisodes(url,name):
 	log("> getUlmenepisodes()")
 	res=[]
-	doc = fetchText(url)
+	doc = getURL(url)
 	if doc:
 		p1=re.compile('class="my_chapter_headline">(.*?)</div>(.*?)<!--my_videoslider_line', re.DOTALL + re.MULTILINE + re.IGNORECASE)				# bbb
 		p2=re.compile('class="my_video_headline">(.*?)</.*?(http.*?jpg).*?href="(.*?)" title="(.*?)"', re.DOTALL + re.MULTILINE + re.IGNORECASE)		
@@ -69,7 +193,7 @@ def getUlmenNewEpisodes(name):
 	log("> getUlmenNewEpisodes()")
 	res=[]
 	url = BASE_URL + '/de/ajax/utv/utv_videolist_newest.html?owner=UlmenTV'
-	doc = fetchText(url)
+	doc = getURL(url)
 	if doc:
 		p=re.compile('url\(\'(.*?)\'.*?href="(.*?)".*?title="(.*?)"', re.DOTALL + re.MULTILINE + re.IGNORECASE)
 		matches=p.findall(doc)
@@ -95,22 +219,21 @@ def fetchVideoLink(url):
 		p=re.compile('<div style=.+? <a href="(.+?)" rel="nofollow".+?">.+?</a></div>', re.DOTALL + re.MULTILINE + re.IGNORECASE)
 		matches=p.findall(doc)
 		url=matches[0]
-	return url	
+	return url
 
 # fetch webpage
-def fetchText(url):
-	doc = ""
+def getURL(url):
+	""" read a doc from a url """
 	try:
-		log('fetchText() url=%s' % url)
-		f=urllib.urlopen(url)
-		doc=f.read()
-		f.close()
-		doc=unicode(doc, 'UTF-8')
+		safe_url = url.replace( " ", "%20" )
+		log('getURL() url=%s' % safe_url)
+		sock = urllib.urlopen( safe_url )
+		doc = sock.read()
+		sock.close()
+		return unicode(doc, 'UTF-8')
 	except:
-		msg = sys.exc_info()[ 1 ]
-		print msg
-		xbmcgui.Dialog().ok("WebPage Download failed!", msg)
-	return doc
+		errorOK()
+		return None
 
 # fetch media file
 def fetchBinary(url):
@@ -137,17 +260,19 @@ def fetchBinary(url):
 		return ''
 	
 def get_params():
-	""" extract params from argv[2] to make a dict (key=value) """
-	log("get_params() argv[2]=%s" % sys.argv[2])
-	paramDict = {}
-	if sys.argv[2]:
-		paramPairs=sys.argv[2][1:].split( "&" )
-		for paramsPair in paramPairs:
-			paramSplits = paramsPair.split('=')
-			if (len(paramSplits))==2:
-				paramDict[paramSplits[0]] = paramSplits[1]
-
-	return paramDict
+    """ extract params from argv[2] to make a dict (key=value) """
+    paramDict = {}
+    try:
+        print "get_params() argv=", sys.argv
+        if sys.argv[2]:
+            paramPairs=sys.argv[2][1:].split( "&" )
+            for paramsPair in paramPairs:
+                paramSplits = paramsPair.split('=')
+                if (len(paramSplits))==2:
+                    paramDict[paramSplits[0]] = paramSplits[1]
+    except:
+        errorOK()
+    return paramDict
 
 # add a link to directory
 def addLink(name, url, img):
@@ -197,53 +322,54 @@ def showShows(url,name):
 #######################################################################################################################    
 # BEGIN !
 #######################################################################################################################
-try:
-	# used to save thumbnail images
-	d = xbmc.translatePath(DIR_USERDATA)
-	os.makedirs( d )
-	log("created " + d)
-except: pass
-			
-try:
-	# used to remove old thumbnails + folder
-	d = xbmc.translatePath(DIR_USERDATA_OLD)
-	rmtree(d, ignore_errors=True)
-	log("removed " + d)
-except: pass
 
-
+updating = False
 params=get_params()
-url=None
-name=None
-mode=None
-try:
-		url=urllib.unquote_plus(params["url"])
-except:
-		pass
-try:
-		name=urllib.unquote_plus(params["name"])
-except:
-		pass
-try:
-		mode=int(params["mode"])
-except:
-		pass
-log("Mode: "+str(mode))
-log("URL: "+str(url))
-log("Name: "+str(name))
-if mode==None or url==None or len(url)<1:
+if not params:
+	# first run, check for update
+	updating = updateCheck()
+else:
+	version = params.get("updating", None)
+	if version:
+		updating = updateCheck(version)
+
+if not updating:
+	try:
+		# used to save thumbnail images
+		d = xbmc.translatePath(DIR_USERDATA)
+		os.makedirs( d )
+		log("created " + d)
+	except: pass
+
+	try:
+		# used to remove old thumbnails + folder
+		d = xbmc.translatePath(DIR_USERDATA_OLD)
+		if os.path.exists( d ):
+			rmtree( d )
+			log("removed " + d)
+	except: pass
+
+	url=urllib.unquote_plus(params.get("url", ""))
+	name=urllib.unquote_plus(params.get("name",""))
+	mode=int(params.get("mode","0"))
+	log("Mode: "+str(mode))
+	log("URL: "+str(url))
+	log("Name: "+str(name))
+
+	if mode==0 or not url:
 		log("categories")
 		showCats(url,name)
-elif mode==1:
+	elif mode==1:
 		log("shows")
 		showShows(url,name)
-elif mode==2:
+	elif mode==2:
 		log("Next: "+url)
 		#showVidlinks(url)
-elif mode==3:
+	elif mode==3:
 		log("show eps: "+url+" - "+name)
 		showEpisodes(url)
-elif mode==4:
+	elif mode==4:
 		log("show vidlinks")
 		showVidLinks(url)
-xbmcplugin.endOfDirectory(int(sys.argv[1]))
+	ok = True
+	xbmcplugin.endOfDirectory(int(sys.argv[1]), ok)
