@@ -24,7 +24,6 @@ class Main:
 
     # base paths
     BASE_PLUGIN_THUMBNAIL_PATH = os.path.join( os.getcwd(), "thumbnails" )
-    BASE_AUTH_FILE_PATH = "/".join( [ "special://profile", "plugin_data", "pictures", os.path.basename( os.getcwd() ), "authfile.txt" ] )
     BASE_PRESETS_PATH = "/".join( [ "special://profile", "plugin_data", "pictures", os.path.basename( os.getcwd() ) ] )
 
     # flickr client
@@ -60,15 +59,7 @@ class Main:
         exec "self.args = _Info(%s)" % ( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ), )
 
     def _get_authkey( self ):
-        self.authkey = ""
-        # we only need to authenticate one time (TODO: verify this)
-        if ( os.path.isfile( self.BASE_AUTH_FILE_PATH ) ):
-            # grab a file object
-            fileobject = open( self.BASE_AUTH_FILE_PATH, "r" )
-            # read the query
-            self.authkey = fileobject.read().strip()
-            # close # file object
-            fileobject.close()
+        self.authtoken = xbmcplugin.getSetting( "authtoken" )
 
     def _get_items( self ):
         try:
@@ -111,7 +102,7 @@ class Main:
 
     def flickr_photosets_getList( self ):
         items = []
-        photosets = self.client.flickr_photosets_getList( user_id=self.args.usernsid, auth_token=self.authkey )
+        photosets = self.client.flickr_photosets_getList( user_id=self.args.usernsid, auth_token=self.authtoken )
         if ( photosets[ "stat" ] == "ok" ):
             for photoset in photosets[ "photosets" ][ "photoset" ]:
                 # if full details leave thumbnail blank, so a thumb will be created(sloooooooow)
@@ -131,10 +122,10 @@ class Main:
 
     def flickr_photos_getContactsPublicPhotos( self ):
         items = []
-        if ( self.authkey ):
-            contacts = self.client.flickr_photos_getContactsPhotos( user_id=self.args.usernsid, auth_token=self.authkey, count=100, single_photo=1, include_self=0 )
+        if ( self.authtoken ):
+            contacts = self.client.flickr_photos_getContactsPhotos( user_id=self.args.usernsid, auth_token=self.authtoken, count=100, single_photo=1, include_self=0 )
         else:
-            contacts = self.client.flickr_photos_getContactsPublicPhotos( user_id=self.args.usernsid, auth_token=self.authkey, count=100, single_photo=1, include_self=0 )
+            contacts = self.client.flickr_photos_getContactsPublicPhotos( user_id=self.args.usernsid, auth_token=self.authtoken, count=100, single_photo=1, include_self=0 )
         if ( contacts[ "stat" ] == "ok" ):
             for contact in contacts[ "photos" ][ "photo" ]:
                 thumbnail_url = self.BASE_THUMBNAIL_URL % ( contact[ "farm" ], contact[ "server" ], contact[ "id" ], contact[ "secret" ], )
@@ -150,7 +141,7 @@ class Main:
 
     def flickr_people_getPublicGroups( self ):
         items = []
-        groups = self.client.flickr_people_getPublicGroups( user_id=self.args.usernsid, auth_token=self.authkey )
+        groups = self.client.flickr_people_getPublicGroups( user_id=self.args.usernsid, auth_token=self.authtoken )
         if ( groups[ "stat" ] == "ok" ):
             for group in groups[ "groups" ][ "group" ]:
                 # doesn't return much
@@ -204,7 +195,7 @@ class Main:
         # we need to set the title to our query
         self.args.title = self.args.pq
         # perform the query
-        items_dict = self.client.flickr_photos_search( text=self.args.pq, auth_token=self.authkey, per_page=self.settings[ "perpage" ], page=self.args.page, user_id=user_id, tags=tags, tag_mode=tag_mode, content_type=content_type, machine_tags=machine_tags, machine_tag_mode=machine_tag_mode, group_id=group_id, extras=u"date_upload,date_taken,owner_name,original_format" )
+        items_dict = self.client.flickr_photos_search( text=self.args.pq, auth_token=self.authtoken, per_page=self.settings[ "perpage" ], page=self.args.page, user_id=user_id, tags=tags, tag_mode=tag_mode, content_type=content_type, machine_tags=machine_tags, machine_tag_mode=machine_tag_mode, group_id=group_id, extras=u"date_upload,date_taken,owner_name,original_format" )
         return self._set_pictures( items_dict[ "stat" ] == "ok", items_dict[ "photos" ][ "photo" ], self.args.page, items_dict[ "photos" ][ "pages" ], items_dict[ "photos" ][ "perpage" ], items_dict[ "photos" ][ "total" ] )
 
     def flickr_groups_search( self ):
@@ -218,7 +209,7 @@ class Main:
         if ( self.args.gq == "" ): return None
         items = []
         # perform the query
-        groups = self.client.flickr_groups_search( text=self.args.gq, auth_token=self.authkey, per_page=self.settings[ "perpage" ], page=self.args.page )
+        groups = self.client.flickr_groups_search( text=self.args.gq, auth_token=self.authtoken, per_page=self.settings[ "perpage" ], page=self.args.page )
         if ( groups[ "stat" ] == "ok" ):
             # get our previous and/or next page item
             items = self._get_pages( xbmc.getLocalizedString( 30905 ), groups[ "groups" ][ "page" ], groups[ "groups" ][ "pages" ], groups[ "groups" ][ "perpage" ], groups[ "groups" ][ "total" ] )
@@ -244,35 +235,35 @@ class Main:
         return items
 
     def flickr_favorites_getPublicList( self ):
-        if ( self.authkey ):
-            items_dict = self.client.flickr_favorites_getList( user_id=self.args.userid, auth_token=self.authkey, per_page=self.settings[ "perpage" ], page=self.args.page, extras=u"date_upload,date_taken,owner_name,original_format" )
+        if ( self.authtoken ):
+            items_dict = self.client.flickr_favorites_getList( user_id=self.args.userid, auth_token=self.authtoken, per_page=self.settings[ "perpage" ], page=self.args.page, extras=u"date_upload,date_taken,owner_name,original_format" )
         else:
-            items_dict = self.client.flickr_favorites_getPublicList( user_id=self.args.userid, auth_token=self.authkey, per_page=self.settings[ "perpage" ], page=self.args.page, extras=u"date_upload,date_taken,owner_name,original_format" )
+            items_dict = self.client.flickr_favorites_getPublicList( user_id=self.args.userid, auth_token=self.authtoken, per_page=self.settings[ "perpage" ], page=self.args.page, extras=u"date_upload,date_taken,owner_name,original_format" )
         return self._set_pictures( items_dict[ "stat" ] == "ok", items_dict[ "photos" ][ "photo" ], self.args.page, items_dict[ "photos" ][ "pages" ], items_dict[ "photos" ][ "perpage" ], items_dict[ "photos" ][ "total" ] )
 
     def flickr_groups_pools_getPhotos( self ):
-        items_dict = self.client.flickr_groups_pools_getPhotos( group_id=self.args.groupid, auth_token=self.authkey, per_page=self.settings[ "perpage" ], page=self.args.page, extras="date_upload,date_taken,owner_name,original_format" )
+        items_dict = self.client.flickr_groups_pools_getPhotos( group_id=self.args.groupid, auth_token=self.authtoken, per_page=self.settings[ "perpage" ], page=self.args.page, extras="date_upload,date_taken,owner_name,original_format" )
         return self._set_pictures( items_dict[ "stat" ] == "ok", items_dict[ "photos" ][ "photo" ], self.args.page, items_dict[ "photos" ][ "pages" ], items_dict[ "photos" ][ "perpage" ], items_dict[ "photos" ][ "total" ] )
 
     def flickr_interestingness_getList( self ):
         # TODO: get and use a date
-        items_dict = self.client.flickr_interestingness_getList( auth_token=self.authkey, per_page=self.settings[ "perpage" ], page=self.args.page, extras=u"date_upload,date_taken,owner_name,original_format" )
+        items_dict = self.client.flickr_interestingness_getList( auth_token=self.authtoken, per_page=self.settings[ "perpage" ], page=self.args.page, extras=u"date_upload,date_taken,owner_name,original_format" )
         return self._set_pictures( items_dict[ "stat" ] == "ok", items_dict[ "photos" ][ "photo" ], self.args.page, items_dict[ "photos" ][ "pages" ], items_dict[ "photos" ][ "perpage" ], items_dict[ "photos" ][ "total" ] )
 
     def flickr_people_getPublicPhotos( self ):
-        items_dict = self.client.flickr_people_getPublicPhotos( user_id=self.args.userid, auth_token=self.authkey, safe_search=self.settings[ "safe_search" ], per_page=self.settings[ "perpage" ], page=self.args.page, extras=u"date_upload,date_taken,owner_name,original_format" )
+        items_dict = self.client.flickr_people_getPublicPhotos( user_id=self.args.userid, auth_token=self.authtoken, safe_search=self.settings[ "safe_search" ], per_page=self.settings[ "perpage" ], page=self.args.page, extras=u"date_upload,date_taken,owner_name,original_format" )
         return self._set_pictures( items_dict[ "stat" ] == "ok", items_dict[ "photos" ][ "photo" ], self.args.page, items_dict[ "photos" ][ "pages" ], items_dict[ "photos" ][ "perpage" ], items_dict[ "photos" ][ "total" ] )
 
     def flickr_photos_getRecent( self ):
-        items_dict = self.client.flickr_photos_getRecent( user_id=self.args.userid, auth_token=self.authkey, per_page=self.settings[ "perpage" ], page=self.args.page, extras=u"date_upload,date_taken,owner_name,original_format" )
+        items_dict = self.client.flickr_photos_getRecent( user_id=self.args.userid, auth_token=self.authtoken, per_page=self.settings[ "perpage" ], page=self.args.page, extras=u"date_upload,date_taken,owner_name,original_format" )
         return self._set_pictures( items_dict[ "stat" ] == "ok", items_dict[ "photos" ][ "photo" ], self.args.page, items_dict[ "photos" ][ "pages" ], items_dict[ "photos" ][ "perpage" ], items_dict[ "photos" ][ "total" ] )
 
     def flickr_photosets_getPhotos( self ):
-        items_dict = self.client.flickr_photosets_getPhotos( photoset_id=self.args.photosetid, auth_token=self.authkey, privacy_filter=self.settings[ "privacy_filter" ], per_page=self.settings[ "perpage" ], page=self.args.page, extras=u"date_upload,date_taken,owner_name,original_format" )
+        items_dict = self.client.flickr_photosets_getPhotos( photoset_id=self.args.photosetid, auth_token=self.authtoken, privacy_filter=self.settings[ "privacy_filter" ], per_page=self.settings[ "perpage" ], page=self.args.page, extras=u"date_upload,date_taken,owner_name,original_format" )
         return self._set_pictures( items_dict[ "stat" ] == "ok", items_dict[ "photoset" ][ "photo" ], self.args.page, items_dict[ "photoset" ][ "pages" ], items_dict[ "photoset" ][ "per_page" ], items_dict[ "photoset" ][ "total" ] )
 
     def flickr_photos_getInfo( self ): # TODO: add secret
-        items_dict = self.client.flickr_photos_getInfo( photo_id=self.args.photoid, auth_token=self.authkey )
+        items_dict = self.client.flickr_photos_getInfo( photo_id=self.args.photoid, auth_token=self.authtoken )
         return self._set_pictures( items_dict[ "stat" ] == "ok", items_dict[ "photos" ][ "photo" ], self.args.page, items_dict[ "photos" ][ "pages" ], items_dict[ "photos" ][ "perpage" ], items_dict[ "photos" ][ "total" ] )
 
     def _set_pictures( self, ok, items_dict, page, pages, perpage, total ):
@@ -287,7 +278,7 @@ class Main:
                 for item in items_dict:
                     description = ""
                     if ( self.settings[ "full_details" ] ):
-                        info = self.client.flickr_photos_getInfo( auth_token=self.authkey, photo_id=item[ "id" ], secret=item[ "secret" ] )
+                        info = self.client.flickr_photos_getInfo( auth_token=self.authtoken, photo_id=item[ "id" ], secret=item[ "secret" ] )
                         exec 'description=u"%s"' % ( info[ "photo" ][ "description" ][ "_content" ].replace( '"', '\\"' ).replace( '\n', '\\n' ).replace( '\r', '\\r' ), )
                     # create the thumbnail url and if no original format available, we set our url for something to view when clicked
                     url = thumbnail_url = self.BASE_THUMBNAIL_URL % ( item[ "farm" ], item[ "server" ], item[ "id" ], item[ "secret" ], )

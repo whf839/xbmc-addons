@@ -53,10 +53,11 @@ class Main:
         try:
             self.user_id = ""
             self.user_nsid = ""
-            # if this is first run open settings
-            self.openSettings()
-            # get the users id
+            # if this is first run open settings and authenticate
+            self.runOnce()
+            # get the users id and token
             userid = xbmcplugin.getSetting( "user_id" )
+            self.authtoken = xbmcplugin.getSetting( "authtoken" )
             # if user did not edit settings, return
             if ( userid == "" ): return True
             # flickr client
@@ -81,32 +82,52 @@ class Main:
             xbmcgui.Dialog().ok( xbmc.getLocalizedString( 30900 ), xbmc.getLocalizedString( 30901 ), xbmc.getLocalizedString( 30902 ) )
         return ok
 
-    def openSettings( self ):
-        try:
-            # is this the first time plugin was run and user has not set email
-            if ( not sys.argv[ 2 ] and xbmcplugin.getSetting( "user_id" ) == "" and xbmcplugin.getSetting( "runonce" ) == "" ):
-                # set runonce
-                xbmcplugin.setSetting( "runonce", "1" )
-                # open settings
-                xbmcplugin.openSettings( sys.argv[ 0 ] )
-        except:
-            # new methods not in build
-            pass
+    def runOnce( self ):
+        # is this the first time plugin was run and user has not set email
+        if ( not sys.argv[ 2 ] and xbmcplugin.getSetting( "user_id" ) == "" and xbmcplugin.getSetting( "runonce" ) != "1" and xbmcplugin.getSetting( "runonce" ) != "2" ):
+            # set runonce
+            xbmcplugin.setSetting( "runonce", "1" )
+            # sleep for xbox so dialogs don't clash. (TODO: report this as a bug?)
+            if ( os.environ.get( "OS", "n/a" ) == "xbox" ):
+                xbmc.sleep( 2000 )
+            # open settings
+            xbmcplugin.openSettings( sys.argv[ 0 ] )
+        # check again to see if authentication is necessary
+        if ( not sys.argv[ 2 ] and xbmcplugin.getSetting( "user_id" ) != "" and xbmcplugin.getSetting( "runonce" ) != "2" ):
+            # set runonce
+            xbmcplugin.setSetting( "runonce", "2" )
+            # sleep for xbox so dialogs don't clash. (TODO: report this as a bug?)
+            if ( os.environ.get( "OS", "n/a" ) == "xbox" ):
+                xbmc.sleep( 2000 )
+            # ask user if they want to authenticate
+            ok = xbmcgui.Dialog().yesno( xbmc.getLocalizedString( 30907 ), xbmc.getLocalizedString( 30908 ), "", xbmc.getLocalizedString( 30909 ), xbmc.getLocalizedString( 30910 ), xbmc.getLocalizedString( 30911 ) )
+            # authenticate
+            if (ok ):
+                self.authenticate()
+
+    def authenticate( self ):
+        # flickr client
+        client = FlickrClient( api_key=True, secret=True )
+        # authenticate
+        authtoken = client.authenticate()
+        # write it to the settings file
+        if ( authtoken ):
+            xbmcplugin.setSetting( "authtoken", authtoken )
 
     def _get_root_categories( self, root=True ):
         try:
             # default categories
             if ( root ):
                 categories = (
-                                    ( xbmc.getLocalizedString( 30950 ), "flickr_photosets_getList", True, "", "", 0, "", 0, ),
-                                    ( xbmc.getLocalizedString( 30951 ), "flickr_photos_getRecent", False, "", "", 0, "", 0, ),
-                                    ( xbmc.getLocalizedString( 30952 ), "flickr_people_getPublicPhotos", True, "", "", 0, "", 0, ),
-                                    ( xbmc.getLocalizedString( 30953 ), "flickr_interestingness_getList", False, "", "", 0, "", 0, ),
-                                    ( xbmc.getLocalizedString( 30954 ), "flickr_favorites_getPublicList", True, "", "", 0, "", 0, ),
-                                    ( xbmc.getLocalizedString( 30955 ), "flickr_photos_getContactsPublicPhotos", True, "", "", 0, "", 0, ),
-                                    ( xbmc.getLocalizedString( 30956 ), "flickr_people_getPublicGroups", True, "", "", 0, "", 0, ),
-                                    ( xbmc.getLocalizedString( 30959 ), "presets_groups", False, "", "", 0, "", 0, ),
-                                    ( xbmc.getLocalizedString( 30960 ), "presets_photos", False, "", "", 0, "", 0, ),
+                                    ( xbmc.getLocalizedString( 30950 ), "flickr_photosets_getList", True, "", "", 0, "", 0, False, ),
+                                    ( xbmc.getLocalizedString( 30951 ), "flickr_photos_getRecent", False, "", "", 0, "", 0, False, ),
+                                    ( xbmc.getLocalizedString( 30952 ), "flickr_people_getPublicPhotos", True, "", "", 0, "", 0, False, ),
+                                    ( xbmc.getLocalizedString( 30953 ), "flickr_interestingness_getList", False, "", "", 0, "", 0, False, ),
+                                    ( xbmc.getLocalizedString( 30954 ), "flickr_favorites_getPublicList", True, "", "", 0, "", 0, False, ),
+                                    ( xbmc.getLocalizedString( 30955 ), "flickr_photos_getContactsPublicPhotos", True, "", "", 0, "", 0, False, ),
+                                    ( xbmc.getLocalizedString( 30956 ), "flickr_people_getPublicGroups", True, "", "", 0, "", 0, False, ),
+                                    ( xbmc.getLocalizedString( 30959 ), "presets_groups", False, "", "", 0, "", 0, False, ),
+                                    ( xbmc.getLocalizedString( 30960 ), "presets_photos", False, "", "", 0, "", 0, False, ),
                                     )
             # photo preset category
             elif ( "category='presets_photos'" in sys.argv[ 2 ] ):
@@ -133,9 +154,9 @@ class Main:
         categories = ()
         # add our new search item
         if ( ptype ):
-            categories += ( ( xbmc.getLocalizedString( 30957 ), "flickr_groups_search", False, "", "", 1, "", time.time(), ), )
+            categories += ( ( xbmc.getLocalizedString( 30957 ), "flickr_groups_search", False, "", "", 1, "", time.time(), False, ), )
         else:
-            categories += ( ( xbmc.getLocalizedString( 30958 ), "flickr_photos_search", False, "", "", 2, "", time.time(), ), )
+            categories += ( ( xbmc.getLocalizedString( 30958 ), "flickr_photos_search", False, "", "", 2, "", time.time(), False, ), )
         # fetch saved presets
         try:
             # grab a file object
@@ -162,7 +183,7 @@ class Main:
                 else:
                     pq = query.split( " | " )[ 0 ].encode( "utf-8" )
                 # add preset to our dictionary
-                categories += ( ( query.split( " | " )[ 0 ].encode( "utf-8" ), categories[ 0 ][ 1 ], False, pq, gq, 0, thumbnail, 0, ), )
+                categories += ( ( query.split( " | " )[ 0 ].encode( "utf-8" ), categories[ 0 ][ 1 ], False, pq, gq, 0, thumbnail, 0, False, ), )
             except:
                 # oops print error message
                 print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
@@ -172,9 +193,10 @@ class Main:
         try:
             ok = True
             # enumerate through the list of categories and add the item to the media list
-            for ( ltitle, method, userid_required, pq, gq, issearch, thumbnail, time, ) in categories:
+            for ( ltitle, method, userid_required, pq, gq, issearch, thumbnail, time, authtoken_required, ) in categories:
                 # if a user id is required for category and none supplied, skip category
                 if ( userid_required and self.user_id == "" ): continue
+                if ( authtoken_required and self.authtoken == "" ): continue
                 # set the callback url with all parameters
                 url = '%s?title=%s&category=%s&userid=%s&usernsid=%s&photosetid=""&photoid=""&groupid=""&primary=""&secret=""&server=""&photos=0&page=1&prevpage=0&pq=%s&gq=%s&issearch=%d&update_listing=%d&time=%d' % ( sys.argv[ 0 ], repr( ltitle ), repr( method ), repr( self.user_id ), repr( self.user_nsid ), repr( pq ), repr( gq ), issearch, False, time, )
                 # check for a valid custom thumbnail for the current method

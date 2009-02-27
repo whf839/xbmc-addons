@@ -8,6 +8,15 @@
     <string id="30904">Groups search keywords</string>
     <string id="30905">*Groups</string>
     <string id="30906">Photos</string>
+    <string id="30907">XBMC Flickr</string>
+    <string id="30908">Certain features require your authorization&#10;before you can use them.</string>
+    <string id="30909">Would you like to authorize this plugin?</string>
+    <string id="30910">No Thanks</string>
+    <string id="30911">Authorize</string>
+    <string id="30912">Return to XBMC Media Center after you have&#10;finished the authorization process on flickr.com</string>
+    <string id="30913">Cancel</string>
+    <string id="30914">Authorized</string>
+    <string id="30915">FTP into your xbox and grab q:\\xbmc.log.&#10;'Look for XBMC Flicker authroization url:'. Copy that into&#10;a web browser and authorize.</string>
 
     <!-- Category strings -->
     <string id="30950">My Photosets</string>
@@ -24,7 +33,7 @@
 
     <!-- Plugin settings strings -->
     <string id="30000">Flickr screen name or e-mail address</string>
-    <string id="30010">Authentication token</string>
+    <string id="30010">Upload folder</string>
     <string id="30020">Privacy filter (photosets)</string>
     <string id="30021">Public photos</string>
     <string id="30022">Private photos visible to friends</string>
