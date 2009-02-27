@@ -53,15 +53,7 @@ class Main:
         exec "self.args = _Info(%s)" % ( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
 
     def _get_authkey( self ):
-        self.authkey = ""
-        # we only need to authenticate one time (TODO: verify this)
-        if ( os.path.isfile( self.BASE_AUTH_FILE_PATH ) ):
-            # grab a file object
-            fileobject = open( self.BASE_AUTH_FILE_PATH, "r" )
-            # read the query
-            self.authkey = fileobject.read()
-            # close # file object
-            fileobject.close()
+        self.authkey = xbmcplugin.getSetting( "authkey" )
 
     def _get_items( self ):
         # get the photos and/or subcategories and fill the media list
