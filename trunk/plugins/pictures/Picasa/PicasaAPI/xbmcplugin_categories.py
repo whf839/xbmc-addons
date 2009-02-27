@@ -61,16 +61,7 @@ class Main:
                 authkey = client.authenticate( self.email, password )
                 # if authentication succeeded, save it for later
                 if ( authkey ):
-                    try:
-                        # grab a file object
-                        fileobject = open( self.BASE_AUTH_FILE_PATH, "w" )
-                        # save authkey for later use
-                        fileobject.write( authkey )
-                        # close # file object
-                        fileobject.close()
-                    except:
-                        import traceback
-                        traceback.print_exc()
+                    xbmcplugin.setSetting( "authkey", authkey )
 
     def openSettings( self ):
         try:

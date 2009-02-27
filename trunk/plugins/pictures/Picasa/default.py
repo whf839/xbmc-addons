@@ -10,7 +10,7 @@ __plugin__ = "Picasa"
 __author__ = "nuka1195"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/Picasa"
-__version__ = "1.1"
+__version__ = "1.2"
 
 
 if ( __name__ == "__main__" ):
