@@ -1,33 +1,55 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-    <strings>  <!--  29.1.2009 Finnish   -->
+    <strings>  <!--  28.2.2009 Finnish   -->
     <string id="30000">TED Talks - Ideas Worth Spreading</string>
 
     <string id="30001">Haku</string>
     <string id="30002">Lisää suosikkeihin</string>
     
     <string id="30003">Selaa aihepiireittäin</string>
-    <string id="30004">Joka vuosi, the TED (Technology, Entertainment, Design) kokous, isännöi joitakin maailman mielenkiintoisimmista ihmisistä: Luotetut puhujat käytäntöjä rikkovat persoonat, ikonit ja älyköt. Nämä podcastit (saatavana myös ääni muodossa) tallentavat epätavallisimmat esitykset toimitetttuna TED-lavalta.</string>
+    <string id="30004">Joka vuosi, TED (Technology, Entertainment, Design) kokous isännöi joitakin maailman mielenkiintoisimmista ihmisistä: Luotetut puhujat, käytäntöjä rikkovat persoonat, ikonit ja älyköt. Nämä podcastit (saatavana myös ääni muodossa) tallentavat epätavallisimmat esitykset toimitetttuna TED-lavalta.</string>
 
     <string id="30010">Toista satunnaisesti</string>
-    <string id="30020">Lataa</string>
+    <string id="30020">Lataa video</string>
 	
     <string id="30030">Selaa aihepiireittäin</string>
     <string id="30031">Selaa kaikista</string>
-    <string id="30032">Suosikit</string>
-    <string id="30033">Selaa puhujittain</string>
+    <string id="30032">Omat suosikit</string>
+    <string id="30033">Ladatut videot</string>
     
     <!--Settings-->
     
-    <string id="30040">Toistotapa</string>   
-    <string id="30050">DVDPlayer </string>
-    <string id="30060">MPlayer</string>
+	<string id="30040">Tarkista päivitykset käynnistyessä</string>
+   
+    <string id="30070">Kuvanlaatu</string>
+	<string id="30071">Normaali</string>
+    <string id="30072">HD (480p)</string>
+    <string id="30073">Audio </string>
 	
-    <string id="30070">Videokuvan laatu</string>
-    <string id="30071">Normaali</string>
-    <string id="30072">Suuri tarkkuus(480p)</string>
-    <string id="30073">Ääni </string>
+    <string id="30074">Latausmuoto</string>
+    <string id="30076">Tilapäinen</string>
+    <string id="30077">Tallenna</string>
+    <string id="30075">- Tallennuskansio</string>
 	
-    <string id="30074">Ladataanko ohjelma katsomisen sijaan?</string>
-    <string id="30075">Latauspolku</string>  
+	<!--Addons upgrader-->	
+		<!-- Update messages -->
+	<string id="30080">Päivitys saatavilla</string>
+    <string id="30081">(Päivitetään...)</string>
+    <string id="30082">Noudetaan tiedostoluetteloa...</string>
+    <string id="30083">Odota hetki...</string>
+    <string id="30084"></string>
+    <string id="30085">Noudetaan:</string>
+    <string id="30086">Polku:</string>
+    <string id="30087">Tiedosto:</string>
+    <string id="30088">Päivitetään:</string>
+    <string id="30089">Ohita</string>
+    <string id="30090">Asenna</string>
+	<string id="30091">Valitse "Asenna" päivittääksesi</string>
+	<string id="30092">Valitse "Ohita" jatkaaksesi ilman päivittämistä.</string>
+	<string id="30500">Ladataan: %s</string>
+    <string id="30501">Tallennetaan: %s</string>
+    <string id="30502">Kohteeseen: %s</string>
+    <string id="30503">Kopioidaan: %s</string>
+		<!-- Update error messages -->
+    <string id="30099">Päivitys ei onnistunut!</string>
 	
 </strings>
