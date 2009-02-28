@@ -21,11 +21,8 @@ class Main:
     # base paths
     BASE_SKIN_THUMBNAIL_PATH = "/".join( [ "special://xbmc", xbmc.getSkinDir(), "media", sys.modules[ "__main__" ].__plugin__ ] )
     BASE_PLUGIN_THUMBNAIL_PATH = os.path.join( os.getcwd(), "thumbnails" )
-    BASE_PRESETS_PATH = "/".join( [ "special://profile", "plugin_data", "pictures", os.path.basename( os.getcwd() ) ] )
 
     def __init__( self ):
-        # create the settings folder for presets
-        self.make_presets_folders()
         # parse sys.argv
         self._parse_argv()
         # get user
@@ -37,10 +34,6 @@ class Main:
         cacheToDisc = ( ok and not ( "category='presets_photos'" in sys.argv[ 2 ] or "category='presets_groups'" in sys.argv[ 2 ] ) )
         # send notification we're finished, successfully or unsuccessfully
         xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=ok, cacheToDisc=cacheToDisc )
-
-    def make_presets_folders( self ):
-        if ( not os.path.isdir( xbmc.translatePath( self.BASE_PRESETS_PATH ) ) ):
-            os.makedirs( xbmc.translatePath( self.BASE_PRESETS_PATH ) )
 
     def _parse_argv( self ):
         if ( not sys.argv[ 2 ] ):
@@ -119,15 +112,15 @@ class Main:
             # default categories
             if ( root ):
                 categories = (
-                                    ( xbmc.getLocalizedString( 30950 ), "flickr_photosets_getList", True, "", "", 0, "", 0, False, ),
-                                    ( xbmc.getLocalizedString( 30951 ), "flickr_photos_getRecent", False, "", "", 0, "", 0, False, ),
-                                    ( xbmc.getLocalizedString( 30952 ), "flickr_people_getPublicPhotos", True, "", "", 0, "", 0, False, ),
-                                    ( xbmc.getLocalizedString( 30953 ), "flickr_interestingness_getList", False, "", "", 0, "", 0, False, ),
-                                    ( xbmc.getLocalizedString( 30954 ), "flickr_favorites_getPublicList", True, "", "", 0, "", 0, False, ),
-                                    ( xbmc.getLocalizedString( 30955 ), "flickr_photos_getContactsPublicPhotos", True, "", "", 0, "", 0, False, ),
-                                    ( xbmc.getLocalizedString( 30956 ), "flickr_people_getPublicGroups", True, "", "", 0, "", 0, False, ),
-                                    ( xbmc.getLocalizedString( 30959 ), "presets_groups", False, "", "", 0, "", 0, False, ),
-                                    ( xbmc.getLocalizedString( 30960 ), "presets_photos", False, "", "", 0, "", 0, False, ),
+                                    ( xbmc.getLocalizedString( 30950 ), "flickr_photosets_getList", True, "", "", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30951 ), "flickr_photos_getRecent", False, "", "", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30952 ), "flickr_people_getPublicPhotos", True, "", "", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30953 ), "flickr_interestingness_getList", False, "", "", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30954 ), "flickr_favorites_getPublicList", True, "", "", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30955 ), "flickr_photos_getContactsPublicPhotos", True, "", "", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30956 ), "flickr_people_getPublicGroups", True, "", "", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30959 ), "presets_groups", False, "", "", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30960 ), "presets_photos", False, "", "", 0, "", False, ),
                                     )
             # photo preset category
             elif ( "category='presets_photos'" in sys.argv[ 2 ] ):
@@ -144,27 +137,19 @@ class Main:
         return ok
 
     def get_presets( self, ptype=False ):
-        # we add time to the url, so it is always unique
-        import time
         # set category
         category = ( "photos", "groups", )[ ptype ]
-        # set the proper preset path
-        preset_path = "/".join( [ self.BASE_PRESETS_PATH, category ] )
         # initialize our category tuple
         categories = ()
         # add our new search item
         if ( ptype ):
-            categories += ( ( xbmc.getLocalizedString( 30957 ), "flickr_groups_search", False, "", "", 1, "", time.time(), False, ), )
+            categories += ( ( xbmc.getLocalizedString( 30957 ), "flickr_groups_search", False, "", "", 2, "", False, ), )
         else:
-            categories += ( ( xbmc.getLocalizedString( 30958 ), "flickr_photos_search", False, "", "", 2, "", time.time(), False, ), )
+            categories += ( ( xbmc.getLocalizedString( 30958 ), "flickr_photos_search", False, "", "", 1, "", False, ), )
         # fetch saved presets
         try:
-            # grab a file object
-            fileobject = open( preset_path, "r" )
             # read the queries
-            presets = eval( fileobject.read() )
-            # close file object
-            fileobject.close()
+            presets = eval( xbmcplugin.getSetting( "presets_%s" % ( category, ) ) )
             # sort items
             presets.sort()
         except:
@@ -183,7 +168,7 @@ class Main:
                 else:
                     pq = query.split( " | " )[ 0 ].encode( "utf-8" )
                 # add preset to our dictionary
-                categories += ( ( query.split( " | " )[ 0 ].encode( "utf-8" ), categories[ 0 ][ 1 ], False, pq, gq, 0, thumbnail, 0, False, ), )
+                categories += ( ( query.split( " | " )[ 0 ].encode( "utf-8" ), categories[ 0 ][ 1 ], False, pq, gq, 0, thumbnail, False, ), )
             except:
                 # oops print error message
                 print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
@@ -193,21 +178,18 @@ class Main:
         try:
             ok = True
             # enumerate through the list of categories and add the item to the media list
-            for ( ltitle, method, userid_required, pq, gq, issearch, thumbnail, time, authtoken_required, ) in categories:
+            for ( ltitle, method, userid_required, pq, gq, issearch, thumbnail, authtoken_required, ) in categories:
                 # if a user id is required for category and none supplied, skip category
                 if ( userid_required and self.user_id == "" ): continue
                 if ( authtoken_required and self.authtoken == "" ): continue
                 # set the callback url with all parameters
-                url = '%s?title=%s&category=%s&userid=%s&usernsid=%s&photosetid=""&photoid=""&groupid=""&primary=""&secret=""&server=""&photos=0&page=1&prevpage=0&pq=%s&gq=%s&issearch=%d&update_listing=%d&time=%d' % ( sys.argv[ 0 ], repr( ltitle ), repr( method ), repr( self.user_id ), repr( self.user_nsid ), repr( pq ), repr( gq ), issearch, False, time, )
+                url = '%s?title=%s&category=%s&userid=%s&usernsid=%s&photosetid=""&photoid=""&groupid=""&primary=""&secret=""&server=""&photos=0&page=1&prevpage=0&pq=%s&gq=%s&issearch=%d&update_listing=%d&' % ( sys.argv[ 0 ], repr( ltitle ), repr( method ), repr( self.user_id ), repr( self.user_nsid ), repr( pq ), repr( gq ), issearch, False, )
                 # check for a valid custom thumbnail for the current method
                 thumbnail = thumbnail or self._get_thumbnail( method )
                 # set the default icon
                 icon = "defaultfolderBig.png"
                 # only need to add label, icon and thumbnail, setInfo() and addSortMethod() takes care of label2
                 listitem=xbmcgui.ListItem( ltitle, iconImage=icon, thumbnailImage=thumbnail )
-                # set special properties
-                listitem.setProperty( "IsFolder", "true" )
-                listitem.setProperty( "IsPictureFolder", "true" )
                 # add the item to the media list
                 ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=url, listitem=listitem, isFolder=True, totalItems=len( categories ) )
                 # if user cancels, call raise to exit loop
