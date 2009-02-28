@@ -24,7 +24,6 @@ class Main:
 
     # base paths
     BASE_PLUGIN_THUMBNAIL_PATH = os.path.join( os.getcwd(), "thumbnails" )
-    BASE_PRESETS_PATH = "/".join( [ "special://profile", "plugin_data", "pictures", os.path.basename( os.getcwd() ) ] )
 
     # flickr client
     client = FlickrClient( True, True )
@@ -213,9 +212,7 @@ class Main:
         if ( groups[ "stat" ] == "ok" ):
             # get our previous and/or next page item
             items = self._get_pages( xbmc.getLocalizedString( 30905 ), groups[ "groups" ][ "page" ], groups[ "groups" ][ "pages" ], groups[ "groups" ][ "perpage" ], groups[ "groups" ][ "total" ] )
-
             self.query_thumbnail = "DefaultFolderBig.png"
-            
             # enumerate through and add the group to our _Info object
             for group in groups[ "groups" ][ "group" ]:
                 # doesn't return much
@@ -384,17 +381,11 @@ class Main:
 
     def save_as_preset( self ):
         # select correct query
-        query = ( self.args.gq, self.args.pq, )[ self.args.issearch - 1 ]
-        # set the proper preset path
-        preset_path = "/".join( [ self.BASE_PRESETS_PATH, ( "groups", "photos", )[ self.args.issearch - 1 ] ] )
+        query = ( self.args.pq, self.args.gq, )[ self.args.issearch - 1 ]
         # fetch saved presets
         try:
-            # grab a file object
-            fileobject = open( preset_path, "r" )
             # read the queries
-            presets = eval( fileobject.read() )
-            # close file object
-            fileobject.close()
+            presets = eval( xbmcplugin.getSetting( "presets_%s" % ( "photos", "groups", )[ self.args.issearch - 1  ], ) )
             # if this is an existing search, move it up
             for count, preset in enumerate( presets ):
                 if ( repr( query + " | " )[ : -1 ] in repr( preset ) ):
@@ -409,15 +400,4 @@ class Main:
         # insert our new search
         presets = [ query + " | " + self.query_thumbnail ] + presets
         # save search query
-        try:
-            # grab a file object
-            fileobject = open( preset_path, "w" )
-            # write our current queries to file
-            fileobject.write( repr( presets ) )
-            # close file object
-            fileobject.close()
-        except:
-            # oops print error message
-            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
-            ok = xbmcgui.Dialog().ok( self.localized_string[ 30902 ], self.localized_string[ 30903 ], repr( sys.exc_info()[ 1 ] ) )
-
+        xbmcplugin.setSetting( "presets_%s" % ( "photos", "groups", )[ self.args.issearch - 1  ], repr( presets ) )
