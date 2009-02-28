@@ -9,25 +9,47 @@
     <string id="30004">Each year,  the TED (Technology, Entertainment, Design) conference hosts some of the world's most fascinating people: Trusted voices and convention-breaking mavericks, icons and geniuses. These podcasts (also available in audio format) capture the most extraordinary presentations delivered from the TED stage.</string>
 
 	<string id="30010">Play Random</string>
-    <string id="30020">Download</string>
+    <string id="30020">Download Video</string>
 	
 	<string id="30030">Browse By Theme</string>
 	<string id="30031">Browse All Feeds</string>
 	<string id="30032">Your Favorites</string>
-	<string id="30033">Browse by Speaker</string>
+	<string id="30033">Your Downloaded Videos</string>
 	
 	<!--Settings-->
     
-	<string id="30040">Player Type</string>   
-    <string id="30050">DVDPlayer </string>
-    <string id="30060">MPlayer</string>
+	<string id="30040">Check for updates at startup</string>   
 	
     <string id="30070">Video Quality</string>
 	<string id="30071">Standard Def</string>
     <string id="30072">High Def (480p)</string>
     <string id="30073">Audio </string>
 	
-	<string id="30074">Download instead Stream on select?</string>
-    <string id="30075">Download Path</string>  
+	<string id="30074">Download Mode</string>
+	<string id="30076">Temp</string>
+	<string id="30077">Save</string>
+    <string id="30075">Download Path</string>
+	
+	<!--Addons upgrader-->	
+		<!-- Update messages -->
+	<string id="30080">Upgrade Avaliable</string>
+    <string id="30081">(Updating...)</string>
+    <string id="30082">Fetching file list...</string>
+    <string id="30083">Please wait...</string>
+    <string id="30084"></string>
+    <string id="30085">Fetching:</string>
+    <string id="30086">Path:</string>
+    <string id="30087">File:</string>
+    <string id="30088">Updating:</string>
+    <string id="30089">Skip</string>
+    <string id="30090">Install</string>
+	<string id="30091">Select "Install" to upgrade</string>
+	<string id="30092">Select "Skip" to continue without upgrading.</string>
+	<string id="30500">Downloading: %s</string>
+    <string id="30501">Saving: %s</string>
+    <string id="30502">To: %s</string>
+    <string id="30503">Copying: %s</string>
+		<!-- Update error messages -->
+    <string id="30099">There was an error installing item!</string>
 	
 </strings>
