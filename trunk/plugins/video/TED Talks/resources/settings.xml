@@ -2,4 +2,6 @@
    <!-- GUI  -->
    <setting id="video_quality" 	type="enum" 	label="30070" lvalues="30072|30071|30073" 	default="0"/>
    <setting type="sep" />
+    <setting id="download_mode" type="enum" lvalues="30076|30077" label="30074" default="1" />
+    <setting id="download_path" type="folder" source="video" enable="eq(-1,1)" option="writeable" label="30075" default="F:\videos" />
 </settings>
