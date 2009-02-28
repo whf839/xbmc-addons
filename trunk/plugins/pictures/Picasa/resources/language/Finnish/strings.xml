@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings> <!--  14.2.2009 Finnish   -->
+<strings> <!--  28.2.2009 Finnish   -->
     <!-- Plugin strings -->
     <string id="30900">Haun talletus</string>
     <string id="30901">Haluatko tallettaa tämän haun?</string>
@@ -7,9 +7,9 @@
     <string id="30903">Haun talletus epäonnistui virheeseen:</string>
     <string id="30904">Käyttäjällä ei ollut tunnistetta tai se ei ollut utf-8 muodossa</string>
     <string id="30905">Haun talletusnimi</string>
-    <string id="30906">Talleta avainsanat</string>
-    <string id="30907">Hae käyttäjätunnus id</string>
-    <string id="30908">Kuvia</string>
+    <string id="30906">Hae sanoja</string>
+    <string id="30907">Hae käyttäjätunnistetta</string>
+    <string id="30908">Kuvat</string>
     <string id="30909">Albumeja</string>
 
     <!-- Category strings -->
@@ -23,7 +23,7 @@
     <!-- Plugin settings strings -->
     <string id="30000">Käyttäjän sähköpostiosoite</string>
     <string id="30010">Kayttäjän salasana</string>
-    <string id="30020">Pääsy taso</string>
+    <string id="30020">Pääsytaso</string>
     <string id="30021">Kaikki (vaatii tunnistautumisen)</string>
     <string id="30022">Yksityiset (vaatii tunnistautumisen)</string>
     <string id="30023">Julkiset</string>
