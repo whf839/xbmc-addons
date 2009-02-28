@@ -22,7 +22,6 @@ class Main:
     # base paths
     BASE_PLUGIN_THUMBNAIL_PATH = os.path.join( os.getcwd(), "thumbnails" )
     BASE_PRESETS_PATH = "/".join( [ "special://profile", "plugin_data", "pictures", os.path.basename( os.getcwd() ) ] )
-    BASE_AUTH_FILE_PATH = "/".join( [ "special://profile", "plugin_data", "pictures", os.path.basename( os.getcwd() ), "authfile.txt" ] )
 
     def __init__( self ):
         self._get_settings()
@@ -66,17 +65,11 @@ class Main:
 
     def save_as_preset( self ):
         # select correct query
-        query = ( self.args.user_id, self.args.pq, )[ self.args.issearch - 1 ]
-        # set the proper preset path
-        preset_path = "/".join( [ self.BASE_PRESETS_PATH, ( "users", "photos", )[ self.args.issearch - 1 ] ] )
+        query = (  self.args.pq, self.args.user_id, )[ self.args.issearch - 1 ]
         # fetch saved presets
         try:
-            # grab a file object
-            fileobject = open( preset_path, "r" )
             # read the queries
-            presets = eval( fileobject.read() )
-            # close file object
-            fileobject.close()
+            presets = eval( xbmcplugin.getSetting( "presets_%s" % ( "photos", "users", )[ self.args.issearch - 1  ], ) )
             # if this is an existing search, move it up
             for count, preset in enumerate( presets ):
                 if ( repr( query + " | " )[ : -1 ] in repr( preset ) ):
@@ -91,17 +84,7 @@ class Main:
         # insert our new search
         presets = [ query + " | " + self.query_thumbnail ] + presets
         # save search query
-        try:
-            # grab a file object
-            fileobject = open( preset_path, "w" )
-            # write our current queries to file
-            fileobject.write( repr( presets ) )
-            # close file object
-            fileobject.close()
-        except:
-            # oops print error message
-            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
-            ok = xbmcgui.Dialog().ok( self.localized_string[ 30902 ], self.localized_string[ 30903 ], repr( sys.exc_info()[ 1 ] ) )
+        xbmcplugin.setSetting( "presets_%s" % ( "photos", "users", )[ self.args.issearch - 1  ], repr( presets ) )
 
     def search_photos( self ):
         # get the query to search for from the user
