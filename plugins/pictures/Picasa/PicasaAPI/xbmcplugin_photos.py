@@ -65,7 +65,7 @@ class Main:
 
     def save_as_preset( self ):
         # select correct query
-        query = (  self.args.pq, self.args.user_id, )[ self.args.issearch - 1 ]
+        query = ( self.args.pq, self.args.user_id, )[ self.args.issearch - 1 ]
         # fetch saved presets
         try:
             # read the queries

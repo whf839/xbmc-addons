@@ -61,6 +61,9 @@ class Main:
             if ( not sys.argv[ 2 ] and xbmcplugin.getSetting( "user_email" ) == "" and xbmcplugin.getSetting( "runonce" ) == "" ):
                 # set runonce
                 xbmcplugin.setSetting( "runonce", "1" )
+                # sleep for xbox so dialogs don't clash. (TODO: report this as a bug?)
+                if ( os.environ.get( "OS", "n/a" ) == "xbox" ):
+                    xbmc.sleep( 2000 )
                 # open settings
                 xbmcplugin.openSettings( sys.argv[ 0 ] )
         except:
@@ -97,6 +100,8 @@ class Main:
         xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=ok, cacheToDisc=cacheToDisc )
 
     def get_presets( self, ptype=False ):
+        # set category
+        category = ( "photos", "users", )[ ptype ]
         # initialize our category tuple
         categories = ()
         # add our new search item
@@ -107,7 +112,7 @@ class Main:
         # fetch saved presets
         try:
             # read the queries
-            presets = eval( xbmcplugin.getSetting( "presets_%s" % ( "photos", "users", )[ ptype ], ) )
+            presets = eval( xbmcplugin.getSetting( "presets_%s" % ( category, ) ) )
             # sort items
             presets.sort()
         except:
