@@ -770,8 +770,6 @@ class CCurrentList:
                     index = value.find('|')
                     if value[:index] == 'video.monkey.locale':
                         value = ' ' + xbmc.getLocalizedString(int(value[index+1:])) + ' '
-                    elif value[:index] == 'video.monkey.image':
-                        value = os.path.join(imgDir, value[index+1:])
                     if key == 'start':
                         self.start = value
                     elif key == 'player':
@@ -890,7 +888,7 @@ class CCurrentList:
         elif info_name == 'icon':
             info_value = decode(unquote_safe(info_value))
             if info_value == '':
-                info_value = os.path.join(imgDir, 'video.png')
+                info_value = 'video.png'
         return clean_safe(info_value)
 
     def loadRemote(self, remote_url, recursive = True, lItem = None):
@@ -1308,18 +1306,19 @@ class Main:
         try:
             icon = videoItem.infos_values[videoItem.infos_names.index('icon')]
         except:
-            icon = os.path.join(imgDir, 'video.png')
+            icon = 'video.png'
         try:
             title = videoItem.infos_values[videoItem.infos_names.index('title')]
         except:
             title = '...'
-        try:
-            urllib.urlretrieve(icon, os.path.join(cacheDir, 'thumb.tbn'))
-            icon = os.path.join(cacheDir, 'thumb.tbn')
-        except:
-            if enable_debug:
-                traceback.print_exc(file = sys.stdout)
-            icon = os.path.join(imgDir, 'video.png')
+        if not os.path.exists(icon):
+            try:
+                urllib.urlretrieve(icon, os.path.join(cacheDir, 'thumb.tbn'))
+                icon = os.path.join(cacheDir, 'thumb.tbn')
+            except:
+                if enable_debug:
+                    traceback.print_exc(file = sys.stdout)
+                icon = 'video.png'
         flv_file = url
         listitem = xbmcgui.ListItem(title, title, icon, icon)
         listitem.setInfo('video', {'Title':title})
@@ -1514,19 +1513,16 @@ class Main:
                 if m_type == 'rss' or m_type == 'search':
                     self.addListItem(m_title, self.currentlist.codeUrl(m), m_icon, len(self.currentlist.items), m)
                 elif m_type.find('video') != -1:
-                    self.addListItem(m_title, self.currentlist.codeUrl(m, 'videomonkey'), m_icon, len(self.currentlist.items), m)
+                    self.addListItem(m_title, self.currentlist.codeUrl(m, 'videomonkey'), m_icon, len(self.currentlist.items), m, False)
                 elif m_type == 'live':
-                    self.addListItem(m_title, m_url, m_icon, len(self.currentlist.items), m, False)
+                    self.addListItem(m_title, m_url, m_icon, len(self.currentlist.items), m, False, True)
         return result
 
-    def addListItem(self, title, url, icon, totalItems, lItem, isDir = True):
+    def addListItem(self, title, url, icon, totalItems, lItem, isDir = True, noCallback = False):
         u = sys.argv[0] + '?url=' + url
-        if isDir and self.currentlist.getFileExtension(url) == 'videomonkey':
-            liz = xbmcgui.ListItem(title, title, os.path.join(imgDir, 'video.png'), icon)
-        elif isDir:
-            liz = xbmcgui.ListItem(title, title, os.path.join(imgDir, 'sites.png'), icon)
-        else:
-            liz = xbmcgui.ListItem(title, title, os.path.join(imgDir, 'station.png'), icon)
+        if os.path.exists(os.path.join(imgDir, icon)):
+            icon = os.path.join(imgDir, icon)
+        liz = xbmcgui.ListItem(title, title, icon, icon)
         if isDir and self.currentlist.getFileExtension(url) == 'videomonkey' and self.currentlist.skill.find('nodownload') == -1:
             action = 'XBMC.RunPlugin(%s.dwnldmonkey)' % u[:len(u)-12]
             try:
@@ -1565,7 +1561,7 @@ class Main:
                         liz.setInfo(type = 'Video', infoLabels = {capitalize(video_info_name): lItem.infos_values[lItem.infos_names.index(video_info_name)]})
                 except:
                     pass
-        if not isDir:
+        if noCallback:
             u = url
         xbmcplugin.addDirectoryItem(handle = int(sys.argv[1]), url = u, listitem = liz, isFolder = isDir, totalItems = totalItems)
 

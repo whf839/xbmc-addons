@@ -7,6 +7,6 @@ skill=add
 ########################################################
 title=Teleasturias
 type=live
-icon=video.monkey.image|teleasturias.png
+icon=teleasturias.png
 url=mms://DWS28.dinaserver.com/directo
 ########################################################
