@@ -29,9 +29,8 @@ quality=standard
 ########################################################
 title=clipnabber.com
 target=<a href='([^']+)' *><strong>FLV
-url=http://clipnabber.com/gethint.php
-data=mode=1&url=%s
-header=Referer|http://www.clipnabber.com
+url=http://clipnabber.com/gethint.php?mode=1&url=%s&sid=313411493607800
+header=Referer|http://www.clipnabber.com/
 extension=flv
 quality=standard
 target=<a href='([^']+)' *><strong>MP4

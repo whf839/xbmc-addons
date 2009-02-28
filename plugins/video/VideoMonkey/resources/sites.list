@@ -7,7 +7,7 @@ title=  TV
 type=rss
 genre=VideoMonkey
 director=VideoMonkey
-icon=video.monkey.image|tv.png
+icon=tv.png
 url=tv.sites.list
 ########################################################
 # Live sites
@@ -16,7 +16,7 @@ title=  LIVE
 type=rss
 genre=VideoMonkey
 director=VideoMonkey
-icon=video.monkey.image|station.png
+icon=station.png
 url=live.sites.list
 ########################################################
 # More sites
@@ -25,6 +25,6 @@ title=video.monkey.locale|30104
 type=rss
 genre=VideoMonkey
 director=VideoMonkey
-icon=video.monkey.image|sites.png
+icon=sites.png
 url=more.sites.list
 ########################################################
