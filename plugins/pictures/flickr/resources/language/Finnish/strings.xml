@@ -1,13 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings> <!--  8.2.2009 Finnish   -->
+<strings> <!--  28.2.2009 Finnish   -->
     <!-- Plugin strings -->
-    <string id="30900">Flickr Plug-in</string>
-    <string id="30901">Käyttäjän id tunnnus on sopimaton!</string>
+    <string id="30900">Flickr lisäke</string>
+    <string id="30901">Käyttäjän Id tunnnus on sopimaton!</string>
     <string id="30902">Tarkista asetukset.</string>
     <string id="30903">Kuvien hakusanat</string>
     <string id="30904">Ryhmien hakusanat</string>
     <string id="30905">*Ryhmät</string>
     <string id="30906">Kuvat</string>
+    <string id="30907">XBMC Flickr</string>
+    <string id="30908">Jotkut ominaisuudet vaativat varmennuksen&#10;ennen kuin voit käyttää niitä.</string>
+    <string id="30909">Haluatko varmentaa tämän lisäkkeen?</string>
+    <string id="30910">Ei kiitos</string>
+    <string id="30911">Varmenna</string>
+    <string id="30912">Palaa XBMC Media Center-ohjelmaan kun olet&#10;suorittanut varmennuksen flickr.com-osoitteessa</string>
+    <string id="30913">Peruuta</string>
+    <string id="30914">Varmennettu</string>
+    <string id="30915">Ota FTP-yhteys xboksiin ja nouda q:\\xbmc.log.&#10;'etsi XBMC Flicker varmennusosoite:'. Kopioi tämä&#10; nettiselaimeen ja varmenna.</string>
 
     <!-- Category strings -->
     <string id="30950">Omat kuvakokoelmat</string>
@@ -17,14 +26,14 @@
     <string id="30954">Omat suosikit</string>
     <string id="30955">Omat yhteystiedot</string>
     <string id="30956">Omat ryhmät</string>
-    <string id="30957">Etsitään ryhmiä...</string>
-    <string id="30958">Etsitään kuvia...</string>
+    <string id="30957">Etsi ryhmiä...</string>
+    <string id="30958">Etsi kuvia...</string>
     <string id="30959">Etsi ryhmiä</string>
     <string id="30960">Etsi kuvia</string>
 
     <!-- Plugin settings strings -->
     <string id="30000">Flickr näyttönimi tai sähköpostiosoite</string>
-    <string id="30010">Varmennus tunnus</string>
+    <string id="30010">Siirtokansio</string>
     <string id="30020">Yksityisyys suodatus (kuvakokoelmat)</string>
     <string id="30021">Yleiset kuvat</string>
     <string id="30022">Ystäville näkyvät kuvat</string>
