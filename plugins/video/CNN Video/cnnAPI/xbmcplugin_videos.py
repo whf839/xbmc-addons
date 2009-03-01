@@ -86,7 +86,7 @@ class _Parser:
 
 class Main:
     # base paths
-    BASE_CACHE_PATH = os.path.join( "P:\\", "Thumbnails", "Video" )
+    BASE_CACHE_PATH = os.path.join( xbmc.translatePath( "special://profile/" ), "Thumbnails", "Video" )
 
     def __init__( self ):
         self._parse_argv()
@@ -145,7 +145,7 @@ class Main:
     def _clear_asx_thumbnail( self, url ):
         # make the proper cache filename and path
         filename = xbmc.getCacheThumbName( url )
-        filepath = xbmc.translatePath( os.path.join( self.BASE_CACHE_PATH, filename[ 0 ], filename ) )
+        filepath = os.path.join( self.BASE_CACHE_PATH, filename[ 0 ], filename )
         try:
             # remove the cached thumbnail for live streams
             if ( os.path.isfile( filepath ) ):
