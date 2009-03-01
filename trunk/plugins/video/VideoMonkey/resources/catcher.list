@@ -27,17 +27,39 @@ target=<div id="box">[^<]*<h2>Download</h2>[^<]*<p><a href="([^"]+)" target="_bl
 url=http://www.2video.de/index.php?dl=%s&skill=download
 quality=standard
 ########################################################
-title=clipnabber.com
-target=<a href='([^']+)' *><strong>FLV
-url=http://clipnabber.com/gethint.php?mode=1&url=%s&sid=313411493607800
-header=Referer|http://www.clipnabber.com/
+title=keepvid.com
+target=<a href="(/[^"]+)"[^>]+>[^<]+</a>[^<]+<em>\([^\.]+\.... - Low Quality\)</em>
+url=http://keepvid.com/index.php?url=%s
+header=Referer|http://keepvid.com/
+build=http://keepvid.com%s
 extension=flv
+action=unquote
 quality=standard
-target=<a href='([^']+)' *><strong>MP4
+target=<a href="([^/][^"]+)"[^>]+>[^<]+</a>[^<]+<em>\([^\.]+\.... - Low Quality\)</em>
+extension=flv
+action=unquote
+quality=standard
+target=<a href="(/[^"]+)"[^>]+>[^<]+</a>[^<]+<em>\([^\.]+\.... - High Quality\)</em>
+build=http://keepvid.com%s
 extension=mp4
+action=unquote
 quality=high
-target=<a href='([^']+)' *><strong>
-quality=fallback
+target=<a href="([^/][^"]+)"[^>]+>[^<]+</a>[^<]+<em>\([^\.]+\.... - Low Quality\)</em>
+extension=mp4
+action=unquote
+quality=high
+########################################################
+#title=clipnabber.com
+#target=<a href='([^']+)' *><strong>FLV
+#url=http://clipnabber.com/gethint.php?mode=1&url=%s&sid=313411493607800
+#header=Referer|http://www.clipnabber.com/
+#extension=flv
+#quality=standard
+#target=<a href='([^']+)' *><strong>MP4
+#extension=mp4
+#quality=high
+#target=<a href='([^']+)' *><strong>
+#quality=fallback
 ########################################################
 title=atrapavideo.com
 target=so.addVariable\('file','(.+?.flv)
