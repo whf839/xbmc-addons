@@ -22,10 +22,20 @@
 ########################################################
 # Catcher sites
 ########################################################
-title=2video.de
-target=<div id="box">[^<]*<h2>Download</h2>[^<]*<p><a href="([^"]+)" target="_blank">
-url=http://www.2video.de/index.php?dl=%s&skill=download
+#title=2video.de
+#target=<div id="box">[^<]*<h2>Download</h2>[^<]*<p><a href="([^"]+)" target="_blank">
+#url=http://www.2video.de/index.php?dl=%s&skill=download
+#quality=standard
+########################################################
+title=keepclip.de
+target=<a href="([^"]+)"[^>]+><span[^>]+>Download</span>[^\(]+\(flv\)
+url=http://www.keepclip.de/?getclip=%s
+header=Referer|http://www.keepclip.de/index.php
+extension=flv
 quality=standard
+target=<a href="([^"]+)"[^>]+><span[^>]+>Download</span>[^\(]+\(mp4\)
+extension=mp4
+quality=high
 ########################################################
 title=keepvid.com
 target=<a href="(/[^"]+)"[^>]+>[^<]+</a>[^<]+<em>\([^\.]+\.... - Low Quality\)</em>
@@ -33,20 +43,16 @@ url=http://keepvid.com/index.php?url=%s
 header=Referer|http://keepvid.com/
 build=http://keepvid.com%s
 extension=flv
-action=unquote
 quality=standard
 target=<a href="([^/][^"]+)"[^>]+>[^<]+</a>[^<]+<em>\([^\.]+\.... - Low Quality\)</em>
 extension=flv
-action=unquote
 quality=standard
 target=<a href="(/[^"]+)"[^>]+>[^<]+</a>[^<]+<em>\([^\.]+\.... - High Quality\)</em>
 build=http://keepvid.com%s
 extension=mp4
-action=unquote
 quality=high
 target=<a href="([^/][^"]+)"[^>]+>[^<]+</a>[^<]+<em>\([^\.]+\.... - Low Quality\)</em>
 extension=mp4
-action=unquote
 quality=high
 ########################################################
 #title=clipnabber.com
@@ -61,12 +67,12 @@ quality=high
 #target=<a href='([^']+)' *><strong>
 #quality=fallback
 ########################################################
-title=atrapavideo.com
-target=so.addVariable\('file','(.+?.flv)
-url=http://www.atrapavideo.com/video
-data=data[url]=%s
-header=Referer|http://www.atrapavideo.com/en/
-quality=standard
+#title=atrapavideo.com
+#target=so.addVariable\('file','(.+?.flv)
+#url=http://www.atrapavideo.com/video
+#data=data[url]=%s
+#header=Referer|http://www.atrapavideo.com/en/
+#quality=standard
 ########################################################
 title=degrab.de
 target=Download Link.+?<a href="([^"]+)"

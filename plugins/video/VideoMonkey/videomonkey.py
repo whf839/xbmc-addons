@@ -24,18 +24,24 @@ if xbmcplugin.getSetting('use_proxy') == 'true':
 else:
     proxy_handler = None
 
+class MyHTTPRedirectHandler(urllib2.HTTPRedirectHandler):
+    def http_error_302(self, req, fp, code, msg, headers):
+        infourl = urllib.addinfourl(fp, headers, req.get_full_url())
+        infourl.status = code
+        return infourl
+
 if cj != None:
     if os.path.isfile(os.path.join(resDir, 'cookies.lwp')):
         cj.load(os.path.join(resDir, 'cookies.lwp'))
     if proxy_handler:
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj), proxy_handler)
+        opener = urllib2.build_opener(MyHTTPRedirectHandler, urllib2.HTTPCookieProcessor(cj), proxy_handler)
     else:
-        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+        opener = urllib2.build_opener(MyHTTPRedirectHandler, urllib2.HTTPCookieProcessor(cj))
 else:
     if proxy_handler:
-        opener = urllib2.build_opener(proxy_handler)
+        opener = urllib2.build_opener(MyHTTPRedirectHandler, proxy_handler)
     else:
-        opener = urllib2.build_opener()
+        opener = urllib2.build_opener(MyHTTPRedirectHandler)
 
 urllib2.install_opener(opener)
 
