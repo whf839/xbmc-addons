@@ -22,11 +22,11 @@ class _Info:
 class Main:
     # base paths
     BASE_PLUGIN_THUMBNAIL_PATH = os.path.join( os.getcwd(), "thumbnails" )
-    BASE_PRESETS_PATH = "/".join( [ "special://profile", "plugin_data", "video", os.path.basename( os.getcwd() ) ] )
 
     def __init__( self ):
         self._get_settings()
         self._get_strings()
+        self._get_authkey()
         self._parse_argv()
         self._get_items()
 
@@ -52,6 +52,9 @@ class Main:
         # call _Info() with our formatted argv to create the self.args object
         exec "self.args = _Info(%s)" % ( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
 
+    def _get_authkey( self ):
+        self.authkey = xbmcplugin.getSetting( "authkey" )
+
     def _get_items( self ):
         # get the videos and/or subcategories and fill the media list
         exec "ok, total = self.%s()" % ( self.args.category, )
@@ -63,19 +66,13 @@ class Main:
 
     def save_as_preset( self ):
         # select correct query
-        query = ( self.args.username, self.args.vq, )[ self.args.issearch - 1 ]
+        query = ( self.args.vq, self.args.username, )[ self.args.issearch - 1 ]
         # if user search and user was found then proceed, should never be an issue for video search
         if ( query ):
-            # set the proper preset path
-            preset_path = "/".join( [ self.BASE_PRESETS_PATH, ( "users", "videos", )[ self.args.issearch - 1 ] ] )
             # fetch saved presets
             try:
-                # grab a file object
-                fileobject = open( preset_path, "r" )
                 # read the queries
-                presets = eval( fileobject.read() )
-                # close file object
-                fileobject.close()
+                presets = eval( xbmcplugin.getSetting( "presets_%s" % ( "videos", "users", )[ self.args.issearch - 1  ], ) )
                 # if this is an existing search, move it up
                 for count, preset in enumerate( presets ):
                     if ( repr( query + " | " )[ : -1 ] in repr( preset ) ):
@@ -90,17 +87,7 @@ class Main:
             # insert our new search
             presets = [ query + " | " + self.query_thumbnail ] + presets
             # save search query
-            try:
-                # grab a file object
-                fileobject = open( preset_path, "w" )
-                # write our current queries to file
-                fileobject.write( repr( presets ) )
-                # close file object
-                fileobject.close()
-            except:
-                # oops print error message
-                print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
-                ok = xbmcgui.Dialog().ok( self.localized_string[ 30902 ], self.localized_string[ 30903 ], repr( sys.exc_info()[ 1 ] ) )
+            xbmcplugin.setSetting( "presets_%s" % ( "videos", "users", )[ self.args.issearch - 1  ], repr( presets ) )
 
     def most_viewed( self ):
         return self.fetch_videos( YoutubeClient.BASE_STANDARD_URL, feed_time=self.settings[ "feed_time" ], region_id=self.settings[ "region_id" ] )
@@ -189,7 +176,7 @@ class Main:
 
     def fetch_videos( self, url, feed_time="", region_id="" ):
         # Youtube client
-        client = YoutubeClient( url )
+        client = YoutubeClient( url, self.authkey )
         # starting video
         start_index = ( self.args.page - 1 ) * self.settings[ "perpage" ] + 1
         # fetch the videos
