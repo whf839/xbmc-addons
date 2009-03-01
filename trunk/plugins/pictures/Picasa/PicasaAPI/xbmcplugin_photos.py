@@ -96,7 +96,7 @@ class Main:
         # we need to set the title to our query
         self.args.title = self.args.pq
         # fetch the items
-        return self.fetch_photos( kind="photo", access="public" )
+        return self.fetch_photos( kind="photo" )
 
     def search_users( self ):
         # get the user id to search for from the user
@@ -107,9 +107,9 @@ class Main:
         self.args.category = ( "users", "photos", )[ self.settings[ "user_search_kind" ] == "photo" ]
         # we need to set the title to our query
         self.args.title = self.args.user_id
-        # TODO: consider making this search public
+        # TODO: see why punlic search is required here
         # fetch the items
-        return self.fetch_photos( user_id=self.args.user_id, kind=self.settings[ "user_search_kind" ] )#, access="public" )
+        return self.fetch_photos( user_id=self.args.user_id, kind=self.settings[ "user_search_kind" ], access="public" )
 
     def users_albums( self ):
         # set author to user name

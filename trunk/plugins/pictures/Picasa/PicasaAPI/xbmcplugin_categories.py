@@ -17,7 +17,6 @@ class _Info:
 
 class Main:
     # base paths
-    BASE_SKIN_THUMBNAIL_PATH = "/".join( [ "special://xbmc", "skin", xbmc.getSkinDir(), "media", sys.modules[ "__main__" ].__plugin__ ] )
     BASE_PLUGIN_THUMBNAIL_PATH = os.path.join( os.getcwd(), "thumbnails" )
 
     def __init__( self ):
@@ -182,9 +181,9 @@ class Main:
 
     def _get_thumbnail( self, title ):
         # create the full thumbnail path for skins directory
-        thumbnail = "/".join( [ self.BASE_SKIN_THUMBNAIL_PATH, title + ".png" ] )
+        thumbnail = os.path.join( sys.modules[ "__main__" ].__plugin__, title + ".png" )
         # use a plugin custom thumbnail if a custom skin thumbnail does not exists
-        if ( not os.path.isfile( thumbnail ) ):
+        if ( not xbmc.skinHasImage( thumbnail ) ):
             # create the full thumbnail path for plugin directory
             thumbnail = os.path.join( self.BASE_PLUGIN_THUMBNAIL_PATH, title + ".png" )
             # use a default thumbnail if a custom thumbnail does not exists
