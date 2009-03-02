@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings> <!--  28.2.2009 Finnish   -->
+<strings> <!--  2.3.2009 Finnish   -->
     <!-- Plugin strings -->
     <string id="30900">Flickr lisäke</string>
     <string id="30901">Käyttäjän Id tunnnus on sopimaton!</string>
@@ -9,14 +9,14 @@
     <string id="30905">*Ryhmät</string>
     <string id="30906">Kuvat</string>
     <string id="30907">XBMC Flickr</string>
-    <string id="30908">Jotkut ominaisuudet vaativat varmennuksen&#10;ennen kuin voit käyttää niitä.</string>
-    <string id="30909">Haluatko varmentaa tämän lisäkkeen?</string>
+    <string id="30908">Jotkut ominaisuudet vaativat valtuutuksen&#10;ennen kuin voit käyttää niitä.</string>
+    <string id="30909">Haluatko valtuuttaa tämän lisäkkeen?</string>
     <string id="30910">Ei kiitos</string>
-    <string id="30911">Varmenna</string>
-    <string id="30912">Palaa XBMC Media Center-ohjelmaan kun olet&#10;suorittanut varmennuksen flickr.com-osoitteessa</string>
+    <string id="30911">Valtuuta</string>
+    <string id="30912">Palaa XBMC Media Center-ohjelmaan kun olet&#10;suorittanut valtuutuksen flickr.com-osoitteessa</string>
     <string id="30913">Peruuta</string>
-    <string id="30914">Varmennettu</string>
-    <string id="30915">Ota FTP-yhteys xboksiin ja nouda q:\\xbmc.log.&#10;'etsi XBMC Flicker varmennusosoite:'. Kopioi tämä&#10; nettiselaimeen ja varmenna.</string>
+    <string id="30914">Valtuutettu</string>
+    <string id="30915">Ota FTP-yhteys xboksiin ja nouda q:\\xbmc.log tiedosto.&#10;'Etsi XBMC Flicker valtuutusosoite:'. Kopioi tämä&#10; nettiselaimeen ja varmenna.</string>
 
     <!-- Category strings -->
     <string id="30950">Omat kuvakokoelmat</string>
