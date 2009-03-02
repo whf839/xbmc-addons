@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings>    <!--  10.1.2009 Finnish   -->
+<strings>    <!--  2.3.2009 Finnish   -->
     <string id="30000">VideoDevil</string>
     <string id="30001">XBMC Media Center</string>
 
@@ -28,8 +28,8 @@
     <string id="30056">Matala laatu</string>
     <string id="30057">Normaali laatu</string>
     <string id="30058">Korkea laatu</string>
-    <string id="30059">Päivitä</string>
-    <string id="30060">VideoDevil on päivitetty onnistuneesti</string>
+    <string id="30059">Uuden Version päivitys</string>
+    <string id="30060">VideoDevil on päivitetty onnistuneesti.</string>
     <string id="30061">Tämä lisäke sisältää aikuisille suunnattua materiaalia.</string>
     <string id="30062">Voit käyttää lisäkettä mikäli olet vähintään 18v vanha</string>
     <string id="30063">tai sen ikäinen mikä on määritelty oikeuskelpoiseksi</string>
