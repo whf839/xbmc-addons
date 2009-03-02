@@ -1,0 +1,10 @@
+This script will upgrade your system on an aptitude based distro.
+
+install.py needs to be added to sudoers with no password, the script have no password entering logic as of yet.
+To maintain security the install.py is best placed in a location were only sudo can write.
+
+row 65 needs to contain an absolute path to the install.py (we relay the script to the systems interpreter thats why we need an absolute path)
+    pathToInstallScript = '/foo/bar/install.py'
+
+also python-apt needs to be installed.
+sudo apt-get install python-apt
