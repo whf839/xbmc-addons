@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings> <!--  8.2.2009 Finnish   -->
+<strings> <!--  2.3.2009 Finnish   -->
     <!-- Plugin strings -->
     <string id="30900">Tallenna esiasetukseksi</string>
     <string id="30901">Haluatko lisätä tämän haun esiasetukseksi?</string>
     <string id="30902">Haun tallennus epäonnistui!</string>
     <string id="30903">Haun tallennus epäonnistui virheeseen:</string>
-    <string id="30904">Ei selitettä.</string>
+    <string id="30904">Ei kuvausta.</string>
     <string id="30905">Esiasetettu hakunimi</string>
     <string id="30906">Etsi sanaa</string>
     <string id="30907">Etsi käyttäjänimeä</string>
@@ -22,8 +22,8 @@
     <string id="30952">Etsi videoita</string>
     <string id="30953">Etsi ihmisiä</string>
     <string id="30954">Viimeksi esitellyt</string>
-    <string id="30955">Etsitään ihmisiä...</string>
-    <string id="30956">Etsitään Videoita...</string>
+    <string id="30955">Etsi ihmisiä...</string>
+    <string id="30956">Etsi videoita...</string>
     <string id="30957">Arvostetuimmat</string>
     <string id="30958">Katso kannettavalla</string>
     <string id="30959">Katso satunnaisia musiikkivideoita</string>
@@ -38,19 +38,20 @@
     <string id="30968">Samankaltaiset</string>
 
     <!-- Context menu strings -->
-    <string id="30500">Vastaavanlaiset videot</string>
+    <string id="30500">Samankaltaiset videot</string>
     <string id="30501">Lataa video</string>
 
     <!-- messages -->
     <string id="30600">Ladataan: %s</string>
     <string id="30601">Tallennetaan: %s</string>
-    <string id="30602">'->': %s</string>
+    <string id="30602">Kohteeseen: %s</string>
     <string id="30603">Kopioidaan: %s</string>
 
     <!-- Plugin settings strings -->
     <string id="30000">Käyttäjänimi</string>
+    <string id="30005">Salasana</string>
     <string id="30010">Lisäyspäivä</string>
-    <string id="30011">Mikä vain</string>
+    <string id="30011">Kaikki</string>
     <string id="30012">Tänään</string>
     <string id="30013">Tällä viikolla</string>
     <string id="30014">Tässä kuussa</string>
@@ -69,7 +70,7 @@
     <string id="30065">Ranska</string>
     <string id="30066">Saksa</string>
     <string id="30067">Englanti</string>
-    <string id="30068">Hollanti</string>
+    <string id="30068">Alankomaat</string>
     <string id="30069">Hong Kong</string>
     <string id="30070">Irlanti</string>
     <string id="30071">Italia</string>
