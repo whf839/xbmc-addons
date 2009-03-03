@@ -55,7 +55,7 @@ class Main:
 
     def _play_video( self ):
         # Youtube client
-        client = YoutubeClient()
+        client = YoutubeClient( authkey=xbmcplugin.getSetting( "authkey" ) )
         # construct the video url with session id and get video details
         url, g_title, g_director, g_genre, g_rating, g_runtime, g_count, g_date, g_thumbnail, g_plotoutline, video_id = client.construct_video_url( self.args.video_url, ( 0, 6, 18, )[ int( xbmcplugin.getSetting( "quality" ) ) ] )
         # close the dialog

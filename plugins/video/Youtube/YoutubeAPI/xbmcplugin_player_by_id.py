@@ -47,7 +47,7 @@ class Main:
 
     def play_video( self, video_id ):
         # Youtube client
-        client = YoutubeClient()
+        client = YoutubeClient( authkey=xbmcplugin.getSetting( "authkey" ) )
         # construct the video url with session id
         video_url = client.BASE_ID_URL % ( video_id, )
         # fetch video information

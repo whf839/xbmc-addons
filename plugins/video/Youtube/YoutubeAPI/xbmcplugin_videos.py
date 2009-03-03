@@ -342,7 +342,7 @@ class Main:
                         # add movie info
                         cm += [ ( xbmc.getLocalizedString( 30502 ), "XBMC.Action(Info)", ) ]
                         # add to favourites
-                        if ( self.args.category != "my_favorites" ):
+                        if ( self.args.category != "my_favorites" and self.authkey ):
                             cm += [ ( xbmc.getLocalizedString( 30503 ), "XBMC.RunPlugin(%s?category='add__favorite'&video_id=%s&update_listing=False)" % ( sys.argv[ 0 ], repr( video[ "id" ][ "$t" ].split( "/" )[ -1 ] ), ) ) ]
                         # add context menu items
                         listitem.addContextMenuItems( cm, replaceItems=True )
