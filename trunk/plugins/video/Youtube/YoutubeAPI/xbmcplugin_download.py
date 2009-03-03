@@ -74,7 +74,7 @@ class Main:
     def _download_video( self ):
         try:
             # Youtube client
-            client = YoutubeClient()
+            client = YoutubeClient( authkey=xbmcplugin.getSetting( "authkey" ) )
             # construct the video url with session id and get video details
             url, self.g_title, self.g_director, self.g_genre, self.g_rating, self.g_runtime, self.g_count, self.g_date, self.g_thumbnail, self.g_plotoutline, video_id = client.construct_video_url( self.args.video_url, ( 0, 6, 18, )[ int( xbmcplugin.getSetting( "quality" ) ) ] )
             # create our temp save path

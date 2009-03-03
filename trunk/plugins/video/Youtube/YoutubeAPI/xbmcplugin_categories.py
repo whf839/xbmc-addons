@@ -44,6 +44,7 @@ class Main:
             # get the users settings
             password = xbmcplugin.getSetting( "user_password" )
             # we can only authenticate if both email and password are entered
+            self.authkey = ""
             if ( self.username and password ):
                 # our client api
                 from YoutubeAPI.YoutubeClient import YoutubeClient
