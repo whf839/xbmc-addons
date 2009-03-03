@@ -48,12 +48,7 @@ class XBMCTextProgress(FetchProgress):
 apt_pkg.init()
 
 c = apt.Cache(XBMCTextProgress())
-#c.upgrade()
-p = c.__getitem__("audacity")
-if p.isInstalled:
-    p.markDelete()
-else:
-    p.markInstall()
+c.upgrade()
 changes = c.getChanges()
 
 dialog = xbmcgui.Dialog()

@@ -70,12 +70,7 @@ class TerminalProgress(OpProgress):
 apt_pkg.init()
 
 c = apt.Cache(TerminalProgress())
-#c.upgrade()
-p = c.__getitem__("audacity")
-if p.isInstalled:
-    p.markDelete()
-else:
-    p.markInstall()
+c.upgrade()
 changes = c.getChanges()
 
 
