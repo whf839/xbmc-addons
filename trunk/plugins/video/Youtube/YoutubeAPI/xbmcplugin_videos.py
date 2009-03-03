@@ -138,7 +138,7 @@ class Main:
         # we need to set the title to our query
         self.args.title = self.args.username
         # we need to set the function to users
-        self.args.category = "users"
+        self.args.category = "users__uploads"
         ok, total = self.fetch_videos( YoutubeClient.BASE_USERS_URL )
         # if exact match was found return results
         if ( total ): return ok, total
@@ -151,14 +151,12 @@ class Main:
         self.args.username = ""
         return self.fetch_videos( YoutubeClient.BASE_SEARCH_URL )
 
-    def users__uploads( self ):
-        # set author to user name
-        self.args.username = self.settings[ "username" ]
+    def my_uploads( self ):
+        # logged in users uploads
         return self.fetch_videos( YoutubeClient.BASE_USERS_URL )
 
-    def users__favorites( self ):
-        # set author to user name
-        self.args.username = self.settings[ "username" ]
+    def my_favorites( self ):
+        # logged in users favorites
         return self.fetch_videos( YoutubeClient.BASE_USERS_URL )
 
     def all_videos( self ):
@@ -170,9 +168,20 @@ class Main:
         # we end up here for pages 2 and on
         return self.fetch_videos( YoutubeClient.BASE_SEARCH_URL )
 
-    def users( self ):
-        # we end up here for pages 2 and on
+    #def user__favorites( self ):
+    #    # set author to user name
+    #    self.args.username = self.settings[ "username" ]
+    #    return self.fetch_videos( YoutubeClient.BASE_USERS_URL )
+
+    def users__uploads( self ):
+        # we end up here for pages 2 and on for user searches
         return self.fetch_videos( YoutubeClient.BASE_USERS_URL )
+
+    def add__favorite( self ):
+        # Youtube client
+        client = YoutubeClient( YoutubeClient.BASE_USERS_URL, self.authkey )
+        client.add_favorites( self.args.video_id )
+        return False, 0
 
     def fetch_videos( self, url, feed_time="", region_id="" ):
         # Youtube client
@@ -326,16 +335,17 @@ class Main:
                         # add the different infolabels we want to sort by
                         listitem.setInfo( type="Video", infoLabels={ "Title": title, "Director": director, "Duration": runtime, "Plot": plot, "Rating": rating, "Genre": genre, "Count": count, "Date": date } )
                         # set context menu items
-                        action = "XBMC.ActivateWindow(%d,%s?title=%s&category='related'&page=1&vq=''&username=''&orderby='relevance'&related=%s&issearch=False&update_listing=False)" % ( xbmcgui.getCurrentWindowId(), sys.argv[ 0 ], repr( xbmc.getLocalizedString( 30968 ) ), repr( video[ "id" ][ "$t" ].split( "/" )[ -1 ] ), )
-                        cm = [ ( xbmc.getLocalizedString( 30500 ), action, ) ]
+                        cm = [ ( xbmc.getLocalizedString( 30500 ), "XBMC.ActivateWindow(%d,%s?title=%s&category='related'&page=1&vq=''&username=''&orderby='relevance'&related=%s&issearch=False&update_listing=False)" % ( xbmcgui.getCurrentWindowId(), sys.argv[ 0 ], repr( xbmc.getLocalizedString( 30968 ) ), repr( video[ "id" ][ "$t" ].split( "/" )[ -1 ] ), ), ) ]
                         # if download path set, add download item
                         if ( self.settings[ "download_path" ] != "" ):
-                            action2 = "XBMC.RunPlugin(%s?category='download_video'&video_url=%s)" % ( sys.argv[ 0 ], repr( quote_plus( video_url ) ), )
-                            cm += [ ( xbmc.getLocalizedString( 30501 ), action2, ) ]
-                        try:
-                            listitem.addContextMenuItems( cm )
-                        except:
-                            pass
+                            cm += [ ( xbmc.getLocalizedString( 30501 ), "XBMC.RunPlugin(%s?category='download_video'&video_url=%s)" % ( sys.argv[ 0 ], repr( quote_plus( video_url ) ), ), ) ]
+                        # add movie info
+                        cm += [ ( xbmc.getLocalizedString( 30502 ), "XBMC.Action(Info)", ) ]
+                        # add to favourites
+                        if ( self.args.category != "my_favorites" ):
+                            cm += [ ( xbmc.getLocalizedString( 30503 ), "XBMC.RunPlugin(%s?category='add__favorite'&video_id=%s&update_listing=False)" % ( sys.argv[ 0 ], repr( video[ "id" ][ "$t" ].split( "/" )[ -1 ] ), ) ) ]
+                        # add context menu items
+                        listitem.addContextMenuItems( cm, replaceItems=True )
                         # add the video to the media list
                         ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=url, listitem=listitem, isFolder=False, totalItems=total_items )
                         # if user cancels, call raise to exit loop

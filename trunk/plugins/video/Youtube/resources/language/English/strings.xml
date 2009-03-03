@@ -40,6 +40,8 @@
     <!-- Context menu strings -->
     <string id="30500">Related videos</string>
     <string id="30501">Download video</string>
+    <string id="30502">Video information</string>
+    <string id="30503">Add to My Favorites</string>
 
     <!-- messages -->
     <string id="30600">Downloading: %s</string>
