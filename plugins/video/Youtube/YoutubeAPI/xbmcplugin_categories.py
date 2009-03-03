@@ -49,10 +49,10 @@ class Main:
                 from YoutubeAPI.YoutubeClient import YoutubeClient
                 client = YoutubeClient()
                 # make the authentication call
-                authkey, userid = client.authenticate( self.username, password )
+                self.authkey, userid = client.authenticate( self.username, password )
                 # if authentication succeeded, save it for later
-                if ( authkey ):
-                    xbmcplugin.setSetting( "authkey", authkey )
+                if ( self.authkey ):
+                    xbmcplugin.setSetting( "authkey", self.authkey )
 
     def openSettings( self ):
         try:
@@ -85,8 +85,8 @@ class Main:
                                         #( xbmc.getLocalizedString( 30958 ), "watch_on_mobile", "", "", True, "updated", 0, "", False, "", ),
                                         #( xbmc.getLocalizedString( 30959 ), "play_random_videos", "", "", False, "relevance", 0, "", False, "", ),
                                         ( xbmc.getLocalizedString( 30960 ), "play_video_by_id", "", "", False, "relevance", 0, "", False, ),
-                                        ( xbmc.getLocalizedString( 30961 ), "users__uploads", "", "", True, "updated", 0, "", True, ),
-                                        ( xbmc.getLocalizedString( 30962 ), "users__favorites", "", "", True, "updated", 0, "", True, ),
+                                        ( xbmc.getLocalizedString( 30961 ), "my_uploads", "", "", True, "updated", 0, "", True, ),
+                                        ( xbmc.getLocalizedString( 30962 ), "my_favorites", "", "", True, "updated", 0, "", True, ),
                                         ( xbmc.getLocalizedString( 30963 ), "top_favorites", "", "", True, "relevance", 0, "", False, ),
                                         ( xbmc.getLocalizedString( 30964 ), "most_discussed", "", "", True, "relevance", 0, "", False, ),
                                         ( xbmc.getLocalizedString( 30965 ), "most_linked", "", "", True, "relevance", 0, "", False, ),
@@ -154,7 +154,7 @@ class Main:
             # enumerate through the tuple of categories and add the item to the media list
             for ( ltitle, method, vq, username, isfolder, orderby, issearch, thumbnail, user_required, ) in categories:
                 # if a username is required for category and none supplied, skip category
-                if ( user_required and self.username == "" ): continue
+                if ( user_required and self.authkey == "" ): continue
                 # set the callback url
                 url = '%s?title=%s&category=%s&page=1&vq=%s&username=%s&orderby=%s&related=""&issearch=%d&update_listing=%d' % ( sys.argv[ 0 ], repr( ltitle ), repr( method ), repr( vq ), repr( username ), repr( orderby ), issearch, False, )
                 # check for a valid custom thumbnail for the current category
