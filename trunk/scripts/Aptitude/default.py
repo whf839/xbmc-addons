@@ -62,7 +62,7 @@ else:
     downloadString = str(len(changes)) + " packages to install, needs to download " + str(downloadSize / 1024 / 1024) + " mb. Continue?"
 
     if dialog.yesno("Info", downloadString):
-        pathToInstallScript = '/home/topfs/XBMC-Default/BUILD/scripts/Aptitude/install.py'
+        pathToInstallScript = xbmc.translatePath('special://xbmc/') + 'scripts/Aptitude/install.py'
         tmp = xbmc.translatePath('special://temp/') + 'workfile'
         install = 'sudo python ' + pathToInstallScript + ' > ' + tmp
         os.system(install)
@@ -76,16 +76,18 @@ else:
         for line in f.readlines():
             tokens = line.strip('\n').split(';')
             if "Start" in tokens:
-                line1 = tokens[1]
-                line2 = tokens[2]
-                line3 = tokens[3]
+                if len(tokens) >= 4:
+                    line1 = tokens[1]
+                    line2 = tokens[2]
+                    line3 = tokens[3]
                 progress.update(0)
             elif "Finish" in tokens:
                 pass
             elif "Progress" in tokens:
-                line1 = tokens[2]
-                line2 = tokens[3]
-                line3 = tokens[4]
+                if len(tokens) >= 5:
+                    line1 = tokens[2]
+                    line2 = tokens[3]
+                    line3 = tokens[4]
                 progress.update(float(tokens[1]), line1, line2, line3)
             elif "Complete" in tokens:
                 res = bool(tokens[1])
