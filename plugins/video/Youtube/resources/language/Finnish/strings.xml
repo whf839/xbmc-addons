@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings> <!--  2.3.2009 Finnish   -->
+<strings> <!--  4.3.2009 Finnish   -->
     <!-- Plugin strings -->
     <string id="30900">Tallenna esiasetukseksi</string>
     <string id="30901">Haluatko lisätä tämän haun esiasetukseksi?</string>
     <string id="30902">Haun tallennus epäonnistui!</string>
     <string id="30903">Haun tallennus epäonnistui virheeseen:</string>
-    <string id="30904">Ei kuvausta.</string>
+    <string id="30904">Käyttäjästä ei ollut kuvausta tai se ei ollut utf-8-muodossa</string>
     <string id="30905">Esiasetettu hakunimi</string>
     <string id="30906">Etsi sanaa</string>
     <string id="30907">Etsi käyttäjänimeä</string>
@@ -20,9 +20,9 @@
     <string id="30950">Kaikki videot</string>
     <string id="30951">Katsotuimmat</string>
     <string id="30952">Etsi videoita</string>
-    <string id="30953">Etsi ihmisiä</string>
+    <string id="30953">Etsi käyttäjiä</string>
     <string id="30954">Viimeksi esitellyt</string>
-    <string id="30955">Etsi ihmisiä...</string>
+    <string id="30955">Etsi käyttäjiä...</string>
     <string id="30956">Etsi videoita...</string>
     <string id="30957">Arvostetuimmat</string>
     <string id="30958">Katso kannettavalla</string>
@@ -40,6 +40,8 @@
     <!-- Context menu strings -->
     <string id="30500">Samankaltaiset videot</string>
     <string id="30501">Lataa video</string>
+    <string id="30502">Videon tiedot</string>
+    <string id="30503">Lisää suosikkehin</string>
 
     <!-- messages -->
     <string id="30600">Ladataan: %s</string>
