@@ -2,6 +2,8 @@
     Player module: plays the selected video
 """
 
+import xbmc
+
 def _get_keyboard( default="", heading="", hidden=False ):
     """ shows a keyboard and returns a value """
     keyboard = xbmc.Keyboard( default, heading, hidden )
@@ -11,7 +13,6 @@ def _get_keyboard( default="", heading="", hidden=False ):
     return default
 
 # get the video id (we do it here so there is minimal delay with nothing displayed)
-import xbmc
 video_id = _get_keyboard( heading=xbmc.getLocalizedString( 30910 ) )#"W2cMJE35WKE"
 
 if ( video_id ):
@@ -54,6 +55,7 @@ class Main:
         url, title, author, genre, rating, runtime, count, date, thumbnail_url, plot, video_id = client.construct_video_url( video_url, ( 0, 6, 18, )[ int( xbmcplugin.getSetting( "quality" ) ) ] )
         pDialog.close()
         if ( not pDialog.iscanceled() ):
+            # construct our listitem
             listitem = xbmcgui.ListItem( title, runtime, thumbnailImage=thumbnail_url )
             # set the key information
             listitem.setInfo( "video", { "Title": title, "Director": author, "Genre": genre, "Rating": rating, "Duration": runtime, "Count": count, "Date": date, "PlotOutline": plot, "Plot": plot } )
