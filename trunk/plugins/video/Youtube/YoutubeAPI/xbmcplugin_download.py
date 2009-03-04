@@ -78,7 +78,7 @@ class Main:
             # construct the video url with session id and get video details
             url, self.g_title, self.g_director, self.g_genre, self.g_rating, self.g_runtime, self.g_count, self.g_date, self.g_thumbnail, self.g_plotoutline, video_id = client.construct_video_url( self.args.video_url, ( 0, 6, 18, )[ int( xbmcplugin.getSetting( "quality" ) ) ] )
             # create our temp save path
-            tmp_path = xbmc.translatePath( "Z:\\%s.flv" % ( video_id, ) )
+            tmp_path = xbmc.translatePath( "special://temp/%s.flv" % ( video_id, ) )
             # get a valid filepath
             if ( self.settings[ "use_title" ] ):
                 # add extension to video title
