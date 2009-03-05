@@ -39,6 +39,7 @@ class Main:
         self.settings[ "region_id" ] = ( "", "AU", "BR", "CA", "FR", "DE", "GB", "NL", "HK", "IE", "IT", "JP", "MX", "NZ", "PL", "RU", "KR", "ES", "TW", "US", )[ int( xbmcplugin.getSetting( "region_id" ) ) ]
         self.settings[ "saved_searches" ] = ( 10, 20, 30, 40, )[ int( xbmcplugin.getSetting( "saved_searches" ) ) ]
         self.settings[ "download_path" ] = xbmcplugin.getSetting( "download_path" )
+        self.settings[ "fanart_image" ] = xbmcplugin.getSetting( "fanart_image" )
 
     def _get_strings( self ):
         self.localized_string = {}
@@ -181,6 +182,12 @@ class Main:
         # Youtube client
         client = YoutubeClient( YoutubeClient.BASE_USERS_URL, self.authkey )
         client.add_favorites( self.args.video_id )
+        return False, 0
+
+    def delete__favorite( self ):
+        # Youtube client
+        ##client = YoutubeClient( YoutubeClient.BASE_USERS_URL, self.authkey )
+        ##client.delete_favorites( self.args.video_id )
         return False, 0
 
     def fetch_videos( self, url, feed_time="", region_id="" ):
@@ -334,8 +341,14 @@ class Main:
                         listitem=xbmcgui.ListItem( label=title, iconImage=icon, thumbnailImage=thumbnail_url )
                         # add the different infolabels we want to sort by
                         listitem.setInfo( type="Video", infoLabels={ "Title": title, "Director": director, "Duration": runtime, "Plot": plot, "Rating": rating, "Genre": genre, "Count": count, "Date": date } )
+                        # set isplayable property
+                        listitem.setProperty( "IsPlayable", "true" )
                         # set context menu items
-                        cm = [ ( xbmc.getLocalizedString( 30500 ), "XBMC.ActivateWindow(%d,%s?title=%s&category='related'&page=1&vq=''&username=''&orderby='relevance'&related=%s&issearch=False&update_listing=False)" % ( xbmcgui.getCurrentWindowId(), sys.argv[ 0 ], repr( xbmc.getLocalizedString( 30968 ) ), repr( video[ "id" ][ "$t" ].split( "/" )[ -1 ] ), ), ) ]
+                        cm = []
+                        # add queue video
+                        cm += [ ( xbmc.getLocalizedString( 30504 ), "XBMC.Action(Queue)", ) ]
+                        # add related videos
+                        cm += [ ( xbmc.getLocalizedString( 30500 ), "XBMC.ActivateWindow(%d,%s?title=%s&category='related'&page=1&vq=''&username=''&orderby='relevance'&related=%s&issearch=False&update_listing=False)" % ( xbmcgui.getCurrentWindowId(), sys.argv[ 0 ], repr( xbmc.getLocalizedString( 30968 ) ), repr( video[ "id" ][ "$t" ].split( "/" )[ -1 ] ), ), ) ]
                         # if download path set, add download item
                         if ( self.settings[ "download_path" ] != "" ):
                             cm += [ ( xbmc.getLocalizedString( 30501 ), "XBMC.RunPlugin(%s?category='download_video'&video_url=%s)" % ( sys.argv[ 0 ], repr( quote_plus( video_url ) ), ), ) ]
@@ -344,6 +357,10 @@ class Main:
                         # add to favourites
                         if ( self.args.category != "my_favorites" and self.authkey ):
                             cm += [ ( xbmc.getLocalizedString( 30503 ), "XBMC.RunPlugin(%s?category='add__favorite'&video_id=%s&update_listing=False)" % ( sys.argv[ 0 ], repr( video[ "id" ][ "$t" ].split( "/" )[ -1 ] ), ) ) ]
+                        else:
+                            cm += [ ( xbmc.getLocalizedString( 30506 ), "XBMC.RunPlugin(%s?category='delete__favorite'&video_id=%s&update_listing=False)" % ( sys.argv[ 0 ], repr( video[ "id" ][ "$t" ].split( "/" )[ -1 ] ), ) ) ]
+                        # add now playing
+                        cm += [ ( xbmc.getLocalizedString( 30505 ), "XBMC.ActivateWindow(10028)", ) ]
                         # add context menu items
                         listitem.addContextMenuItems( cm, replaceItems=True )
                         # add the video to the media list
@@ -366,11 +383,15 @@ class Main:
             xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_GENRE )
             # set content
             xbmcplugin.setContent( handle=int( sys.argv[ 1 ] ), content="movies" )
-            try:
-                # set our plugin category
-                xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title )
-            except:
-                pass
+            # set our plugin category
+            xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title )
+            # if skin has fanart image use it
+            fanart_image = os.path.join( sys.modules[ "__main__" ].__plugin__, self.args.category + "-fanart.png" )
+            if ( xbmc.skinHasImage( fanart_image ) ):
+                xbmcplugin.setPluginFanart( handle=int( sys.argv[ 1 ] ), image=fanart_image )
+            # set our fanart from user setting
+            elif ( self.settings[ "fanart_image" ] ):
+                xbmcplugin.setPluginFanart( handle=int( sys.argv[ 1 ] ), image=self.settings[ "fanart_image" ] )
         return ok, total_items
 
     def _get_keyboard( self, default="", heading="", hidden=False ):

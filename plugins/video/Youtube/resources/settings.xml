@@ -11,9 +11,8 @@
     <setting type="sep" />
     <setting id="saved_searches" type="enum" values="10|20|30|40" label="30090" default="0" />
     <setting type="sep" />
-    <!--setting id="download_mode" type="enum" lvalues="30101|30102" label="30100" default="0" /-->
     <setting id="download_path" type="folder" source="video" option="writeable" label="30110" default="" />
     <setting id="use_title" type="bool" enable="!eq(-1,)" label="30120" default="true" />
     <setting type="sep" />
-    <setting id="player_core" type="enum" values="MPlayer|DVDPlayer" label="30040" default="1" />
+    <setting id="fanart_image" type="pictures" label="30130" default="" />
 </settings>

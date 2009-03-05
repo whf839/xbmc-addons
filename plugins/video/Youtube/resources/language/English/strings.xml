@@ -42,6 +42,9 @@
     <string id="30501">Download video</string>
     <string id="30502">Video information</string>
     <string id="30503">Add to My Favorites</string>
+    <string id="30504">Queue video</string>
+    <string id="30505">Now playing...</string>
+    <string id="30506">Delete from My Favorites</string>
 
     <!-- messages -->
     <string id="30600">Downloading: %s</string>
@@ -91,4 +94,5 @@
     <string id="30102">Save</string>
     <string id="30110">Download folder</string>
     <string id="30120">- Use title for saved filename</string>
+    <string id="30130">Fanart image</string>
 </strings>

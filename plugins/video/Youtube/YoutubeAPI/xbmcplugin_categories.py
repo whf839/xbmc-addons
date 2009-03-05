@@ -56,19 +56,15 @@ class Main:
                     xbmcplugin.setSetting( "authkey", self.authkey )
 
     def openSettings( self ):
-        try:
-            # is this the first time plugin was run and user has not set email
-            if ( not sys.argv[ 2 ] and xbmcplugin.getSetting( "username" ) == "" and xbmcplugin.getSetting( "runonce" ) == "" ):
-                # set runonce
-                xbmcplugin.setSetting( "runonce", "1" )
-                # sleep for xbox so dialogs don't clash. (TODO: report this as a bug?)
-                if ( os.environ.get( "OS", "n/a" ) == "xbox" ):
-                    xbmc.sleep( 2000 )
-                # open settings
-                xbmcplugin.openSettings( sys.argv[ 0 ] )
-        except:
-            # new methods not in build
-            pass
+        # is this the first time plugin was run and user has not set email
+        if ( not sys.argv[ 2 ] and xbmcplugin.getSetting( "username" ) == "" and xbmcplugin.getSetting( "runonce" ) == "" ):
+            # set runonce
+            xbmcplugin.setSetting( "runonce", "1" )
+            # sleep for xbox so dialogs don't clash. (TODO: report this as a bug?)
+            if ( os.environ.get( "OS", "n/a" ) == "xbox" ):
+                xbmc.sleep( 2000 )
+            # open settings
+            xbmcplugin.openSettings( sys.argv[ 0 ] )
         # we need to get the users email
         self.username = xbmcplugin.getSetting( "username" )
 
@@ -77,14 +73,12 @@ class Main:
             # default categories
             if ( root ):
                 categories = (
-                                        #( xbmc.getLocalizedString( 30950 ), "all_videos", "", "", True, "updated", 0, "", False, "", ),
                                         ( xbmc.getLocalizedString( 30951 ), "most_viewed", "", "", True, "viewCount", 0, "", False, ),
                                         ( xbmc.getLocalizedString( 30952 ), "presets_videos", "", "", True, "updated", 0, "", False, ),
                                         ( xbmc.getLocalizedString( 30953 ), "presets_users", "", "", True, "updated", 0, "", False, ),
                                         ( xbmc.getLocalizedString( 30954 ), "recently_featured", "", "", True, "updated", 0, "", False, ),
                                         ( xbmc.getLocalizedString( 30957 ), "top_rated", "", "", True, "rating", 0, "", False, ),
                                         ( xbmc.getLocalizedString( 30958 ), "watch_on_mobile", "", "", True, "updated", 0, "", False, ),
-                                        #( xbmc.getLocalizedString( 30959 ), "play_random_videos", "", "", False, "relevance", 0, "", False, ),
                                         ( xbmc.getLocalizedString( 30960 ), "play_video_by_id", "", "", False, "relevance", 0, "", False, ),
                                         ( xbmc.getLocalizedString( 30961 ), "my_uploads", "", "", True, "updated", 0, "", True, ),
                                         ( xbmc.getLocalizedString( 30962 ), "my_favorites", "", "", True, "updated", 0, "", True, ),
@@ -171,14 +165,11 @@ class Main:
             # we do not want to sort queries list
             if ( "category='presets_videos'" in sys.argv[ 2 ] or "category='presets_users'" in sys.argv[ 2 ] ):
                 xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-                try:
-                    # set our plugin category
-                    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title )
-                    # set our fanart from user setting
-                    #if ( self.settings[ "fanart_image" ] ):
-                    #    xbmcplugin.setPluginFanart( handle=int( sys.argv[ 1 ] ), image=self.settings[ "fanart_image" ], color1=self.settings[ "fanart_color1" ], color2=self.settings[ "fanart_color2" ], color3=self.settings[ "fanart_color3" ] )
-                except:
-                    pass
+            # set our plugin category
+            xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title )
+            # set our fanart from user setting
+            if ( xbmcplugin.getSetting( "fanart_image" ) ):
+                xbmcplugin.setPluginFanart( handle=int( sys.argv[ 1 ] ), image=xbmcplugin.getSetting( "fanart_image" ) )
         except:
             # user cancelled dialog or an error occurred
             print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
