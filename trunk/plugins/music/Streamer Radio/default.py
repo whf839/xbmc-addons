@@ -22,6 +22,8 @@ __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/music/Streame
 __credits__ = "Team XBMC"
 __version__ = "1.1"
 
+xbmc.log( "[PLUGIN] '%s: version %s' initialized!" % ( __plugin__, __version__, ), xbmc.LOGNOTICE )
+
 
 class _Info:
     def __init__( self, *args, **kwargs ):
