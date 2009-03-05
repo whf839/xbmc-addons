@@ -23,7 +23,7 @@ class _Parser:
         Parses an xml document for videos
     """
     # base urls
-    BASE_URL = sys.modules[ "__main__" ].BASE_URL
+    BASE_URL = "http://www.cnn.com/"
     BASE_STREAMING_URL = "http://vid.cnn.com/cnn/big/%s_576x324_dl.flv"
     BASE_LIVE_STREAMING_URL = "http://www.cnn.com/video/live/cnnlive_%s.asx"
 
@@ -55,7 +55,7 @@ class _Parser:
                         elif ( node.tagName == "image_url" ):
                             image_url = node.firstChild.nodeValue
                             if ( not image_url.startswith( "http://" ) ):
-                                image_url = os.path.join( self.BASE_URL, image_url[ 1 : ] )
+                                image_url = self.BASE_URL + image_url[ 1 : ]
                             date = "%s-%s-%s" % ( image_url.split( "/" )[ -2 ], image_url.split( "/" )[ -3 ], image_url.split( "/" )[ -4 ], )
                         # use this for live streams
                         elif ( node.tagName == "video_url" ):

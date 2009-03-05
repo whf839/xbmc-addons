@@ -23,7 +23,7 @@ class _Parser( SGMLParser ):
         Parses an html document for categories
     """
     # base urls
-    BASE_URL = sys.modules[ "__main__" ].BASE_URL
+    BASE_URL = "http://www.cnn.com/"
 
     def reset( self ):
         SGMLParser.reset( self )
@@ -56,15 +56,15 @@ class _Parser( SGMLParser ):
 
     def make_object( self, title, category ):
         # add item to our _Info() object list
-        self.categories += [ _Info( title=title, url=os.path.join( self.BASE_URL, category ) ) ]
+        self.categories += [ _Info( title=title, url=self.BASE_URL + category ) ]
 
 
 class Main:
     # base urls
-    BASE_CATEGORY_URL = os.path.join( sys.modules[ "__main__" ].BASE_URL, "video" )
+    BASE_CATEGORY_URL = "http://www.cnn.com/video"
 
     # base paths
-    BASE_PLUGIN_THUMBNAIL_PATH = os.path.join( sys.modules[ "__main__" ].BASE_PATH, "thumbnails" )
+    BASE_PLUGIN_THUMBNAIL_PATH = os.path.join( os.getcwd(), "thumbnails" )
 
     def __init__( self ):
         self.get_categories()
