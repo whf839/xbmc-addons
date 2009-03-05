@@ -5,6 +5,7 @@
 # main imports
 import sys
 import os
+import xbmc
 
 # plugin constants
 __plugin__ = "Apple Movie Trailers II"
@@ -13,6 +14,8 @@ __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Apple%20Movie%20Trailers%20II"
 __credits__ = "Team XBMC"
 __version__ = "1.6"
+
+xbmc.log( "[PLUGIN] '%s: version %s' initialized!" % ( __plugin__, __version__, ), xbmc.LOGNOTICE )
 
 
 if ( __name__ == "__main__" ):
