@@ -13,7 +13,7 @@ def _get_keyboard( default="", heading="", hidden=False ):
     return default
 
 # get the video id (we do it here so there is minimal delay with nothing displayed)
-video_id = _get_keyboard( heading=xbmc.getLocalizedString( 30910 ) )#"W2cMJE35WKE"
+video_id = _get_keyboard( heading=xbmc.getLocalizedString( 30910 ) )
 
 if ( video_id ):
     # create the progress dialog (we do it here so there is minimal delay with nothing displayed)
@@ -22,6 +22,7 @@ if ( video_id ):
     pDialog = xbmcgui.DialogProgress()
     pDialog.create( sys.modules[ "__main__" ].__plugin__, xbmc.getLocalizedString( 30908 ) )
 
+    import os
     import xbmcplugin
 
     from YoutubeAPI.YoutubeClient import YoutubeClient
@@ -36,28 +37,28 @@ class Main:
     def __init__( self ):
         if ( video_id ):
             self._parse_argv()
-            self._get_settings()
             self.play_video( video_id )
 
     def _parse_argv( self ):
         # call _Info() with our formatted argv to create the self.args object
         exec "self.args = _Info(%s)" % ( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
 
-    def _get_settings( self ):
-        self.player_core = ( xbmc.PLAYER_CORE_MPLAYER, xbmc.PLAYER_CORE_DVDPLAYER, )[ int( xbmcplugin.getSetting( "player_core" ) ) ]
-
     def play_video( self, video_id ):
         # Youtube client
         client = YoutubeClient( authkey=xbmcplugin.getSetting( "authkey" ) )
-        # construct the video url with session id
+        # construct the video url
         video_url = client.BASE_ID_URL % ( video_id, )
         # fetch video information
         url, title, author, genre, rating, runtime, count, date, thumbnail_url, plot, video_id = client.construct_video_url( video_url, ( 0, 6, 18, )[ int( xbmcplugin.getSetting( "quality" ) ) ] )
-        pDialog.close()
-        if ( not pDialog.iscanceled() ):
-            # construct our listitem
-            listitem = xbmcgui.ListItem( title, runtime, thumbnailImage=thumbnail_url )
-            # set the key information
-            listitem.setInfo( "video", { "Title": title, "Director": author, "Genre": genre, "Rating": rating, "Duration": runtime, "Count": count, "Date": date, "PlotOutline": plot, "Plot": plot } )
-            # Play video with the proper core
-            xbmc.Player( self.player_core ).play( url, listitem )
+        # get cached thumbnail, no need to redownload
+        thumbnail = xbmc.getCacheThumbName( sys.argv[ 0 ] + sys.argv[ 2 ] + video_id )
+        thumbnail = os.path.join( xbmc.translatePath( "special://profile" ), "Thumbnails", "Video", thumbnail[ 0 ], thumbnail )
+        # if thumb not found download it
+        if ( not os.path.isfile( thumbnail ) ):
+            xbmc.executehttpapi( "FileCopy(%s,%s)" % ( thumbnail_url, thumbnail.encode( "utf-8" ), ) )
+        # construct our listitem
+        listitem = xbmcgui.ListItem( title, runtime, thumbnailImage=thumbnail )
+        # set the key information
+        listitem.setInfo( "video", { "Title": title, "Director": author, "Genre": genre, "Rating": rating, "Duration": runtime, "Count": count, "Date": date, "PlotOutline": plot, "Plot": plot } )
+        # Play video with the proper core
+        xbmc.Player().play( url, listitem )

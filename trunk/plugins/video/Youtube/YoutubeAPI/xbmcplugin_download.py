@@ -59,7 +59,6 @@ class Main:
 
     def _get_settings( self ):
         self.settings = {}
-        self.settings[ "player_core" ] = ( xbmc.PLAYER_CORE_MPLAYER, xbmc.PLAYER_CORE_DVDPLAYER, )[ int( xbmcplugin.getSetting( "player_core" ) ) ]
         self.settings[ "download_path" ] = xbmcplugin.getSetting( "download_path" )
         self.settings[ "use_title" ] = ( xbmcplugin.getSetting( "use_title" ) == "true" )
 
@@ -196,4 +195,4 @@ class Main:
             # add item to our playlist
             playlist.add( self.filepath, listitem )
             # play item
-            xbmc.Player( self.settings[ "player_core" ] ).play( playlist )
+            xbmc.Player().play( playlist )
