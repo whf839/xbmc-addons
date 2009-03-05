@@ -2,30 +2,11 @@
     Player module: plays the selected video
 """
 
-# TODO: remove this when dialog issue is resolved
-import xbmc
-"""
-# set our title
-g_title = unicode( xbmc.getInfoLabel( "ListItem.Title" ), "utf-8" )
-# set our director
-g_director = unicode( xbmc.getInfoLabel( "ListItem.Director" ), "utf-8" )
-# set our genre
-g_genre = unicode( xbmc.getInfoLabel( "ListItem.Genre" ), "utf-8" )
-# set our rating
-g_rating = 0.0
-if ( xbmc.getInfoLabel( "ListItem.Rating" ) ):
-    g_rating = float( xbmc.getInfoLabel( "ListItem.Rating" ) )
-# set our date
-g_date = xbmc.getInfoLabel( "ListItem.Date" )
-# set our thumbnail
-g_thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
-# set our plotoutline
-g_plotoutline = unicode( xbmc.getInfoLabel( "ListItem.Plot" ), "utf-8" )
-"""
-
 # create the progress dialog (we do it here so there is minimal delay with nothing displayed)
 import sys
+import xbmc
 import xbmcgui
+
 pDialog = xbmcgui.DialogProgress()
 pDialog.create( sys.modules[ "__main__" ].__plugin__, xbmc.getLocalizedString( 30908 ) )
 
@@ -95,7 +76,7 @@ class Main:
             else:
                 filepath = self.filepath
             # only download if the trailer doesn't exist
-            if ( not os.path.isfile( tmp_path ) ):
+            if ( not os.path.isfile( tmp_path ) and not os.path.isfile( self.filepath ) ):
                 # fetch the video
                 urllib.urlretrieve( url, tmp_path, self._report_hook )
             ok = True
@@ -103,8 +84,8 @@ class Main:
             if ( not os.path.isfile( filepath ) ):
                 # copy to final location
                 ok = self._finalize_download( tmp_path )
-                # if the copy failed raise an error
-                if ( not ok ): raise
+            # if the copy failed raise an error
+            if ( not ok ): raise
         except:
             print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             # filepath is not always released immediately, we may need to try more than one attempt, sleeping between
@@ -152,26 +133,16 @@ class Main:
     def _finalize_download( self, tmp_path ):
         try:
             # copy the trailer
-            msg1 = xbmc.getLocalizedString( 30603 ) % ( os.path.split( self.filepath )[ 1 ], )
-            msg2 = xbmc.getLocalizedString( 30602 ) % ( os.path.split( self.filepath )[ 0 ], )
-            pDialog.update( -1 )#, msg1, msg2 )
+            pDialog.update( -1 )
+            # only copy if the trailer doesn't exist
+            if ( not os.path.isfile( self.filepath ) ):
+                xbmc.executehttpapi( "FileCopy(%s,%s)" % ( tmp_path, urllib.quote_plus( self.filepath.encode( "utf-8" ) ), ) )
+            # fetch the thumbnail
+            thumbpath = os.path.splitext( self.filepath )[ 0 ] + ".tbn"
             # necessary for dialog to update
-            xbmc.sleep( 50 )
-            xbmc.executehttpapi( "FileCopy(%s,%s)" % ( tmp_path, self.filepath.encode( "utf-8" ), ) )
-            """
-            # create conf file for better MPlayer playback only when trailer saved on xbox and not progressive
-            if ( not self.filepath.startswith( "smb://" ) and not url.endswith( "p.mov" ) and not os.path.isfile( self.filepath + ".conf" ) and os.environ.get( "OS", "xbox" ) == "xbox" ):
-                f = open( self.filepath + ".conf" , "w" )
-                f.write( "nocache=1" )
-                f.close()
-            """
-            # copy the thumbnail
-            ##thumbpath = os.path.splitext( self.filepath )[ 0 ] + ".tbn"
-            ##msg1 = xbmc.getLocalizedString( 30603 ) % ( os.path.split( thumbpath )[ 1 ], )
-            ##pDialog.update( -1, msg1, msg2 )
-            # necessary for dialog to update
-            ##xbmc.sleep( 50 )
-            ##xbmc.executehttpapi( "FileCopy(%s,%s)" % ( self.g_thumbnail, thumbpath.encode( "utf-8" ), ) )
+            if ( not os.path.isfile( thumbpath ) ):
+                xbmc.executehttpapi( "FileCopy(%s,%s)" % ( self.g_thumbnail, urllib.quote_plus( thumbpath.encode( "utf-8" ) ), ) )
+            self.g_thumbnail = thumbpath
             # we succeeded
             return True
         except:
@@ -179,20 +150,20 @@ class Main:
             return False
 
     def _play_video( self ):
-        # close dialog
-        pDialog.close()
-        if ( self.filepath ):
-            # create our playlist
-            playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
-            # clear any possible entries
-            playlist.clear()
-            # set the default icon
-            icon = "DefaultVideo.png"
-            # only need to add label, icon and thumbnail, setInfo() and addSortMethod() takes care of label2
-            listitem = xbmcgui.ListItem( self.g_title, iconImage=icon, thumbnailImage=self.g_thumbnail )
-            # set the key information
-            listitem.setInfo( "video", { "Title": self.g_title, "Genre": self.g_genre, "Director": self.g_director, "Rating": self.g_rating, "Plot": self.g_plotoutline, "Plotoutline": self.g_plotoutline, "Year": int( self.g_date[ -4 : ] ) } )
-            # add item to our playlist
-            playlist.add( self.filepath, listitem )
-            # play item
-            xbmc.Player().play( playlist )
+        if ( not self.filepath ):
+            pDialog.close()
+            return
+        # create our playlist
+        playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
+        # clear any possible entries
+        playlist.clear()
+        # set the default icon
+        icon = "DefaultVideo.png"
+        # only need to add label, icon and thumbnail, setInfo() and addSortMethod() takes care of label2
+        listitem = xbmcgui.ListItem( self.g_title, iconImage=icon, thumbnailImage=self.g_thumbnail )
+        # set the key information
+        listitem.setInfo( "video", { "Title": self.g_title, "Genre": self.g_genre, "Director": self.g_director, "Rating": self.g_rating, "Plot": self.g_plotoutline, "Plotoutline": self.g_plotoutline, "Year": int( self.g_date[ -4 : ] ) } )
+        # add item to our playlist
+        playlist.add( self.filepath, listitem )
+        # play item
+        xbmc.Player().play( playlist )
