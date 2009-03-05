@@ -158,6 +158,9 @@ class Main:
                 icon = "DefaultFolderBig.png"
                 # only need to add label, icon and thumbnail, setInfo() and addSortMethod() takes care of label2
                 listitem=xbmcgui.ListItem( ltitle, iconImage=icon, thumbnailImage=thumbnail )
+                # TODO: verify if this should work
+                # set fanart
+                listitem.setProperty( "fanart_image", "%s-fanart.png" % os.path.join( sys.modules[ "__main__" ].__plugin__, method, ) )
                 # add the item to the media list
                 ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=url, listitem=listitem, isFolder=isfolder, totalItems=len( categories ) )
                 # if user cancels, call raise to exit loop
