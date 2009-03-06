@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+    
+	<!--general-->
+	<setting type="sep" />
+	<setting id='LargeThumbs' type ="bool" label="30019" default="1"/>
+
+</settings>
