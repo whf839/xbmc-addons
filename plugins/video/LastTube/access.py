@@ -11,7 +11,6 @@ def getFlv(url):
     p=re.compile('http://www.youtube.com/watch\?v=(.*)')
     match=p.findall(url)
     for code in match:
-        print 'code='+code
         req = urllib2.Request('http://www.youtube.com/watch?v='+code)
         req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
         response = urllib2.urlopen(req)
@@ -27,7 +26,6 @@ def getUrl(xml):
     p=re.compile('<url>(.*)</url>')
     match=p.findall(xml)
     for url in match:
-        print 'url='+url
         flv=getFlv(url)
         return flv
 
@@ -50,16 +48,16 @@ def getThumb(xml):
         return thumb
 
 def getVideoInfo(mode):
+    print 'LastTube --> req :: ',site,mode
     req = urllib2.Request(site+mode)
     req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
     response = urllib2.urlopen(req)
     link=response.read()
     response.close()
-    print link
     url=getUrl(link)
     artist=getArtist(link)
     track=getTrack(link)
     thumb=getThumb(link)
     info=[url,artist,track,thumb]
-    print info
+    print 'LastTube --> '+str(info)
     return info
