@@ -8,12 +8,12 @@ import os
 import xbmc
 
 # plugin constants
-__plugin__ = "Apple Movie Trailers II"
+__plugin__ = "Apple Movie Trailers Lite"
 __author__ = "nuka1195"
 __url__ = "http://code.google.com/p/xbmc-addons/"
-__svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Apple%20Movie%20Trailers%20II"
+__svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Apple%20Movie%20Trailers%20Lite"
 __credits__ = "Team XBMC"
-__version__ = "1.6"
+__version__ = "1.6.1"
 
 xbmc.log( "[PLUGIN] '%s: version %s' initialized!" % ( __plugin__, __version__, ), xbmc.LOGNOTICE )
 
