@@ -177,9 +177,7 @@ class Main:
         # helper functions
         self.MediaWindow = MediaWindow( int( sys.argv[ 1 ] ), category=self.PluginCategory, content="movies", sortmethods=sortmethods, fanart=( self.settings[ "fanart_image" ], self.Fanart, ) )
         # fetch videos
-        ok = self.get_videos()
-        # end plugin
-        self.MediaWindow.end( ok )
+        self.MediaWindow.end( self.get_videos() )
 
     def _get_settings( self ):
         self.settings = {}
