@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings> <!--  4.3.2009 Finnish   -->
+<strings> <!--  7.3.2009 Finnish   -->
     <!-- Plugin strings -->
     <string id="30900">Tallenna esiasetukseksi</string>
     <string id="30901">Haluatko lisätä tämän haun esiasetukseksi?</string>
@@ -41,7 +41,10 @@
     <string id="30500">Samankaltaiset videot</string>
     <string id="30501">Lataa video</string>
     <string id="30502">Videon tiedot</string>
-    <string id="30503">Lisää suosikkehin</string>
+    <string id="30503">Lisää suosikkeihin</string>
+    <string id="30504">Lisää toistojonoon</string>
+    <string id="30505">Toistetaan...</string>
+    <string id="30506">Poista suosikeista</string>
 
     <!-- messages -->
     <string id="30600">Ladataan: %s</string>
@@ -91,4 +94,5 @@
     <string id="30102">Tallennus</string>
     <string id="30110">Latauskansio</string>
     <string id="30120">- Käytä videon otsikkoa tallennusnimenä</string>
+    <string id="30130">Fanitaide kuva</string>
 </strings>
