@@ -51,7 +51,6 @@ class Main:
                         CLIPLIST.append(Clips)
                 else:
                     print "NO SHOW NAME: " + breakurl 
-        print SHOWLIST
 
         #for SHOWNAME,Episodes,Clips in SHOWLIST:
         for SHOWNAME in SHOWLIST:

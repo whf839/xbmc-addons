@@ -179,8 +179,10 @@ class Main:
                 #480p and 720p pids
                 elif breakurl[15] <> '':
                         pid = breakurl[10] + "<break>" + breakurl[15]
-
-                thumbnail = breakurl[12]
+                if (xbmcplugin.getSetting('largethumbs') == 'true'):
+                    thumbnail = breakurl[12]
+                elif (xbmcplugin.getSetting('largethumbs') == 'false'):
+                    thumbnail = breakurl[11]
                 plot = breakurl[5].replace('\\','')
                 duration = breakurl[9]
                 if breakurl[4] <> '':
