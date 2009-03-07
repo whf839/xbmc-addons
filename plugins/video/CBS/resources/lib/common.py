@@ -31,7 +31,6 @@ SITEFEED_URL     = "http://www.cbs.com/sitefeeds"
 imagepath   = os.path.join(os.getcwd().replace(';', ''),'resources','images')
 
 
-
 """
     GET SETTINGS
 """
@@ -59,7 +58,7 @@ def cleanNames(string):
 
 def addDirectory(name, url='', mode='default', thumb='', icon='', plot=''):
     ok=True
-    u = sys.argv[0]+'?url="'+urllib.quote_plus(url)+'"&mode="'+mode+'"&name="'+urllib.quote_plus(cleanNames(name))+'"&plot="'+urllib.quote_plus(cleanNames(plot))+'"'
+    u = sys.argv[0]+'?url="'+urllib.quote_plus(url)+'"&mode="'+mode+'"&name="'+urllib.quote_plus(cleanNames(name))+'"&plot="'+urllib.quote_plus(cleanNames(plot))+'"&thumbnail="'+urllib.quote_plus(cleanNames(thumb))+'"'
     liz=xbmcgui.ListItem(name, iconImage=icon, thumbnailImage=icon)
     liz.setInfo( type="Video",
                  infoLabels={ "Title":name,
@@ -68,9 +67,15 @@ def addDirectory(name, url='', mode='default', thumb='', icon='', plot=''):
     ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
     return ok
 
-   
-    
 
+def getHTML( url ):
+    print 'CBS --> common :: getHTML :: url = '+url
+    req = urllib2.Request(url)
+    req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+    response = urllib2.urlopen(req)
+    link=response.read()
+    response.close()
+    return link
     
 
 

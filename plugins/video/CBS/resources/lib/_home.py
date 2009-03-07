@@ -61,7 +61,7 @@ class Main:
                             xbmc.translatePath(os.path.join(common.imagepath,"tv_icon.png")),
                             xbmc.translatePath(os.path.join(common.imagepath,"tv_icon.png")),
                             plot = "")
-        common.addDirectory("9. HD Episodes",
+        common.addDirectory("9. HD Shows",
                             common.HDVIDEOS_URL,
                             "HD",
                             xbmc.translatePath(os.path.join(common.imagepath,"hd_icon.png")),
