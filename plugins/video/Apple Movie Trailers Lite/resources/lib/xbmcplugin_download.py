@@ -100,7 +100,7 @@ class Main:
 
     def _report_hook( self, count, blocksize, totalsize ):
         percent = int( float( count * blocksize * 100) / totalsize )
-        msg1 = xbmc.getLocalizedString( 30500 + self.settings[ "play_mode" ] - 1  ) % ( os.path.split( self.filepath )[ 1 ], )
+        msg1 = xbmc.getLocalizedString( 30500 + ( self.settings[ "play_mode" ] == 2 ) ) % ( os.path.split( self.filepath )[ 1 ], )
         msg2 = ( "", xbmc.getLocalizedString( 30502 ) % ( os.path.split( self.filepath )[ 0 ], ), )[ self.settings[ "play_mode" ] - 1 ]
         pDialog.update( percent, msg1, msg2 )
         if ( pDialog.iscanceled() ): raise
