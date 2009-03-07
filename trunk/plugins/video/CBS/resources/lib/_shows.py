@@ -25,13 +25,8 @@ class Main:
             self.LISTSHOWS('specials')
 
     def LISTSHOWS(self,cat):
-        print cat
         url = common.ALL_SHOWS_URL
-        req = urllib2.Request(url)
-        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-        response = urllib2.urlopen(req)
-        link=response.read()
-        response.close()
+        link=common.getHTML(url)
         match=re.compile('<a href="(.+?)" class="shows" target="_parent">(.+?)</a>').findall(link)
         for url,name in match:
                 thumb = "http://www.cbs.com" + url + "images/common/show_logo.gif"

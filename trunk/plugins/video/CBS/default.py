@@ -50,10 +50,10 @@ def modes( ):
             import resources.lib._videolist as videolist
             videolist.Main()
         elif common.args.mode.startswith('HD'):
-            import resources.lib._videolist as videolist
-            videolist.Main()
-            #import resources.lib._hd as hd
-            #hd.Main()
+            #import resources.lib._hd as videolist
+            #videolist.Main()
+            import resources.lib._hd as hd
+            hd.Main()
         else:
             import xbmcgui
             xbmcgui.Dialog().ok('common.args.mode',common.args.mode)

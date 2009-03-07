@@ -25,7 +25,7 @@ class Main:
             self.VIDEOLINKS(showid,name)        
         elif common.args.mode == 'SeasonsList':
             self.VIDEOSHOWSEASONS(showid,name)
-        elif common.args.mode == 'HD':
+        elif common.args.mode == 'ListHD':
             self.VIDEOLINKS(showid,name)
 
     def VIDEOSHOWIDS(self,showid,name):
@@ -34,36 +34,31 @@ class Main:
         C = 1
         url = common.SITEFEED_URL + showid + "recent.js"
         if self.TESTURL(url) == True:
-                common.addDirectory(str(C) + ". " + "Latest Videos",url,"Latest",'')
+                common.addDirectory(str(C) + ". " + "Latest Videos",url,"Latest",common.args.thumbnail,common.args.thumbnail)
                 C = C + 1
         url = common.SITEFEED_URL + showid + "popular.js"
         if self.TESTURL(url) == True:
-                common.addDirectory(str(C) + ". " + "Most Popular",url,"Popular",'')
+                common.addDirectory(str(C) + ". " + "Most Popular",url,"Popular",common.args.thumbnail,common.args.thumbnail)
                 C = C + 1
         url = common.SITEFEED_URL + showid + "clips.js"
         if self.TESTURL(url) == True:
-                common.addDirectory(str(C) + ". " + "Clips",url,"Clips",'')
+                common.addDirectory(str(C) + ". " + "Clips",url,"Clips",common.args.thumbnail,common.args.thumbnail)
                 C = C + 1
-                if self.CHECKSEASONS(showid) > 1:
-                    url = common.SITEFEED_URL + showid + "episodes.js"
-                    if self.TESTURL(url) == False:
-                        print "test" #xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ) )
-                        
 
         #Special Crimetime case. Normal video lists unavailable
         if showid == "/crimetime/":
                 url = "http://www.cbs.com/crimetime/js/video/behind_the_scenes.js"
-                common.addDirectory(str(C) + ". " + "Behind the Scenes",url,"Clips",'')
+                common.addDirectory(str(C) + ". " + "Behind the Scenes",url,"Clips",common.args.thumbnail,common.args.thumbnail)
                 C = C + 1
                 url = "http://www.cbs.com/crimetime/js/video/48_hours.js"
-                common.addDirectory(str(C) + ". " + "48 Hours: Crimetime",url,"Clips",'')
+                common.addDirectory(str(C) + ". " + "48 Hours: Crimetime",url,"Clips",common.args.thumbnail,common.args.thumbnail)
                 C = C + 1
 
         #Full Episodes Listings
         url = common.SITEFEED_URL + showid + "episodes.js"
         #Check seasons.js for Season Count
         if self.CHECKSEASONS(showid) > 1:
-                common.addDirectory(str(C) + ". " + "Seasons",showid,"SeasonsList",'')
+                common.addDirectory(str(C) + ". " + "Seasons",showid,"SeasonsList",common.args.thumbnail,common.args.thumbnail)
         #Add Episodes
         else:
                 if self.TESTURL(url) == True:
@@ -81,7 +76,7 @@ class Main:
                 url = common.SITEFEED_URL + showid + str(season) + ".js"
                 if self.TESTURL(url) == True:
                         C = C + 1
-                        common.addDirectory('Season ' + str(season),url,'Seasons','')
+                        common.addDirectory('Season ' + str(season),url,'Seasons',common.args.thumbnail,common.args.thumbnail)
                         if C == int(seasons):
                             xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ) )
                             return
@@ -91,11 +86,7 @@ class Main:
     #Tests URLs for errors 
     def TESTURL(self, url):
         try:
-                req = urllib2.Request(url, None)
-                req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-                response = urllib2.urlopen(req)
-                link=response.read()
-                response.close()
+                link=common.getHTML(url)
         except urllib2.URLError, e:
                 print 'Error code: ', e.code
                 return False
@@ -116,23 +107,29 @@ class Main:
         #Seasons
         url = "http://www.cbs.com/sitefeeds" + showid + "seasons.js"
         if self.TESTURL(url) == True:
-                req = urllib2.Request(url, None)
-                req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-                response = urllib2.urlopen(req)
-                link=response.read()
-                response.close()
+                link=common.getHTML(url)
                 match=re.compile('var categoryCount = (.+?);').findall(link)
                 seasons = int(match[0])
                 return seasons
 
 
     def VIDEOLINKS(self,url,name):
-        print "VideoLinks " + url
-        req = urllib2.Request(url)
-        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-        response = urllib2.urlopen(req)
-        link=response.read()
-        response.close()
+        showfilter = ''
+        if url == "Episodes":
+            HD = True
+            typefilter = url
+            showfilter = name
+            url = common.HDVIDEOS_URL
+        elif url == "Clips":
+            HD = True
+            typefilter = url
+            showfilter = name
+            url = common.HDVIDEOS_URL
+        else:
+            typefilter = ''
+            showfilter = ''
+            HD = False
+        link=common.getHTML(url)
         match=re.compile('videoProperties(.+?);\r').findall(link)
         #set List Counter to 1 for popular and recent shows
         if "popular" in url or "recent" in url:
@@ -158,7 +155,6 @@ class Main:
                 # 14 = site name in xml, lowercased and trimmed to match the value passed from the left menu(mostly blank)
                 # 15 = empty or 720p pid
                 breakurl = url.split("','")
-                print breakurl
                 #change single digit season numbers to 2 digits
                 if len(breakurl[4]) == 1:
                         breakurl[4] = "0" + breakurl[4]
@@ -169,10 +165,12 @@ class Main:
                 breakurl[15] = breakurl[15].replace("')","")
                 if breakurl[15] == '':
                         pid = breakurl[10]
+                        if HD == True:
+                            continue
                 #480p and 720p pids
                 elif breakurl[15] <> '':
                         pid = breakurl[10] + "<break>" + breakurl[15]
-                print "pid: " + pid
+
                 thumbnail = breakurl[12]
                 plot = breakurl[5].replace('\\','')
                 duration = breakurl[9]
@@ -198,43 +196,72 @@ class Main:
                         ordernumber = ''
                 #Generate filename for Full Episode - series title + "S" + season number+ "E" + episode number + " - " + episode title
                 if breakurl[8] == "Full Episode":
-                        print url
-                        if "late" in breakurl[1] or "daytime" in breakurl[1]:
+                         if "late" in breakurl[1] or "daytime" in breakurl[1]:
                                 finalname = ordernumber + breakurl[2]
-                        else:
+                         else:
                                 finalname = ordernumber + breakurl[3] + " S" + breakurl[4] + "E" + breakurl[6] + " - " + breakurl[2]
                 #Generate filename for Clip - series title + " - " + episode title + " (Clip)"
                 elif breakurl[8] == "Clip": 
                         #finalname = ordernumber + breakurl[3] + " - " + breakurl[2] + " (Clip) " + breakurl[9]
-                        finalname = ordernumber + breakurl[2] + " (Clip) - "+ breakurl[3] 
+                        if breakurl[2] == '':
+                                finalname = ordernumber + breakurl[3] + " (Clip)"
+                        if breakurl[3] in breakurl[2]:
+                                finalname = ordernumber + breakurl[2] + " (Clip)"
+                        else:
+                                finalname = ordernumber + breakurl[2] + " (Clip) - " + breakurl[3] 
                 #HD title and for everything else
                 else:
-                        finalname = breakurl[3] + " E" + breakurl[6] + " - " + breakurl[2]
+                        if len(breakurl[9]) > 4:
+                            finalname = breakurl[3] + " E" + breakurl[6] + " - " + breakurl[2] # + " (" + breakurl[9] + ")"
+                        elif len(breakurl[9]) <= 4:
+                            if breakurl[3] in breakurl[2]:
+                                finalname = breakurl[2] + " (Clip)" # (" + breakurl[9] + ")"
+                            else:
+                                finalname = breakurl[3] + " - " + breakurl[2] + " (Clip)" # + " (" + breakurl[9] + ")"
                 #Clean filename
                 finalname = finalname.replace('\\\'','\'')
-                if '<break>' in pid:
-                        if len(breakurl[9]) > 4:
-                            passname = finalname.replace(ordernumber,'')
-                            url = sys.argv[0]+'?mode="'+'Play'+'"&name="'+urllib.quote_plus(passname)+'"&pid="'+urllib.quote_plus(pid)+'"&thumbnail="'+urllib.quote_plus(thumbnail)+'"'#+'"&plot="'+urllib.quote_plus(plot)+'?duration="'+urllib.quote_plus(duration)+'?season="'+urllib.quote_plus(str(season))+'?episode="'+urllib.quote_plus(str(episode))+'"'
-                            item=xbmcgui.ListItem(finalname, iconImage=thumbnail, thumbnailImage=thumbnail)
-                            item.setInfo( type="Video",
-                                         infoLabels={ "Title": finalname,
-                                                        "Season": season,
-                                                        "Episode": episode,
-                                                        "Duration": duration,
-                                                        "Plot": plot})
-                            xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=item,isFolder=True)
+                if "<break>" in pid:
+                    if breakurl[3] == showfilter:
+                        if typefilter == "Episodes":
+                            if len(breakurl[9]) > 4:
+                                passname = finalname.replace(ordernumber,'')
+                                url = sys.argv[0]+'?mode="'+'Play'+'"&name="'+urllib.quote_plus(passname)+'"&pid="'+urllib.quote_plus(pid)+'"&thumbnail="'+urllib.quote_plus(thumbnail)+'"'#+'"&plot="'+urllib.quote_plus(plot)+'?duration="'+urllib.quote_plus(duration)+'?season="'+urllib.quote_plus(str(season))+'?episode="'+urllib.quote_plus(str(episode))+'"'
+                                item=xbmcgui.ListItem(finalname, iconImage=thumbnail, thumbnailImage=thumbnail)
+                                item.setInfo( type="Video",
+                                             infoLabels={ "Title": finalname,
+                                                            "Season": season,
+                                                            "Episode": episode,
+                                                            "Duration": duration,
+                                                            "Plot": plot})
+                                xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=item,isFolder=True)
+                                continue
+                        elif typefilter == "Clips":
+                            if len(breakurl[9]) <= 4:
+                                passname = finalname.replace(ordernumber,'')
+                                url = sys.argv[0]+'?mode="'+'Play'+'"&name="'+urllib.quote_plus(passname)+'"&pid="'+urllib.quote_plus(pid)+'"&thumbnail="'+urllib.quote_plus(thumbnail)+'"'#+'"&plot="'+urllib.quote_plus(plot)+'?duration="'+urllib.quote_plus(duration)+'?season="'+urllib.quote_plus(str(season))+'?episode="'+urllib.quote_plus(str(episode))+'"'
+                                item=xbmcgui.ListItem(finalname, iconImage=thumbnail, thumbnailImage=thumbnail)
+                                item.setInfo( type="Video",
+                                            infoLabels={ "Title": finalname,
+                                                            "Season": season,
+                                                            "Episode": episode,
+                                                            "Duration": duration,
+                                                            "Plot": plot})
+                                xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=item,isFolder=True)
+                                continue
                 else:
-                        passname = finalname.replace(ordernumber,'')
-                        url = sys.argv[0]+'?mode="'+'Play'+'"&name="'+urllib.quote_plus(passname)+'"&pid="'+urllib.quote_plus(pid)+'"&thumbnail="'+urllib.quote_plus(thumbnail)+'"'#+'"&plot="'+urllib.quote_plus(plot)+'?duration="'+urllib.quote_plus(duration)+'?season="'+urllib.quote_plus(str(season))+'?episode="'+urllib.quote_plus(str(episode))+'"'
-                        item=xbmcgui.ListItem(finalname, iconImage=thumbnail, thumbnailImage=thumbnail)
-                        item.setInfo( type="Video",
-                                     infoLabels={ "Title": finalname,
-                                                    "Season": season,
-                                                    "Episode": episode,
-                                                    "Duration": duration,
-                                                    "Plot": plot})
-                        xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=item)
-
+                    passname = finalname.replace(ordernumber,'')
+                    url = sys.argv[0]+'?mode="'+'Play'+'"&name="'+urllib.quote_plus(passname)+'"&pid="'+urllib.quote_plus(pid)+'"&thumbnail="'+urllib.quote_plus(thumbnail)+'"'#+'"&plot="'+urllib.quote_plus(plot)+'?duration="'+urllib.quote_plus(duration)+'?season="'+urllib.quote_plus(str(season))+'?episode="'+urllib.quote_plus(str(episode))+'"'
+                    item=xbmcgui.ListItem(finalname, iconImage=thumbnail, thumbnailImage=thumbnail)
+                    item.setInfo( type="Video",
+                                 infoLabels={ "Title": finalname,
+                                                "Season": season,
+                                                "Episode": episode,
+                                                "Duration": duration,
+                                                "Plot": plot})
+                    xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=item)
+                    continue
+        #add Clips for HD
+        #if typefilter == "Episodes":
+        #    common.addDirectory(showfilter, "Clips", "ListHD")
         xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ) )
                         
