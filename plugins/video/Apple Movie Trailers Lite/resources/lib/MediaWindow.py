@@ -10,7 +10,7 @@ class _ButtonIndexError:
     pass
 
 
-class MediaItem:
+class DirectoryItem:
     def __init__( self, *args, **kwargs ):
         self.url = ""
         self.listitem = ""

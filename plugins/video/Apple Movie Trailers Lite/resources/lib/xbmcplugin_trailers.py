@@ -16,7 +16,7 @@ import datetime
 from xml.sax.saxutils import unescape
 
 from util import get_filesystem, get_legal_filepath
-from MediaWindow import MediaWindow, MediaItem
+from MediaWindow import MediaWindow, DirectoryItem
 
 
 class _Parser:
@@ -107,16 +107,16 @@ class _Parser:
 
     def _add_video( self, video, total ):
         # get our media item
-        mediaitem = MediaItem()
+        dirItem = DirectoryItem()
         # set total items
-        mediaitem.totalItems = total
+        dirItem.totalItems = total
         try:
             # set the default icon
             icon = "DefaultVideo.png"
             # set an overlay if one is practical
             overlay = ( xbmcgui.ICON_OVERLAY_NONE, xbmcgui.ICON_OVERLAY_HD, )[ "720p." in video[ "trailer" ] or "1080p." in video[ "trailer" ] ]
             # only need to add label and thumbnail, setInfo() and addSortMethod() takes care of label2
-            mediaitem.listitem = xbmcgui.ListItem( video[ "title" ], iconImage=icon, thumbnailImage=video[ "poster" ] )
+            dirItem.listitem = xbmcgui.ListItem( video[ "title" ], iconImage=icon, thumbnailImage=video[ "poster" ] )
             # release date and year
             try:
                 # format the date
@@ -127,33 +127,33 @@ class _Parser:
                 release_date = ""
                 year = 0
             # set the key information
-            mediaitem.listitem.setInfo( "video", { "Title": video[ "title" ], "Overlay": overlay, "Size": video[ "size" ], "Year": year, "Plot": video[ "plot" ], "PlotOutline": video[ "plot" ], "MPAA": video[ "mpaa" ], "Genre": video[ "genre" ], "Studio": video[ "studio" ], "Director": video[ "director" ], "Duration": video[ "runtime" ], "Cast": video[ "cast" ], "Date": video[ "postdate" ] } )
+            dirItem.listitem.setInfo( "video", { "Title": video[ "title" ], "Overlay": overlay, "Size": video[ "size" ], "Year": year, "Plot": video[ "plot" ], "PlotOutline": video[ "plot" ], "MPAA": video[ "mpaa" ], "Genre": video[ "genre" ], "Studio": video[ "studio" ], "Director": video[ "director" ], "Duration": video[ "runtime" ], "Cast": video[ "cast" ], "Date": video[ "postdate" ] } )
             # set release date property
-            mediaitem.listitem.setProperty( "releasedate", release_date )
+            dirItem.listitem.setProperty( "releasedate", release_date )
             # get filepath and tmp_filepath
             tmp_path, filepath = get_legal_filepath( video[ "title" ], video[ "trailer" ], 2, self.settings[ "download_path" ], self.settings[ "use_title" ], self.settings[ "use_trailer" ] )
             # set context menu items
             items = [ ( xbmc.getLocalizedString( 30900 ), "XBMC.RunPlugin(%s?Fetch_Showtimes=True&title=%s)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "title" ] ) ), ), ) ]
             # check if trailer already exists if user specified
             if ( self.settings[ "play_existing" ] and os.path.isfile( filepath.encode( "utf-8" ) ) ):
-                mediaitem.url = filepath
+                dirItem.url = filepath
                 # just add play trailer if trailer exists and user preference to always play existing
-                items += [ ( xbmc.getLocalizedString( 30920 ), "XBMC.PlayMedia(%s)" % ( mediaitem.url ), ) ]
+                items += [ ( xbmc.getLocalizedString( 30920 ), "XBMC.PlayMedia(%s)" % ( dirItem.url ), ) ]
             elif ( self.settings[ "play_mode" ] == 0 ):
-                mediaitem.url = video[ "trailer" ]
+                dirItem.url = video[ "trailer" ]
                 # we want both play and download if user preference is to stream
                 items += [ ( xbmc.getLocalizedString( 30910 ), "XBMC.RunPlugin(%s?Download_Trailer=True&trailer_url=%s)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "trailer" ] ) ), ), ) ]
-                items += [ ( xbmc.getLocalizedString( 30920 ), "XBMC.PlayMedia(%s)" % ( mediaitem.url ), ) ]
+                items += [ ( xbmc.getLocalizedString( 30920 ), "XBMC.PlayMedia(%s)" % ( dirItem.url ), ) ]
             else:
-                mediaitem.url = "%s?Download_Trailer=True&trailer_url=%s" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "trailer" ] ) ) )
+                dirItem.url = "%s?Download_Trailer=True&trailer_url=%s" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "trailer" ] ) ) )
                 # only add download if user prefernce is not stream
                 items += [ ( xbmc.getLocalizedString( 30910 ), "XBMC.RunPlugin(%s?Download_Trailer=True&trailer_url=%s)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "trailer" ] ) ), ), ) ]
             # add the movie information item
             items += [ ( xbmc.getLocalizedString( 30930 ), "XBMC.Action(Info)", ) ]
             # add items to listitem with replaceItems = True so only ours show
-            mediaitem.listitem.addContextMenuItems( items, replaceItems=True )
+            dirItem.listitem.addContextMenuItems( items, replaceItems=True )
             # add the item to the media list
-            return self.MediaWindow.add( mediaitem )
+            return self.MediaWindow.add( dirItem )
         except:
             print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             return False
