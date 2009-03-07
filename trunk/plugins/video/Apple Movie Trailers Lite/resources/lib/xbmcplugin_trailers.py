@@ -16,6 +16,7 @@ import datetime
 from xml.sax.saxutils import unescape
 
 from util import get_filesystem, get_legal_filepath
+from MediaWindow import MediaWindow, MediaItem
 
 
 class _Parser:
@@ -23,9 +24,10 @@ class _Parser:
         Parses an xml document for videos
     """
 
-    def __init__( self, xmlSource, settings ):
+    def __init__( self, xmlSource, settings, MediaWindow ):
         self.success = True
         self.settings = settings
+        self.MediaWindow = MediaWindow
         # get our regions format
         try:
             self.date_format = xbmc.getRegion( "datelong" ).replace( "DDDD,", "" ).replace( "MMMM", "%B" ).replace( "D", "%d" ).replace( "YYYY", "%Y" ).strip()
@@ -104,13 +106,17 @@ class _Parser:
         return ok
 
     def _add_video( self, video, total ):
+        # get our media item
+        mediaitem = MediaItem()
+        # set total items
+        mediaitem.totalItems = total
         try:
             # set the default icon
             icon = "DefaultVideo.png"
             # set an overlay if one is practical
-            overlay = ( xbmcgui.ICON_OVERLAY_NONE, xbmcgui.ICON_OVERLAY_HD, )[ "720p.mov" in video[ "trailer" ] or "1080p.mov" in video[ "trailer" ] ]
+            overlay = ( xbmcgui.ICON_OVERLAY_NONE, xbmcgui.ICON_OVERLAY_HD, )[ "720p." in video[ "trailer" ] or "1080p." in video[ "trailer" ] ]
             # only need to add label and thumbnail, setInfo() and addSortMethod() takes care of label2
-            listitem = xbmcgui.ListItem( video[ "title" ], iconImage=icon, thumbnailImage=video[ "poster" ] )
+            mediaitem.listitem = xbmcgui.ListItem( video[ "title" ], iconImage=icon, thumbnailImage=video[ "poster" ] )
             # release date and year
             try:
                 # format the date
@@ -121,35 +127,33 @@ class _Parser:
                 release_date = ""
                 year = 0
             # set the key information
-            listitem.setInfo( "video", { "Title": video[ "title" ], "Overlay": overlay, "Size": video[ "size" ], "Year": year, "Plot": video[ "plot" ], "PlotOutline": video[ "plot" ], "MPAA": video[ "mpaa" ], "Genre": video[ "genre" ], "Studio": video[ "studio" ], "Director": video[ "director" ], "Duration": video[ "runtime" ], "Cast": video[ "cast" ], "Date": video[ "postdate" ] } )
+            mediaitem.listitem.setInfo( "video", { "Title": video[ "title" ], "Overlay": overlay, "Size": video[ "size" ], "Year": year, "Plot": video[ "plot" ], "PlotOutline": video[ "plot" ], "MPAA": video[ "mpaa" ], "Genre": video[ "genre" ], "Studio": video[ "studio" ], "Director": video[ "director" ], "Duration": video[ "runtime" ], "Cast": video[ "cast" ], "Date": video[ "postdate" ] } )
             # set release date property
-            listitem.setProperty( "releasedate", release_date )
+            mediaitem.listitem.setProperty( "releasedate", release_date )
             # get filepath and tmp_filepath
             tmp_path, filepath = get_legal_filepath( video[ "title" ], video[ "trailer" ], 2, self.settings[ "download_path" ], self.settings[ "use_title" ], self.settings[ "use_trailer" ] )
             # set context menu items
             items = [ ( xbmc.getLocalizedString( 30900 ), "XBMC.RunPlugin(%s?Fetch_Showtimes=True&title=%s)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "title" ] ) ), ), ) ]
             # check if trailer already exists if user specified
             if ( self.settings[ "play_existing" ] and os.path.isfile( filepath.encode( "utf-8" ) ) ):
-                url = filepath
+                mediaitem.url = filepath
                 # just add play trailer if trailer exists and user preference to always play existing
-                items += [ ( xbmc.getLocalizedString( 30920 ), "XBMC.PlayMedia(%s)" % ( url ), ) ]
+                items += [ ( xbmc.getLocalizedString( 30920 ), "XBMC.PlayMedia(%s)" % ( mediaitem.url ), ) ]
             elif ( self.settings[ "play_mode" ] == 0 ):
-                url = video[ "trailer" ]
+                mediaitem.url = video[ "trailer" ]
                 # we want both play and download if user preference is to stream
                 items += [ ( xbmc.getLocalizedString( 30910 ), "XBMC.RunPlugin(%s?Download_Trailer=True&trailer_url=%s)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "trailer" ] ) ), ), ) ]
-                items += [ ( xbmc.getLocalizedString( 30920 ), "XBMC.PlayMedia(%s)" % ( url ), ) ]
+                items += [ ( xbmc.getLocalizedString( 30920 ), "XBMC.PlayMedia(%s)" % ( mediaitem.url ), ) ]
             else:
-                url = "%s?Download_Trailer=True&trailer_url=%s" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "trailer" ] ) ) )
+                mediaitem.url = "%s?Download_Trailer=True&trailer_url=%s" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "trailer" ] ) ) )
                 # only add download if user prefernce is not stream
                 items += [ ( xbmc.getLocalizedString( 30910 ), "XBMC.RunPlugin(%s?Download_Trailer=True&trailer_url=%s)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "trailer" ] ) ), ), ) ]
             # add the movie information item
             items += [ ( xbmc.getLocalizedString( 30930 ), "XBMC.Action(Info)", ) ]
             # add items to listitem with replaceItems = True so only ours show
-            listitem.addContextMenuItems( items, replaceItems=True )
+            mediaitem.listitem.addContextMenuItems( items, replaceItems=True )
             # add the item to the media list
-            ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=url, listitem=listitem, isFolder=False, totalItems=total )
-            # return
-            return ok
+            return self.MediaWindow.add( mediaitem )
         except:
             print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             return False
@@ -166,34 +170,21 @@ class Main:
     def __init__( self ):
         # get users preference
         self._get_settings()
+        # sort methods
+        sortmethods = ( xbmcplugin.SORT_METHOD_LABEL, xbmcplugin.SORT_METHOD_SIZE, xbmcplugin.SORT_METHOD_DATE,
+                                 xbmcplugin.SORT_METHOD_VIDEO_RUNTIME, xbmcplugin.SORT_METHOD_VIDEO_YEAR, xbmcplugin.SORT_METHOD_GENRE,
+                                 xbmcplugin.SORT_METHOD_MPAA_RATING, xbmcplugin.SORT_METHOD_STUDIO, )
+        # helper functions
+        self.MediaWindow = MediaWindow( int( sys.argv[ 1 ] ), category=self.PluginCategory, content="movies", sortmethods=sortmethods, fanart=( self.settings[ "fanart_image" ], self.Fanart, ) )
         # fetch videos
         ok = self.get_videos()
-        # if successful and user did not cancel, set our sort orders, content, plugin category and fanart
-        if ( ok ):
-            xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )
-            xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_SIZE )
-            xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_DATE )
-            xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_VIDEO_RUNTIME )
-            xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_VIDEO_YEAR )
-            xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_GENRE )
-            xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_MPAA_RATING )
-            xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_STUDIO )
-            # set content
-            xbmcplugin.setContent( handle=int( sys.argv[ 1 ] ), content="movies" )
-            try:
-                # set our plugin category
-                xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.PluginCategory )
-                # set our fanart from user setting
-                if ( self.settings[ "fanart_image" ] ):
-                    xbmcplugin.setPluginFanart( handle=int( sys.argv[ 1 ] ), image=self.settings[ "fanart_image" ], color1=self.settings[ "fanart_color1" ], color2=self.settings[ "fanart_color2" ], color3=self.settings[ "fanart_color3" ] )
-            except:
-                pass
-        # send notification we're finished, successfully or unsuccessfully
-        xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=ok )
+        # end plugin
+        self.MediaWindow.end( ok )
 
     def _get_settings( self ):
         self.settings = {}
         self.PluginCategory = ( xbmc.getLocalizedString( 30700 ), xbmc.getLocalizedString( 30701 ), xbmc.getLocalizedString( 30702 ), xbmc.getLocalizedString( 30703 ), )[ int( xbmcplugin.getSetting( "quality" ) ) ]
+        self.Fanart = ( "standard", "480p", "720p", "1080p", )[ int( xbmcplugin.getSetting( "quality" ) ) ]
         self.settings[ "quality" ] = ( "", "_480p", "_720p", "_1080p", )[ int( xbmcplugin.getSetting( "quality" ) ) ]
         self.settings[ "poster" ] = ( xbmcplugin.getSetting( "poster" ) == "true" )
         self.settings[ "rating" ] = int( xbmcplugin.getSetting( "rating" ) )
@@ -205,14 +196,12 @@ class Main:
         self.settings[ "use_trailer" ] = ( xbmcplugin.getSetting( "use_trailer" ) == "true" and self.settings[ "use_title" ] == True and self.settings[ "download_path" ] != "" )
         self.settings[ "play_existing" ] = ( xbmcplugin.getSetting( "play_existing" ) == "true" and self.settings[ "download_path" ] != "" )
         self.settings[ "fanart_image" ] = xbmcplugin.getSetting( "fanart_image" )
-        self.settings[ "fanart_color1" ] = xbmcplugin.getSetting( "fanart_color1" )
-        self.settings[ "fanart_color2" ] = xbmcplugin.getSetting( "fanart_color2" )
-        self.settings[ "fanart_color3" ] = xbmcplugin.getSetting( "fanart_color3" )
 
     def get_videos( self ):
         ok = False
         # fetch xml source
         xmlSource = self.get_xml_source()
+        # parse source and add our items
         if ( xmlSource ):
             ok = self.parse_xml_source( xmlSource )
         return ok
@@ -273,5 +262,5 @@ class Main:
 
     def parse_xml_source( self, xmlSource ):
         # Parse xmlSource for videos
-        parser = _Parser( xmlSource, self.settings )
+        parser = _Parser( xmlSource, self.settings, self.MediaWindow )
         return parser.success

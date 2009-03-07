@@ -21,7 +21,7 @@ def get_legal_filepath( title, url, mode, download_path, use_title, use_trailer 
     # create our temp save path
     tmp_path = xbmc.translatePath( "special://temp/%s" % ( os.path.basename( url ), ) )
     # if play_mode is temp download to cache folder
-    if ( mode == 1 ):
+    if ( mode < 2 ):
         filepath = tmp_path
     else:
         # get a valid filepath

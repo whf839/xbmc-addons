@@ -10,9 +10,6 @@
     <setting id="play_existing" type="bool" enable="eq(-4,2) + !eq(-3,)" label="30130" default="true" />
     <setting type="sep" />
     <setting id="fanart_image" type="pictures" label="30090" default="" />
-    <setting id="fanart_color1" type="text" label="30100" enable="!eq(-1,)" default="" />
-    <setting id="fanart_color2" type="text" label="30110" enable="!eq(-2,)" default="" />
-    <setting id="fanart_color3" type="text" label="30120" enable="!eq(-3,)" default="" />
     <setting type="sep" />
     <setting id="local" type="text" label="30050" default="90210" />
     <setting id="scraper" type="fileenum" mask="/" values="resources/scrapers/" label="30060" enable="!eq(-1,)" default="Google" />
