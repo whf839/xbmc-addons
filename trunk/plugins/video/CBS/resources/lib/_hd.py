@@ -59,7 +59,7 @@ class Main:
             Episodes = EPISODELIST[i]
             Clips = CLIPLIST[i]
             if Episodes == True and Clips == True:
-                common.addDirectory(SHOWNAME, 'Episodes', 'ListHD')
+                common.addDirectory(SHOWNAME, 'EpisodesClips', 'ListHD')
             elif Episodes == True:
                 common.addDirectory(SHOWNAME, 'Episodes', 'ListHD')
             elif Clips == True:
