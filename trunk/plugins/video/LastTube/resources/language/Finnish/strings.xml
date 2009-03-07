@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings> <!--  1.2.2009 Finnish   -->
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings> <!--  7.3.2009 Finnish   -->
     <string id="30000">:n suosikki esittäjät</string>
 	<string id="30001">Hae Last.FM käyttäjää</string>
-	<string id="30002">Hae vastavia esittäjiä</string>
+	<string id="30002">Hae vastaavia esittäjiä</string>
 	<string id="30003">Hae tunnisteella</string>
 </strings>
