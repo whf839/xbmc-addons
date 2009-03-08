@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>   <!--  8.3.2009 Finnish   -->
     <string id="30000">Käytä DVD Player-soitinta</string>
-    <string id="30001">Lataa ja toista video</string>
-    <string id="30002">Latauspolku</string>
-    <string id="30003">Kysy latauksesta ennen toistoa</string>
-	<string id="30004">Teräväpiirto pienoiskuvakkeet</string>
-	<string id="30005">Oletus kuvanlaatu 480p</string>
-	<string id="30006">Oletus kuvanlaatu 720p</string>
+    <string id="30001">Kysy</string>
+    <string id="30002">480p</string>
+    <string id="30003">720p</string>
+    <string id="30004">Oletus kuvanlaatu</string>
+
+    <string id="30005">Kysy</string>
+    <string id="30006">Toista</string>
+    <string id="30007">Lataa</string>
+    <string id="30008">Lataa ja toista</string>
+    <string id="30009">Lataus asetukset (http ainoastaan)</string>
+    <string id="30010">Latauspolku</string>
+
+    <string id="30011">Teräväpiirto pienoiskuvakkeet</string>
 </strings>
