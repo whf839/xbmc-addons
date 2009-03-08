@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
     <string id="30000">Use DVD Player instead of regular player</string>
-    <string id="30001">Download and Play video</string>
-    <string id="30002">Download path</string>
-    <string id="30003">Ask for download before playing video</string>
-	<string id="30004">High Resolution Thumbnails</string>
-	<string id="30005">Default HD Quality 480p</string>
-	<string id="30006">Default HD Quality 720p</string>
+	<string id="30001">Ask</string>
+	<string id="30002">480p</string>
+	<string id="30003">720p</string>
+	<string id="30004">Default HD Quality</string>
+
+	<string id="30005">Ask</string>
+	<string id="30006">Play</string>
+	<string id="30007">Download</string>
+	<string id="30008">Play and Download</string>
+	<string id="30009">Download Setting (http only)</string>
+    <string id="30010">Download path</string>
+
+    <string id="30011">High Resolution Thumbnails</string>
 </strings>
