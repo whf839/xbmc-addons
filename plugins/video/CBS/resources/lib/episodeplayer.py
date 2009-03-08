@@ -15,10 +15,11 @@ class Main:
         pid = common.args.pid
         thumbnail = common.args.thumbnail
         #print pid
-        if (xbmcplugin.getSetting('480p') == 'true'):
+        print (xbmcplugin.getSetting("hdquality"))
+        if (xbmcplugin.getSetting("hdquality") == '1'):
             breakpid = pid.split('<break>')
             pid=breakpid[0]
-        if (xbmcplugin.getSetting('720p') == 'true'):
+        elif (xbmcplugin.getSetting("hdquality") == '2'):
             breakpid = pid.split('<break>')
             pid=breakpid[1]
         if '<break>' in pid:
@@ -66,20 +67,28 @@ class Main:
                                                     dp.close()
                     flv_file = None
                     stream = 'false'
-                    if (xbmcplugin.getSetting('download') == 'true'):
-                                    flv_file = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), name))
-                                    Download(finalurl,flv_file)
-                    elif (xbmcplugin.getSetting('download') == 'false' and xbmcplugin.getSetting('download_ask') == 'true'):
+                    if (xbmcplugin.getSetting('download') == '3'):
+                            flv_file = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), name))
+                            Download(finalurl,flv_file)
+                    elif (xbmcplugin.getSetting('download') == '2'):
+                            flv_file = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), name))
+                            Download(finalurl,flv_file)
+                            return
+                    elif (xbmcplugin.getSetting('download') == '0'):
                             dia = xbmcgui.Dialog()
-                            ret = dia.select('What do you want to do?', ['Download & Play', 'Stream', 'Exit'])
-                            if (ret == 0):
+                            ret = dia.select('What do you want to do?', ['Play','Download','Download & Play','Exit'])
+                            if (ret == 2):
                                     flv_file = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), name))
                                     Download(finalurl,flv_file)
-                            elif (ret == 1):
+                            elif (ret == 0):
                                     stream = 'true'
+                            elif (ret == 1):
+                                    flv_file = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), name))
+                                    Download(finalurl,flv_file)
+                                    return
                             else:
-                                    pass
-                    elif (xbmcplugin.getSetting('download') == 'false' and xbmcplugin.getSetting('download_ask') == 'false'):
+                                    return
+                    elif (xbmcplugin.getSetting('download') == '1'):
                             stream = 'true'
                     if (flv_file != None and os.path.isfile(flv_file)):
                             finalurl =str(flv_file)
@@ -109,5 +118,3 @@ class Main:
             else:
                     player_type = xbmc.PLAYER_CORE_MPLAYER
             ok=xbmc.Player(player_type).play(finalurl, item)
-            xbmc.sleep(200)
-

@@ -6,6 +6,7 @@ import common
 import urllib,urllib2
 import sys
 import re
+import os
 
 class Main:
 
@@ -50,9 +51,11 @@ class Main:
                         #Fix 48 Hours and Victorias Secret thumb
                         elif "/primetime/48_hours/" == url or "/specials/victorias_secret/" == url:
                                 thumb = "http://www.cbs.com" + url + "images/common/show_logo.jpg"
+                        elif "/primetime/big_brother/housecalls/" == url:
+                                thumb = "http://www.cbs.com" + "/primetime/big_brother/" + "images/common/show_logo.gif"
                         #Blank icons for unavailable
-                        elif "/primetime/flashpoint/" == url or "/primetime/game_show_in_my_head/" == url or "/specials/grammys/lincoln/" == url or "/primetime/big_brother/housecalls/" == url:
-                                thumb = ''
+                        elif "/primetime/flashpoint/" == url or "/primetime/game_show_in_my_head/" == url or "/specials/grammys/lincoln/" == url:
+                                thumb = xbmc.translatePath(os.path.join(common.imagepath,url.replace('/','') + ".png"))
                         #All Categories 
                         if cat == "all":
                             common.addDirectory(name,url,'List',thumb,thumb)
