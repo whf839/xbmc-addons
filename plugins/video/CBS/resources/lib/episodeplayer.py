@@ -11,32 +11,29 @@ import os
 class Main:
 
     def __init__( self ):
-        name = common.args.name
-        pid = common.args.pid
-        thumbnail = common.args.thumbnail
-        #print pid
-        print (xbmcplugin.getSetting("hdquality"))
-        if (xbmcplugin.getSetting("hdquality") == '1'):
-            breakpid = pid.split('<break>')
-            pid=breakpid[0]
-        elif (xbmcplugin.getSetting("hdquality") == '2'):
-            breakpid = pid.split('<break>')
-            pid=breakpid[1]
-        if '<break>' in pid:
-            breakpid = pid.split('<break>')
-            for pid in breakpid:
-                url = sys.argv[0]+'?mode="'+'Play'+'"&name="'+urllib.quote_plus(name)+'"&pid="'+urllib.quote_plus(pid)+'"&thumbnail="'+urllib.quote_plus(thumbnail)+'"'
-                item=xbmcgui.ListItem(name, iconImage=thumbnail, thumbnailImage=thumbnail)
-                item.setInfo( type="Video",
-                             infoLabels={ "Title": name,
-                                          #"Season": season,
-                                          #"Episode": episode,
-                                          #"Duration": duration,
-                                          #"Plot": plot
-                                          })
-                xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=item)
-            xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ) )
-        else:            
+            name = common.args.name
+            pid = common.args.pid
+            thumbnail = common.args.thumbnail
+            #Default HD 480p
+            if (xbmcplugin.getSetting("hdquality") == '1'):
+                breakpid = pid.split('<break>')
+                pid=breakpid[0]
+            #Default HD 720p
+            elif (xbmcplugin.getSetting("hdquality") == '2'):
+                breakpid = pid.split('<break>')
+                pid=breakpid[1]
+            #Ask HD Quality
+            if '<break>' in pid:
+                breakpid = pid.split('<break>')
+                dia = xbmcgui.Dialog()
+                ret = dia.select('What do you want to do?', ['Play 480p','Play 720p','Exit'])
+                if (ret == 0):
+                        pid=breakpid[0]
+                elif (ret == 1):
+                        pid=breakpid[1]
+                else:
+                        return
+
             url = "http://release.theplatform.com/content.select?format=SMIL&Tracking=true&balance=true&pid=" + pid
             link=common.getHTML(url)
             if "rtmp://" in link:
@@ -99,8 +96,7 @@ class Main:
                     finalname = '480p: ' + name
             else:
                     finalname = name
-            #print "platpath: " + playpath
-            #print "finalurl: " + finalurl
+
             item=xbmcgui.ListItem(finalname, iconImage=thumbnail, thumbnailImage=thumbnail)
             item.setInfo( type="Video",
                          infoLabels={ "Title": finalname,
