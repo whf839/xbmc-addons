@@ -1,8 +1,9 @@
-<strings> <!--  9.1.2009 Finnish   -->
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?> 
+<strings> <!--  8.3.2009 Finnish   -->
     <string id="20000">Hakuasetukset:</string>
-    <string id="30000">Haetaan lyhyet</string>
-    <string id="30001">Haetaan keskipitkät</string>
-    <string id="30002">Haetaan pitkät</string>
+    <string id="30000">Hae kestoltaan lyhyet</string>
+    <string id="30001">Hae kestoltaan keskipitkät</string>
+    <string id="30002">Hae kestoltaan pitkät</string>
     <string id="30007">Tyhjennä aiemmat haut</string>
     <string id="24000">Hakupaikka:</string>
     <string id="30004">Vain GOOGLE</string>
@@ -14,8 +15,8 @@
     <string id="300011">Vain GUBA</string>
     <string id="300012">Vain YOUKU</string>
     <string id="300014">Vain TUDOU</string>
-    <string id="25000">Anna lataus hakemisto:</string>
+    <string id="25000">Anna lataushakemisto:</string>
     <string id="30003">Videon lataus käytössä</string>
-    <string id="300013">Lataus hakemisto </string>
+    <string id="300013">Lataushakemisto </string>
 
 </strings>
