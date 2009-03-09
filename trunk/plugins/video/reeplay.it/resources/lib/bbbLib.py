@@ -10,7 +10,7 @@
 import sys, os.path
 import xbmc, xbmcgui
 import os, re, unicodedata, traceback
-from string import strip, replace, find, rjust, capwords
+from string import strip, replace, find, rjust
 from shutil import rmtree
 
 __scriptname__ = sys.modules[ "__main__" ].__scriptname__
