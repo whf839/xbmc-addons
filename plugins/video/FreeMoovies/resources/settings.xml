@@ -1,0 +1,7 @@
+<settings>
+   <setting id="dvdplayer" type="bool" label="30000" default="true"/>
+<!-- 0.Ask 1.Play 2.  Download 3. Download and Play -->
+   <setting id="download" type="enum" lvalues="30005|30006|30007|30008" label="30009" default="0"/>
+   <setting id="download_path" type="folder" source="video" label="30010"  option="writeable" default="E:\"/>
+
+</settings>
