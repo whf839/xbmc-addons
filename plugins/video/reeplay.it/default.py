@@ -21,17 +21,17 @@ from pprint import pprint
 
 __plugin__ = "reeplay.it"
 __scriptname__ = __plugin__
-__version__ = '1.0'
+__version__ = '1.0.1'
 __author__ = 'BigBellyBilly [BigBellyBilly@gmail.com]'
 __svn_url__ = "http://xbmc-scripting.googlecode.com/svn/trunk/reeplay.it"
-__date__ = '25-02-2009'
-xbmc.output(__scriptname__ + " Version: " + __version__ + " Date: " + __date__)
+__date__ = '06-03-2009'
+xbmc.output(__plugin__ + " Version: " + __version__ + " Date: " + __date__)
 
 # Shared resources
 DIR_HOME= os.getcwd().replace(';','')
 DIR_RESOURCES = os.path.join( DIR_HOME, "resources" )
 DIR_RESOURCES_LIB = os.path.join( DIR_RESOURCES, "lib" )
-DIR_USERDATA = '/'.join( ["T:", "plugin_data", "video", __scriptname__] )
+DIR_USERDATA = '/'.join( ["T:", "plugin_data", "video", __plugin__] )
 DIR_CACHE = xbmc.translatePath('/'.join( [ DIR_USERDATA, "cache"] ))
 sys.path.insert(0, xbmc.translatePath(DIR_RESOURCES_LIB) )
 
@@ -152,6 +152,8 @@ class ReeplayitPlugin:
 		if not success:
 			# call settings menu - if xbmc builds has feature
 			try:
+				if ( os.environ.get( "OS", "n/a" ) == "xbox" ):
+					xbmc.sleep( 2000 )
 				xbmcplugin.openSettings(sys.argv[0])
 				success = self.settings.check()
 			except:
@@ -216,7 +218,7 @@ class ReeplayitPlugin:
 				if ( not ok ): break
 		except "Empty":
 			self.debug("Empty raised")
-			messageOK(__scriptname__, __lang__(104))	# no pls found
+			messageOK(__plugin__, __lang__(104))	# no pls found
 			ok = False
 		except:
 			traceback.print_exc()
@@ -291,7 +293,7 @@ class ReeplayitPlugin:
 
 #		dialogProgress.close()
 		if not ok:
-			messageOK(__scriptname__, __lang__(105), plsTitle)	# no video
+			messageOK(__plugin__, __lang__(105), plsTitle)	# no video
 		else:
 			xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )
 			xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_DATE )
@@ -418,7 +420,7 @@ moduleList = ['bbbLib', 'reeplayit']
 for m in moduleList:
 	try:
 		del sys.modules[m]
-		xbmc.output(__scriptname__ + " del sys.module=%s" % m)
+		xbmc.output(__plugin__ + " del sys.module=%s" % m)
 	except: pass
 
 # remove other globals

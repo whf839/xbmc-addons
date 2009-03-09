@@ -3,7 +3,7 @@
 	<setting id="user" type="text" label="30003" default="" />
 	<setting id="pwd" type="text" label="30004" default="" />
 	<setting id="page_size" type="labelenum" values="20|50|100|250|500|1000" label="30005" default="50" />
-	<setting id="hq_video" type="bool" label="30006" default="true" />
+	<setting id="hq_video" type="bool" label="30006" default="false" />
 	<setting id="stream_videos" type="bool" label="30008" default="true" />
 	<setting id="delete_videos" type="bool" enable="eq(-1,false)" label="30007" default="true" />
 	<setting type="sep" />
