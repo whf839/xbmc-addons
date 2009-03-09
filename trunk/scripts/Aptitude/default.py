@@ -64,7 +64,8 @@ else:
     if dialog.yesno("Info", downloadString):
         pathToInstallScript = xbmc.translatePath('special://xbmc/') + 'scripts/Aptitude/install.py'
         tmp = xbmc.translatePath('special://temp/') + 'workfile'
-        install = 'sudo python ' + pathToInstallScript + ' > ' + tmp
+        password = dialog.keyboard(1, "Password needed")
+        install = 'echo "' + password + '" | sudo -S python ' + pathToInstallScript + ' > ' + tmp
         os.system(install)
         f = open(tmp, 'r')
         progress = xbmcgui.DialogProgress()
