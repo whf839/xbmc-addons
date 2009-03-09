@@ -52,7 +52,7 @@ c.upgrade()
 changes = c.getChanges()
 
 dialog = xbmcgui.Dialog()
-if len(changes) == 0:
+if len(changes) == -10:
     dialog.ok("Info", "No new packages available")
 else:
     downloadSize = 0
@@ -64,42 +64,45 @@ else:
     if dialog.yesno("Info", downloadString):
         pathToInstallScript = xbmc.translatePath('special://xbmc/') + 'scripts/Aptitude/install.py'
         tmp = xbmc.translatePath('special://temp/') + 'workfile'
-        password = dialog.keyboard(1, "Password needed")
-        install = 'echo "' + password + '" | sudo -S python ' + pathToInstallScript + ' > ' + tmp
-        os.system(install)
-        f = open(tmp, 'r')
-        progress = xbmcgui.DialogProgress()
-        res = False
-        line1 = ""
-        line2 = ""
-        line3 = ""
-        progress.create("Installing")
-        for line in f.readlines():
-            tokens = line.strip('\n').split(';')
-            if "Start" in tokens:
-                if len(tokens) >= 4:
-                    line1 = tokens[1]
-                    line2 = tokens[2]
-                    line3 = tokens[3]
-                progress.update(0)
-            elif "Finish" in tokens:
-                pass
-            elif "Progress" in tokens:
-                if len(tokens) >= 5:
-                    line1 = tokens[2]
-                    line2 = tokens[3]
-                    line3 = tokens[4]
-                progress.update(float(tokens[1]), line1, line2, line3)
-            elif "Complete" in tokens:
-                res = bool(tokens[1])
-                progress.close()
-                break
-            time.sleep(0.001)
-            if progress.iscanceled():
-                progress.close()
-                break
-        
-        if res:
-            dialog.ok("Info", "Upgraded completed sucessfully")
-        else:
-            dialog.ok("Error", "Failed to upgraded")
+        kb = xbmc.Keyboard('', 'Password needed', True)
+        kb.doModal()
+        if kb.isConfirmed():
+            password = kb.getText()
+            install = 'echo "' + password + '" | sudo -S python ' + pathToInstallScript + ' > ' + tmp
+            os.system(install)
+            f = open(tmp, 'r')
+            progress = xbmcgui.DialogProgress()
+            res = False
+            line1 = ""
+            line2 = ""
+            line3 = ""
+            progress.create("Installing")
+            for line in f.readlines():
+                tokens = line.strip('\n').split(';')
+                if "Start" in tokens:
+                    if len(tokens) >= 4:
+                        line1 = tokens[1]
+                        line2 = tokens[2]
+                        line3 = tokens[3]
+                    progress.update(0)
+                elif "Finish" in tokens:
+                    pass
+                elif "Progress" in tokens:
+                    if len(tokens) >= 5:
+                        line1 = tokens[2]
+                        line2 = tokens[3]
+                        line3 = tokens[4]
+                    progress.update(float(tokens[1]), line1, line2, line3)
+                elif "Complete" in tokens:
+                    res = bool(tokens[1])
+                    progress.close()
+                    break
+                time.sleep(0.001)
+                if progress.iscanceled():
+                    progress.close()
+                    break
+            
+            if res:
+                dialog.ok("Info", "Upgraded completed sucessfully")
+            else:
+                dialog.ok("Error", "Failed to upgraded")
