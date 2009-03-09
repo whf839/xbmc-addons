@@ -7,7 +7,10 @@ baseurl = 'http://www.freemooviesonline.com'
 def getHTML( url ):
         try:
                 print 'FreeMoovies --> common :: getHTML :: url = '+url
-                req = urllib2.Request(url)
+                values = {'filter' : '',
+                          'limit' : '0'}
+                data = urllib.urlencode(values)
+                req = urllib2.Request(url,data)
                 req.addheaders = [('Referer', 'http://www.freemooviesonline.com'),
                                   ('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')]
                 response = urllib2.urlopen(req)
