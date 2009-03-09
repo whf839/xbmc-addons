@@ -7,6 +7,21 @@ baseurl = 'http://www.freemooviesonline.com'
 def getHTML( url ):
         try:
                 print 'FreeMoovies --> common :: getHTML :: url = '+url
+                req = urllib2.Request(url)
+                req.addheaders = [('Referer', 'http://www.freemooviesonline.com'),
+                                  ('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')]
+                response = urllib2.urlopen(req)
+                link=response.read()
+                response.close()
+        except urllib2.URLError, e:
+                print 'Error code: ', e.code
+                return False
+        else:
+                return link
+
+def postHTML( url ):
+        try:
+                print 'FreeMoovies --> common :: getHTML :: url = '+url
                 values = {'filter' : '',
                           'limit' : '0'}
                 data = urllib.urlencode(values)
@@ -21,6 +36,7 @@ def getHTML( url ):
                 return False
         else:
                 return link
+
 
 
 
@@ -42,7 +58,9 @@ def CATEGORIES():
 def INDEX(sectionurl):
         catmatch = sectionurl.replace('http://www.freemooviesonline.com','')
         section = catmatch.replace('.html','')
-        link = getHTML(sectionurl)
+        nolimit = True
+        link = postHTML(sectionurl)
+        nolimit = False
         link = re.sub('\r', ' ', link)
         link = re.sub('\n', ' ', link)
         link = re.sub('\t', ' ', link)
@@ -52,7 +70,6 @@ def INDEX(sectionurl):
                         pass
                 elif section in url:
                         name = url.replace(section + '/','').replace('.html','').replace('-',' ')
-
                         url = baseurl + url
                         if 'class="category' in url:
                                 url = url.replace('" class="category','')
