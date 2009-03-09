@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>   <!--  9.3.2009 Finnish   -->
     <string id="30000">Käytä DVD Player-soitinta</string>
-    <string id="30001">Kysy</string>
-    <string id="30002">480p</string>
-    <string id="30003">720p</string>
-    <string id="30004">Oletus kuvanlaatu</string>
 
     <string id="30005">Kysy</string>
     <string id="30006">Toista</string>
@@ -13,5 +9,4 @@
     <string id="30009">Latausasetukset (http ainoastaan)</string>
     <string id="30010">Latauspolku</string>
 
-    <string id="30011">Teräväpiirto pienoiskuvakkeet</string>
 </strings>
