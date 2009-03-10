@@ -218,7 +218,7 @@ class Main:
             # set content
             xbmcplugin.setContent( handle=int( sys.argv[ 1 ] ), content="movies" )
             # set our plugin category
-            xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=unicode( self.args.title, "utf-8" ) )
+            xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title.encode( "utf-8" ) )
         return ok, total_items
 
     def _get_keyboard( self, default="", heading="", hidden=False ):
