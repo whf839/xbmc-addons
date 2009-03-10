@@ -199,7 +199,7 @@ class Main:
                         # only need to add label, icon and thumbnail, setInfo() and addSortMethod() takes care of label2
                         listitem=xbmcgui.ListItem( label=video[ "title" ], iconImage=icon, thumbnailImage=video[ "thumbnail" ] )
                         # add the different infolabels we want to sort by
-                        listitem.setInfo( type="Video", infoLabels={ "Title": video[ "title" ], "Director": video[ "username" ], "Duration": runtime, "Plot": plot, "Rating": rating, "Genre": genre, "Date": date } )
+                        listitem.setInfo( type="Video", infoLabels={ "Title": video[ "title" ], "Director": video[ "username" ], "Duration": runtime, "Plot": plot, "PlotOutline": plot, "Rating": rating, "Genre": genre, "Date": date } )
                         # add the video to the media list
                         ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=url, listitem=listitem, isFolder=False, totalItems=total_items )
                         # if user cancels, call raise to exit loop
@@ -217,11 +217,8 @@ class Main:
             xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_GENRE )
             # set content
             xbmcplugin.setContent( handle=int( sys.argv[ 1 ] ), content="movies" )
-            try:
-                # set our plugin category
-                xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title )
-            except:
-                pass
+            # set our plugin category
+            xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=unicode( self.args.title, "utf-8" ) )
         return ok, total_items
 
     def _get_keyboard( self, default="", heading="", hidden=False ):
