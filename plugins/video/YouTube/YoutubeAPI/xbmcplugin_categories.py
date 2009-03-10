@@ -169,7 +169,7 @@ class Main:
             if ( "category='presets_videos'" in sys.argv[ 2 ] or "category='presets_users'" in sys.argv[ 2 ] ):
                 xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
             # set our plugin category
-            xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title )
+            xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title.encode( "utf-8" ) )
             # set our fanart from user setting
             if ( xbmcplugin.getSetting( "fanart_image" ) ):
                 xbmcplugin.setPluginFanart( handle=int( sys.argv[ 1 ] ), image=xbmcplugin.getSetting( "fanart_image" ) )
