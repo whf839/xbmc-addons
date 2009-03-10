@@ -44,6 +44,9 @@ class Main:
             #url containing video link
             url = "http://release.theplatform.com/content.select?format=SMIL&Tracking=true&balance=true&pid=" + pid
             link=common.getHTML(url)
+            #Get ad links
+            #if (xbmcplugin.getSetting("ads") == 'true'):
+            #        ads = self.getAds(link)                  
             if "rtmp://" in link:
                     stripurl = re.compile('<ref src="rtmp://(.+?)" ').findall(link)
                     cleanurl = stripurl[0].replace('&amp;','&').replace('&lt;','<').replace('&gt;','>').split('<break>')
@@ -124,5 +127,18 @@ class Main:
             if (flv_file != None and os.path.isfile(flv_file)):
                     finalurl =str(flv_file)
             return stream
-        
+
+    #Non-Functional right now
+    def getAds( self, link):
+        stripurl = re.compile('<ref src="ad.doubleclick.net(.+?)" ').findall(link)
+        ads = ['']
+        stripurl[0] = 'http://www.cbs.com/thunder/ad.doubleclick.net' + stripurl[0].replace('PARTNER','cbs')
+        for url in stripurl:
+            url = 'http://www.cbs.com/thunder/ad.doubleclick.net' + stripurl[0].replace('PARTNER','cbs')
+            link=common.getHTML(url)
+            adsurl = re.compile('src="(.+?)"').findall(link)
+            adtrack = re.compile('tp:trackingURLs="0%;(.+?)"').findall(link)
+            ads.apend(url)
+        return ads
+                
         

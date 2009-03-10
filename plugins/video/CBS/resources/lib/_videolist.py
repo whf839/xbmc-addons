@@ -6,6 +6,7 @@ import common
 import urllib,urllib2
 import sys
 import re
+import os
 
 class Main:
 
@@ -15,9 +16,13 @@ class Main:
         showid = common.args.url
         if common.args.mode == 'List':
             self.VIDEOSHOWIDS(showid,name)
+        elif common.args.mode == 'All':
+            self.VIDEOLINKS(showid,name)
         elif common.args.mode == 'Latest':
             self.VIDEOLINKS(showid,name)
         elif common.args.mode == 'Popular':
+            self.VIDEOLINKS(showid,name)
+        elif common.args.mode == 'Editorial':
             self.VIDEOLINKS(showid,name)
         elif common.args.mode == 'Clips':
             self.VIDEOLINKS(showid,name)
@@ -31,41 +36,45 @@ class Main:
             self.VIDEOLINKS(showid,name)
 
     def VIDEOSHOWIDS(self,showid,name):
-        #All Videos
-        #url = "http://www.cbs.com/sitefeeds" + showid + "all.js"
-        C = 1
-        url = common.SITEFEED_URL + showid + "recent.js"
-        if self.TESTURL(url) == True:
-                common.addDirectory(str(C) + ". " + "Latest Videos",url,"Latest",common.args.thumbnail,common.args.thumbnail)
-                C = C + 1
-        url = common.SITEFEED_URL + showid + "popular.js"
-        if self.TESTURL(url) == True:
-                common.addDirectory(str(C) + ". " + "Most Popular",url,"Popular",common.args.thumbnail,common.args.thumbnail)
-                C = C + 1
-        url = common.SITEFEED_URL + showid + "clips.js"
-        if self.TESTURL(url) == True:
-                common.addDirectory(str(C) + ". " + "Clips",url,"Clips",common.args.thumbnail,common.args.thumbnail)
-                C = C + 1
+        if (xbmcplugin.getSetting('recent') == '0') or (xbmcplugin.getSetting('recent') == '1'):
+            url = common.SITEFEED_URL + showid + "recent.js"
+            if self.TESTURL(url) == True:
+                    common.addDirectory(" Latest Videos",url,"Latest",common.args.thumbnail,common.args.thumbnail)
+        if (xbmcplugin.getSetting('popular') == '0') or (xbmcplugin.getSetting('recent') == '1'):
+            url = common.SITEFEED_URL + showid + "popular.js"
+            if self.TESTURL(url) == True:
+                    common.addDirectory(" Most Popular",url,"Popular",common.args.thumbnail,common.args.thumbnail)
+        if (xbmcplugin.getSetting('editorial') == 'true'):
+            url = common.SITEFEED_URL + showid + "editorial.js"
+            if self.TESTURL(url) == True:
+                    common.addDirectory(" Editor's Picks",url,"Editorial",common.args.thumbnail,common.args.thumbnail)
+        if (xbmcplugin.getSetting('clips') == 'true'):
+            url = common.SITEFEED_URL + showid + "clips.js"
+            if self.TESTURL(url) == True:
+                    common.addDirectory(" Clips",url,"Clips",common.args.thumbnail,common.args.thumbnail)
+        if (xbmcplugin.getSetting('all') == 'true'):
+            url = common.SITEFEED_URL + showid + "all.js"
+            if self.TESTURL(url) == True:
+                    common.addDirectory(" All Videos",url,"All",common.args.thumbnail,common.args.thumbnail)
 
         #Special Crimetime case. Normal video lists unavailable
         if showid == "/crimetime/":
                 url = "http://www.cbs.com/crimetime/js/video/behind_the_scenes.js"
-                common.addDirectory(str(C) + ". " + "Behind the Scenes",url,"ListAny",common.args.thumbnail,common.args.thumbnail)
-                C = C + 1
+                if self.TESTURL(url) == True:
+                    common.addDirectory("Behind the Scenes",url,"ListAny",common.args.thumbnail,common.args.thumbnail)
                 url = "http://www.cbs.com/crimetime/js/video/48_hours.js"
-                common.addDirectory(str(C) + ". " + "48 Hours: Crimetime",url,"ListAny",common.args.thumbnail,common.args.thumbnail)
-                C = C + 1
-
+                if self.TESTURL(url) == True:
+                    common.addDirectory("48 Hours: Crimetime",url,"ListAny",common.args.thumbnail,common.args.thumbnail)
+                
         #Full Episodes Listings
         url = common.SITEFEED_URL + showid + "episodes.js"
         #Check seasons.js for Season Count
         if self.CHECKSEASONS(showid) > 1:
-                common.addDirectory(str(C) + ". " + "Seasons",showid,"SeasonsList",common.args.thumbnail,common.args.thumbnail)
+                common.addDirectory(" Seasons",showid,"SeasonsList",common.args.thumbnail,common.args.thumbnail)
         #Add Episodes
         else:
                 if self.TESTURL(url) == True:
                         self.VIDEOLINKS(url,name)
-
                         
         xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ) )
 
@@ -90,10 +99,8 @@ class Main:
 
     #Tests URLs for errors 
     def TESTURL(self, url):
-        try:
-                link=common.getHTML(url)
-        except urllib2.URLError, e:
-                print 'Error code: ', e.code
+        link=common.getHTML(url)
+        if link == False:
                 return False
         else:
                 #CHECKSEASONS
@@ -138,10 +145,17 @@ class Main:
             typefilter = ''
             showfilter = ''
             HD = False
-        link=common.getHTML(url)
+
+        hdcachefile = xbmc.translatePath(os.path.join(common.cachepath,"hd.js"))
+        if url == common.HDVIDEOS_URL and os.path.isfile(hdcachefile):
+            f = open(hdcachefile , 'r')
+            link = f.read()
+            f.close()
+        else:
+            link=common.getHTML(url)
         match=re.compile('videoProperties(.+?);\r').findall(link)
         #set List Counter to 1 for popular and recent shows
-        if "popular" in url or "recent" in url:
+        if "popular" in url or "recent" in url or "editorial" in url :
                 C = 1
         else:
                 C = 0
@@ -210,7 +224,7 @@ class Main:
                          if "late" in breakurl[1] or "daytime" in breakurl[1]:
                                 finalname = ordernumber + breakurl[2]
                          else:
-                                finalname = ordernumber + breakurl[3] + " S" + breakurl[4] + "E" + breakurl[6] + " - " + breakurl[2]
+                                finalname = ordernumber + "S" + breakurl[4] + "E" + breakurl[6] + " - " + breakurl[2]
                 #Generate filename for Clip - series title + " - " + episode title + " (Clip)"
                 elif breakurl[8] == "Clip": 
                         #finalname = ordernumber + breakurl[3] + " - " + breakurl[2] + " (Clip) " + breakurl[9]
@@ -219,7 +233,7 @@ class Main:
                         if breakurl[3] in breakurl[2]:
                                 finalname = ordernumber + breakurl[2] + " (Clip)"
                         else:
-                                finalname = ordernumber + breakurl[2] + " (Clip) - " + breakurl[3] 
+                                finalname = ordernumber + breakurl[2] + " (Clip)" 
                 #HD title and for everything else
                 else:
                         if len(breakurl[9]) > 4:

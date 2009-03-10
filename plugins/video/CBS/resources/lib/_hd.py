@@ -6,6 +6,7 @@ import common
 import urllib,urllib2
 import sys
 import re
+import os
 
 class Main:
 
@@ -17,6 +18,10 @@ class Main:
 
     def HDSHOWS(self,url):
         link=common.getHTML(url)
+        hdcachefile = xbmc.translatePath(os.path.join(common.cachepath,"hd.js"))
+        f = open(hdcachefile , 'w')
+        plot = f.write(str(link))
+        f.close()
         match=re.compile('videoProperties(.+?);\r').findall(link)
         SHOWLIST = ['']
         CLIPLIST = ['']
@@ -63,6 +68,5 @@ class Main:
                 common.addDirectory(SHOWNAME, 'Episodes', 'ListHD')
             elif Clips == True:
                 common.addDirectory(SHOWNAME, "Clips", "ListHD")
-                #common.addDirectory(SHOWNAME + "(Clips)", "Clips", "ListHD")
                     
         xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ) )

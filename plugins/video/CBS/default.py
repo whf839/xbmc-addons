@@ -34,12 +34,18 @@ def modes( ):
         elif common.args.mode.startswith('Shows'):
             import resources.lib._shows as shows
             shows.Main()
+        elif common.args.mode.startswith('All'):
+            import resources.lib._videolist as videolist
+            videolist.Main()
         elif common.args.mode.startswith('Latest'):
             import resources.lib._videolist as videolist
             videolist.Main()
         elif common.args.mode.startswith('Popular'):
             import resources.lib._videolist as videolist
             videolist.Main()
+        elif common.args.mode.startswith('Editorial'):
+            import resources.lib._videolist as videolist
+            videolist.Main()                         
         elif common.args.mode.startswith('Clips'):
             import resources.lib._videolist as videolist
             videolist.Main()
