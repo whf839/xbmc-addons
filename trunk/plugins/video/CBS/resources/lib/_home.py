@@ -13,57 +13,70 @@ class Main:
 
    
     def addMainHomeItems( self ):
-        common.addDirectory("1. Latest Videos",
-                            common.ALL_RECENT_URL,
-                            "Latest",
-                            xbmc.translatePath(os.path.join(common.imagepath,"tv_icon.png")),
-                            xbmc.translatePath(os.path.join(common.imagepath,"tv_icon.png")),
-                            plot = "Latest Videos Added to CBS.com")
-        common.addDirectory("2. Most Popular",
-                            common.ALL_POPULAR_URL,
-                            "Popular",
-                            xbmc.translatePath(os.path.join(common.imagepath,"tv_icon.png")),
-                            xbmc.translatePath(os.path.join(common.imagepath,"tv_icon.png")),
-                            plot = "Most Popular Episodes and Clips from CBS.com")
-        common.addDirectory("3. All Shows",
+        namecount = 0
+        if (xbmcplugin.getSetting('recent') == '0') or (xbmcplugin.getSetting('recent') == '2'):
+            namecount += 1
+            common.addDirectory(str(namecount) + ". Latest Videos",
+                                common.ALL_RECENT_URL,
+                                "Latest",
+                                xbmc.translatePath(os.path.join(common.imagepath,"tv_icon.png")),
+                                xbmc.translatePath(os.path.join(common.imagepath,"tv_icon.png")),
+                                plot = "Latest Videos Added to CBS.com")
+        if (xbmcplugin.getSetting('popular') == '0') or (xbmcplugin.getSetting('popular') == '2'):
+            namecount += 1
+            common.addDirectory(str(namecount) + ". Most Popular",
+                                common.ALL_POPULAR_URL,
+                                "Popular",
+                                xbmc.translatePath(os.path.join(common.imagepath,"tv_icon.png")),
+                                xbmc.translatePath(os.path.join(common.imagepath,"tv_icon.png")),
+                                plot = "Most Popular Episodes and Clips from CBS.com")
+        namecount += 1
+        common.addDirectory(str(namecount) + ". All Shows",
                             common.ALL_SHOWS_URL,
                             "Shows",
                             xbmc.translatePath(os.path.join(common.imagepath,"tv_icon.png")),
                             xbmc.translatePath(os.path.join(common.imagepath,"tv_icon.png")),
                             plot = "")
-        common.addDirectory("4. Primetime",
+        namecount += 1
+        common.addDirectory(str(namecount) + ". Primetime",
                             common.ALL_SHOWS_URL,
                             "ShowsPrimetime",
                             xbmc.translatePath(os.path.join(common.imagepath,"tv_icon.png")),
                             xbmc.translatePath(os.path.join(common.imagepath,"tv_icon.png")),
                             plot = "")
-        common.addDirectory("5. Daytime",
+        namecount += 1
+        common.addDirectory(str(namecount) + ". Daytime",
                             common.ALL_SHOWS_URL,
                             "ShowsDaytime",
                             xbmc.translatePath(os.path.join(common.imagepath,"tv_icon.png")),
                             xbmc.translatePath(os.path.join(common.imagepath,"tv_icon.png")),
                             plot = "")
-        common.addDirectory("6. Late Night",
+        namecount += 1
+        common.addDirectory(str(namecount) + ". Late Night",
                             common.ALL_SHOWS_URL,
                             "ShowsLate",
                             xbmc.translatePath(os.path.join(common.imagepath,"tv_icon.png")),
                             xbmc.translatePath(os.path.join(common.imagepath,"tv_icon.png")),
                             plot = "")
-        common.addDirectory("7. TV Classics",
+        namecount += 1
+        common.addDirectory(str(namecount) + ". TV Classics",
                             common.ALL_SHOWS_URL,
                             "ShowsClassics",
                             xbmc.translatePath(os.path.join(common.imagepath,"tv_icon.png")),
                             xbmc.translatePath(os.path.join(common.imagepath,"tv_icon.png")),
                             plot = "")
-        common.addDirectory("8. Specials",
+        namecount += 1
+        common.addDirectory(str(namecount) + ". Specials",
                             common.ALL_SHOWS_URL,
                             "ShowsSpecials",
                             xbmc.translatePath(os.path.join(common.imagepath,"tv_icon.png")),
                             xbmc.translatePath(os.path.join(common.imagepath,"tv_icon.png")),
                             plot = "")
-        common.addDirectory("9. HD Shows",
-                            common.HDVIDEOS_URL,
-                            "HD",
-                            xbmc.translatePath(os.path.join(common.imagepath,"hd_icon.png")),
-                            xbmc.translatePath(os.path.join(common.imagepath,"hd_icon.png")),
-                            plot = "")
+        if (xbmcplugin.getSetting('hdcat') == 'true'):
+            namecount += 1
+            common.addDirectory(str(namecount) + ". HD Videos",
+                                common.HDVIDEOS_URL,
+                                "HD",
+                                xbmc.translatePath(os.path.join(common.imagepath,"hd_icon.png")),
+                                xbmc.translatePath(os.path.join(common.imagepath,"hd_icon.png")),
+                                plot = "")

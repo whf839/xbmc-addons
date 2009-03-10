@@ -35,11 +35,11 @@ class Main:
                 name = name.replace("<br>"," ").replace("&reg","")
                 #Ignore badshow links & showids
                 if "http://" in url:
-                        print "Bad Show url :" + url
+                        pass
                 elif "/daytime/" == url:
-                        print "Bad Show url :" + url
+                        pass
                 elif "/primetime/survivor/fantasy/" == url:
-                        print "Bad Show url :" + url   
+                        pass                       
                 else:
                         #Fix late show showid & thumb
                         if "/latenight/lateshow/" == url:
@@ -56,11 +56,22 @@ class Main:
                         #Blank icons for unavailable
                         elif "/primetime/flashpoint/" == url or "/primetime/game_show_in_my_head/" == url or "/specials/grammys/lincoln/" == url:
                                 thumb = xbmc.translatePath(os.path.join(common.imagepath,url.replace('/','') + ".png"))
-                        #All Categories 
+
+                        #Plot cache file
+                        plotfile = xbmc.translatePath(os.path.join(common.cachepath,url.replace('/','') + ".txt"))
+                        #Check for show info cache file
+                        if os.path.isfile(plotfile):
+                            f = open(plotfile , 'r')
+                            plot = f.read()
+                            f.close()
+                        #No Plot
+                        else:
+                            plot = 'No Plot Information Available'
+                        #All Categories
                         if cat == "all":
-                            common.addDirectory(name,url,'List',thumb,thumb)
+                            common.addDirectory(name,url,'List',thumb,thumb,plot)
                         #Selected Categories
                         elif cat in url:
-                            common.addDirectory(name,url,'List',thumb,thumb)
+                            common.addDirectory(name,url,'List',thumb,thumb,plot)
 
         xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ))
