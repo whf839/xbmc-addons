@@ -384,7 +384,7 @@ class Main:
             # set content
             xbmcplugin.setContent( handle=int( sys.argv[ 1 ] ), content="movies" )
             # set our plugin category
-            xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title )
+            xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title.encode( encoding ) )
             # if skin has fanart image use it
             fanart_image = os.path.join( sys.modules[ "__main__" ].__plugin__, self.args.category + "-fanart.png" )
             if ( xbmc.skinHasImage( fanart_image ) ):
