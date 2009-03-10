@@ -21,7 +21,6 @@ class _Info:
 class Main:
     # base paths
     BASE_PLUGIN_THUMBNAIL_PATH = os.path.join( os.getcwd(), "thumbnails" )
-    BASE_PRESETS_PATH = "/".join( [ "special://profile", "plugin_data", "pictures", os.path.basename( os.getcwd() ) ] )
 
     def __init__( self ):
         self._get_settings()
