@@ -158,7 +158,7 @@ class Main:
                 xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
                 try:
                     # set our plugin category
-                    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title )
+                    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=unicode( self.args.title, "utf-8" ) )
                     # set our fanart from user setting
                     #if ( self.settings[ "fanart_image" ] ):
                     #    xbmcplugin.setPluginFanart( handle=int( sys.argv[ 1 ] ), image=self.settings[ "fanart_image" ], color1=self.settings[ "fanart_color1" ], color2=self.settings[ "fanart_color2" ], color3=self.settings[ "fanart_color3" ] )
