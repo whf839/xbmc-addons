@@ -126,7 +126,9 @@ class Main:
                 # only need to add label, icon and thumbnail, setInfo() and addSortMethod() takes care of label2
                 listitem=xbmcgui.ListItem( label=video.title, iconImage=icon, thumbnailImage=video.image_url )
                 # add the different infolabels we want to sort by
-                listitem.setInfo( type="Video", infoLabels={ "Title": video.title, "Genre": unicode( self.args.title, "utf-8" ), "Duration": video.duration, "Date": video.date } )
+                listitem.setInfo( type="Video", infoLabels={ "TVShowTitle": video.title, "Title": video.title, "Genre": unicode( self.args.title, "utf-8" ), "Duration": video.duration, "Date": video.date } )
+                # set content
+                xbmcplugin.setContent( handle=int( sys.argv[ 1 ] ), content="tvshows" )
                 # add the item to the media list
                 ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=video.url, listitem=listitem, totalItems=len( videos ) )
                 # if user cancels, call raise to exit loop
