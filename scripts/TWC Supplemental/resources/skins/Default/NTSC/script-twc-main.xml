@@ -1,5 +1,5 @@
 <window>
-    <defaultcontrol>2000</defaultcontrol>
+    <defaultcontrol>20000</defaultcontrol>
     <allowoverlay>false</allowoverlay>
     <zorder>1</zorder>
     
@@ -10,6 +10,30 @@
     </coordinates>
 
     <controls>
+        <control type="button" id="20000">
+            <description>dummy button to set initial view</description>
+            <posx>0</posx>
+            <posy>0</posy>
+            <texturenofocus>-</texturenofocus>
+            <texturefocus>-</texturefocus>
+            <onfocus>Skin.SetString(twc-defaultview,200)</onfocus>
+            <onfocus>SetProperty(CurrentView,206)</onfocus>
+            <onfocus>SetProperty(CurrentMapList,1)</onfocus>
+            <onfocus>SetProperty(CurrentMapList,1)</onfocus>
+            <onfocus>SetFocus(2000)</onfocus>
+            <visible>IsEmpty(Skin.String(twc-defaultview))</visible>
+        </control>
+        <control type="button" id="20000">
+            <description>dummy button to set initial view</description>
+            <posx>0</posx>
+            <posy>0</posy>
+            <texturenofocus>-</texturenofocus>
+            <texturefocus>-</texturefocus>
+            <onfocus>SetProperty(CurrentView,206)</onfocus>
+            <onfocus>SetProperty(CurrentMapList,1)</onfocus>
+            <onfocus>SetFocus(2000)</onfocus>
+            <visible>!IsEmpty(Skin.String(twc-defaultview))</visible>
+        </control>
         <!-- dialog group -->
         <control type="group" id="2000">
             <visible>!VideoPlayer.IsFullscreen</visible>
@@ -42,7 +66,7 @@
                 <width>630</width>
                 <height>445</height>
                 <imagepath diffuse="twc-fanart-diffuse.png">$INFO[Skin.String(twc-fanart-path)]$INFO[Weather.Location]</imagepath>
-                <timeperimage>5000</timeperimage>
+                <timeperimage>10000</timeperimage>
                 <pauseatend>0</pauseatend>
                 <fadetime>1000</fadetime>
                 <randomize>true</randomize>
@@ -59,7 +83,7 @@
                 <width>630</width>
                 <height>445</height>
                 <imagepath diffuse="twc-fanart-diffuse.png">$INFO[Skin.String(twc-fanart-path)]$INFO[Weather.FanartCode]</imagepath>
-                <timeperimage>5000</timeperimage>
+                <timeperimage>10000</timeperimage>
                 <pauseatend>0</pauseatend>
                 <fadetime>1000</fadetime>
                 <randomize>true</randomize>
@@ -124,6 +148,7 @@
                     <onright>201</onright>
                     <onup>3000</onup>
                     <ondown>3000</ondown>
+                    <onclick>SetProperty(CurrentView,200)</onclick>
                 </control>
                 <control type="button" id="201">
                     <description>36 Hour Forecast Button</description>
@@ -145,6 +170,7 @@
                     <onright>202</onright>
                     <onup>3000</onup>
                     <ondown>3000</ondown>
+                    <onclick>SetProperty(CurrentView,201)</onclick>
                 </control>
                 <control type="button" id="202">
                     <description>Hour by Hour Forecast Button</description>
@@ -166,6 +192,7 @@
                     <onright>203</onright>
                     <onup>3000</onup>
                     <ondown>3000</ondown>
+                    <onclick>SetProperty(CurrentView,202)</onclick>
                 </control>
                 <control type="button" id="203">
                     <description>Weekend Forecast Button</description>
@@ -187,6 +214,7 @@
                     <onright>204</onright>
                     <onup>3000</onup>
                     <ondown>3000</ondown>
+                    <onclick>SetProperty(CurrentView,203)</onclick>
                 </control>
                 <control type="button" id="204">
                     <description>10 Day Forecast Button</description>
@@ -208,6 +236,7 @@
                     <onright>206</onright>
                     <onup>3000</onup>
                     <ondown>3000</ondown>
+                    <onclick>SetProperty(CurrentView,204)</onclick>
                 </control>
                 <!-- used if first time script is run in a skin -->
                 <control type="button" id="205">
@@ -229,6 +258,7 @@
                     <onclick>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibNF.png)</onclick>
                     <onclick>Skin.SetString(twc-fanart-diffusecolor,60FFFFFF)</onclick>
                     <onclick>Skin.SetString(twc-fanart-diffusebutton,4082)</onclick>
+                    <onclick>SetProperty(CurrentView,205)</onclick>
                     <onclick>SetFocus(2000)</onclick>
                     <onleft>206</onleft>
                     <onright>200</onright>
@@ -255,6 +285,7 @@
                     <texturenofocus border="10">twc-tab-nofocus.png</texturenofocus>
                     <texturefocus border="10">twc-tab-focus.png</texturefocus>
                     <onclick>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibNF.png)</onclick>
+                    <onclick>SetProperty(CurrentView,205)</onclick>
                     <onleft>206</onleft>
                     <onright>200</onright>
                     <onup>3000</onup>
@@ -279,7 +310,7 @@
                     <texturenofocus border="10">twc-tab-nofocus.png</texturenofocus>
                     <texturefocus border="10">twc-tab-focus.png</texturefocus>
                     <visible>!IsEmpty(Window.Property(Alerts))</visible>
-                    <onfocus>SetProperty(twc-fadelevel-gfx,twc-osd_slider_nibNF.png)</onfocus>
+                    <onclick>SetProperty(CurrentView,206)</onclick>
                     <onleft>204</onleft>
                     <onright>205</onright>
                     <onup>3000</onup>
@@ -324,7 +355,8 @@
                     <height>30</height>
                     <texture border="10">twc-tab-closed.png</texture>
                     <aspectratio>stretch</aspectratio>
-                    <visible>IsEmpty(Window.Property(view-Maps))</visible>
+                    <!--visible>!StringCompare(Window.Property(CurrentView),200)</visible-->
+                    <visible>!StringCompare(Window.Property(CurrentView),200) + ![StringCompare(Window.Property(CurrentView),206) + IsEmpty(Window.Property(Alerts)) + StringCompare(Skin.String(twc-defaultview),200)]</visible>
                 </control>
                 <control type="image">
                     <description>tab2 not selected</description>
@@ -334,7 +366,8 @@
                     <height>30</height>
                     <texture border="10">twc-tab-closed.png</texture>
                     <aspectratio>stretch</aspectratio>
-                    <visible>IsEmpty(Window.Property(view-36Hour))</visible>
+                    <!--visible>!StringCompare(Window.Property(CurrentView),201)</visible-->
+                    <visible>!StringCompare(Window.Property(CurrentView),201) + ![StringCompare(Window.Property(CurrentView),206) + IsEmpty(Window.Property(Alerts)) + StringCompare(Skin.String(twc-defaultview),201)]</visible>
                 </control>
                 <control type="image">
                     <description>tab3 not selected</description>
@@ -344,7 +377,7 @@
                     <height>30</height>
                     <texture border="10">twc-tab-closed.png</texture>
                     <aspectratio>stretch</aspectratio>
-                    <visible>IsEmpty(Window.Property(view-HourByHour))</visible>
+                    <visible>!StringCompare(Window.Property(CurrentView),202) + ![StringCompare(Window.Property(CurrentView),206) + IsEmpty(Window.Property(Alerts)) + StringCompare(Skin.String(twc-defaultview),202)]</visible>
                 </control>
                 <control type="image">
                     <description>tab4 not selected</description>
@@ -354,7 +387,7 @@
                     <height>30</height>
                     <texture border="10">twc-tab-closed.png</texture>
                     <aspectratio>stretch</aspectratio>
-                    <visible>IsEmpty(Window.Property(view-Weekend))</visible>
+                    <visible>!StringCompare(Window.Property(CurrentView),203) + ![StringCompare(Window.Property(CurrentView),206) + IsEmpty(Window.Property(Alerts)) + StringCompare(Skin.String(twc-defaultview),203)]</visible>
                 </control>
                 <control type="image">
                     <description>tab5 not selected</description>
@@ -364,7 +397,7 @@
                     <height>30</height>
                     <texture border="10">twc-tab-closed.png</texture>
                     <aspectratio>stretch</aspectratio>
-                    <visible>IsEmpty(Window.Property(view-10Day))</visible>
+                    <visible>!StringCompare(Window.Property(CurrentView),204) + ![StringCompare(Window.Property(CurrentView),206) + IsEmpty(Window.Property(Alerts)) + StringCompare(Skin.String(twc-defaultview),204)]</visible>
                 </control>
                 <control type="image">
                     <description>tab6 not selected</description>
@@ -374,7 +407,7 @@
                     <height>30</height>
                     <texture border="10">twc-tab-closed.png</texture>
                     <aspectratio>stretch</aspectratio>
-                    <visible>IsEmpty(Window.Property(view-Settings))</visible>
+                    <visible>!StringCompare(Window.Property(CurrentView),205)</visible>
                     <animation effect="slide" start="0,0" end="85,0" time="0" reversible="false" condition="!IsEmpty(Window.Property(Alerts))">Conditional</animation>
                 </control>
                 <control type="image">
@@ -385,7 +418,7 @@
                     <height>30</height>
                     <texture border="10">twc-tab-closed.png</texture>
                     <aspectratio>stretch</aspectratio>
-                    <visible>IsEmpty(Window.Property(view-Alerts)) + !IsEmpty(Window.Property(Alerts))</visible>
+                    <visible>!StringCompare(Window.Property(CurrentView),206) + !IsEmpty(Window.Property(Alerts))</visible>
                 </control>
 			</control>
         </control>
@@ -396,7 +429,7 @@
             <control type="group">
                 <posx>75</posx>
                 <posy>150</posy>
-                <visible>!IsEmpty(Window.Property(view-Alerts))</visible>
+                <visible>StringCompare(Window.Property(CurrentView),206) + !IsEmpty(Window.Property(Alerts))</visible>
                 <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
                 <!-- Section border -->
                 <control type="image">
@@ -424,7 +457,7 @@
                     <spinheight>-5</spinheight>
                     <info>Window.Property(Alerts)</info>
                     <autoscroll time="2000" delay="10000" repeat="15000">VisibleChange</autoscroll>
-                    <visible>!IsEmpty(Window.Property(view-Alerts))</visible>
+                    <visible>StringCompare(Window.Property(CurrentView),206)</visible>
                 </control>
                 <!-- Scrollbar for alert textbox -->
                 <control type="scrollbar" id="8000">
@@ -484,7 +517,7 @@
             <control type="group">
                 <posx>75</posx>
                 <posy>150</posy>
-                <visible>!IsEmpty(Window.Property(view-Maps))</visible>
+                <visible>StringCompare(Window.Property(CurrentView),200) | [StringCompare(Window.Property(CurrentView),206) + IsEmpty(Window.Property(Alerts)) + StringCompare(Skin.String(twc-defaultview),200)]</visible>
                 <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
                 <!-- Main buttons ** required ** -->
                 <control type="group" id="5200">
@@ -510,9 +543,7 @@
                         <onup>2000</onup>
                         <ondown>5100</ondown>
                         <visible>!IsEmpty(Window.Property(MapList1))</visible>
-                        <onclick>SetProperty(view-Maps1,1)</onclick>
-                        <onclick>SetProperty(view-Maps2,)</onclick>
-                        <onclick>SetProperty(view-Maps3,)</onclick>
+                        <onclick>SetProperty(CurrentMapList,1)</onclick>
                     </control>
                     <control type="button" id="5202">
                         <description>Map List Button</description>
@@ -535,9 +566,7 @@
                         <onup>2000</onup>
                         <ondown>5100</ondown>
                         <visible>!IsEmpty(Window.Property(MapList2))</visible>
-                        <onclick>SetProperty(view-Maps1,)</onclick>
-                        <onclick>SetProperty(view-Maps2,1)</onclick>
-                        <onclick>SetProperty(view-Maps3,)</onclick>
+                        <onclick>SetProperty(CurrentMapList,2)</onclick>
                     </control>
                     <control type="button" id="5203">
                         <description>Map List Button</description>
@@ -561,9 +590,7 @@
                         <onup>2000</onup>
                         <ondown>5100</ondown>
                         <visible>!IsEmpty(Window.Property(MapList3))</visible>
-                        <onclick>SetProperty(view-Maps1,)</onclick>
-                        <onclick>SetProperty(view-Maps2,)</onclick>
-                        <onclick>SetProperty(view-Maps3,1)</onclick>
+                        <onclick>SetProperty(CurrentMapList,3)</onclick>
                     </control>
                     <!-- Not selected button background images -->
                     <control type="image">
@@ -574,7 +601,7 @@
                         <height>20</height>
                         <texture border="10">twc-tab-closed.png</texture>
                         <aspectratio>stretch</aspectratio>
-                        <visible>!IsEmpty(Window.Property(view-Maps2)) | !IsEmpty(Window.Property(view-Maps3))</visible>
+                        <visible>!StringCompare(Window.Property(CurrentMapList),1)</visible>
                     </control>
                     <control type="image">
                         <description>tab2 not selected</description>
@@ -584,7 +611,7 @@
                         <height>20</height>
                         <texture border="10">twc-tab-closed.png</texture>
                         <aspectratio>stretch</aspectratio>
-                        <visible>IsEmpty(Window.Property(view-Maps2)) + !IsEmpty(Window.Property(MapList2))</visible>
+                        <visible>!StringCompare(Window.Property(CurrentMapList),2) + !IsEmpty(Window.Property(MapList2))</visible>
                     </control>
                     <control type="image">
                         <description>tab3 not selected</description>
@@ -594,7 +621,7 @@
                         <height>20</height>
                         <texture border="10">twc-tab-closed.png</texture>
                         <aspectratio>stretch</aspectratio>
-                        <visible>IsEmpty(Window.Property(view-Maps3)) + !IsEmpty(Window.Property(MapList3))</visible>
+                        <visible>!StringCompare(Window.Property(CurrentMapList),3) + !IsEmpty(Window.Property(MapList3))</visible>
                     </control>
 
                     <!-- Section background -->
@@ -629,7 +656,7 @@
                 <control type="group" id="5100">
                     <!-- Local maps list ** Required ** -->
                     <control type="group">
-                        <visible>IsEmpty(Window.Property(view-Maps2)) + IsEmpty(Window.Property(view-Maps3))</visible>
+                        <visible>StringCompare(Window.Property(CurrentMapList),1)</visible>
                         <control type="list" id="500">
                             <posx>-5</posx>
                             <posy>25</posy>
@@ -737,7 +764,7 @@
 
                     <!-- National maps list ** Required ** -->
                     <control type="group">
-                        <visible>!IsEmpty(Window.Property(view-Maps2))</visible>
+                        <visible>StringCompare(Window.Property(CurrentMapList),2)</visible>
                         <control type="list" id="501">
                             <posx>-5</posx>
                             <posy>25</posy>
@@ -845,7 +872,7 @@
 
                     <!-- Travel maps list ** Required ** -->
                     <control type="group">
-                        <visible>!IsEmpty(Window.Property(view-Maps3))</visible>
+                        <visible>StringCompare(Window.Property(CurrentMapList),3)</visible>
                         <control type="list" id="502">
                             <posx>-5</posx>
                             <posy>25</posy>
@@ -1008,7 +1035,7 @@
             <control type="group">
                 <posx>75</posx>
                 <posy>150</posy>
-                <visible>!IsEmpty(Window.Property(view-36Hour))</visible>
+                <visible>StringCompare(Window.Property(CurrentView),201) | [StringCompare(Window.Property(CurrentView),206) + IsEmpty(Window.Property(Alerts)) + StringCompare(Skin.String(twc-defaultview),201)]</visible>
                 <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
                 <!-- Video button -->
                 <control type="button" id="302">
@@ -1031,7 +1058,7 @@
                     <onright>2000</onright>
                     <onup>2000</onup>
                     <ondown>2000</ondown>
-                    <visible>!IsEmpty(Window.Property(Video)) + !IsEmpty(Window.Property(view-36Hour))</visible>
+                    <visible>!IsEmpty(Window.Property(Video)) + StringCompare(Window.Property(CurrentView),201)</visible>
                 </control>
                 <control type="button">
                     <description>dummy button so can't lose navigation</description>
@@ -1204,7 +1231,7 @@
                             <spinheight>-5</spinheight>
                             <info>Window.Property(36Hour1outlook)</info>
                             <autoscroll time="2000" delay="6000" repeat="6000">VisibleChange</autoscroll>
-                            <visible>!IsEmpty(Window.Property(36Hour1title)) + !IsEmpty(Window.Property(view-36Hour))</visible>
+                            <visible>!IsEmpty(Window.Property(36Hour1title)) + [StringCompare(Window.Property(CurrentView),201) | [StringCompare(Window.Property(CurrentView),206) + IsEmpty(Window.Property(Alerts)) + StringCompare(Skin.String(twc-defaultview),201)]]</visible>
                         </control>
                         <!-- Sunrise/Sunset -->
                         <control type="label">
@@ -1347,7 +1374,7 @@
                             <aligny>top</aligny>
                             <info>Window.Property(36Hour2outlook)</info>
                             <autoscroll time="2000" delay="6000" repeat="6000">VisibleChange</autoscroll>
-                            <visible>!IsEmpty(Window.Property(36Hour1title)) + !IsEmpty(Window.Property(view-36Hour))</visible>
+                            <visible>!IsEmpty(Window.Property(36Hour2title)) + [StringCompare(Window.Property(CurrentView),201) | [StringCompare(Window.Property(CurrentView),206) + IsEmpty(Window.Property(Alerts)) + StringCompare(Skin.String(twc-defaultview),201)]]</visible>
                         </control>
                         <!-- Sunrise/Sunset -->
                         <control type="label">
@@ -1490,7 +1517,7 @@
                             <aligny>top</aligny>
                             <info>Window.Property(36Hour3outlook)</info>
                             <autoscroll time="2000" delay="6000" repeat="6000">VisibleChange</autoscroll>
-                            <visible>!IsEmpty(Window.Property(36Hour1title)) + !IsEmpty(Window.Property(view-36Hour))</visible>
+                            <visible>!IsEmpty(Window.Property(36Hour3title)) + [StringCompare(Window.Property(CurrentView),201) | [StringCompare(Window.Property(CurrentView),206) + IsEmpty(Window.Property(Alerts)) + StringCompare(Skin.String(twc-defaultview),201)]]</visible>
                         </control>
                         <!-- Sunrise/Sunset -->
                         <control type="label">
@@ -1525,7 +1552,7 @@
             <control type="group">
                 <posx>75</posx>
                 <posy>150</posy>
-                <visible>!IsEmpty(Window.Property(view-HourByHour))</visible>
+                <visible>StringCompare(Window.Property(CurrentView),202) | [StringCompare(Window.Property(CurrentView),206) + IsEmpty(Window.Property(Alerts)) + StringCompare(Skin.String(twc-defaultview),202)]</visible>
                 <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
                 <!-- Loading label used to inform user when fetching info -->
                 <control type="label">
@@ -1932,7 +1959,7 @@
             <control type="group">
                 <posx>75</posx>
                 <posy>150</posy>
-                <visible>!IsEmpty(Window.Property(view-Weekend))</visible>
+                <visible>StringCompare(Window.Property(CurrentView),203) | [StringCompare(Window.Property(CurrentView),206) + IsEmpty(Window.Property(Alerts)) + StringCompare(Skin.String(twc-defaultview),203)]</visible>
                 <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
                 <!-- Loading label used to inform user when fetching info -->
                 <control type="label">
@@ -2343,7 +2370,7 @@
                             <aligny>top</aligny>
                             <spinheight>-5</spinheight>
                             <info>Window.Property(Weekend1outlook)</info>
-                            <visible>IsEmpty(Window.Property(WeekendToggle)) + !IsEmpty(Window.Property(Weekend1day)) + !IsEmpty(Window.Property(view-Weekend))</visible>
+                            <visible>IsEmpty(Window.Property(WeekendToggle)) + !IsEmpty(Window.Property(Weekend1day)) + [StringCompare(Window.Property(CurrentView),203) | [StringCompare(Window.Property(CurrentView),206) + IsEmpty(Window.Property(Alerts)) + StringCompare(Skin.String(twc-defaultview),203)]]</visible>
                             <autoscroll time="2000" delay="6000" repeat="6000">VisibleChange</autoscroll>
                         </control>
                     </control>
@@ -2663,7 +2690,7 @@
                             <aligny>top</aligny>
                             <spinheight>-5</spinheight>
                             <info>Window.Property(Weekend2outlook)</info>
-                            <visible>IsEmpty(Window.Property(WeekendToggle)) + !IsEmpty(Window.Property(Weekend2day)) + !IsEmpty(Window.Property(view-Weekend))</visible>
+                            <visible>IsEmpty(Window.Property(WeekendToggle)) + !IsEmpty(Window.Property(Weekend2day)) + [StringCompare(Window.Property(CurrentView),203) | [StringCompare(Window.Property(CurrentView),206) + IsEmpty(Window.Property(Alerts)) + StringCompare(Skin.String(twc-defaultview),203)]]</visible>
                             <autoscroll time="2000" delay="6000" repeat="6000">VisibleChange</autoscroll>
                         </control>
                     </control>
@@ -2984,7 +3011,7 @@
                             <spinheight>-5</spinheight>
                             <info>Window.Property(Weekend3outlook)</info>
                             <autoscroll time="2000" delay="6000" repeat="6000">VisibleChange</autoscroll>
-                            <visible>IsEmpty(Window.Property(WeekendToggle)) + !IsEmpty(Window.Property(Weekend1day)) + !IsEmpty(Window.Property(view-Weekend))</visible>
+                            <visible>IsEmpty(Window.Property(WeekendToggle)) + !IsEmpty(Window.Property(Weekend3day)) + [StringCompare(Window.Property(CurrentView),203) | [StringCompare(Window.Property(CurrentView),206) + IsEmpty(Window.Property(Alerts)) + StringCompare(Skin.String(twc-defaultview),203)]]</visible>
                         </control>
                     </control>
                 </control>
@@ -3007,7 +3034,7 @@
             <control type="group">
                 <posx>75</posx>
                 <posy>150</posy>
-                <visible>!IsEmpty(Window.Property(view-10Day))</visible>
+                <visible>StringCompare(Window.Property(CurrentView),204) | [StringCompare(Window.Property(CurrentView),206) + IsEmpty(Window.Property(Alerts)) + StringCompare(Skin.String(twc-defaultview),204)]</visible>
                 <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
                 <!-- Loading label used to inform user when fetching info -->
                 <control type="label">
@@ -3331,7 +3358,7 @@
             <control type="group">
                 <posx>75</posx>
                 <posy>150</posy>
-                <visible>!IsEmpty(Window.Property(view-Settings))</visible>
+                <visible>StringCompare(Window.Property(CurrentView),205)</visible>
                 <animation effect="fade" reversible="true" time="300">VisibleChange</animation>
                 <!-- Settings group -->
                 <control type="grouplist" id="9000">
