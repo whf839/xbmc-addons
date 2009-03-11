@@ -8,7 +8,7 @@ import os
 import xbmc
 import xbmcgui
 import xbmcplugin
-
+from urllib import quote_plus, unquote_plus
 
 class _Info:
     def __init__( self, *args, **kwargs ):
@@ -34,7 +34,7 @@ class Main:
             self.args = _Info( title="" )
         else:
             # call _Info() with our formatted argv to create the self.args object
-            exec "self.args = _Info(%s)" % ( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
+            exec "self.args = _Info(%s)" % ( unquote_plus( sys.argv[ 2 ][ 1 : ] ).replace( "&", ", " ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
 
     def authenticate( self ):
         # if this is first run open settings
@@ -151,7 +151,7 @@ class Main:
                 # if a username is required for category and none supplied, skip category
                 if ( user_required and self.authkey == "" ): continue
                 # set the callback url
-                url = '%s?title=%s&category=%s&page=1&vq=%s&username=%s&orderby=%s&related=""&issearch=%d&update_listing=%d' % ( sys.argv[ 0 ], repr( ltitle ), repr( method ), repr( vq ), repr( username ), repr( orderby ), issearch, False, )
+                url = '%s?title=%s&category=%s&page=1&vq=%s&username=%s&orderby=%s&related=""&issearch=%d&update_listing=%d' % ( sys.argv[ 0 ], repr( quote_plus( ltitle ) ), repr( method ), repr( quote_plus( vq ) ), repr( quote_plus( username ) ), repr( orderby ), issearch, False, )
                 # check for a valid custom thumbnail for the current category
                 thumbnail = thumbnail or self._get_thumbnail( method )
                 # set the default icon
@@ -169,7 +169,7 @@ class Main:
             if ( "category='presets_videos'" in sys.argv[ 2 ] or "category='presets_users'" in sys.argv[ 2 ] ):
                 xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
             # set our plugin category
-            xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title.encode( "utf-8" ) )
+            xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title )
             # set our fanart from user setting
             if ( xbmcplugin.getSetting( "fanart_image" ) ):
                 xbmcplugin.setPluginFanart( handle=int( sys.argv[ 1 ] ), image=xbmcplugin.getSetting( "fanart_image" ) )
