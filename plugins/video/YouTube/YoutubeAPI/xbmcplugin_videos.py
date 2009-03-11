@@ -51,7 +51,7 @@ class Main:
 
     def _parse_argv( self ):
         # call _Info() with our formatted argv to create the self.args object
-        exec "self.args = _Info(%s)" % ( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
+        exec "self.args = _Info(%s)" % ( unquote_plus( sys.argv[ 2 ][ 1 : ] ).replace( "&", ", " ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
 
     def _get_authkey( self ):
         self.authkey = xbmcplugin.getSetting( "authkey" )
@@ -246,7 +246,7 @@ class Main:
                     username = ( "", spell_vq, )[ self.args.issearch == 2 ]
                     vq = ( "", spell_vq, )[ self.args.issearch == 1 ]
                     # create the callback url
-                    url = '%s?title=%s&category=%s&page=%d&vq=%s&username=%s&orderby=%s&related=%s&issearch=%d&update_listing=%d' % ( sys.argv[ 0 ], repr( self.args.title ), repr( "videos" ), 1, repr( vq ), repr( username ), repr( self.args.orderby ), repr( self.args.related ), self.args.issearch, True, )
+                    url = '%s?title=%s&category=%s&page=%d&vq=%s&username=%s&orderby=%s&related=%s&issearch=%d&update_listing=%d' % ( sys.argv[ 0 ], repr( quote_plus( self.args.title ) ), repr( "videos" ), 1, repr( quote_plus( vq ) ), repr( quote_plus( username ) ), repr( self.args.orderby ), repr( self.args.related ), self.args.issearch, True, )
                     # TODO: get rid of self.BASE_PLUGIN_THUMBNAIL_PATH
                     # we set the thumb so XBMC does not try and cache the next pictures
                     thumbnail = os.path.join( self.BASE_PLUGIN_THUMBNAIL_PATH, "spell_page.png" )
@@ -266,7 +266,7 @@ class Main:
                     if ( endno > total ):
                         endno = total
                     # create the callback url
-                    url = '%s?title=%s&category=%s&page=%d&vq=%s&username=%s&orderby=%s&issearch=0&related=%s&update_listing=%d' % ( sys.argv[ 0 ], repr( self.args.title ), repr( self.args.category ), page + 1, repr( self.args.vq ), repr( self.args.username ), repr( self.args.orderby ), repr( self.args.related ), True, )
+                    url = '%s?title=%s&category=%s&page=%d&vq=%s&username=%s&orderby=%s&issearch=0&related=%s&update_listing=%d' % ( sys.argv[ 0 ], repr( quote_plus( self.args.title ) ), repr( self.args.category ), page + 1, repr( quote_plus( self.args.vq ) ), repr( quote_plus( self.args.username ) ), repr( self.args.orderby ), repr( self.args.related ), True, )
                     # TODO: get rid of self.BASE_PLUGIN_THUMBNAIL_PATH
                     # we set the thumb so XBMC does not try and cache the next pictures
                     thumbnail = os.path.join( self.BASE_PLUGIN_THUMBNAIL_PATH, "next.png" )
@@ -283,7 +283,7 @@ class Main:
                     # calculate the ending video
                     endno = startno + perpage - 1
                     # create the callback url
-                    url = '%s?title=%s&category=%s&page=%d&vq=%s&username=%s&orderby=%s&related=%s&issearch=0&update_listing=%d' % ( sys.argv[ 0 ], repr( self.args.title ), repr( self.args.category ), page - 1, repr( self.args.vq ), repr( self.args.username ), repr( self.args.orderby ), repr( self.args.related ), True, )
+                    url = '%s?title=%s&category=%s&page=%d&vq=%s&username=%s&orderby=%s&related=%s&issearch=0&update_listing=%d' % ( sys.argv[ 0 ], repr( quote_plus( self.args.title ) ), repr( self.args.category ), page - 1, repr( quote_plus( self.args.vq ) ), repr( quote_plus( self.args.username ) ), repr( self.args.orderby ), repr( self.args.related ), True, )
                     # TODO: get rid of self.BASE_PLUGIN_THUMBNAIL_PATH
                     # we set the thumb so XBMC does not try and cache the previous pictures
                     thumbnail = os.path.join( self.BASE_PLUGIN_THUMBNAIL_PATH, "previous.png" )
@@ -384,7 +384,7 @@ class Main:
             # set content
             xbmcplugin.setContent( handle=int( sys.argv[ 1 ] ), content="movies" )
             # set our plugin category
-            xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title.encode( encoding ) )
+            xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title.decode( encoding ) )
             # if skin has fanart image use it
             fanart_image = os.path.join( sys.modules[ "__main__" ].__plugin__, self.args.category + "-fanart.png" )
             if ( xbmc.skinHasImage( fanart_image ) ):
