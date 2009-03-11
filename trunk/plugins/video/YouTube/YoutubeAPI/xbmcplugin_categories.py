@@ -8,7 +8,9 @@ import os
 import xbmc
 import xbmcgui
 import xbmcplugin
+
 from urllib import quote_plus, unquote_plus
+
 
 class _Info:
     def __init__( self, *args, **kwargs ):
