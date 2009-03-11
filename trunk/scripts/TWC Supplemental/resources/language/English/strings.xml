@@ -2,7 +2,8 @@
 <strings>
     <string id="0">The Weather Channel - Supplemental</string>
     <string id="1">xbmc media center</string>
-    <string id="2">Nuka1195</string>
+    <!-- language strings credit -->
+    <string id="2">nuka1195</string>
 
     <string id="10">Loading...</string>
 

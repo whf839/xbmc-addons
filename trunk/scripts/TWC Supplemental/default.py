@@ -5,6 +5,7 @@
 #main imports
 import sys
 import os
+import xbmc
 
 # Script constants
 __scriptname__ = "TWC Supplemental"
@@ -12,8 +13,11 @@ __author__ = "Nuka1195"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/scripts/TWC%20Supplemental"
 __credits__ = "Team XBMC"
-__version__ = "1.5.1"
+__version__ = "1.5.2"
 __svn_revision__ = 0
+
+xbmc.log( "[SCRIPT] '%s: version %s' initialized!" % ( __scriptname__, __version__, ), xbmc.LOGNOTICE )
+
 
 # Start the main gui
 if ( __name__ == "__main__" ):
