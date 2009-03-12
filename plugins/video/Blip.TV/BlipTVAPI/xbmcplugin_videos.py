@@ -9,6 +9,8 @@ import xbmc
 import xbmcgui
 import xbmcplugin
 
+from urllib import unquote_plus, quote_plus
+
 from BlipTVAPI.BlipTVClient import BlipTVClient
 
 
@@ -35,6 +37,7 @@ class Main:
         self.settings[ "pagelen" ] = ( 10, 15, 20, 25, 30, 40, 50, 75, 100, )[ int( xbmcplugin.getSetting( "pagelen" ) ) ]
         self.settings[ "language_code" ] = ( "", xbmcplugin.getSetting( "language_code" ), )[ xbmcplugin.getSetting( "language_code" ) != "-" ]
         self.settings[ "saved_searches" ] = ( 10, 20, 30, 40, )[ int( xbmcplugin.getSetting( "saved_searches" ) ) ]
+        self.settings[ "fanart_image" ] = xbmcplugin.getSetting( "fanart_image" )
 
     def _get_strings( self ):
         self.localized_string = {}
@@ -46,7 +49,7 @@ class Main:
 
     def _parse_argv( self ):
         # call _Info() with our formatted argv to create the self.args object
-        exec "self.args = _Info(%s)" % ( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
+        exec "self.args = _Info(%s)" % ( unquote_plus( sys.argv[ 2 ][ 1 : ] ).replace( "&", ", " ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
 
     def _get_items( self ):
         # get the videos and/or subcategories and fill the media list
@@ -218,7 +221,14 @@ class Main:
             # set content
             xbmcplugin.setContent( handle=int( sys.argv[ 1 ] ), content="movies" )
             # set our plugin category
-            xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title.encode( "utf-8" ) )
+            xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title )
+            # if skin has fanart image use it
+            fanart_image = os.path.join( sys.modules[ "__main__" ].__plugin__, self.args.category + "-fanart.png" )
+            if ( xbmc.skinHasImage( fanart_image ) ):
+                xbmcplugin.setPluginFanart( handle=int( sys.argv[ 1 ] ), image=fanart_image )
+            # set our fanart from user setting
+            elif ( self.settings[ "fanart_image" ] ):
+                xbmcplugin.setPluginFanart( handle=int( sys.argv[ 1 ] ), image=self.settings[ "fanart_image" ] )
         return ok, total_items
 
     def _get_keyboard( self, default="", heading="", hidden=False ):
