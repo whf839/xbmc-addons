@@ -16,7 +16,7 @@
     <string id="30912">Return to XBMC Media Center after you have&#10;finished the authorization process on flickr.com</string>
     <string id="30913">Cancel</string>
     <string id="30914">Authorized</string>
-    <string id="30915">FTP into your xbox and grab q:\\xbmc.log.&#10;'Look for XBMC Flicker authroization url:'. Copy that into&#10;a web browser and authorize.</string>
+    <string id="30915">FTP into your xbox and grab q:\\xbmc.log.&#10;'Look for XBMC Flicker authorization url:'. Copy that into&#10;a web browser and authorize.</string>
 
     <!-- Category strings -->
     <string id="30950">My Photosets</string>
