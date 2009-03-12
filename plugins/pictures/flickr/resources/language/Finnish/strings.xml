@@ -2,10 +2,10 @@
 <strings> <!--  12.3.2009 Finnish   -->
     <!-- Plugin strings -->
     <string id="30900">Flickr-lisäke</string>
-    <string id="30901">Käyttäjän Id tunnnus on sopimaton!</string>
+    <string id="30901">Käyttäjän Id-tunnnus on sopimaton!</string>
     <string id="30902">Tarkista asetukset.</string>
-    <string id="30903">Kuvien hakusanat</string>
-    <string id="30904">Ryhmien hakusanat</string>
+    <string id="30903">Kuvien hakusana</string>
+    <string id="30904">Ryhmien hakusana</string>
     <string id="30905">*Ryhmät</string>
     <string id="30906">Kuvat</string>
     <string id="30907">XBMC Flickr</string>
@@ -16,13 +16,13 @@
     <string id="30912">Palaa XBMC Media Center-ohjelmaan kun olet&#10;suorittanut valtuutuksen flickr.com-osoitteessa</string>
     <string id="30913">Peruuta</string>
     <string id="30914">Valtuutettu</string>
-    <string id="30915">Ota FTP-yhteys xboksiin ja nouda q:\\xbmc.log tiedosto.&#10;'Etsi XBMC Flicker valtuutusosoite:'. Kopioi tämä&#10; nettiselaimeen ja varmenna.</string>
+    <string id="30915">Ota FTP-yhteys xboksiin ja nouda q:\\xbmc.log&#10;tiedosto.'Etsi XBMC Flicker valtuutusosoite:'&#10;Kopioi tämä nettiselaimeen ja varmenna.</string>
 
     <!-- Category strings -->
     <string id="30950">Omat kuvakokoelmat</string>
     <string id="30951">Uusimmat</string>
     <string id="30952">Omat kuvat</string>
-    <string id="30953">Kiinnostavuus</string>
+    <string id="30953">Kiinnostavat</string>
     <string id="30954">Omat suosikit</string>
     <string id="30955">Omat yhteystiedot</string>
     <string id="30956">Omat ryhmät</string>
