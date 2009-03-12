@@ -1,0 +1,4 @@
+<settings>
+   <setting id="dvdplayer" type="bool" label="30000" default="true"/>
+   <setting id="quality" type="enum" lvalues="30001|30002|30003" label="30004" default="0"/>
+</settings>
