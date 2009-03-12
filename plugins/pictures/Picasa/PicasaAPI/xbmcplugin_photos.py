@@ -9,6 +9,7 @@ import xbmc
 import xbmcgui
 import xbmcplugin
 
+from urllib import quote_plus, unquote_plus
 
 from PicasaAPI.PicasaClient import PicasaClient
 
@@ -37,6 +38,7 @@ class Main:
         self.settings[ "thumbsize" ] = ( 72, 144, 160, 200, 288, 320, 400, 512, )[ int( xbmcplugin.getSetting( "thumbsize" ) ) ]
         self.settings[ "user_search_kind" ] = ( "album", "photo", )[ int( xbmcplugin.getSetting( "user_search_kind" ) ) ]
         self.settings[ "saved_searches" ] = ( 10, 20, 30, 40, )[ int( xbmcplugin.getSetting( "saved_searches" ) ) ]
+        self.settings[ "fanart_image" ] = xbmcplugin.getSetting( "fanart_image" )
 
     def _get_strings( self ):
         self.localized_string = {}
@@ -48,7 +50,7 @@ class Main:
 
     def _parse_argv( self ):
         # call _Info() with our formatted argv to create the self.args object
-        exec "self.args = _Info(%s)" % ( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
+        exec "self.args = _Info(%s)" % ( unquote_plus( sys.argv[ 2 ][ 1 : ] ).replace( "&", ", " ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
 
     def _get_authkey( self ):
         self.authkey = xbmcplugin.getSetting( "authkey" )
@@ -176,7 +178,7 @@ class Main:
                 if ( endno > total ):
                     endno = total
                 # create the callback url
-                url = '%s?title=%s&category=%s&access=%s&kind=%s&page=%d&pq=%s&issearch=0&update_listing=%d&user_id=%s&album_id=%s&photo_id=%s' % ( sys.argv[ 0 ], repr( self.args.title ), repr( self.args.category ), repr( access ), repr( kind ), page + 1, repr( self.args.pq ), True, repr( self.args.user_id ), repr( self.args.album_id ), repr( self.args.photo_id ), )
+                url = '%s?title=%s&category=%s&access=%s&kind=%s&page=%d&pq=%s&issearch=0&update_listing=%d&user_id=%s&album_id=%s&photo_id=%s' % ( sys.argv[ 0 ], repr( quote_plus( self.args.title ) ), repr( self.args.category ), repr( access ), repr( kind ), page + 1, repr( quote_plus( self.args.pq ) ), True, repr( self.args.user_id ), repr( self.args.album_id ), repr( self.args.photo_id ), )
                 # TODO: get rid of self.BASE_PLUGIN_THUMBNAIL_PATH
                 # we set the thumb so XBMC does not try and cache the next pictures
                 thumbnail = os.path.join( self.BASE_PLUGIN_THUMBNAIL_PATH, "next.png" )
@@ -195,7 +197,7 @@ class Main:
                 # calculate the ending video
                 endno = startno + perpage - 1
                 # create the callback url
-                url = '%s?title=%s&category=%s&access=%s&kind=%s&page=%d&pq=%s&issearch=0&update_listing=%d&user_id=%s&album_id=%s&photo_id=%s' % ( sys.argv[ 0 ], repr( self.args.title ), repr( self.args.category ), repr( access ), repr( kind ), page - 1, repr( self.args.pq ), True, repr( self.args.user_id ), repr( self.args.album_id ), repr( self.args.photo_id ), )
+                url = '%s?title=%s&category=%s&access=%s&kind=%s&page=%d&pq=%s&issearch=0&update_listing=%d&user_id=%s&album_id=%s&photo_id=%s' % ( sys.argv[ 0 ], repr( quote_plus( self.args.title ) ), repr( self.args.category ), repr( access ), repr( kind ), page - 1, repr( quote_plus( self.args.pq ) ), True, repr( self.args.user_id ), repr( self.args.album_id ), repr( self.args.photo_id ), )
                 # TODO: get rid of self.BASE_PLUGIN_THUMBNAIL_PATH
                 # we set the thumb so XBMC does not try and cache the previous pictures
                 thumbnail = os.path.join( self.BASE_PLUGIN_THUMBNAIL_PATH, "previous.png" )
@@ -234,7 +236,7 @@ class Main:
                         page = 1
                         # set our category to photos
                         self.args.category = "photos"
-                    url = "%s?title=%s&category=%s&access=%s&kind=%s&page=%d&pq=%s&issearch=0&update_listing=%d&user_id=%s&album_id=%s&photo_id=%s" % ( sys.argv[ 0 ], repr( item[ "title" ] ), repr( self.args.category ), repr( access ), repr( kind ), page, repr( "" ), False, repr( item[ "user_id" ] ), repr( item[ "album_id" ] ), repr( item[ "photo_id" ] ), )
+                    url = "%s?title=%s&category=%s&access=%s&kind=%s&page=%d&pq=%s&issearch=0&update_listing=%d&user_id=%s&album_id=%s&photo_id=%s" % ( sys.argv[ 0 ], repr( quote_plus( item[ "title" ] ) ), repr( self.args.category ), repr( access ), repr( kind ), page, repr( "" ), False, repr( item[ "user_id" ] ), repr( item[ "album_id" ] ), repr( item[ "photo_id" ] ), )
                     # no photo_url, must be an album
                     isfolder = True
                     # set the default icon
@@ -269,12 +271,16 @@ class Main:
             xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_SIZE )
             xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_DATE )
             # set content
-            #xbmcplugin.setContent( handle=int( sys.argv[ 1 ] ), content="pictures" )
-            try:
-                # set our plugin category
-                xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title )
-            except:
-                pass
+            xbmcplugin.setContent( handle=int( sys.argv[ 1 ] ), content="pictures" )
+            # set our plugin category
+            xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title )
+            # if skin has fanart image use it
+            fanart_image = os.path.join( sys.modules[ "__main__" ].__plugin__, self.args.category + "-fanart.png" )
+            if ( xbmc.skinHasImage( fanart_image ) ):
+                xbmcplugin.setPluginFanart( handle=int( sys.argv[ 1 ] ), image=fanart_image )
+            # set our fanart from user setting
+            elif ( self.settings[ "fanart_image" ] ):
+                xbmcplugin.setPluginFanart( handle=int( sys.argv[ 1 ] ), image=self.settings[ "fanart_image" ] )
         return ok, total_items
 
     def _get_keyboard( self, default="", heading="", hidden=False ):
