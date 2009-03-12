@@ -48,6 +48,7 @@
     <string id="30050">Include more details (enabled will slow down results)</string>
     <string id="30150">Number of searches to save</string>
     <string id="30160">Interestingness date (optional)</string>
+    <string id="30170">Fanart image</string>
 
     <!-- Advanced search strings -->
     <string id="30060">Advanced photo search</string>

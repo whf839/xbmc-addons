@@ -9,6 +9,8 @@ import xbmc
 import xbmcgui
 import xbmcplugin
 
+from urllib import quote_plus, unquote_plus
+
 from FlickrAPI.FlickrClient import FlickrClient
 
 
@@ -39,7 +41,7 @@ class Main:
             self.args = _Info( title="" )
         else:
             # call _Info() with our formatted argv to create the self.args object
-            exec "self.args = _Info(%s)" % ( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
+            exec "self.args = _Info(%s)" % ( unquote_plus( sys.argv[ 2 ][ 1 : ] ).replace( "&", ", " ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
 
     def _get_user( self ):
         try:
@@ -182,7 +184,7 @@ class Main:
                 if ( userid_required and self.user_id == "" ): continue
                 if ( authtoken_required and self.authtoken == "" ): continue
                 # set the callback url with all parameters
-                url = '%s?title=%s&category=%s&userid=%s&usernsid=%s&photosetid=""&photoid=""&groupid=""&primary=""&secret=""&server=""&photos=0&page=1&prevpage=0&pq=%s&gq=%s&issearch=%d&update_listing=%d&' % ( sys.argv[ 0 ], repr( ltitle ), repr( method ), repr( self.user_id ), repr( self.user_nsid ), repr( pq ), repr( gq ), issearch, False, )
+                url = '%s?title=%s&category=%s&userid=%s&usernsid=%s&photosetid=""&photoid=""&groupid=""&primary=""&secret=""&server=""&photos=0&page=1&prevpage=0&pq=%s&gq=%s&issearch=%d&update_listing=%d&' % ( sys.argv[ 0 ], repr( quote_plus( ltitle ) ), repr( method ), repr( self.user_id ), repr( self.user_nsid ), repr( quote_plus( pq ) ), repr( quote_plus( gq ) ), issearch, False, )
                 # check for a valid custom thumbnail for the current method
                 thumbnail = thumbnail or self._get_thumbnail( method )
                 # set the default icon
@@ -196,14 +198,11 @@ class Main:
             # we do not want to sort queries list
             if ( "category='presets_photos'" in sys.argv[ 2 ] or "category='presets_groups'" in sys.argv[ 2 ] ):
                 xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
-                try:
-                    # set our plugin category
-                    xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title )
-                    # set our fanart from user setting
-                    if ( self.settings[ "fanart_image" ] ):
-                        xbmcplugin.setPluginFanart( handle=int( sys.argv[ 1 ] ), image=self.settings[ "fanart_image" ], color1=self.settings[ "fanart_color1" ], color2=self.settings[ "fanart_color2" ], color3=self.settings[ "fanart_color3" ] )
-                except:
-                    pass
+            # set our plugin category
+            xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title )
+            # set our fanart from user setting
+            if ( xbmcplugin.getSetting( "fanart_image" ) ):
+                xbmcplugin.setPluginFanart( handle=int( sys.argv[ 1 ] ), image=xbmcplugin.getSetting( "fanart_image" ) )
         except:
             # user cancelled dialog or an error occurred
             print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
