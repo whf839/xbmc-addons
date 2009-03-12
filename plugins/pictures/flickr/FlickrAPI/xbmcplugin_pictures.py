@@ -9,6 +9,8 @@ import xbmc
 import xbmcgui
 import xbmcplugin
 
+from urllib import unquote_plus, quote_plus
+
 from FlickrAPI.FlickrClient import FlickrClient
 
 
@@ -40,6 +42,7 @@ class Main:
         self.settings[ "safe_search" ] = ( 1, 2, 3, )[ int( xbmcplugin.getSetting( "safe_search" ) ) ]
         self.settings[ "perpage" ] = ( 10, 15, 20, 25, 30, 40, 50, 75, 100, )[ int( xbmcplugin.getSetting( "perpage" ) ) ]
         self.settings[ "full_details" ] = xbmcplugin.getSetting( "full_details" ) == "true"
+        self.settings[ "fanart_image" ] = xbmcplugin.getSetting( "fanart_image" )
         self.settings[ "advanced_photos_query" ] = False#xbmcplugin.getSetting( "advanced_photos_query" ) == "true"
         """
         self.settings[ "photos_query_userid" ] = xbmcplugin.getSetting( "photos_query_userid" )
@@ -55,7 +58,7 @@ class Main:
 
     def _parse_argv( self ):
         # call _Info() with our formatted argv to create the self.args object
-        exec "self.args = _Info(%s)" % ( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ), )
+        exec "self.args = _Info(%s)" % ( unquote_plus( sys.argv[ 2 ][ 1 : ] ).replace( "&", ", " ), )
 
     def _get_authkey( self ):
         self.authtoken = xbmcplugin.getSetting( "authtoken" )
@@ -85,7 +88,7 @@ class Main:
         url += u'&photosetid=%s' % repr( kwargs[ "photosetid" ] )
         url += u'&photoid=%s' % repr( kwargs[ "photoid" ] )
         url += u'&groupid=%s' % repr( kwargs[ "groupid" ] )
-        url += u'&title=%s' % repr( kwargs[ "title" ] )
+        url += u'&title=%s' % repr( quote_plus( kwargs[ "title" ] ) )
         url += u'&category=%s' % repr( kwargs[ "category" ] )
         url += u'&primary=%s' % repr( kwargs[ "primary" ] )
         url += u'&secret=%s' % repr( kwargs[ "secret" ] )
@@ -93,8 +96,8 @@ class Main:
         url += u'&photos=%d' % kwargs[ "photos" ]
         url += u'&page=%d' % kwargs[ "page" ]
         url += u'&prevpage=%d' % kwargs[ "prevpage" ]
-        url += u'&pq=%s' % repr( self.args.pq )
-        url += u'&gq=%s' % repr( self.args.gq )
+        url += u'&pq=%s' % repr( quote_plus( self.args.pq ) )
+        url += u'&gq=%s' % repr( quote_plus( self.args.gq ) )
         url += u'&issearch=%d' % self.args.issearch
         url += u'&update_listing=%d' % kwargs[ "update_listing" ]
         return url
@@ -364,11 +367,15 @@ class Main:
         if ( ok ):
             xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )
             xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_DATE )
-            try:
-                # set our plugin category
-                xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title )
-            except:
-                pass
+            # set our plugin category
+            xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title )
+            # if skin has fanart image use it
+            fanart_image = os.path.join( sys.modules[ "__main__" ].__plugin__, self.args.category + "-fanart.png" )
+            if ( xbmc.skinHasImage( fanart_image ) ):
+                xbmcplugin.setPluginFanart( handle=int( sys.argv[ 1 ] ), image=fanart_image )
+            # set our fanart from user setting
+            elif ( self.settings[ "fanart_image" ] ):
+                xbmcplugin.setPluginFanart( handle=int( sys.argv[ 1 ] ), image=self.settings[ "fanart_image" ] )
         return ok, len( items )
 
     def _get_keyboard( self, default="", heading="", hidden=False ):
