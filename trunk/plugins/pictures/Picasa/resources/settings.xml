@@ -10,4 +10,6 @@
     <setting type="sep" />
     <setting id="user_search_kind" type="enum" lvalues="30051|30052" label="30050" default="0" />
     <setting id="saved_searches" type="enum" values="10|20|30|40" label="30060" default="0" />
+    <setting type="sep" />
+    <setting id="fanart_image" type="pictures" label="30130" default="" />
 </settings>
