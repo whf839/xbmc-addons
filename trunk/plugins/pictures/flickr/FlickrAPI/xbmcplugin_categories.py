@@ -26,15 +26,19 @@ class Main:
     def __init__( self ):
         # parse sys.argv
         self._parse_argv()
-        # get user
-        ok = self._get_user()
-        # set the main default categories
-        if ( ok ):
-            ok = self._get_root_categories( sys.argv[ 2 ] == "" )
-        # set cache to disc
-        cacheToDisc = ( ok and not ( "category='presets_photos'" in sys.argv[ 2 ] or "category='presets_groups'" in sys.argv[ 2 ] ) )
-        # send notification we're finished, successfully or unsuccessfully
-        xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=ok, cacheToDisc=cacheToDisc )
+        # only authorize if user selected from settings
+        if ( hasattr( self.args, "authorize" ) ):
+            self._authorize()
+        else:
+            # get user
+            ok = self._get_user()
+            # set the main default categories
+            if ( ok ):
+                ok = self._get_root_categories( sys.argv[ 2 ] == "" )
+            # set cache to disc
+            cacheToDisc = ( ok and not ( "category='presets_photos'" in sys.argv[ 2 ] or "category='presets_groups'" in sys.argv[ 2 ] ) )
+            # send notification we're finished, successfully or unsuccessfully
+            xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=ok, cacheToDisc=cacheToDisc )
 
     def _parse_argv( self ):
         if ( not sys.argv[ 2 ] ):
@@ -47,8 +51,8 @@ class Main:
         try:
             self.user_id = ""
             self.user_nsid = ""
-            # if this is first run open settings and authenticate
-            self.runOnce()
+            # if this is first run open settings and authorize
+            self._run_once()
             # get the users id and token
             userid = xbmcplugin.getSetting( "user_id" )
             self.authtoken = xbmcplugin.getSetting( "authtoken" )
@@ -76,7 +80,7 @@ class Main:
             xbmcgui.Dialog().ok( xbmc.getLocalizedString( 30900 ), xbmc.getLocalizedString( 30901 ), xbmc.getLocalizedString( 30902 ) )
         return ok
 
-    def runOnce( self ):
+    def _run_once( self ):
         # is this the first time plugin was run and user has not set email
         if ( not sys.argv[ 2 ] and xbmcplugin.getSetting( "user_id" ) == "" and xbmcplugin.getSetting( "runonce" ) != "1" and xbmcplugin.getSetting( "runonce" ) != "2" ):
             # set runonce
@@ -87,19 +91,19 @@ class Main:
             # open settings
             xbmcplugin.openSettings( sys.argv[ 0 ] )
         # check again to see if authentication is necessary
-        if ( not sys.argv[ 2 ] and xbmcplugin.getSetting( "user_id" ) != "" and xbmcplugin.getSetting( "runonce" ) != "2" ):
+        if ( not sys.argv[ 2 ] and xbmcplugin.getSetting( "user_id" ) != "" and xbmcplugin.getSetting( "runonce" ) != "2" and xbmcplugin.getSetting( "authtoken" ) =="" ):
             # set runonce
             xbmcplugin.setSetting( "runonce", "2" )
             # sleep for xbox so dialogs don't clash. (TODO: report this as a bug?)
             if ( os.environ.get( "OS", "n/a" ) == "xbox" ):
                 xbmc.sleep( 2000 )
-            # ask user if they want to authenticate
+            # ask user if they want to authorize
             ok = xbmcgui.Dialog().yesno( xbmc.getLocalizedString( 30907 ), xbmc.getLocalizedString( 30908 ), "", xbmc.getLocalizedString( 30909 ), xbmc.getLocalizedString( 30910 ), xbmc.getLocalizedString( 30911 ) )
-            # authenticate
+            # authorize
             if (ok ):
-                self.authenticate()
+                self._authorize()
 
-    def authenticate( self ):
+    def _authorize( self ):
         # flickr client
         client = FlickrClient( api_key=True, secret=True )
         # authenticate
