@@ -9,7 +9,9 @@ import cookielib, htmlentitydefs
 import socket, base64
 
 rootDir = os.getcwd()
-if rootDir[-1] == ';':rootDir = rootDir[0:-1]
+if rootDir[-1] == ';':
+    rootDir = rootDir[0:-1]
+rootDir = xbmc.translatePath(rootDir)
 cacheDir = os.path.join(rootDir, 'cache')
 resDir = os.path.join(rootDir, 'resources')
 imgDir = os.path.join(resDir, 'images')
@@ -479,6 +481,8 @@ class CRuleItem:
         self.infos = ''
         self.order = ''
         self.skill = ''
+        self.context = ''
+        self.discard = ''
         self.curr = ''
         self.info_list = []
         self.url_build = ''
@@ -510,6 +514,7 @@ class CCurrentList:
         self.sort = 'label'
         self.cfg = ''
         self.skill = ''
+        self.context = ''
         self.reference = ''
         self.content = ''
         self.catcher = []
@@ -534,7 +539,7 @@ class CCurrentList:
         for attempt in range(attempts):
             filename = ''.join([random.choice(chars) for i in range(length)])
             filename = prefix + filename + suffix
-            if not os.path.exists(os.path.join(dir, filename)):
+            if not os.path.isfile(os.path.join(xbmc.translatePath(dir), filename)):
                 return filename
 
     def videoCount(self):
@@ -615,8 +620,9 @@ class CCurrentList:
         firstInfo = True
         for info_name in item.infos_names:
             if info_idx != url_idx and item.infos_names[info_idx].find('.once') == -1:
-                #info_value = urllib.quote(item.infos_values[info_idx])
                 info_value = item.infos_values[info_idx]
+                if info_value == '':
+                    info_value = '...'
                 if firstInfo:
                     firstInfo = False
                     url = smart_unicode(item.infos_names[info_idx]) + ':' + smart_unicode(info_value)
@@ -643,9 +649,13 @@ class CCurrentList:
         for info_name_value in infos_names_values:
             sep_index = info_name_value.find(':')
             if sep_index != -1:
-                item.infos_names.append(info_name_value[:sep_index])
-                #item.infos_values.append(clean_safe(urllib.unquote(info_name_value[sep_index+1:])))
-                item.infos_values.append(clean_safe(info_name_value[sep_index+1:]))
+                if info_name_value[:sep_index] == 'context':
+                    self.context = info_name_value[sep_index+1:]
+                    if enable_debug:
+                        xbmc.output('Current context: ' + str(self.context))
+                else:
+                    item.infos_names.append(info_name_value[:sep_index])
+                    item.infos_values.append(clean_safe(info_name_value[sep_index+1:]))
         try:
             type_idx = item.infos_names.index('type')
         except:
@@ -763,6 +773,7 @@ class CCurrentList:
             try:
                 lItem.infos_values[lItem.infos_names.index(strin)] = self.cfg
             except:
+                self.context = 'start'
                 lItem.infos_names.append('cfg')
                 lItem.infos_values.append(self.cfg)
         del self.items[:]
@@ -822,6 +833,10 @@ class CCurrentList:
                         rule_tmp.order = value
                     elif key == 'item_skill':
                         rule_tmp.skill = value
+                    elif key == 'item_context':
+                        rule_tmp.context = value
+                    elif key == 'item_discard':
+                        rule_tmp.discard = value
                     elif key == 'item_curr':
                         rule_tmp.curr = value
                     elif key == 'item_info_name':
@@ -841,6 +856,8 @@ class CCurrentList:
                         rule_tmp.info_list.append(info_tmp)
                     elif key == 'item_url_build':
                         rule_tmp.url_build = value
+                        if (rule_tmp.discard != '' and self.context.find(rule_tmp.discard) != -1) or (rule_tmp.context != '' and self.context.find(rule_tmp.context) == -1):
+                            continue
                         self.rules.append(rule_tmp)
                     elif key == 'title':
                         tmp = CListItem()
@@ -983,6 +1000,9 @@ class CCurrentList:
                 else:
                     tmp.infos_names.append(item_rule.order)
                     tmp.infos_values.append(reinfos)
+                if item_rule.skill.find('keep') != -1:
+                    tmp.infos_names.append('context')
+                    tmp.infos_values.append(self.context)
                 for info in item_rule.info_list:
                     info_value = ''
                     try:
@@ -1317,7 +1337,7 @@ class Main:
             title = videoItem.infos_values[videoItem.infos_names.index('title')]
         except:
             title = '...'
-        if not os.path.exists(icon):
+        if not os.path.isfile(icon):
             try:
                 urllib.urlretrieve(icon, os.path.join(cacheDir, 'thumb.tbn'))
                 icon = os.path.join(cacheDir, 'thumb.tbn')
@@ -1376,7 +1396,7 @@ class Main:
     def downloadMovie(self, url, title):
         if enable_debug:
             xbmc.output('Trying to download video ' + str(url))
-        file_path = os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension)
+        file_path = os.path.join(xbmc.translatePath(xbmcplugin.getSetting('download_Path')), title + self.videoExtension)
         if os.path.isfile(file_path):
             file_path = self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '_', suffix = self.videoExtension)
         try:
@@ -1386,7 +1406,7 @@ class Main:
             return file_path
         except IOError:
             title = first_clean_filename(title)
-            file_path = os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension)
+            file_path = os.path.join(xbmc.translatePath(xbmcplugin.getSetting('download_Path')), title + self.videoExtension)
             if os.path.isfile(file_path):
                 file_path = self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '_', suffix = self.videoExtension)
             try:
@@ -1396,7 +1416,7 @@ class Main:
                 return file_path
             except IOError:
                 title = second_clean_filename(title)
-                file_path = os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension)
+                file_path = os.path.join(xbmc.translatePath(xbmcplugin.getSetting('download_Path')), title + self.videoExtension)
                 if os.path.isfile(file_path):
                     file_path = self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '_', suffix = self.videoExtension)
                 try:
@@ -1406,7 +1426,7 @@ class Main:
                     return file_path
                 except IOError:
                     title = third_clean_filename(title)
-                    file_path = os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension)
+                    file_path = os.path.join(xbmc.translatePath(xbmcplugin.getSetting('download_Path')), title + self.videoExtension)
                     if os.path.isfile(file_path):
                         file_path = self.currentlist.randomFilename(dir = xbmcplugin.getSetting('download_Path'), suffix = self.videoExtension)
                     try:
@@ -1416,7 +1436,7 @@ class Main:
                         return file_path
                     except IOError:
                         title = self.currentlist.randomFilename()
-                        file_path = os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension)
+                        file_path = os.path.join(xbmc.translatePath(xbmcplugin.getSetting('download_Path')), title + self.videoExtension)
                         if os.path.isfile(file_path):
                             file_path = self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '_', suffix = self.videoExtension)
                         try:
@@ -1526,7 +1546,7 @@ class Main:
 
     def addListItem(self, title, url, icon, totalItems, lItem, isDir = True, noCallback = False):
         u = sys.argv[0] + '?url=' + url
-        if os.path.exists(os.path.join(imgDir, icon)):
+        if os.path.isfile(os.path.join(imgDir, icon)):
             icon = os.path.join(imgDir, icon)
         liz = xbmcgui.ListItem(title, title, icon, icon)
         if isDir and self.currentlist.getFileExtension(url) == 'videomonkey' and self.currentlist.skill.find('nodownload') == -1:
@@ -1593,7 +1613,7 @@ class Main:
                     os.mkdir(cacheDir)
                     if enable_debug:
                         xbmc.output('Cache directory created')
-                if not os.path.exists(xbmcplugin.getSetting('download_Path')):
+                if not os.path.exists(xbmc.translatePath(xbmcplugin.getSetting('download_Path'))):
                     try:
                         if enable_debug:
                             xbmc.output('Creating download directory ' + str(xbmcplugin.getSetting('download_Path')))
