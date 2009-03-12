@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings> <!--  4.3.2009 Finnish   -->
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings> <!--  12.3.2009 Finnish   -->
     <!-- Plugin strings -->
     <string id="30900">Tallenna esiasetukseksi</string>
     <string id="30901">Haluatko lisätä tämän haun esiasetukseksi?</string>
@@ -19,7 +19,9 @@
     <!-- Category strings -->
     <string id="30950">Etsi videoita</string>
     <string id="30951">Etsi käyttäjiä</string>
+
     <string id="30952">Etsi videoita...</string>
+
     <string id="30953">Etsi käyttäjiä...</string>
     <string id="30954">Omat videot</string>
     <string id="30955">Omat suosikit</string>
@@ -44,4 +46,5 @@
     <string id="30040">Näytettävien videoiden määrä</string>
     <string id="30050">Toistin</string>
     <string id="30060">Talletettavien hakujen määrä</string>
+    <string id="30130">Fanitaide kuva</string>
 </strings>

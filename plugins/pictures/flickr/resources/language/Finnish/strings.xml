@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings> <!--  2.3.2009 Finnish   -->
+<strings> <!--  12.3.2009 Finnish   -->
     <!-- Plugin strings -->
-    <string id="30900">Flickr lisäke</string>
+    <string id="30900">Flickr-lisäke</string>
     <string id="30901">Käyttäjän Id tunnnus on sopimaton!</string>
     <string id="30902">Tarkista asetukset.</string>
     <string id="30903">Kuvien hakusanat</string>
@@ -48,6 +48,7 @@
     <string id="30050">Sisällytä lisää valintoja (tämä voi hidastaa toimintaa)</string>
     <string id="30150">Talletettavien hakujen määrä</string>
     <string id="30160">Haluttu päivämäärä (valinnainen)</string>
+    <string id="30170">Fanitaide kuva</string>
 
     <!-- Advanced search strings -->
     <string id="30060">Kuvien haun lisäasetukset</string>

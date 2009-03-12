@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings> <!--  2.3.2009 Finnish   -->
+<strings> <!--  12.3.2009 Finnish   -->
     <!-- Plugin strings -->
     <string id="30900">Haun talletus</string>
     <string id="30901">Haluatko tallettaa tämän haun?</string>
@@ -33,5 +33,6 @@
     <string id="30051">Albumit</string>
     <string id="30052">Kuvat</string>
     <string id="30060">Talletettavien hakujen määrä</string>
+    <string id="30130">Fanitaide kuva</string>
 
 </strings>
