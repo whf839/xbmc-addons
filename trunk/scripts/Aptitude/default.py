@@ -52,7 +52,7 @@ c.upgrade()
 changes = c.getChanges()
 
 dialog = xbmcgui.Dialog()
-if len(changes) == -10:
+if len(changes) == 0:
     dialog.ok("Info", "No new packages available")
 else:
     downloadSize = 0
