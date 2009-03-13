@@ -99,7 +99,7 @@ def category_assets(url, name):
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
 		cell=cell+1
 	if (data3[0][1] != data3[0][2]):
-		li=xbmcgui.ListItem("Next Page")
+		li=xbmcgui.ListItem(xbmc.getLocalizedString( 30004 ))
 		u=sys.argv[0]+"?mode=3&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(thisurl)+"&page="+str(int(page)+1)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
@@ -141,8 +141,9 @@ def playVideo(url, name):
 			flv_file = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), name))
 			Download(url,flv_file)
 	elif (xbmcplugin.getSetting('download') == 'false' and xbmcplugin.getSetting('download_ask') == 'true'):
-		dia = xbmcgui.Dialog()
-		ret = dia.select('What do you want to do?', ['Download & Play', 'Stream', 'Exit'])
+		dia = xbmcgui.Dialog()		
+		ret = dia.select(xbmc.getLocalizedString( 30005 ), [xbmc.getLocalizedString( 30001 ), xbmc.getLocalizedString( 30007 ), xbmc.getLocalizedString( 30006 )])
+		
 		if (ret == 0):
 			flv_file = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), name))
 			Download(url,flv_file)
