@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <string id="30000">Use DVD Player instead of regular player</string>
+
+	<string id="30005">Ask</string>
+	<string id="30006">Play</string>
+	<string id="30007">Download</string>
+	<string id="30008">Play and Download</string>
+	<string id="30009">Download Setting (http only)</string>
+    <string id="30010">Download path</string>
+
+    <string id="30011">What do you want to do?</string>
+    <string id="30012">Exit</string>
+  </strings>
