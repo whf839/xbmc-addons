@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings> <!--  Finnish 2.12.2008 -->
+<strings> <!--  Finnish 13.3.2009 -->
     <!-- settings labels -->
     <string id="30000">Esittelyn kuvanlaatu</string>
     <string id="30001">Normaali</string>
@@ -8,8 +8,8 @@
     <string id="30004">1080p</string>
     <string id="30010">Suuret julistekuvat käytössä</string>
     <string id="30020">MPAA-luokituksen rajoitus esittelyille</string>
-    <string id="30030">Muoto</string>
-    <string id="30031">Tiedostovirta</string>
+    <string id="30030">Toistotapa</string>
+    <string id="30031">Katso</string>
     <string id="30032">Lataa</string>
     <string id="30033">Lataa &amp; Tallenna</string>
     <string id="30040">- Latauskansio</string>
@@ -30,7 +30,7 @@
     <string id="30110">-Fanitaiteen väri kaksi(AARRGGBB)</string>
     <string id="30120">-Fanitaiteen väri kolme(AARRGGBB)</string>
     <string id="30130">- Toista aina tallennetut esittelyt</string>
-    <string id="30140">- Lisää '-esittely' tallennettuihin</string>
+    <string id="30140">- Lisää '-trailer' tallennettuihin</string>
 
     <!-- messages -->
     <string id="30500">Ladataan: %s</string>

@@ -229,7 +229,7 @@ def playVideo(url, name):
 			Download(url,flv_file)
 	elif (xbmcplugin.getSetting('download') == 'false' and xbmcplugin.getSetting('download_ask') == 'true'):
 		dia = xbmcgui.Dialog()
-		ret = dia.select('What do you want to do?', ['Download & Play', 'Stream', 'Exit'])
+		ret = dia.select(xbmc.getLocalizedString( 30005 ), [xbmc.getLocalizedString( 30001 ), xbmc.getLocalizedString( 30007 ), xbmc.getLocalizedString( 30006 )])
 		if (ret == 0):
 			flv_file = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), name))
 			Download(url,flv_file)
