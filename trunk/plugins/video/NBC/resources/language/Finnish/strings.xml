@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings>   <!--  12.3.2009 Finnish   -->
+<strings>   <!--  13.3.2009 Finnish   -->
     <string id="30000">Käytä DVD Player-soitinta</string>
     <string id="30001">Kysy</string>
     <string id="30002">Korkea</string>
     <string id="30003">Matala</string>
-    <string id="30004">Oletuslaatu</string>
+    <string id="30004">Kuvanlaatu</string>
 </strings>
