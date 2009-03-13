@@ -132,7 +132,7 @@ def httpDownload( finalurl, name):
         stream = 'false'
         if (xbmcplugin.getSetting('download') == '0'):
                 dia = xbmcgui.Dialog()
-                ret = dia.select('What do you want to do?', ['Play','Download','Download & Play','Exit'])
+                ret = dia.select(xbmc.getLocalizedString( 30011 ),xbmc.getLocalizedString( 30006 ),xbmc.getLocalizedString( 30007 ),xbmc.getLocalizedString( 30008 ),xbmc.getLocalizedString( 30012 )])
                 if (ret == 0):
                         stream = 'true'
                 elif (ret == 1):
