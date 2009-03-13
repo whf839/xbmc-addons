@@ -1,4 +1,4 @@
-# XBMC Video Plugin
+﻿# XBMC Video Plugin
 # G4TV
 # Date: 01/10/08
 # ver. 1.00
@@ -105,7 +105,7 @@ def newShow(url,page):
 			x=x+1
 			if (x==20):
 				break
-	li=xbmcgui.ListItem("Next Page")
+	li=xbmcgui.ListItem(xbmc.getLocalizedString( 30004 ))
 	u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(thisurl)+"&page="+str(int(page)+1)
 	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 		
@@ -198,7 +198,7 @@ def showList2(url):
 			Download(url,flv_file)
 	elif (xbmcplugin.getSetting('download') == 'false' and xbmcplugin.getSetting('download_ask') == 'true'):
 		dia = xbmcgui.Dialog()
-		ret = dia.select('What do you want to do?', ['Download & Play', 'Stream', 'Exit'])
+		ret = dia.select(xbmc.getLocalizedString( 30005 ), [xbmc.getLocalizedString( 30001 ), xbmc.getLocalizedString( 30007 ), xbmc.getLocalizedString( 30006 )])
 		if (ret == 0):
 			flv_file = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), name))
 			Download(url,flv_file)
