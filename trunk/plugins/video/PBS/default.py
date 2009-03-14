@@ -26,7 +26,7 @@ def showRoot():
 def natureA():
 		url='http://www.pbs.org/wnet/nature/category/video/watch-full-episodes/page/'
 		thisurl=url
-		req = urllib2.Request(url+str(int(page)+1))
+		req = urllib2.Request(url+str(page))
 		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.6) Gecko/2009011913 Firefox/3.0.6')
 		f=urllib2.urlopen(req)
 		a=f.read()
@@ -40,14 +40,14 @@ def natureA():
 		x=0
 		for url,title,date in info:
 			title=clean(title)
-			name2 = str(int(x+1+12*int(page)))+'. '+date+': '+title+' - '+disc[x]
+			name2 = str(int(x+1+12*int(page-1)))+'. '+date+': '+title+' - '+disc[x]
 			thumb='http://www.pbs.org'+img[x]
 			li=xbmcgui.ListItem(name2, iconImage=thumb, thumbnailImage=thumb)
 			u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(title)+"&url="+urllib.quote_plus(url)+"&page="+str(int(page)+1)
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 			x=x+1
 		if x == 12:
-			li=xbmcgui.ListItem("Next Page")
+			li=xbmcgui.ListItem("Next Page", iconImage="DefaultVideo.png", thumbnailImage=os.path.join(IMAGE_DIR, 'next.png'))
 			u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(title)+"&url="+urllib.quote_plus(thisurl)+"&page="+str(int(page)+1)
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
@@ -253,7 +253,7 @@ def novaA():
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 			x=x+1
 		if x == 5:
-			li=xbmcgui.ListItem("Next Page")
+			li=xbmcgui.ListItem("Next Page", iconImage="DefaultVideo.png", thumbnailImage=os.path.join(IMAGE_DIR, 'next.png'))
 			u=sys.argv[0]+"?mode=5&url="+urllib.quote_plus(thisurl)+"&page="+str(int(page)+1)
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
@@ -316,7 +316,7 @@ def Update():
 			dp.update(percent)
 		if dp.iscanceled():  
 			dp.close()
-	version='b2'
+	version='b3'
 	req = urllib2.Request('http://code.google.com/p/plugin/downloads/list?q=label:Featured')
 	response = urllib2.urlopen(req)
 	page = response.read()
