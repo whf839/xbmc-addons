@@ -31,24 +31,41 @@ def CATEGORIES():
         for category,name in match:
                 name = name.replace('&amp;','&').replace('&#039;',"'")
                 category = baseurl + category
-                addDir(str(name),category,1,'')
+                thumbsplit = name.split(' ')
+                thumb = 'http://www.animefreak.tv/infologos/infologo' + thumbsplit[0].lower() + '.jpg'
+                addDir(str(name),category,1,thumb)
         return
 
 
 
-def INDEX(url):
+def INDEX(url,name):
+        showname = name
         items = getHTML(url)
         items = re.sub('\r', '', items)
         items = re.sub('\n', '', items)
         items = re.sub('\t', '', items)
         topmenu=re.compile('<ul class="menu"><li class="leaf first">(.+?)</ul>').findall(items)
-        del items
-        match=re.compile('<a href="(.+?)">(.+?)</a>').findall(topmenu[0])
-        del topmenu
-        for episode,name in match:
-                name = name.replace('&amp;','&').replace('&#039;',"'")
-                episode = baseurl + episode
-                addDir(str(name),episode,2,'')
+        if topmenu == []:
+                topmenu=re.compile('<ul class="menu"><li class="collapsed first">(.+?)</ul>').findall(items)
+                match=re.compile('<a href="(.+?)">(.+?)</a>').findall(topmenu[0])
+                for episode,name in match:
+                        name = name.replace('&amp;','&').replace('&#039;',"'")
+                        if name == 'Blogs':
+                                VIDEOLINKS(url,showname)
+                                return
+                        elif name == 'Extras':
+                                pass
+                        else:
+                                episode = baseurl + episode
+                                addDir(str(name),episode,1,'')
+                xbmcplugin.endOfDirectory(handle=int(sys.argv[1]))
+        else:
+                match=re.compile('<a href="(.+?)">(.+?)</a>').findall(topmenu[0])
+                for episode,name in match:
+                        name = name.replace('&amp;','&').replace('&#039;',"'")
+                        episode = baseurl + episode
+                        addDir(str(name),episode,2,'')
+                xbmcplugin.endOfDirectory(handle=int(sys.argv[1]))        
         return
 
 
@@ -177,13 +194,12 @@ print "Name: "+str(name)
 if mode==None or url==None or len(url)<1:
         print ""
         CATEGORIES()
-        xbmcplugin.endOfDirectory(int(sys.argv[1]))
+        xbmcplugin.endOfDirectory(handle=int(sys.argv[1]),cacheToDisc=True)
         
 elif mode==1:
         print ""+url
-        INDEX(url)
-        xbmcplugin.endOfDirectory(int(sys.argv[1]))
-        
+        INDEX(url,name)
+                
 elif mode==2:
         print ""+url
         VIDEOLINKS(url,name)
