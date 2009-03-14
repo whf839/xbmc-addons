@@ -49,7 +49,7 @@ class Main:
         # construct the video url
         video_url = client.BASE_ID_URL % ( video_id, )
         # fetch video information
-        url, title, author, genre, rating, runtime, count, date, thumbnail_url, plot, video_id = client.construct_video_url( video_url, ( 0, 6, 18, )[ int( xbmcplugin.getSetting( "quality" ) ) ] )
+        url, title, author, genre, rating, runtime, count, date, thumbnail_url, plot, video_id = client.construct_video_url( video_url, ( 18, 22, )[ xbmcplugin.getSetting( "hd_videos" ) == "true" ] )
         # get cached thumbnail, no need to redownload
         thumbnail = xbmc.getCacheThumbName( sys.argv[ 0 ] + sys.argv[ 2 ] + video_id )
         thumbnail = os.path.join( xbmc.translatePath( "special://profile" ), "Thumbnails", "Video", thumbnail[ 0 ], thumbnail )
