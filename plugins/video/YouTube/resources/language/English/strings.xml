@@ -63,10 +63,7 @@
     <string id="30020">Include explicit content</string>
     <string id="30030">Number of videos per page</string>
     <string id="30040">Player core</string>
-    <string id="30050">Preferred video quality</string>
-    <string id="30051">Standard</string>
-    <string id="30052">High (few videos)</string>
-    <string id="30053">H264 (beta)</string>
+    <string id="30050">Play HD videos if available</string>
     <string id="30060">Limit standard feeds videos to country region</string>
     <string id="30061">All</string>
     <string id="30062">Australia</string>

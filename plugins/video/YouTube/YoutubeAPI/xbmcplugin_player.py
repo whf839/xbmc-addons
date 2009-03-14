@@ -31,7 +31,7 @@ class Main:
         # Youtube client
         client = YoutubeClient( authkey=xbmcplugin.getSetting( "authkey" ) )
         # construct the video url with session id and get video details
-        url, title, director, genre, rating, runtime, count, date, thumbnail, plotoutline, video_id = client.construct_video_url( self.args.video_url, ( 0, 6, 18, )[ int( xbmcplugin.getSetting( "quality" ) ) ] )
+        url, title, director, genre, rating, runtime, count, date, thumbnail, plotoutline, video_id = client.construct_video_url( self.args.video_url, ( 18, 22, )[ xbmcplugin.getSetting( "hd_videos" ) == "true" ] )
         # get cached thumbnail, no need to redownload
         thumbnail = xbmc.getCacheThumbName( sys.argv[ 0 ] + sys.argv[ 2 ] )
         thumbnail = os.path.join( xbmc.translatePath( "special://profile" ), "Thumbnails", "Video", thumbnail[ 0 ], thumbnail )
