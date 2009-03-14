@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings> <!--  7.3.2009 Finnish   -->
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings> <!--  14.3.2009 Finnish   -->
     <!-- Plugin strings -->
     <string id="30900">Tallenna esiasetukseksi</string>
     <string id="30901">Haluatko lisätä tämän haun esiasetukseksi?</string>
@@ -7,7 +7,7 @@
     <string id="30903">Haun tallennus epäonnistui virheeseen:</string>
     <string id="30904">Käyttäjästä ei ollut kuvausta tai se ei ollut utf-8-muodossa</string>
     <string id="30905">Esiasetettu hakunimi</string>
-    <string id="30906">Etsi sanaa</string>
+    <string id="30906">Etsi sanalla</string>
     <string id="30907">Etsi käyttäjänimeä</string>
     <string id="30908">Ladataan videota...</string>
     <string id="30909">Noudetaan satunnaista musiikkivideota...</string>
@@ -60,13 +60,10 @@
     <string id="30012">Tänään</string>
     <string id="30013">Tällä viikolla</string>
     <string id="30014">Tässä kuussa</string>
-    <string id="30020">Sisällytä epäsiveellinen sisältö</string>
-    <string id="30030">Sivujen määrä sivua kohti</string>
-    <string id="30040">Videosoitin</string>
-    <string id="30050">Videokuvan laatu</string>
-    <string id="30051">Normaali</string>
-    <string id="30052">Korkea (muutama video)</string>
-    <string id="30053">H264 (beta)</string>
+    <string id="30020">Sisällytä aikuis-sisältö</string>
+    <string id="30030">Videoiden määrä sivua kohti</string>
+    <string id="30040">Toistin</string>
+    <string id="30050">Toista teräväpiirto videot, mikäli saatavilla</string>
     <string id="30060">Etsi videoita maasta</string>
     <string id="30061">Kaikki</string>
     <string id="30062">Australia</string>
