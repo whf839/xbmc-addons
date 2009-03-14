@@ -178,7 +178,7 @@ def showListB(url,name):
 			u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
 			x=x+1
-		li=xbmcgui.ListItem("Next Page")
+		li=xbmcgui.ListItem(xbmc.getLocalizedString( 30004 ))
 		u=sys.argv[0]+"?mode=8&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(thisurl)+"&page="+str(int(page)+1)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
