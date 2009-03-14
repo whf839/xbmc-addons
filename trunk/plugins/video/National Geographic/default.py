@@ -5,6 +5,7 @@
 # Changelog & More Info: http://xbmc.org/forum/showthread.php?t=45132
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
+THUMBNAIL_PATH = os.path.join( os.getcwd(), "thumbnails" )
 
 def sectionlist():
 	url='http://video.nationalgeographic.com/video/player/data/xml/sectionlist.xml'
@@ -99,7 +100,7 @@ def category_assets(url, name):
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
 		cell=cell+1
 	if (data3[0][1] != data3[0][2]):
-		li=xbmcgui.ListItem(xbmc.getLocalizedString( 30004 ))
+		li=xbmcgui.ListItem(xbmc.getLocalizedString( 30004 ),iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'next.png'))
 		u=sys.argv[0]+"?mode=3&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(thisurl)+"&page="+str(int(page)+1)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
