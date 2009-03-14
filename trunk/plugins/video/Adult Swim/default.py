@@ -26,7 +26,31 @@ def listCategories():
         aswim = AdultSwim()
         categories = aswim.getCategories()
         for category in categories:
-                addDir(category['name'], 'listShowsByCat?cid='+category['id'], 2 , imageDir + 'categories.png', category['description'])
+                if category['name'] == 'Action' and (xbmcplugin.getSetting('action') == '1'):
+                        shows = aswim.getShowsByCategory( category['id'] )
+                        for show in shows:
+                                addDir(show['name'], 'showTypes?id='+show['id'], 3 , imageDir + 'video.png')          
+                elif category['name'] == 'Action' and (xbmcplugin.getSetting('action') == '0'):
+                        addDir(' '+category['name'], 'listShowsByCat?cid='+category['id'], 2 , imageDir + 'categories.png', category['description'])
+                elif category['name'] == 'Action' and (xbmcplugin.getSetting('action') == '2'):
+                        pass
+                elif category['name'] == 'Comedy' and (xbmcplugin.getSetting('comedy') == '1'):
+                        shows = aswim.getShowsByCategory( category['id'] )
+                        for show in shows:
+                                addDir(show['name'], 'showTypes?id='+show['id'], 3 , imageDir + 'video.png')    
+                elif category['name'] == 'Comedy' and (xbmcplugin.getSetting('comedy') == '0'):
+                        addDir(' '+category['name'], 'listShowsByCat?cid='+category['id'], 2 , imageDir + 'categories.png', category['description'])
+                elif category['name'] == 'Comedy' and (xbmcplugin.getSetting('comedy') == '2'):
+                        pass
+                elif category['name'] == 'Other' and (xbmcplugin.getSetting('other') == '1'):
+                        shows = aswim.getShowsByCategory( category['id'] )
+                        for show in shows:
+                                addDir(show['name'], 'showTypes?id='+show['id'], 3 , imageDir + 'video.png')    
+                elif category['name'] == 'Other' and (xbmcplugin.getSetting('other') == '0'):
+                        addDir(' '+category['name'], 'listShowsByCat?cid='+category['id'], 2 , imageDir + 'categories.png', category['description'])
+                elif category['name'] == 'Other' and (xbmcplugin.getSetting('other') == '2'):
+                        pass
+
         #f = open(os.path.join(resourceDir, 'categories.xml'),'wb')
         #f.write(response)
         
@@ -39,10 +63,27 @@ def listShowsByCat(url):
                 addDir(show['name'], 'showTypes?id='+show['id'], 3 , imageDir + 'video.png')
 
 
-#lists "Full Episodes" or "Clips" for selected show
-def showTypes(url):
-        addDir("Full Episodes", url+'&filterByEpisodeType=PRE,EPI', 4 , imageDir + 'video.png', 'Full Episodes')
-        addDir("Clips", url+'&filterByEpisodeType=CLI', 4 , imageDir + 'video.png', 'Clips')
+#lists episodes by show id              
+def showTypes(showid):
+        aswim = AdultSwim()
+        url = showid+'&filterByEpisodeType=PRE,EPI'
+        params = qs2dict(url.split('?')[1])
+        episodes = aswim.getEpisodesByShow( params['id'], params['filterByEpisodeType'] )        
+        if len(episodes) == 0:
+                url = showid+'&filterByEpisodeType=CLI'
+                params = qs2dict(url.split('?')[1])
+                episodes = aswim.getEpisodesByShow( params['id'], params['filterByEpisodeType'] )
+                for episode in episodes:
+                        addDir(episode['title']+' (Clip)', 'initEpisode?ids='+episode['id'], 5 , episode['thumbnail'], episode['description'])
+                return
+
+        for episode in episodes:
+                addDir(episode['title'], 'initEpisode?ids='+episode['id'], 5 , episode['thumbnail'], episode['description'])
+        
+
+        addDir(" Clips", showid+'&filterByEpisodeType=CLI', 4 , imageDir + 'video.png', 'Clips')
+
+        #addDir(" Full Episodes", url+'&filterByEpisodeType=PRE,EPI', 4 , imageDir + 'video.png', 'Full Episodes')
 
 
 #lists episodes by show id
@@ -56,10 +97,7 @@ def listEpisodes(url):
                 return
 
         for episode in episodes:
-                addDir(episode['title'], 'initEpisode?ids='+episode['id'], 5 , episode['thumbnail'], episode['description'])
-
-
-
+                addDir(episode['title']+' (Clip)', 'initEpisode?ids='+episode['id'], 5 , episode['thumbnail'], episode['description'])
 
 
 def getVideoURL(id):
@@ -68,6 +106,7 @@ def getVideoURL(id):
         episodes = aswim.getEpisodesByIDs( params['ids'] )
         playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
         playlist.clear()
+        playlist_urls = []
         for episode in episodes:
                 for segment in episode['segments']:
                         response = aswim.getPlaylist(segment['id'])
@@ -75,10 +114,73 @@ def getVideoURL(id):
                         title = episode['collectionTitle'] + ' - ' + episode['title']
                         item  = xbmcgui.ListItem(title, iconImage="DefaultVideo.png", thumbnailImage=segment['thumbnail'])
                         item.setInfo(type='Video', infoLabels={'Title': title, 'Genre': episode['collectionCategoryType']})
+                        playlist_urls.append(match[0])
                         playlist.add(match[0], item)
-        xbmc.Player().play( playlist )
+        stream = httpDownload(playlist_urls,name)
+        if stream == 'false':
+                return
+        if xbmcplugin.getSetting("dvdplayer") == "true":
+                    player_type = xbmc.PLAYER_CORE_DVDPLAYER
+        else:
+                    player_type = xbmc.PLAYER_CORE_MPLAYER
+        ok=xbmc.Player(player_type).play( playlist )
         #xbmc.sleep(200)
         #xbmc.executebuiltin('XBMC.ActivateWindow(FullscreenVideo)')
+
+def httpDownload( playlist_urls, name):
+        def Download(url,dest):
+                    dp = xbmcgui.DialogProgress()
+                    dp.create('Downloading','',name)
+                    urllib.urlretrieve(url,dest,lambda nb, bs, fs, url=url: _pbhook(nb,bs,fs,url,dp))
+        def _pbhook(numblocks, blocksize, filesize, url=None,dp=None):
+                    try:
+                                    percent = min((numblocks*blocksize*100)/filesize, 100)
+                                    dp.update(percent)
+                    except:
+                                    percent = 100
+                                    dp.update(percent)
+                    if dp.iscanceled():
+                                    dp.close()
+        flv_file = None
+        stream = 'false'
+        C = 0
+        if (xbmcplugin.getSetting('download') == '0'):
+                dia = xbmcgui.Dialog()
+                ret = dia.select(xbmc.getLocalizedString( 30011 ),[xbmc.getLocalizedString( 30006 ),xbmc.getLocalizedString( 30007 ),xbmc.getLocalizedString( 30008 ),xbmc.getLocalizedString( 30012 )])
+                if (ret == 0):
+                        stream = 'true'
+                elif (ret == 1):
+                        for url in playlist_urls:
+                                C = C + 1
+                                flv_file = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), name+'-part'+str(C)+'.flv'))
+                                Download(url,flv_file)
+                elif (ret == 2):
+                        for url in playlist_urls:
+                                C = C + 1
+                                flv_file = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), name+'-part'+str(C)+'.flv'))
+                                Download(url,flv_file)
+                        stream = 'true'
+                else:
+                        return stream
+        #Play
+        elif (xbmcplugin.getSetting('download') == '1'):
+                stream = 'true'
+        #Download
+        elif (xbmcplugin.getSetting('download') == '2'):
+                for url in playlist_urls:
+                        C = C + 1
+                        flv_file = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), name+'-part'+str(C)+'.flv'))
+                        Download(url,flv_file)
+        #Download & Play
+        elif (xbmcplugin.getSetting('download') == '3'):
+                for url in playlist_urls:
+                        C = C + 1
+                        flv_file = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), name+'-part'+str(C)+'.flv'))
+                        Download(url,flv_file)
+                stream = 'true'            
+        if (flv_file != None and os.path.isfile(flv_file)):
+                finalurl =str(flv_file)
+        return stream
 
 
 """
@@ -176,6 +278,7 @@ elif mode==3:
 elif mode==4:
         listEpisodes(url)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
+        xbmcplugin.endOfDirectory(handle=int(sys.argv[1]),cacheToDisc=True)
 elif mode==5:
         getVideoURL(url)
 
