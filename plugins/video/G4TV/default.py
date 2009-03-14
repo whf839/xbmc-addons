@@ -5,6 +5,7 @@
 # Author: stacked < http://xbmc.org/forum/member.php?u=26908 >
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
+THUMBNAIL_PATH = os.path.join( os.getcwd(), "thumbnails" )
 
 def showRoot():	
 		# li=xbmcgui.ListItem("Attack of the Show")
@@ -105,7 +106,7 @@ def newShow(url,page):
 			x=x+1
 			if (x==20):
 				break
-	li=xbmcgui.ListItem(xbmc.getLocalizedString( 30004 ))
+	li=xbmcgui.ListItem(xbmc.getLocalizedString( 30004 ),iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'next.png'))
 	u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(thisurl)+"&page="+str(int(page)+1)
 	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 		
