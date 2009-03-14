@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings> <!--  Finnish 13.3.2009 -->
+<strings> <!--  Finnish 14.3.2009 -->
     <!-- settings labels -->
-    <string id="30000">Esittelyn kuvanlaatu</string>
+    <string id="30000">Kuvanlaatu</string>
     <string id="30001">Normaali</string>
     <string id="30002">480p</string>
     <string id="30003">720p</string>
@@ -12,7 +12,7 @@
     <string id="30031">Katso</string>
     <string id="30032">Lataa</string>
     <string id="30033">Lataa &amp; Tallenna</string>
-    <string id="30040">- Latauskansio</string>
+    <string id="30040">Latauspolku</string>
     <string id="30050">Postikoodi, kaupunki tai Valtio</string>
     <string id="30060">Hakupaikka</string>
     <string id="30070">Näytä elokuvat</string>

@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings> <!--          Finnish 10.3.2009 -->
+<strings> <!--          Finnish 14.3.2009 -->
     <string id="30000">Toistotapa (wmv-esittelyjä ei ladata)</string>
     <string id="30001">Katso</string>
     <string id="30002">Lataa</string>
     <string id="30003">Lataa &amp; tallenna</string>
-    <string id="30010">- Videoiden tallennuspolku</string>
+    <string id="30010">Latauspolku</string>
     <string id="30020">Sisällytä aikuis-sisältö</string>
     <string id="30030">Videoiden määrä sivua kohti:</string>
     <string id="30040">Sivuja yhteensä</string>

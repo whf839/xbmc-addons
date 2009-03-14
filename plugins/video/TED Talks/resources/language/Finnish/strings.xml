@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-    <strings>  <!--  28.2.2009 Finnish   -->
+    <strings>  <!--  14.3.2009 Finnish   -->
     <string id="30000">TED Talks - Ideas Worth Spreading</string>
 
     <string id="30001">Haku</string>
@@ -28,7 +28,7 @@
     <string id="30074">Latausmuoto</string>
     <string id="30076">Tilapäinen</string>
     <string id="30077">Tallenna</string>
-    <string id="30075">- Tallennuskansio</string>
+    <string id="30075">- Latauspolku</string>
 	
 	<!--Addons upgrader-->	
 		<!-- Update messages -->

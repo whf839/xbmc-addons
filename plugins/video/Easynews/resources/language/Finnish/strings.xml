@@ -1,14 +1,14 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings>
-
-	<!-- account labels -->    <string id="30000">Käyttäjänimi</string>
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>   <!--  14.3.2009 Finnish   -->
+    <!-- account labels -->
+    <string id="30000">Käyttäjänimi</string>
     <string id="30001">Salasana</string>
 
     <!-- settings labels -->
-    <string id="30030">Latausmuoto</string>
+    <string id="30030">Toistotapa</string>
     <string id="30031">Tilapäinen</string>
     <string id="30032">Tallenna</string>
-    <string id="30040">- Tallennuskansio</string>
+    <string id="30040">Latauspolku</string>
 
     <!-- messages -->
     <string id="30500">Ladataan: %s</string>
