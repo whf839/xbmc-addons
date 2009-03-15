@@ -771,9 +771,11 @@ class CCurrentList:
         self.cfg = filename
         if self.getFileExtension(self.cfg) == 'cfg' and lItem != None:
             try:
-                lItem.infos_values[lItem.infos_names.index(strin)] = self.cfg
+                lItem.infos_values[lItem.infos_names.index('cfg')] = self.cfg
             except:
                 self.context = 'start'
+                if enable_debug:
+                    xbmc.output('Context set to "start"')
                 lItem.infos_names.append('cfg')
                 lItem.infos_values.append(self.cfg)
         del self.items[:]
@@ -857,6 +859,8 @@ class CCurrentList:
                     elif key == 'item_url_build':
                         rule_tmp.url_build = value
                         if (rule_tmp.discard != '' and self.context.find(rule_tmp.discard) != -1) or (rule_tmp.context != '' and self.context.find(rule_tmp.context) == -1):
+                            if enable_debug:
+                                xbmc.output('Disacarding rule: ' + str(rule_tmp.infos))
                             continue
                         self.rules.append(rule_tmp)
                     elif key == 'title':
