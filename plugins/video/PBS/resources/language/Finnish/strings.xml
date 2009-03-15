@@ -1,7 +1,23 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings>   <!--  18.1.2009 Finnish   -->
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>   <!--  15.3.2009 Finnish   -->
     <string id="30000">Käytä DVD Player-soitinta</string>
     <string id="30001">Lataa ja toista video</string>
     <string id="30002">Latauspolku</string>
     <string id="30003">Kysy latauksesta ennen toistoa</string>
+
+    <string id="30004">Seuraava sivu</string>
+    <string id="30005">Mitä haluat tehdä?</string>
+    <string id="30006">Poistu</string>
+    <string id="30007">Katso</string>
+
+    <string id="30015">Videota ei ole saatavilla!</string>
+    <string id="30016">Etsi ohjelmaa osoitteesta:</string>
+    <string id="30017">Odota hetki</string>
+    <string id="30018">Ladataan päivitystä...</string>
+    <string id="30019">Päivitys saatavilla</string>
+    <string id="30020">Lisäkkeeseen on saatavilla päivitys, suoritetaanko päivitys?</string>
+    <string id="30021">Nykyinen Versio:</string>
+    <string id="30022">uusi Versio:</string>
+    <string id="30023">Päivitys valmis</string>
+    <string id="30024">Käynnistä lisäke nyt uudelleen.</string>
 </strings>
