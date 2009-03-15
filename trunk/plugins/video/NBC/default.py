@@ -1,12 +1,16 @@
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, sys, os, md5
 from elementtree.ElementTree import *
+from pyamf.remoting.client import RemotingService
 
 __plugin__ = "NBC"
 __authors__ = "BlueCop"
 __credits__ = ""
-__version__ = "0.1"
+__version__ = "0.2"
 
-
+baseurl = 'http://www.nbc.com/'
+liburl = 'http://www.nbc.com/Video/library/'
+fullurl = 'http://www.nbc.com/Video/library/full-episodes/'
+weburl = 'http://www.nbc.com/Video/library/webisodes/'
 showsxml_url = 'http://www.nbc.com/assets/xml/video/shows.xml'
 
 def getHTML( url ):
@@ -24,8 +28,49 @@ def getHTML( url ):
         else:
                 return link
 
+def processHTML( url ):
+        html = getHTML(url)
+        match=re.compile('<!-- debug info --><a href="(.+?)" title="(.+?)"><img src="(.+?)"').findall(html)
+        return match
+
+def processFULL ( url ):
+        html = getHTML(url)
+        match=re.compile('<a class="list_full_det_thumb" href="(.+?)" title="(.+?)"><img src="(.+?)"').findall(html)
+        return match
 
 def CATEGORIES():
+        addDir('Full Episodes',url,1,thumb)
+        addDir('Full Episodes',url,1,thumb)
+
+def SHOWS():
+        xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
+        shows = processHTML(fullurl)
+        for url, name, thumb in shows:
+                name = name.replace('&amp;','&').replace('&#039;',"'")
+                addDir(name,url,1,thumb)
+
+def EPISODES(url):
+        episodes = processFULL(url)
+        for url, name, thumb in episodes:
+                name = name.replace('&amp;','&').replace('&#039;',"'")
+                urlsplit = url.split('?vid=')
+                url = urlsplit[1]
+                addDir(name,url,2,thumb)
+
+def PLAY(episodeGuid,name):
+        gw = RemotingService(url='http://video.nbcuni.com/amfphp/gateway.php',
+                     referer='http://www.nbc.com/assets/video/3-0/swf/NBCVideoApp.swf',
+                     user_agent='Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7)',
+                     )
+        ClipAll_service = gw.getService('getClipInfo.getClipAll')
+        geo  ="US"
+        num1 = "632"
+        num2 = "-1"
+        response = ClipAll_service(episodeGuid,geo,num1,num2)
+        url = 'http://video.nbcuni.com/' + response['clipurl']
+        PLAYRTMP(url, name)
+
+def SHOWSINT():        
         xbmcplugin.setContent(int(sys.argv[1]), 'tvshows')
         showsxml=getHTML(showsxml_url)
         xml = ElementTree(fromstring(showsxml))
@@ -35,7 +80,7 @@ def CATEGORIES():
                 else:
                         pass
                 
-def INDEX(episodesurl):
+def EPISODESINT(episodesurl):
         try:
                 xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
                 episodesurl = episodesurl + 'episodes/init.xml'
@@ -54,38 +99,40 @@ def INDEX(episodesurl):
         except:
                 addDir('No Episodes','',0,'')
 
-def VIDEOLINKS(pid,name):
+def PLAYINT(pid,name):
         url = 'http://video.nbcuni.com/nbcrewind2/smil/' + pid + '.smil'
+        PLAYRTMP(url, name)
+
+
+def PLAYRTMP(url, name):
         rtmpurl = 'rtmp://cp37307.edgefcs.net:80/ondemand?'
         swfUrl = "http://www.nbc.com/assets/video/3-0/swf/NBCVideoApp.swf"
+        link = str(getHTML(url))
+        match=re.compile('<video src="(.+?)"').findall(link)
         if (xbmcplugin.getSetting("quality") == '0'):
                 dia = xbmcgui.Dialog()
                 ret = dia.select('Select Quality Level?', ['High','Low','Exit'])
                 if (ret == 2):
                         return
-        else:
-                ret = ''
-        item=xbmcgui.ListItem(name, iconImage='', thumbnailImage='')
-        item.setInfo( type="Video",infoLabels={ "Title": name})
-        item.setProperty("SWFPlayer", swfUrl)
-        if xbmcplugin.getSetting("dvdplayer") == "true":
-                player_type = xbmc.PLAYER_CORE_DVDPLAYER
-        else:
-                player_type = xbmc.PLAYER_CORE_MPLAYER        
-        link = str(getHTML(url))
-        match=re.compile('<video src="(.+?)"').findall(link)
+        else:        
+                ret = None
         for playpath in match:
                 playpath = playpath.replace('.flv','')
                 if '_0700' in playpath and (xbmcplugin.getSetting("quality") == '1' or (ret == 0)):
+                        item=xbmcgui.ListItem(name, iconImage='', thumbnailImage='')
+                        item.setInfo( type="Video",infoLabels={ "Title": name})
+                        item.setProperty("SWFPlayer", swfUrl)
                         item.setProperty("PlayPath", playpath)
-                        ok=xbmc.Player(player_type).play(rtmpurl, item)
-                        return
                 elif '_0500' in playpath and (xbmcplugin.getSetting("quality") == '2') or (ret == 1):
+                        item=xbmcgui.ListItem(name, iconImage='', thumbnailImage='')
+                        item.setInfo( type="Video",infoLabels={ "Title": name})
+                        item.setProperty("SWFPlayer", swfUrl)
                         item.setProperty("PlayPath", playpath)
-                        ok=xbmc.Player(player_type).play(rtmpurl, item)
-                        return
-
-                
+        if xbmcplugin.getSetting("dvdplayer") == "true":
+                player_type = xbmc.PLAYER_CORE_DVDPLAYER
+        else:
+                player_type = xbmc.PLAYER_CORE_MPLAYER
+        ok=xbmc.Player(player_type).play(rtmpurl, item)
 
 
         
@@ -151,16 +198,24 @@ print "\n\n\n\n\n\n\nstart of NBC plugin\n\n\n\n\n\n"
 
 if mode==None or url==None or len(url)<1:
         print ""
-        CATEGORIES()
-        #_listShows()
+        if (xbmcplugin.getSetting("international") == 'true'):
+                SHOWSINT()
+        else:
+                SHOWS()
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 elif mode==1:
         print ""+url
-        INDEX(url)
-        #_listEpisodes(url)        
+        if (xbmcplugin.getSetting("international") == 'true'):
+                EPISODESINT(url)
+        else:
+                EPISODES(url)      
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 elif mode==2:
         print ""+url
-        VIDEOLINKS(url,name)
-        #_findEpisode(url)
+        if (xbmcplugin.getSetting("international") == 'true'):
+                PLAYINT(url,name)
+        else:
+                PLAY(url,name)
+elif mode==3:
+        print ""+url
 
