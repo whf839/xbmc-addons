@@ -860,7 +860,7 @@ class CCurrentList:
                         rule_tmp.url_build = value
                         if (rule_tmp.discard != '' and self.context.find(rule_tmp.discard) != -1) or (rule_tmp.context != '' and self.context.find(rule_tmp.context) == -1):
                             if enable_debug:
-                                xbmc.output('Disacarding rule: ' + str(rule_tmp.infos))
+                                xbmc.output('Discarding rule: ' + str(rule_tmp.infos))
                             continue
                         self.rules.append(rule_tmp)
                     elif key == 'title':
