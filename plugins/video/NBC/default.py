@@ -49,7 +49,7 @@ def INDEX(episodesurl):
                         pid = smallthumb.replace('http://video.nbc.com/nbcrewind2/thumb/','').replace('_large.jpg','')
                         finalname = epiNumber + ' - ' + name
                         mode = 2
-                        addDir(finalname,pid,2,smallthumb,plot)
+                        addLink(finalname,pid,2,smallthumb,plot)
 
         except:
                 addDir('No Episodes','',0,'')
@@ -106,6 +106,15 @@ def get_params():
                                 param[splitparams[0]]=splitparams[1]
                                 
         return param
+
+def addLink(name,url,mode,iconimage,plot=''):
+        u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
+        ok=True
+        liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
+        liz.setInfo( type="Video", infoLabels={ "Title": name,
+                                                "plot": plot} )
+        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
+        return ok
 
 
 def addDir(name,url,mode,iconimage,plot=''):
