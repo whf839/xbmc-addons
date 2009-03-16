@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <string id="30000">Use DVD Player instead of regular player</string>
+	<string id="30001">Ask</string>
+	<string id="30002">High</string>
+	<string id="30003">Low</string>
+	<string id="30004">Default Quality</string>
+	<string id="30005">Clip Expired</string>
+	<string id="30006">Select Quality Level?</string>
+	<string id="30007">Exit</string>
+</strings>
