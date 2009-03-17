@@ -39,7 +39,7 @@ def showCategories():
 		p=re.compile('"http://www.nba.com/media/(.+?).gif"')
 		match=p.findall(a)
 		for thumb in match:
-			url = 'http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/teams/video_nba_'+nba[x].upper()+'_tab1.txt'
+			url = 'http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/teams/video_nba_'+nba[x].upper()+'_tab1_page1.txt'
 			name=teams[x]
 			if (nba[x] == 'noh'):
 				nba[x] = 'nor'
@@ -60,7 +60,7 @@ def showCategories2():
 		p=re.compile('"http://www.nba.com/media/(.+?).gif"')
 		match=p.findall(a)
 		for thumb in match:
-			url = 'http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/teams/video_nba_'+nba[x].upper()+'_tab2.txt'
+			url = 'http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/teams/video_nba_'+nba[x].upper()+'_tab2_page1.txt'
 			name=teams[x]
 			if (nba[x] == 'noh'):
 				nba[x] = 'nor'
@@ -75,7 +75,7 @@ def showList(url,page):
 		f=urllib2.urlopen(url)
 		a=f.read()
 		f.close()
-		p=re.compile('<img src="(.+?)"><span class="nbaSpanOverlay"></span></div></a><a href="javascript:changePlaylist(''(.+?)'');" class="nbaVideoGridContentHeader">(.+?)</a><div class="nbaVideoGridTextBlock">(.+?)</div>')
+		p=re.compile('<div class="nbaVideoImageWrapper"><img src="(.+?)"><span class="nbaSpanOverlay"></span></div></a><a href="javascript:changePlaylist(''(.+?)'');" class="nbaVideoGridContentHeader">(.+?)</a><div class="nbaVideoGridTextBlock">(.+?)</div>')
 		URLS=p.findall(a)
 		x=0
 		for thumb, url, url2, name, info in URLS:
