@@ -294,8 +294,8 @@ class GUI( module ):
             for forecast in forecasts:
                 listitem = xbmcgui.ListItem( forecast[ 0 ] )
                 listitem.setProperty( "icon", forecast[ 1 ] )
-                listitem.setProperty( "brief", forecast[ 2 ] )
-                listitem.setProperty( "temp", forecast[ 3 ] )
+                listitem.setProperty( "temp", forecast[ 2 ] )
+                listitem.setProperty( "brief", forecast[ 3 ] )
                 listitem.setProperty( "feels", forecast[ 4 ] )
                 listitem.setProperty( "precip", forecast[ 5 ] )
                 #listitem.setProperty( "dew", forecast[ 6 ] )

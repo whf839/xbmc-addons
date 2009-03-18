@@ -1717,7 +1717,7 @@
                                 <align>center</align>
                                 <aligny>center</aligny>
                                 <wrapmultiline>true</wrapmultiline>
-                                <label>$INFO[ListItem.Property(brief)]&#10;[B]$INFO[ListItem.Property(temp)][/B]</label>
+                                <label>[B]$INFO[ListItem.Property(temp)][/B]&#10;$INFO[ListItem.Property(brief)]</label>
                             </control>
                             <control type="label">
                                 <posx>270</posx>
@@ -1835,7 +1835,7 @@
                                 <align>center</align>
                                 <aligny>center</aligny>
                                 <wrapmultiline>true</wrapmultiline>
-                                <label>$INFO[ListItem.Property(brief)]&#10;[B]$INFO[ListItem.Property(temp)][/B]</label>
+                                <label>[B]$INFO[ListItem.Property(temp)][/B]&#10;$INFO[ListItem.Property(brief)]</label>
                             </control>
                             <control type="label">
                                 <posx>270</posx>
