@@ -21,7 +21,7 @@ class _Info:
 
 class Main:
     # base urls
-    BASE_THUMBNAIL_URL = u"http://farm%s.static.flickr.com/%s/%s_%s_m.jpg" 
+    BASE_THUMBNAIL_URL = u"http://farm%s.static.flickr.com/%s/%s_%s%s.jpg" 
     BASE_ORIGINAL_PIC_URL = u"http://farm%s.static.flickr.com/%s/%s_%s_o.%s"
 
     # base paths
@@ -41,6 +41,8 @@ class Main:
         self.settings[ "privacy_filter" ] = ( 1, 2, 3, 4, 5, )[ int( xbmcplugin.getSetting( "privacy_filter" ) ) ]
         self.settings[ "safe_search" ] = ( 1, 2, 3, )[ int( xbmcplugin.getSetting( "safe_search" ) ) ]
         self.settings[ "perpage" ] = ( 10, 15, 20, 25, 30, 40, 50, 75, 100, )[ int( xbmcplugin.getSetting( "perpage" ) ) ]
+        self.settings[ "thumb_size" ] = ( "", "_m", )[ xbmcplugin.getSetting( "thumb_size" ) == "false" ]
+        self.settings[ "photo_size" ] = xbmcplugin.getSetting( "photo_size" ) == "true"
         self.settings[ "full_details" ] = xbmcplugin.getSetting( "full_details" ) == "true"
         self.settings[ "fanart_image" ] = xbmcplugin.getSetting( "fanart_image" )
         self.settings[ "advanced_photos_query" ] = False#xbmcplugin.getSetting( "advanced_photos_query" ) == "true"
@@ -130,7 +132,7 @@ class Main:
             contacts = self.client.flickr_photos_getContactsPublicPhotos( user_id=self.args.usernsid, auth_token=self.authtoken, count=100, single_photo=1, include_self=0 )
         if ( contacts[ "stat" ] == "ok" ):
             for contact in contacts[ "photos" ][ "photo" ]:
-                thumbnail_url = self.BASE_THUMBNAIL_URL % ( contact[ "farm" ], contact[ "server" ], contact[ "id" ], contact[ "secret" ], )
+                thumbnail_url = self.BASE_THUMBNAIL_URL % ( contact[ "farm" ], contact[ "server" ], contact[ "id" ], contact[ "secret" ], self.settings[ "thumb_size" ], )
                 # set the default icon
                 icon = "DefaultFolderBig.png"
                 # hack to correct \u0000 characters, TODO: find why unicode() isn't working
@@ -273,7 +275,7 @@ class Main:
                 # get our previous and/or next page items
                 items = self._get_pages( xbmc.getLocalizedString( 30906 ), page, pages, perpage, total )
                 # set our thumbnail for queries
-                self.query_thumbnail = self.BASE_THUMBNAIL_URL % ( items_dict[ 0 ][ "farm" ], items_dict[ 0 ][ "server" ], items_dict[ 0 ][ "id" ], items_dict[ 0 ][ "secret" ], )
+                self.query_thumbnail = self.BASE_THUMBNAIL_URL % ( items_dict[ 0 ][ "farm" ], items_dict[ 0 ][ "server" ], items_dict[ 0 ][ "id" ], items_dict[ 0 ][ "secret" ], self.settings[ "thumb_size" ], )
                 # enumerate through the list of pictures and add the item to the media list
                 for item in items_dict:
                     description = ""
@@ -281,13 +283,13 @@ class Main:
                         info = self.client.flickr_photos_getInfo( auth_token=self.authtoken, photo_id=item[ "id" ], secret=item[ "secret" ] )
                         exec 'description=u"%s"' % ( info[ "photo" ][ "description" ][ "_content" ].replace( '"', '\\"' ).replace( '\n', '\\n' ).replace( '\r', '\\r' ), )
                     # create the thumbnail url and if no original format available, we set our url for something to view when clicked
-                    url = thumbnail_url = self.BASE_THUMBNAIL_URL % ( item[ "farm" ], item[ "server" ], item[ "id" ], item[ "secret" ], )
+                    url = thumbnail_url = self.BASE_THUMBNAIL_URL % ( item[ "farm" ], item[ "server" ], item[ "id" ], item[ "secret" ], self.settings[ "thumb_size" ], )
                     # set the default icon
                     icon = "DefaultPicture.png"
                     # if this is a pro account and original format is available create a url to it
                     if ( "originalformat" in item ):
                         url = self.BASE_ORIGINAL_PIC_URL % ( item[ "farm" ], item[ "server" ], item[ "id" ], item[ "originalsecret" ], item[ "originalformat" ], )
-                    else:
+                    elif ( self.settings[ "photo_size" ] ):
                         # original size not found, so let's get the best available
                         sizes = self.client.flickr_photos_getSizes( photo_id=item[ "id" ] )
                         # if successful set new url

@@ -6,12 +6,14 @@
     <setting id="safe_search" type="enum" lvalues="30031|30032|30033" label="30030" default="0" />
     <setting id="saved_searches" type="enum" values="10|20|30|40" label="30150" default="0" />
     <setting id="perpage" type="enum" values="10|15|20|25|30|40|50|75|100" label="30040" default="3" />
+    <setting id="thumb_size" type="bool" label="30180" default="false" />
+    <setting id="photo_size" type="bool" label="30190" default="false" />
     <setting id="full_details" type="bool" visible="false" label="30050" default="false" />
-    <setting id="upload_path" type="folder" source="files" enable="!eq(-7,)" option="writeable" label="30010" default="" />
+    <setting id="upload_path" type="folder" source="files" enable="!eq(-9,)" option="writeable" label="30010" default="" />
     <setting type="sep" />
     <setting id="fanart_image" type="pictures" label="30170" default="" />
     <setting type="sep" />
-    <setting type="action" label="30911" enable="!eq(-11,)" option="close" default="RunPlugin(plugin://pictures/flickr/?authorize=True)" />
+    <setting type="action" label="30911" enable="!eq(-13,)" option="close" default="RunPlugin(plugin://pictures/flickr/?authorize=True)" />
     <!--setting id="advanced_photos_query" type="bool" label="30060" default="false" />
     <setting id="photos_query_userid" type="text" enable="eq(-1,true)" label="30070" default="" />
     <setting id="photos_query_tags" type="text" enable="eq(-2,true)" label="30080" default="" />

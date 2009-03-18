@@ -121,7 +121,7 @@ class Main:
                                     ( xbmc.getLocalizedString( 30951 ), "flickr_photos_getRecent", False, "", "", 0, "", False, ),
                                     ( xbmc.getLocalizedString( 30952 ), "flickr_people_getPublicPhotos", True, "", "", 0, "", False, ),
                                     ( xbmc.getLocalizedString( 30953 ), "flickr_interestingness_getList", False, "", "", 0, "", False, ),
-                                    ( xbmc.getLocalizedString( 30954 ), "flickr_favorites_getPublicList", True, "", "", 0, "", False, ),
+                                    ( ( xbmc.getLocalizedString( 30961 ), xbmc.getLocalizedString( 30954 ), )[ self.authtoken == "" ], "flickr_favorites_getPublicList", True, "", "", 0, "", False, ),
                                     ( xbmc.getLocalizedString( 30955 ), "flickr_photos_getContactsPublicPhotos", True, "", "", 0, "", False, ),
                                     ( xbmc.getLocalizedString( 30956 ), "flickr_people_getPublicGroups", True, "", "", 0, "", False, ),
                                     ( xbmc.getLocalizedString( 30959 ), "presets_groups", False, "", "", 0, "", False, ),
