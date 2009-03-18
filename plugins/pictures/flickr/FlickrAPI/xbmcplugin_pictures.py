@@ -287,9 +287,16 @@ class Main:
                     # if this is a pro account and original format is available create a url to it
                     if ( "originalformat" in item ):
                         url = self.BASE_ORIGINAL_PIC_URL % ( item[ "farm" ], item[ "server" ], item[ "id" ], item[ "originalsecret" ], item[ "originalformat" ], )
+                    else:
+                        # original size not found, so let's get the best available
+                        sizes = self.client.flickr_photos_getSizes( photo_id=item[ "id" ] )
+                        # if successful set new url
+                        if ( sizes[ "stat" ] == "ok" ):
+                            url = sizes[ "sizes" ][ "size" ][ -1 ][ "source" ]
                     # hack to correct \u0000 characters, TODO: find why unicode() isn't working
                     exec 'title=u"%s"' % ( ( item[ "title" ], item[ "ownername" ], )[ item[ "title" ] == "" ].replace( '"', '\\"' ), )
                     exec 'author=u"%s"' % ( item[ "ownername" ].replace( '"', '\\"' ), )
+                    ## TODO: set sizes and other info
                     # add item to our _Info() object list
                     items += [ _Info( title=title, author=author, description=description, datetaken=item[ "datetaken" ], url=url, icon=icon, thumbnail_url=thumbnail_url, isFolder=False ) ]
         except:
