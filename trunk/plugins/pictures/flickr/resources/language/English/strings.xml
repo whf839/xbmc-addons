@@ -21,15 +21,16 @@
     <!-- Category strings -->
     <string id="30950">My Photosets</string>
     <string id="30951">Recently Uploaded</string>
-    <string id="30952">My Photos</string>
+    <string id="30952">My Public Photos</string>
     <string id="30953">Interestingness</string>
-    <string id="30954">My Favorites</string>
+    <string id="30954">My Public Favorites</string>
     <string id="30955">My Contacts</string>
     <string id="30956">My Groups</string>
     <string id="30957">Search Groups...</string>
     <string id="30958">Search Photos...</string>
     <string id="30959">Search Groups</string>
     <string id="30960">Search Photos</string>
+    <string id="30961">My Favorites</string>
 
     <!-- Plugin settings strings -->
     <string id="30000">Flickr screen name or e-mail address</string>
@@ -49,6 +50,8 @@
     <string id="30150">Number of searches to save</string>
     <string id="30160">Interestingness date (optional)</string>
     <string id="30170">Fanart image</string>
+    <string id="30180">Use large thumbnail</string>
+    <string id="30190">View large photo if original is not available [I](slow performance)[/I]</string>
 
     <!-- Advanced search strings -->
     <string id="30060">Advanced photo search</string>
