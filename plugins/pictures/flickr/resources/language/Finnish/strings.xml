@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings> <!--  12.3.2009 Finnish   -->
+<strings> <!--  19.3.2009 Finnish   -->
     <!-- Plugin strings -->
     <string id="30900">Flickr-lisäke</string>
     <string id="30901">Käyttäjän Id-tunnnus on sopimaton!</string>
@@ -17,11 +17,12 @@
     <string id="30913">Peruuta</string>
     <string id="30914">Valtuutettu</string>
     <string id="30915">Ota FTP-yhteys xboksiin ja nouda q:\\xbmc.log&#10;tiedosto.'Etsi XBMC Flicker valtuutusosoite:'&#10;Kopioi tämä nettiselaimeen ja varmenna.</string>
+    <string id="30916">Käyttäjänimi tai sähköpostiosoite</string>
 
     <!-- Category strings -->
     <string id="30950">Omat kuvakokoelmat</string>
     <string id="30951">Uusimmat</string>
-    <string id="30952">Omat kuvat</string>
+    <string id="30952">Omat julkiset kuvat</string>
     <string id="30953">Kiinnostavat</string>
     <string id="30954">Omat suosikit</string>
     <string id="30955">Omat yhteystiedot</string>
@@ -30,6 +31,9 @@
     <string id="30958">Etsi kuvia...</string>
     <string id="30959">Etsi ryhmiä</string>
     <string id="30960">Etsi kuvia</string>
+    <string id="30961">Omat suosikit</string>
+    <string id="30962">Etsi ihmistä...</string>
+    <string id="30963">Etsi ihmistä</string>
 
     <!-- Plugin settings strings -->
     <string id="30000">Flickr näyttönimi tai sähköpostiosoite</string>
@@ -49,6 +53,8 @@
     <string id="30150">Talletettavien hakujen määrä</string>
     <string id="30160">Haluttu päivämäärä (valinnainen)</string>
     <string id="30170">Fanitaide kuva</string>
+    <string id="30180">Käytä suuria kuvakkeita</string>
+    <string id="30190">Näytä suuri kuva jos alkuperäistä ei ole saatavilla [I](hidas suoritus)[/I]</string>
 
     <!-- Advanced search strings -->
     <string id="30060">Kuvien haun lisäasetukset</string>
@@ -67,7 +73,7 @@
     <string id="30116">kuvat ja 'muut'</string>
     <string id="30117">kuvat, ruutukaappaukset ja 'muut' (kaikki)</string>
     <string id="30120">- Koneen tunnisteet (valinnainen)</string>
-    <string id="30130">&#32;&#32;- Konnen tunniste muoto</string>
+    <string id="30130">&#32;&#32;- Koneen tunniste muoto</string>
     <string id="30131">Jokin</string>
     <string id="30132">Kaikki</string>
     <string id="30140">Ryhmän Id (valinnainen)</string>
