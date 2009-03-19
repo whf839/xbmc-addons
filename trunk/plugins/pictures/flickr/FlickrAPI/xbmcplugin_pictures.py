@@ -46,6 +46,7 @@ class Main:
         self.settings[ "full_details" ] = xbmcplugin.getSetting( "full_details" ) == "true"
         self.settings[ "fanart_image" ] = xbmcplugin.getSetting( "fanart_image" )
         self.settings[ "advanced_photos_query" ] = False#xbmcplugin.getSetting( "advanced_photos_query" ) == "true"
+        self.save_preset = False
         """
         self.settings[ "photos_query_userid" ] = xbmcplugin.getSetting( "photos_query_userid" )
         self.settings[ "photos_query_tags" ] = xbmcplugin.getSetting( "photos_query_tags" )
@@ -73,7 +74,7 @@ class Main:
             if ( items is None ): raise
             ok, total = self._fill_media_list( items )
             # if there were photos and this was a search ask to save result as a preset
-            if ( ok and total and self.args.issearch ):
+            if ( ok and total and self.args.issearch and self.save_preset ):
                 self.save_as_preset()
         except:
             # oops print error message
@@ -100,6 +101,7 @@ class Main:
         url += u'&prevpage=%d' % kwargs[ "prevpage" ]
         url += u'&pq=%s' % repr( quote_plus( self.args.pq ) )
         url += u'&gq=%s' % repr( quote_plus( self.args.gq ) )
+        url += u'&uq=%s' % repr( quote_plus( self.args.uq ) )
         url += u'&issearch=%d' % self.args.issearch
         url += u'&update_listing=%d' % kwargs[ "update_listing" ]
         return url
@@ -197,7 +199,7 @@ class Main:
         # if keyboard was cancelled or no query entered return None (cancel)
         if ( self.args.pq == "" and not self.settings[ "advanced_photos_query" ] ): return None
         # we need to set the title to our query
-        self.args.title = self.args.pq
+        self.args.title = self.args.pq.title()
         # perform the query
         items_dict = self.client.flickr_photos_search( text=self.args.pq, auth_token=self.authtoken, per_page=self.settings[ "perpage" ], page=self.args.page, user_id=user_id, tags=tags, tag_mode=tag_mode, content_type=content_type, machine_tags=machine_tags, machine_tag_mode=machine_tag_mode, group_id=group_id, extras=u"date_upload,date_taken,owner_name,original_format" )
         return self._set_pictures( items_dict[ "stat" ] == "ok", items_dict[ "photos" ][ "photo" ], self.args.page, items_dict[ "photos" ][ "pages" ], items_dict[ "photos" ][ "perpage" ], items_dict[ "photos" ][ "total" ] )
@@ -214,27 +216,51 @@ class Main:
         items = []
         # perform the query
         groups = self.client.flickr_groups_search( text=self.args.gq, auth_token=self.authtoken, per_page=self.settings[ "perpage" ], page=self.args.page )
-        if ( groups[ "stat" ] == "ok" ):
-            # get our previous and/or next page item
-            items = self._get_pages( xbmc.getLocalizedString( 30905 ), groups[ "groups" ][ "page" ], groups[ "groups" ][ "pages" ], groups[ "groups" ][ "perpage" ], groups[ "groups" ][ "total" ] )
-            self.query_thumbnail = "DefaultFolderBig.png"
-            # enumerate through and add the group to our _Info object
-            for group in groups[ "groups" ][ "group" ]:
-                # doesn't return much
-                #info = self.client.flickr_groups_getInfo( group_id=group[ "nsid" ] )
-                # if full details leave thumbnail blank, so a thumb will be created(sloooooooow)
-                #if ( self.settings[ "full_details" ] ):
-                #    thumbnail = ""
-                #else:
-                thumbnail = "DefaultFolderBig.png"
-                # set the default icon
-                icon = "DefaultFolderBig.png"
-                # hack to correct \u0000 characters, TODO: find why unicode() isn't working
-                exec 'title=u"%s"' % ( group[ "name" ].replace( '"', '\\"' ), )
-                # create the callback url
-                url = self._get_url( title=title, userid=self.args.userid, usernsid=self.args.usernsid, photosetid="", photoid="", groupid=group[ "nsid" ], category="flickr_groups_pools_getPhotos", primary="", secret="", server="", photos=0, page=1, prevpage=0, update_listing=False )
-                items += [ _Info( title=title, author=title, description="", url=url, icon=icon, thumbnail_url=thumbnail, isFolder=True ) ]
+        if ( groups[ "stat" ] != "ok" ):
+            return None
+        # we need to set the title to our query
+        self.args.title = self.args.gq.title()
+        # get our previous and/or next page item
+        items = self._get_pages( xbmc.getLocalizedString( 30905 ), groups[ "groups" ][ "page" ], groups[ "groups" ][ "pages" ], groups[ "groups" ][ "perpage" ], groups[ "groups" ][ "total" ] )
+        self.query_thumbnail = "DefaultFolderBig.png"
+        # enumerate through and add the group to our _Info object
+        for group in groups[ "groups" ][ "group" ]:
+            # doesn't return much
+            #info = self.client.flickr_groups_getInfo( group_id=group[ "nsid" ] )
+            # if full details leave thumbnail blank, so a thumb will be created(sloooooooow)
+            #if ( self.settings[ "full_details" ] ):
+            #    thumbnail = ""
+            #else:
+            thumbnail = "DefaultFolderBig.png"
+            # set the default icon
+            icon = "DefaultFolderBig.png"
+            # hack to correct \u0000 characters, TODO: find why unicode() isn't working
+            exec 'title=u"%s"' % ( group[ "name" ].replace( '"', '\\"' ), )
+            # create the callback url
+            url = self._get_url( title=title, userid=self.args.userid, usernsid=self.args.usernsid, photosetid="", photoid="", groupid=group[ "nsid" ], category="flickr_groups_pools_getPhotos", primary="", secret="", server="", photos=0, page=1, prevpage=0, update_listing=False )
+            items += [ _Info( title=title, author=title, description="", url=url, icon=icon, thumbnail_url=thumbnail, isFolder=True ) ]
         return items
+
+    def flickr_users_search( self ):
+        if ( self.args.uq == "" ):
+            # get the users name or email
+            user_id = self._get_keyboard( heading=xbmc.getLocalizedString( 30916 ) )
+            # no entry return None
+            if ( user_id == "" ): return None
+            # find the user Id of the person
+            if ( "@" in user_id ):
+                info = self.client.flickr_people_findByEmail( find_email=user_id )
+            else:
+                info = self.client.flickr_people_findByUsername( username=user_id )
+            # if no user was found return None
+            if ( info[ "stat" ] != "ok" ):
+                return None
+            # set the user query to the actual users id
+            self.args.uq = info[ "user" ][ "id" ]
+            # we need to set the title to our query
+            self.args.title = user_id
+        # now call the actual flickr method
+        return self.flickr_people_getPublicPhotos()
 
     def flickr_favorites_getPublicList( self ):
         if ( self.authtoken ):
@@ -253,7 +279,8 @@ class Main:
         return self._set_pictures( items_dict[ "stat" ] == "ok", items_dict[ "photos" ][ "photo" ], self.args.page, items_dict[ "photos" ][ "pages" ], items_dict[ "photos" ][ "perpage" ], items_dict[ "photos" ][ "total" ] )
 
     def flickr_people_getPublicPhotos( self ):
-        items_dict = self.client.flickr_people_getPublicPhotos( user_id=self.args.userid, auth_token=self.authtoken, safe_search=self.settings[ "safe_search" ], per_page=self.settings[ "perpage" ], page=self.args.page, extras=u"date_upload,date_taken,owner_name,original_format" )
+        userid = ( self.args.userid, self.args.uq, )[ self.args.uq != "" ]
+        items_dict = self.client.flickr_people_getPublicPhotos( user_id=userid, auth_token=self.authtoken, safe_search=self.settings[ "safe_search" ], per_page=self.settings[ "perpage" ], page=self.args.page, extras=u"date_upload,date_taken,owner_name,original_format" )
         return self._set_pictures( items_dict[ "stat" ] == "ok", items_dict[ "photos" ][ "photo" ], self.args.page, items_dict[ "photos" ][ "pages" ], items_dict[ "photos" ][ "perpage" ], items_dict[ "photos" ][ "total" ] )
 
     def flickr_photos_getRecent( self ):
@@ -322,7 +349,7 @@ class Main:
             if ( end_index > total ):
                 end_index = total
             # create the callback url
-            url = self._get_url( title=self.args.title, userid=self.args.userid, usernsid=self.args.usernsid, photosetid=self.args.photosetid, photoid=self.args.photoid, groupid=self.args.groupid, category=self.args.category, primary=self.args.primary, secret=self.args.secret, server=self.args.server, photos=self.args.photos, page=page + 1, prevpage=page, pq=self.args.pq, gq=self.args.gq, issearch=0, update_listing=True )
+            url = self._get_url( title=self.args.title, userid=self.args.userid, usernsid=self.args.usernsid, photosetid=self.args.photosetid, photoid=self.args.photoid, groupid=self.args.groupid, category=self.args.category, primary=self.args.primary, secret=self.args.secret, server=self.args.server, photos=self.args.photos, page=page + 1, prevpage=page, pq=self.args.pq, gq=self.args.gq, uq=self.args.uq, issearch=0, update_listing=True )
             # TODO: set this without path, so the skin controls it
             # we set the thumb so XBMC does not try and cache the next pictures
             thumbnail_url = os.path.join( self.BASE_PLUGIN_THUMBNAIL_PATH, "next.png" )
@@ -337,7 +364,7 @@ class Main:
             # calculate the ending picture
             end_index = start_index + perpage - 1
             # create the callback url
-            url = self._get_url( title=self.args.title, userid=self.args.userid, usernsid=self.args.usernsid, photosetid=self.args.photosetid, photoid=self.args.photoid, groupid=self.args.groupid, category=self.args.category, primary=self.args.primary, secret=self.args.secret, server=self.args.server, photos=self.args.photos, page=page - 1, prevpage=page, pq=self.args.pq, gq=self.args.gq, issearch=0, update_listing=True )
+            url = self._get_url( title=self.args.title, userid=self.args.userid, usernsid=self.args.usernsid, photosetid=self.args.photosetid, photoid=self.args.photoid, groupid=self.args.groupid, category=self.args.category, primary=self.args.primary, secret=self.args.secret, server=self.args.server, photos=self.args.photos, page=page - 1, prevpage=page, pq=self.args.pq, gq=self.args.gq, uq=self.args.uq, issearch=0, update_listing=True )
             # TODO: set this without path, so the skin controls it
             # we set the thumb so XBMC does not try and cache the previous pictures
             thumbnail_url = os.path.join( self.BASE_PLUGIN_THUMBNAIL_PATH, "previous.png" )
@@ -389,6 +416,7 @@ class Main:
 
     def _get_keyboard( self, default="", heading="", hidden=False ):
         """ shows a keyboard and returns a value """
+        self.save_preset = True
         keyboard = xbmc.Keyboard( default, heading, hidden )
         keyboard.doModal()
         if ( keyboard.isConfirmed() ):
@@ -397,11 +425,11 @@ class Main:
 
     def save_as_preset( self ):
         # select correct query
-        query = ( self.args.pq, self.args.gq, )[ self.args.issearch - 1 ]
+        query = ( self.args.pq, self.args.gq, self.args.uq )[ self.args.issearch - 1 ]
         # fetch saved presets
         try:
             # read the queries
-            presets = eval( xbmcplugin.getSetting( "presets_%s" % ( "photos", "groups", )[ self.args.issearch - 1  ], ) )
+            presets = eval( xbmcplugin.getSetting( "presets_%s" % ( "photos", "groups", "users", )[ self.args.issearch - 1  ], ) )
             # if this is an existing search, move it up
             for count, preset in enumerate( presets ):
                 if ( repr( query + " | " )[ : -1 ] in repr( preset ) ):
@@ -414,6 +442,6 @@ class Main:
             # no presets found
             presets = []
         # insert our new search
-        presets = [ query + " | " + self.query_thumbnail ] + presets
+        presets = [ self.args.title + " | " + query + " | " + self.query_thumbnail ] + presets
         # save search query
-        xbmcplugin.setSetting( "presets_%s" % ( "photos", "groups", )[ self.args.issearch - 1  ], repr( presets ) )
+        xbmcplugin.setSetting( "presets_%s" % ( "photos", "groups", "users", )[ self.args.issearch - 1  ], repr( presets ) )

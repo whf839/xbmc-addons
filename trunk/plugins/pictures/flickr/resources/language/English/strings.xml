@@ -17,6 +17,7 @@
     <string id="30913">Cancel</string>
     <string id="30914">Authorized</string>
     <string id="30915">FTP into your xbox and grab q:\\xbmc.log.&#10;'Look for XBMC Flicker authorization url:'. Copy that into&#10;a web browser and authorize.</string>
+    <string id="30916">Username or e-mail</string>
 
     <!-- Category strings -->
     <string id="30950">My Photosets</string>
@@ -31,6 +32,8 @@
     <string id="30959">Search Groups</string>
     <string id="30960">Search Photos</string>
     <string id="30961">My Favorites</string>
+    <string id="30962">Search People...</string>
+    <string id="30963">Search People</string>
 
     <!-- Plugin settings strings -->
     <string id="30000">Flickr screen name or e-mail address</string>

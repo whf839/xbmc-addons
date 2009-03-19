@@ -36,7 +36,7 @@ class Main:
             if ( ok ):
                 ok = self._get_root_categories( sys.argv[ 2 ] == "" )
             # set cache to disc
-            cacheToDisc = ( ok and not ( "category='presets_photos'" in sys.argv[ 2 ] or "category='presets_groups'" in sys.argv[ 2 ] ) )
+            cacheToDisc = ( ok and not ( "category='presets_users'" in sys.argv[ 2 ] or "category='presets_photos'" in sys.argv[ 2 ] or "category='presets_groups'" in sys.argv[ 2 ] ) )
             # send notification we're finished, successfully or unsuccessfully
             xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=ok, cacheToDisc=cacheToDisc )
 
@@ -117,22 +117,26 @@ class Main:
             # default categories
             if ( root ):
                 categories = (
-                                    ( xbmc.getLocalizedString( 30950 ), "flickr_photosets_getList", True, "", "", 0, "", False, ),
-                                    ( xbmc.getLocalizedString( 30951 ), "flickr_photos_getRecent", False, "", "", 0, "", False, ),
-                                    ( xbmc.getLocalizedString( 30952 ), "flickr_people_getPublicPhotos", True, "", "", 0, "", False, ),
-                                    ( xbmc.getLocalizedString( 30953 ), "flickr_interestingness_getList", False, "", "", 0, "", False, ),
-                                    ( ( xbmc.getLocalizedString( 30961 ), xbmc.getLocalizedString( 30954 ), )[ self.authtoken == "" ], "flickr_favorites_getPublicList", True, "", "", 0, "", False, ),
-                                    ( xbmc.getLocalizedString( 30955 ), "flickr_photos_getContactsPublicPhotos", True, "", "", 0, "", False, ),
-                                    ( xbmc.getLocalizedString( 30956 ), "flickr_people_getPublicGroups", True, "", "", 0, "", False, ),
-                                    ( xbmc.getLocalizedString( 30959 ), "presets_groups", False, "", "", 0, "", False, ),
-                                    ( xbmc.getLocalizedString( 30960 ), "presets_photos", False, "", "", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30950 ), "flickr_photosets_getList", True, "", "", "", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30951 ), "flickr_photos_getRecent", False, "", "", "", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30952 ), "flickr_people_getPublicPhotos", True, "", "", "", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30953 ), "flickr_interestingness_getList", False, "", "", "", 0, "", False, ),
+                                    ( ( xbmc.getLocalizedString( 30961 ), xbmc.getLocalizedString( 30954 ), )[ self.authtoken == "" ], "flickr_favorites_getPublicList", True, "", "", "", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30955 ), "flickr_photos_getContactsPublicPhotos", True, "", "", "", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30956 ), "flickr_people_getPublicGroups", True, "", "", "", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30959 ), "presets_groups", False, "", "", "", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30960 ), "presets_photos", False, "", "", "", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30963 ), "presets_users", False, "", "", "", 0, "", False, ),
                                     )
             # photo preset category
             elif ( "category='presets_photos'" in sys.argv[ 2 ] ):
-                categories = self.get_presets()
+                categories = self.get_presets( 0 )
             # group preset category
             elif ( "category='presets_groups'" in sys.argv[ 2 ] ):
-                categories = self.get_presets( True )
+                categories = self.get_presets( 1 )
+            # group preset category
+            elif ( "category='presets_users'" in sys.argv[ 2 ] ):
+                categories = self.get_presets( 2 )
             # fill media list
             ok = self._fill_media_list( categories )
         except:
@@ -141,16 +145,18 @@ class Main:
             ok = False
         return ok
 
-    def get_presets( self, ptype=False ):
+    def get_presets( self, ptype ):
         # set category
-        category = ( "photos", "groups", )[ ptype ]
+        category = ( "photos", "groups", "users", )[ ptype ]
         # initialize our category tuple
         categories = ()
         # add our new search item
-        if ( ptype ):
-            categories += ( ( xbmc.getLocalizedString( 30957 ), "flickr_groups_search", False, "", "", 2, "", False, ), )
-        else:
-            categories += ( ( xbmc.getLocalizedString( 30958 ), "flickr_photos_search", False, "", "", 1, "", False, ), )
+        if ( ptype == 0 ):
+            categories += ( ( xbmc.getLocalizedString( 30958 ), "flickr_photos_search", False, "", "", "", 1, "", False, ), )
+        elif ( ptype == 1 ):
+            categories += ( ( xbmc.getLocalizedString( 30957 ), "flickr_groups_search", False, "", "", "", 2, "", False, ), )
+        elif ( ptype == 2 ):
+            categories += ( ( xbmc.getLocalizedString( 30962 ), "flickr_users_search", False, "", "", "", 3, "", False, ), )
         # fetch saved presets
         try:
             # read the queries
@@ -164,16 +170,18 @@ class Main:
         for query in presets:
             try:
                 # set photo query and group query to empty
-                pq = gq = u""
+                pq = gq = uq = u""
                 # set thumbnail
-                thumbnail = query.split( " | " )[ 1 ].encode( "utf-8" )
-                # if this is the group presets set group query else set photo query
-                if ( ptype ):
-                    gq = query.split( " | " )[ 0 ].encode( "utf-8" )
-                else:
-                    pq = query.split( " | " )[ 0 ].encode( "utf-8" )
+                thumbnail = query.split( " | " )[ 2 ].encode( "utf-8" )
+                # set group query, photo query or user query
+                if ( ptype == 0 ):
+                    pq = query.split( " | " )[ 1 ].encode( "utf-8" )
+                elif ( ptype == 1 ):
+                    gq = query.split( " | " )[ 1 ].encode( "utf-8" )
+                elif ( ptype == 2 ):
+                    uq = query.split( " | " )[ 1 ].encode( "utf-8" )
                 # add preset to our dictionary
-                categories += ( ( query.split( " | " )[ 0 ].encode( "utf-8" ), categories[ 0 ][ 1 ], False, pq, gq, 0, thumbnail, False, ), )
+                categories += ( ( query.split( " | " )[ 0 ].encode( "utf-8" ), categories[ 0 ][ 1 ], False, pq, gq, uq, 0, thumbnail, False, ), )
             except:
                 # oops print error message
                 print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
@@ -183,12 +191,12 @@ class Main:
         try:
             ok = True
             # enumerate through the list of categories and add the item to the media list
-            for ( ltitle, method, userid_required, pq, gq, issearch, thumbnail, authtoken_required, ) in categories:
+            for ( ltitle, method, userid_required, pq, gq, uq, issearch, thumbnail, authtoken_required, ) in categories:
                 # if a user id is required for category and none supplied, skip category
                 if ( userid_required and self.user_id == "" ): continue
                 if ( authtoken_required and self.authtoken == "" ): continue
                 # set the callback url with all parameters
-                url = '%s?title=%s&category=%s&userid=%s&usernsid=%s&photosetid=""&photoid=""&groupid=""&primary=""&secret=""&server=""&photos=0&page=1&prevpage=0&pq=%s&gq=%s&issearch=%d&update_listing=%d&' % ( sys.argv[ 0 ], repr( quote_plus( ltitle ) ), repr( method ), repr( self.user_id ), repr( self.user_nsid ), repr( quote_plus( pq ) ), repr( quote_plus( gq ) ), issearch, False, )
+                url = '%s?title=%s&category=%s&userid=%s&usernsid=%s&photosetid=""&photoid=""&groupid=""&primary=""&secret=""&server=""&photos=0&page=1&prevpage=0&pq=%s&gq=%s&uq=%s&issearch=%d&update_listing=%d&' % ( sys.argv[ 0 ], repr( quote_plus( ltitle ) ), repr( method ), repr( self.user_id ), repr( self.user_nsid ), repr( quote_plus( pq ) ), repr( quote_plus( gq ) ), repr( quote_plus( uq ) ), issearch, False, )
                 # check for a valid custom thumbnail for the current method
                 thumbnail = thumbnail or self._get_thumbnail( method )
                 # set the default icon
@@ -200,7 +208,7 @@ class Main:
                 # if user cancels, call raise to exit loop
                 if ( not ok ): raise
             # we do not want to sort queries list
-            if ( "category='presets_photos'" in sys.argv[ 2 ] or "category='presets_groups'" in sys.argv[ 2 ] ):
+            if ( "category='presets_photos'" in sys.argv[ 2 ] or "category='presets_groups'" in sys.argv[ 2 ] or "category='presets_users'" in sys.argv[ 2 ] ):
                 xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
             # set our plugin category
             xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title )
