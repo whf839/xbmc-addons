@@ -71,7 +71,7 @@ def episodes(url):
                 episodes.append(episode)
         return episodes
     
-
+#get smil url from amf server. gateway: http://video.nbcuni.com/amfphp/gateway.php Service: getClipInfo.getClipAll
 def getsmil(vid):
         gw = RemotingService(url='http://video.nbcuni.com/amfphp/gateway.php',
                      referer='http://video.nbcuni.com/embed/player_3-x/External.swf',
@@ -91,7 +91,7 @@ def getsmil(vid):
                 return url
 
 
-#get from amf server congfig. 
+#get rtmp host and app from amf server congfig. gateway: http://video.nbcuni.com/amfphp/gateway.php Service: getConfigInfo.getConfigAll
 def getrtmp():
         #rtmpurl = 'rtmp://cp37307.edgefcs.net:443/ondemand'
         gw = RemotingService(url='http://video.nbcuni.com/amfphp/gateway.php',
