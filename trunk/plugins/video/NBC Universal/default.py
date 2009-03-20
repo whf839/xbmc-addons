@@ -65,10 +65,17 @@ def listEpisodes(url):
         elif cat == 'scifi':
                 episodes = scifi.episodes(show)
         #Add Episode links
+        print episodes
         for url, name, thumbnail in episodes:
                 name = name.replace('&amp;','&').replace('&#039;',"'")
-                urlsplit = url.split('id=')
-                vid = urlsplit[1]
+                if 'id=' in url:
+                        urlsplit = url.split('id=')
+                        vid = urlsplit[1]
+                else:
+                        #urlsplit = url.split('/')
+                        #n = len(urlsplit)
+                        #vid = urlsplit[n-2]
+                        vid = url
                 addLink(name, cat + '<break>' + vid, 3 , thumbnail)
        
 

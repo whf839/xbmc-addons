@@ -29,6 +29,22 @@ def getHTML( url ):
 
 #Process NBC Vid Library page for videos or shows
 def processHTML( url ):
+        items = getHTML(url)
+        #<div id="scet_browse_pager"> <!-- #browse_results -->
+        items = re.sub('\n', '', items)
+        items = re.sub('\t', '', items)
+        topmenu=re.compile('<!-- #video_lib -->.*<div id="scet_browse_pager">').findall(items)[0]
+        match=re.compile('<li><a href="(.+?)" title="(.+?)"><img src="(.+?)" alt="(.+?)" width="80" height="45" /></a><p>').findall(topmenu)
+        shows = []
+        for url, name, thumbnail , name2 in match:
+                show = []
+                show.append(url)
+                show.append(name)
+                show.append(thumbnail)
+                shows.append(show)
+        return shows
+
+def processSHOWFULL( url ):
         html = getHTML(url)
         match=re.compile('<!-- debug info --><a href="(.+?)" title="(.+?)"><img src="(.+?)"').findall(html)
         return match
@@ -39,18 +55,60 @@ def processFULL ( url ):
         match=re.compile('<a class="list_full_det_thumb" href="(.+?)" title="(.+?)"><img src="(.+?)"').findall(html)
         return match
 
+#Get show list
+def processSHOWS(url):
+        url = 'http://www.nbc.com/Video/library/'
+        items = getHTML(url)
+        items = re.sub('\n', '', items)
+        topmenu=re.compile('<h2>Video Library</h2>.*<!-- #video_lib -->').findall(items)[0]
+        topmenu=re.compile('<li><a href="(.+?)">(.+?)</a></li>').findall(topmenu)
+        shows = []
+        for url, sho in topmenu:
+                show = []
+                show.append(url)
+                show.append(sho)
+                show.append('')#Blank thumb
+                shows.append(show)
+        return shows
+
 #returns showlist
 def shows():
-        shows = processHTML(fullurl)
+        shows = processSHOWFULL(fullurl)
+        #shows = shows + processSHOWFULL(weburl)
+        #shows = processSHOWS(liburl)
         return shows
        
 def episodes(url):
-        episodes = processFULL(url)
+        #episodes = processFULL(url)
+        #episodes = processHTML(url)
+        if 'episodes' in url:
+                url = url.split('episodes/')[0] + 'episodes/init.xml'                
+        else:
+                url = url.split('categories/')[0] + 'episodes/init.xml'
+        episodes = episodesxml(url)
         return episodes
 
+def episodesxml(episodesurl):
+        episodesxml = getHTML(episodesurl)
+        xml = ElementTree(fromstring(episodesxml))
+        episodes = []
+        for ep in xml.getroot().findall('episodes/episode'):
+                name = ep.find('epiTitle').text
+                epiNumber = ep.find('epiNumber').text
+                smallthumb = ep.find('epiImage').text
+                plot = ep.find('epiDescription').text
+                pid = smallthumb.replace('http://video.nbc.com/nbcrewind2/thumb/','').replace('_large.jpg','')
+                vid = ep.find('videoID').text
+                finalname = epiNumber + ': ' + name
+                episode = []
+                episode.append(vid)
+                episode.append(finalname)
+                episode.append(smallthumb)
+                episodes.append(episode)
+        return episodes
+
+
 #Sends over AMF the VID with parameters to get smil from AMF gateway
-#need to get gateway sever from config file.
-#need to implement geo lock url check for geo parameter?
 #figure out last 2 parameters. most likely decompile player. 
 def getsmil(vid):
         gw = RemotingService(url='http://video.nbcuni.com/amfphp/gateway.php',
@@ -65,7 +123,7 @@ def getsmil(vid):
         url = 'http://video.nbcuni.com/' + response['clipurl']
         return url
 
-#get from amf server congfig. 
+#get rtmp host and app from amf server congfig. gateway: http://video.nbcuni.com/amfphp/gateway.php Service: getConfigInfo.getConfigAll
 def getrtmp():
         #rtmpurl = 'rtmp://cp37307.edgefcs.net:80/ondemand?'
         gw = RemotingService(url='http://video.nbcuni.com/amfphp/gateway.php',
@@ -96,26 +154,6 @@ def showsxml():
         for sh in xml.getroot().findall('show'):
                 sh.find('name').text
                 sh.find('link').text
-
-                
-def episodesxml(episodesurl):
-        try:
-                xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
-                episodesurl = episodesurl + 'episodes/init.xml'
-                episodesxml=getHTML(episodesurl)
-                xml = ElementTree(fromstring(episodesxml))
-                for ep in xml.getroot().findall('episodes/episode'):
-                        name = ep.find('epiTitle').text
-                        epiNumber = ep.find('epiNumber').text
-                        smallthumb = ep.find('epiImage').text
-                        plot = ep.find('epiDescription').text
-                        pid = smallthumb.replace('http://video.nbc.com/nbcrewind2/thumb/','').replace('_large.jpg','')
-                        finalname = epiNumber + ' - ' + name
-                        mode = 2
-                        addLink(finalname,pid,2,smallthumb,plot)
-
-        except:
-                addDir('No Episodes','',0,'')
 
 def getsmilxml(pid,name):
         url = 'http://video.nbcuni.com/nbcrewind2/smil/' + pid + '.smil'
