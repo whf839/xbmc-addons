@@ -48,7 +48,7 @@ def natureA():
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 			x=x+1
 		if x == 12:
-			li=xbmcgui.ListItem("Next Page", iconImage="DefaultVideo.png", thumbnailImage=os.path.join(IMAGE_DIR, 'next.png'))
+			li=xbmcgui.ListItem(xbmc.getLocalizedString( 30004 ), iconImage="DefaultVideo.png", thumbnailImage=os.path.join(IMAGE_DIR, 'next.png'))
 			u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(title)+"&url="+urllib.quote_plus(thisurl)+"&page="+str(int(page)+1)
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
@@ -91,7 +91,7 @@ def natureB(url,name):
 			x=x+1
 		if (xbmcplugin.getSetting('playlist') == 'true'):	
 			dia = xbmcgui.Dialog()
-			if dia.yesno('PlayList', 'Would you like to stream all the segments at once?'):
+			if dia.yesno(xbmc.getLocalizedString( 30008 ), xbmc.getLocalizedString( 30009 )):
 				if xbmcplugin.getSetting("dvdplayer") == "true":
 					player_type = xbmc.PLAYER_CORE_DVDPLAYER
 				else:
@@ -164,7 +164,7 @@ def frontlineB(url,name):
 						f=urllib2.urlopen(req)
 					except HTTPError, e:
 						dialog = xbmcgui.Dialog()
-						ok = dialog.ok('PBS', 'Sorry, this video is not available.\nFind the program at:\n'+saveurl)
+						ok = dialog.ok('PBS', xbmc.getLocalizedString( 30015 )+'\n'+xbmc.getLocalizedString( 30016 )+'\n'+saveurl)
 						dialog.close()
 						break
 					else:
@@ -232,7 +232,7 @@ def frontlineB(url,name):
 			info=p.findall(a)
 			if len(info) == 0:
 				dialog = xbmcgui.Dialog()
-				ok = dialog.ok('PBS', 'Sorry, this video is not available.\nFind the program at:\n'+saveurl)
+				ok = dialog.ok('PBS', xbmc.getLocalizedString( 30015 )+'\n'+xbmc.getLocalizedString( 30016 )+'\n'+saveurl)
 				dialog.close()
 			x=0
 			playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
@@ -249,7 +249,7 @@ def frontlineB(url,name):
 				playlist.add( url, li )
 		if (xbmcplugin.getSetting('playlist') == 'true'):	
 			dia = xbmcgui.Dialog()
-			if dia.yesno('PlayList', 'Would you like to stream all the segments at once?'):
+			if dia.yesno(xbmc.getLocalizedString( 30008 ), xbmc.getLocalizedString( 30009 )):
 				if xbmcplugin.getSetting("dvdplayer") == "true":
 					player_type = xbmc.PLAYER_CORE_DVDPLAYER
 				else:
@@ -259,7 +259,7 @@ def frontlineB(url,name):
 			playlist.clear()
 		# else:
 			# dialog = xbmcgui.Dialog()
-			# ok = dialog.ok('PBS', 'Sorry, this video is not available.\nFind the program at:\n'+saveurl)
+			# ok = dialog.ok('PBS', xbmc.getLocalizedString( 30015 )+'\n'+xbmc.getLocalizedString( 30016 )+'\n'+saveurl)
 			# dialog.close()
 				
 def novaA():
@@ -289,7 +289,7 @@ def novaA():
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 			x=x+1
 		if x == 5:
-			li=xbmcgui.ListItem("Next Page", iconImage="DefaultVideo.png", thumbnailImage=os.path.join(IMAGE_DIR, 'next.png'))
+			li=xbmcgui.ListItem(xbmc.getLocalizedString( 30004 ), iconImage="DefaultVideo.png", thumbnailImage=os.path.join(IMAGE_DIR, 'next.png'))
 			u=sys.argv[0]+"?mode=5&url="+urllib.quote_plus(thisurl)+"&page="+str(int(page)+1)
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
@@ -311,7 +311,7 @@ def novaB(url, name):
 		x=0
 		if len(links) == 0:
 			dialog = xbmcgui.Dialog()
-			ok = dialog.ok('PBS', 'Sorry, this video is not available.\nURL: '+url)
+			ok = dialog.ok('PBS',xbmc.getLocalizedString( 30015 )+'\nURL: '+url)
 			dialog.close()
 		playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
 		playlist.clear()
@@ -328,7 +328,7 @@ def novaB(url, name):
 			x=x+1
 		if (xbmcplugin.getSetting('playlist') == 'true'):	
 			dia = xbmcgui.Dialog()
-			if dia.yesno('PlayList', 'Would you like to stream all the segments at once?'):
+			if dia.yesno(xbmc.getLocalizedString( 30008 ), xbmc.getLocalizedString( 30009 )):
 				if xbmcplugin.getSetting("dvdplayer") == "true":
 					player_type = xbmc.PLAYER_CORE_DVDPLAYER
 				else:
@@ -352,13 +352,13 @@ def Update(version):
 		if not os.path.isdir( tempDir) :
 			os.makedirs( tempDir )
 		dp = xbmcgui.DialogProgress()       
-		dp.create("Please Wait","Downloading Update...",url)
+		dp.create(xbmc.getLocalizedString( 30017 ), xbmc.getLocalizedString( 30018 ),url)
 		urllib.urlretrieve(url,temp,lambda nb, bs, fs, url=url: _pbhook(nb,bs,fs,url,dp))
 		path = os.path.join( drive,'plugins','Video') 
 		xbmc.executebuiltin("XBMC.Extract("+temp+","+path+")")
 		dp.close()
 		di = xbmcgui.Dialog()
-		ok = di.ok('Update Complete', 'Restart this plugin to take effect.')
+		ok = di.ok(xbmc.getLocalizedString( 30023 ), xbmc.getLocalizedString( 30024 ))
 		
 	def _pbhook(numblocks, blocksize, filesize, url=None,dp=None):
 		try:
@@ -379,7 +379,7 @@ def Update(version):
 		if link.find(version) != 0:
 			newVersion=link
 			dia = xbmcgui.Dialog()
-			if dia.yesno('Update Available', 'There is an update available, would you like to update?\nCurrent Version: '+version+'\nUpdate Version: '+newVersion):
+			if dia.yesno(xbmc.getLocalizedString( 30019 ), xbmc.getLocalizedString( 30020 )+'\n'+xbmc.getLocalizedString( 30021 )+version+'\n'+xbmc.getLocalizedString( 30022 )+newVersion):
 				url='http://plugin.googlecode.com/files/PBS_'+newVersion+'.zip'
 				downloadFile(url)
 			
@@ -394,7 +394,7 @@ def playVideo(url, name):
 	else:
 		def Download(url,dest):
 				dp = xbmcgui.DialogProgress()
-				dp.create('Downloading','',name)
+				dp.create(xbmc.getLocalizedString( 30011 ),'',name)
 				urllib.urlretrieve(url,dest,lambda nb, bs, fs, url=url: _pbhook(nb,bs,fs,url,dp))
 		def _pbhook(numblocks, blocksize, filesize, url=None,dp=None):
 				try:
@@ -412,7 +412,7 @@ def playVideo(url, name):
 				Download(url,flv_file)
 		elif (xbmcplugin.getSetting('download') == 'false' and xbmcplugin.getSetting('download_ask') == 'true'):
 			dia = xbmcgui.Dialog()
-			ret = dia.select('What do you want to do?', ['Download & Play', 'Stream', 'Exit'])
+			ret = dia.select(xbmc.getLocalizedString( 30005 ), [xbmc.getLocalizedString( 30001 ), xbmc.getLocalizedString( 30007 ), xbmc.getLocalizedString( 30006 )])
 			if (ret == 0):
 				flv_file = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), name))
 				Download(url,flv_file)
