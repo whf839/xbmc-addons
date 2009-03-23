@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <!-- Errors -->
+    <string id="30900">Error!</string>
+    <string id="30901">Logon details missing!</string>
+    <string id="30902">Setup using Context Menu - Plugin Settings</string>
+    <string id="30903">If this Plugin fails, try updating XBMC build</string>
+    <string id="30904">Login Failed, Check Settings</string>
+    <string id="30905">No Subscriptions Found</string>
+    <string id="30906">No Items Found</string>
+    <string id="30907">No Tags Found</string>
+
+    <!-- Plugin -->
+    <string id="30920">Authenticating User ..</string>
+    <string id="30921">Next Page</string>
+
+    <!-- item skin -->
+    <string id="30940">Updated:</string>
+    <string id="30941">Author:</string>
+
+    <!-- Category -->
+    <string id="30950">Subscriptions</string>
+    <string id="30951">Subscriptions By Label</string>
+    <string id="30952">Items</string>
+    <string id="30953">Items By Label</string>
+    <string id="30954">Starred</string>
+    <string id="30955">Shared</string>
+    <string id="30956">Notes</string>
+
+    <!-- Settings -->
+    <string id="30000">User email</string>
+    <string id="30010">User password</string>
+    <string id="30030">Items per page</string>
+    <string id="30040">Download List Images (slower)?</string>
+    <string id="30050">Show Read Items?</string>
+
+</strings>
