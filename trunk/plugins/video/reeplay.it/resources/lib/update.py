@@ -1,5 +1,5 @@
 """
-Update module
+Update module - PLUGIN VERSION
 
 Changes:
 18-11-2007 
@@ -28,37 +28,49 @@ import urllib
 import re
 import traceback
 from shutil import copytree, rmtree
-import xbmcutils.net as net
+
+def log(msg):
+	try:
+		xbmc.output("[%s]: %s" % (__name__, msg))
+	except: pass
+
+# check if build is special:// aware - set roots paths accordingly
+XBMC_HOME = 'special://home'
+if not os.path.isdir(xbmc.translatePath(XBMC_HOME)):	# if fails to convert to Q:, old builds
+	XBMC_HOME = 'Q:'
+log("XBMC_HOME=%s" % XBMC_HOME)
+
 
 class UpdatePlugin:
-	""" Update Class: used to update Plugin from xbmc google svn repo """
+	""" Update Class: used to update from xbmc google svn repo """
 
+#	URL_BASE = "http://xbmc-scripting.googlecode.com/svn"
 	URL_BASE = "http://xbmc-addons.googlecode.com/svn"
 	
 	def __init__( self, language, pluginName, pluginType ):
-		xbmc.output( "UpdatePlugin()._init_ pluginName=%s pluginType=%s" % (pluginName, pluginType) )
+		log( "_init_ pluginName=%s pluginType=%s" % (pluginName, pluginType) )
 
 		self._ = language
 		self.pluginName = pluginName.replace( ' ', '%20' )
 		self.pluginType = pluginType
-		self.URL_TAGS = "%s/tags/plugins/%s/%s/" % ( self.URL_BASE, pluginType, pluginName)
 
-		# TODO: use special:// equiv. - for now stick with translatePath() cos it converts to special:// equiv.
-		local_base_dir = "/".join( ['Q:','plugins', pluginType] )
+		self.URL_TAGS = "%s/tags/plugins/%s/%s/" % ( self.URL_BASE, pluginType, pluginName)
+		local_base_dir = "/".join( [XBMC_HOME,'plugins', pluginType] )
 		self.local_dir = xbmc.translatePath( "/".join( [local_base_dir, pluginName] ) )
 		self.backup_base_dir = xbmc.translatePath( "/".join( [local_base_dir,'.backups'] ) )
 		self.local_backup_dir = os.path.join( self.backup_base_dir, pluginName )
 
-		xbmc.output("URL_BASE=" + self.URL_BASE)
-		xbmc.output("URL_TAGS=" + self.URL_TAGS)
-		xbmc.output("local_dir=" + self.local_dir)
-		xbmc.output("local_backup_dir=" + self.local_backup_dir)
+		log("URL_BASE=" + self.URL_BASE)
+		log("URL_TAGS=" + self.URL_TAGS)
+		log("local_dir=" + self.local_dir)
+		log("local_backup_dir=" + self.local_backup_dir)
 
 		self.dialog = xbmcgui.DialogProgress()
-			
+
+
 	def downloadVersion( self, version ):
 		""" main update function """
-		xbmc.output( "> UpdatePlugin().downloadVersion() version=%s" % version)
+		log( "> downloadVersion() version=%s" % version)
 		success = False
 		try:
 			self.dialog.create( self._(0), self._( 1004 ), self._( 1005 ) )
@@ -80,14 +92,14 @@ class UpdatePlugin:
 								file = "%s/%s" % (folders[ 0 ], item)
 								script_files.append( file.replace('//','/') )
 					else:
-						xbmc.output("no htmlsource found")
+						log("no htmlsource found")
 						raise
 					folders = folders[1:]
 				except:
 					folders = None
 
 			if not script_files:
-				xbmc.output("empty script_files - raise")
+				log("empty script_files - raise")
 				raise
 			else:
 				success = self.getFiles( script_files, version )
@@ -96,7 +108,7 @@ class UpdatePlugin:
 			xbmcgui.Dialog().ok( self._(0), self._( 1031 ) )
 
 		self.dialog.close()
-		xbmc.output("< UpdatePlugin().downloadVersion() success = %s" % success)
+		log("< downloadVersion() success = %s" % success)
 		return success
 
 	def getLatestVersion( self, silent=True ):
@@ -115,18 +127,18 @@ class UpdatePlugin:
 		except:
 			traceback.print_exc()
 			xbmcgui.Dialog().ok( self._(0), self._( 1031 ), str( sys.exc_info()[ 1 ] ) )
-
 		self.dialog.close()
-		xbmc.output( "UpdatePlugin().getLatestVersion() new version=%s" % version )
+
+		log( "getLatestVersion() new version=%s" % version )
 		return version
 
 	def makeBackup( self ):
-		xbmc.output("> UpdatePlugin().makeBackup()")
+		log("> makeBackup()")
 		self.removeBackup()
 		# make base backup dir
 		try:
 			os.makedirs(self.backup_base_dir)
-			xbmc.output("created dirs=%s" % self.backup_base_dir )
+			log("created dirs=%s" % self.backup_base_dir )
 		except: pass
 
 		try:
@@ -134,41 +146,41 @@ class UpdatePlugin:
 		except:
 			traceback.print_exc()
 			xbmcgui.Dialog().ok( "Error Making Script Backup!", str( sys.exc_info()[ 1 ] ) )
-		xbmc.output("< UpdatePlugin().makeBackup()")
+		log("< makeBackup()")
 
 	def issueUpdate( self, version ):
-		xbmc.output("> UpdatePlugin().issueUpdate() version=%s" % version)
+		log("> issueUpdate() version=%s" % version)
 		path = os.path.join( self.local_backup_dir, 'resources','lib','update.py' )
 		command = 'XBMC.RunScript(%s,%s,%s,%s)'%(path, self.pluginName.replace('%20',' '), self.pluginType, version)
-		xbmc.output(command)
+		log(command)
 		xbmc.executebuiltin(command)
-		xbmc.output("< UpdatePlugin().issueUpdate() done")
+		log("< issueUpdate() done")
 	
 	def removeBackup( self ):
 		try:
 			rmtree(self.local_backup_dir,ignore_errors=True)		
-			xbmc.output("UpdatePlugin().removeBackup() removed OK")
+			log("removeBackup() removed OK")
 		except: pass
 	
 	def removeOriginal( self ):
 		try:
 			rmtree(self.local_dir,ignore_errors=True)
-			xbmc.output("UpdatePlugin().removeOriginal() removed OK")
+			log("removeOriginal() removed OK")
 		except:
 			traceback.print_exc()
 		
 	def backupExists( self ):
 		exists = os.path.exists(self.local_backup_dir)
-		xbmc.output("UpdatePlugin().backupExists() %s" % exists)
+		log("backupExists() %s" % exists)
 		return exists
 
 	def getFiles( self, script_files, version ):
 		""" fetch the files from svn """
-		xbmc.output( "UpdatePlugin().getFiles() version=%s" % version )
+		log( "getFiles() version=%s" % version )
 		success = False
 		try:
 			totalFiles = len(script_files)
-			xbmc.output("UpdatePlugin().getFiles() totalFiles=%d" % totalFiles)
+			log("getFiles() totalFiles=%d" % totalFiles)
 			for cnt, url in enumerate( script_files ):
 				items = os.path.split( url )
 				path = os.path.join( self.local_dir, items[0] ).replace( version+'/', '' ).replace( version, '' ).replace( '//', '/' ).replace( '%20', ' ' )
@@ -181,7 +193,7 @@ class UpdatePlugin:
 				src = "%s%s" % (self.URL_TAGS, url)
 				dest = os.path.join( path, file ).replace( '%20', ' ' )
 				src = src.replace(' ','%20')
-				xbmc.output("urlretrieve src=%s dest=%s" % (src, dest))
+				log("urlretrieve src=%s dest=%s" % (src, dest))
 				urllib.urlretrieve( src,  dest)
 
 			success = True
@@ -192,7 +204,7 @@ class UpdatePlugin:
 	def getHTMLSource( self, url ):
 		""" read a doc from a url """
 		safe_url = url.replace( " ", "%20" )
-		xbmc.output( "UpdatePlugin().getHTMLSource() " + safe_url)
+		log( "getHTMLSource() " + safe_url)
 		try:
 			sock = urllib.urlopen( safe_url )
 			doc = sock.read()
@@ -205,7 +217,7 @@ class UpdatePlugin:
 
 	def parseHTMLSource( self, htmlsource ):
 		""" parse html source for tagged version and url """
-		xbmc.output( "UpdatePlugin().parseHTMLSource()" )
+		log( "parseHTMLSource()" )
 		try:
 			url = re.search('Revision \d+:(.*?)<', htmlsource, re.IGNORECASE).group(1).strip()
 			tagList = re.compile('<li><a href="(.*?)"', re.MULTILINE+re.IGNORECASE+re.DOTALL).findall(htmlsource)
@@ -215,26 +227,8 @@ class UpdatePlugin:
 		except:
 			return None, None
 
-	################################################################################################
-	def retrieve(self, url, post=None, headers={}, fn=None):
-		""" Downloads an url. Returns: None = error , '' = cancelled """
-		xbmc.output("retrieve() %s" % url)
-		try:
-			return net.retrieve (url, post, headers, self.report_hook, self.report_udata, fn)
-		except net.AuthError, e:
-			xbmcgui.Dialog().ok(self._(0), self._(108))
-		except net.DownloadAbort, e:
-			xbmcgui.Dialog().ok(self._(102), e.value)
-			return "" # means aborted
-		except net.DownloadError, e:
-			xbmcgui.Dialog().ok(self._(102), e.value)
-		except:
-			xbmcgui.Dialog().ok(self._(0))
-		return None
-
-
 if __name__ == "__main__":
-	xbmc.output("update.py running from __main__")
+	log("update.py running from __main__")
 
 	# expects lang, pluginName, pluginType
 	if len(sys.argv) != 4:
@@ -245,8 +239,7 @@ if __name__ == "__main__":
 		pluginName = sys.argv[1]
 		pluginType = sys.argv[2]
 		version = sys.argv[3]
-		lang_path = xbmc.translatePath( "/".join( ["Q:", "plugins", pluginType, pluginName] ) )
-		xbmc.output("UpdatePlugin() lang_path=%s" % lang_path)
+		lang_path = xbmc.translatePath( "/".join( [XBMC_HOME, "plugins", pluginType, pluginName] ) )
 		__lang__ = xbmc.Language( lang_path ).getLocalizedString
 		up = UpdatePlugin(__lang__, pluginName, pluginType)
 		up.removeOriginal()

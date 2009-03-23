@@ -22,28 +22,21 @@ xbmc.output("Imported From: " + __scriptname__ + " title: " + __title__ + " Date
 global dialogProgress
 dialogProgress = xbmcgui.DialogProgress()
 
-#######################################################################################################################    
-# DEBUG - display indented information
-#######################################################################################################################    
-DEBUG = True
-debugIndentLvl = 0	# current indentation level
-def debug( value ):
-	global debugIndentLvl
-	if (DEBUG and value):
-		try:
-			if find(value,">") >= 0: debugIndentLvl += 2
-			pad = rjust("", debugIndentLvl)
-			print pad + str(value)
-			if find(value,"<") >= 0: debugIndentLvl -= 2
-		except:
-			try:
-				print value
-			except:
-				print "Debug() Bad chars in string"
+#################################################################################################################
+def log(msg):
+	try:
+		xbmc.output("[%s]: %s" % (__scriptname__, msg))
+	except: pass
+
+def debug(msg):
+    log(msg)
+
+#################################################################################################################
+def logError():
+	log("ERROR: %s" % sys.exc_info()[ 1 ])
 
 #################################################################################################################
 def messageOK(title='', line1='', line2='',line3=''):
-#	debug("%s\n%s\n%s\n%s" % (title, line1,line2,line3))
 	xbmcgui.Dialog().ok(title ,line1,line2,line3)
 
 #################################################################################################################
@@ -59,12 +52,16 @@ def handleException(txt=''):
 		messageOK(title, text)
 	except: pass
 
+#################################################################################################################
+def xbmcBuildError():
+	messageOK(__scriptname__,"XBMC Builtin Error", "Please update your XBMC build.", str(sys.exc_info()[ 1 ]))
+
 #############################################################################################################
 def makeDir(dir):
 	try:
 		d = xbmc.translatePath(dir)
 		os.makedirs( d )
-		debug("bbbLib.makeDir() " + d)
+		log("bbbLib.makeDir() " + d)
 		return True
 	except:
 		return False
@@ -75,14 +72,14 @@ def deleteFile(filename):
 	try:
 		f = xbmc.translatePath(filename)
 		os.remove( f )
-		debug("bbbLib.deleteFile() " + f)
+		log("bbbLib.deleteFile() " + f)
 	except: pass
 
 #################################################################################################################
 def readFile(filename):
 	try:
 		f = xbmc.translatePath(filename)
-		debug("bbbLib.readFile() " + f)
+		log("bbbLib.readFile() " + f)
 		return file(f).read()
 	except:
 		return ""
@@ -95,7 +92,7 @@ def fileExist(filename):
 		if os.path.isfile(f) and os.path.getsize(f) > 0:
 			exists = True
 	except: pass
-	debug("bbbLib.fileExist() %s  %s" % (f, exists))
+	log("bbbLib.fileExist() %s  %s" % (f, exists))
 	return exists
 
 
@@ -113,20 +110,20 @@ def unicodeToAscii(text, charset='utf8'):
 
 ##############################################################################################################    
 def playMedia(source, li=None):
-	debug("> playMedia()")
+	log("> playMedia()")
 	isPlaying = False
 
 	try:
 		if li:
-			debug("player source fn/url with li")
+			log("player source fn/url with li")
 			xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).play(source, li)
 		else:
-			debug("player source PlayList")
+			log("player source PlayList")
 			xbmc.Player().play(source)
 		isPlaying = xbmc.Player().isPlaying()
 	except:
 		traceback.print_exc()
-		debug('xbmc.Player().play() failed trying xbmc.PlayMedia() ')
+		log('xbmc.Player().play() failed trying xbmc.PlayMedia() ')
 		try:
 			cmd = 'xbmc.PlayMedia(%s)' % source
 			xbmc.executebuiltin(cmd)
@@ -134,7 +131,7 @@ def playMedia(source, li=None):
 		except:
 			handleException('playMedia()')
 
-	debug("< playMedia() isPlaying=%s" % isPlaying)
+	log("< playMedia() isPlaying=%s" % isPlaying)
 	return isPlaying
 
 #################################################################################################################
@@ -163,7 +160,7 @@ def findAllRegEx(data, regex, flags=re.MULTILINE+re.IGNORECASE+re.DOTALL):
 def saveData(data, fn, mode="w"):
     """ Save data to a file """
     if not data or not fn or not mode: return False
-    debug("saveData() fn=%s" % fn)
+    log("saveData() fn=%s" % fn)
     try:
         f = open(xbmc.translatePath(fn), mode)
         f.write(data)
@@ -178,3 +175,32 @@ def saveData(data, fn, mode="w"):
 ######################################################################################
 def bbbTranslatePath(partsList):
     return xbmc.translatePath( "/".join(partsList) )
+
+########################################################################################################################
+def checkBuildDate(scriptName, minDate):
+	""" Check if XBMC build is new enough to run script """
+	log( "> checkBuildDate() minDate=%s" % minDate )
+	import time
+
+	# get system build date info
+	buildDate = xbmc.getInfoLabel( "System.BuildDate" )
+	curr_build_date_t = time.strptime(buildDate,"%b %d %Y")			# create time_t
+	curr_build_date_secs = time.mktime(curr_build_date_t)				# convert to epoc secs
+	curr_build_date_formated  = time.strftime("%d-%m-%Y", curr_build_date_t)	# format to text date
+
+	# compare with required min date
+	min_build_date_t = time.strptime(minDate,"%d-%m-%Y")				# DD-MM-YYYY to time_t
+	min_build_date_secs = time.mktime(min_build_date_t)				# convert to epoc secs
+
+	log("XBMC Date: %s secs: %s    Required Date: %s secs: %s" % \
+		(buildDate, curr_build_date_secs, minDate, min_build_date_secs))
+	
+	if curr_build_date_secs < min_build_date_secs:							# No new build
+		messageOK(scriptName, "Your XBMC build is older than required.", "Required: " + minDate, "Current: " + curr_build_date_formated)
+		ok = False
+	else:
+		ok = True
+
+	log("< checkBuildDate() ok=%s" % ok)
+	return ok
+

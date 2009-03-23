@@ -17,21 +17,28 @@ import xbmc, xbmcgui, xbmcplugin
 import sys, os, os.path, traceback
 from xml.sax.saxutils import unescape
 from xml.sax.saxutils import escape
-from pprint import pprint
+#from pprint import pprint
 
 __plugin__ = "reeplay.it"
 __scriptname__ = __plugin__
-__version__ = '1.0.1'
+__version__ = '1.1'
 __author__ = 'BigBellyBilly [BigBellyBilly@gmail.com]'
 __svn_url__ = "http://xbmc-scripting.googlecode.com/svn/trunk/reeplay.it"
-__date__ = '06-03-2009'
+__date__ = '23-03-2009'
 xbmc.output(__plugin__ + " Version: " + __version__ + " Date: " + __date__)
+
+# check if build is special:// aware - set roots paths accordingly
+XBMC_HOME = 'special://home'
+XBMC_PROFILE = 'special://profile'
+if not os.path.isdir(xbmc.translatePath(XBMC_HOME)):	# if fails to convert to Q:, old builds
+	XBMC_HOME = 'Q:'
+	XBMC_PROFILE = 'T:'
 
 # Shared resources
 DIR_HOME= os.getcwd().replace(';','')
 DIR_RESOURCES = os.path.join( DIR_HOME, "resources" )
 DIR_RESOURCES_LIB = os.path.join( DIR_RESOURCES, "lib" )
-DIR_USERDATA = '/'.join( ["T:", "plugin_data", "video", __plugin__] )
+DIR_USERDATA = '/'.join( [XBMC_PROFILE, "plugin_data", "video", __plugin__] )
 DIR_CACHE = xbmc.translatePath('/'.join( [ DIR_USERDATA, "cache"] ))
 sys.path.insert(0, xbmc.translatePath(DIR_RESOURCES_LIB) )
 
@@ -40,18 +47,10 @@ try:
     # 'resources' now auto appended onto path
     __lang__ = xbmc.Language( xbmc.translatePath(DIR_HOME) ).getLocalizedString
 except:
-	e = str( sys.exc_info()[ 1 ] )
-	print e
-	xbmcgui.Dialog().ok("XBMC Language Error", "Install a newer XBMC build.", e)
+	xbmcgui.Dialog().ok("XBMC Language Error", "Install a newer XBMC build.", str( sys.exc_info()[ 1 ] ))
 
 from bbbLib import *
 import reeplayit
-
-debug("DIR_HOME=" + DIR_HOME)
-debug("DIR_RESOURCES=" + DIR_RESOURCES)
-debug("DIR_RESOURCES_LIB=" + DIR_RESOURCES_LIB)
-debug("DIR_USERDATA=" + DIR_USERDATA)
-debug("DIR_CACHE=" + DIR_CACHE)
 
 #################################################################################################################
 class ReeplayitPlugin:
@@ -67,13 +66,11 @@ class ReeplayitPlugin:
 	PARAM_INFO = 'info'
 
 	def __init__( self, *args, **kwargs ):
-		self.debug("> __init__()")
-		if DEBUG:
-			pprint (sys.argv)
+		log("> __init__()")
 
 		if not sys.argv or len(sys.argv) < 3:
 			xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=False)
-			debug("< __init__() too few argv args %s" % sys.argv)
+			log("< __init__() too few argv args %s" % sys.argv)
 			return
 
 		# allow access to readme/changelog which dont rely on any settings
@@ -87,10 +84,10 @@ class ReeplayitPlugin:
 		# load settings - ensuring all ok
 		if not self.loadSettings():
 			xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=False)
-			debug("< settings incomplete, exiting script")
+			log("< settings incomplete, exiting script")
 			return
 
-		debug("script normal startup")
+		log("script normal startup")
 		# create a new lib instance using login details
 		self.reeplayitLib = reeplayit.ReeplayitLib(self.settings.get(self.settings.SETTING_USER), \
 												self.settings.get(self.settings.SETTING_PWD), \
@@ -99,11 +96,18 @@ class ReeplayitPlugin:
 
 
 		if ( not sys.argv[ 2 ] ):
+			ok = True
+			# check XBMC min build date required
+			if not checkBuildDate(__plugin__, "01-02-2009"):
+				ok = False
 			# check for svn update
-			if self.settings.get(self.settings.SETTING_CHECK_UPDATE):	# check for update ?
+			elif self.settings.get(self.settings.SETTING_CHECK_UPDATE):	# check for update ?
 				if checkUpdate(False, False):
-					xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=False)
-					return
+					ok = False
+
+			if not ok:
+				xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=False)
+				return
 
 			# new session clear cache of data and maybe videos
 			deleteVideos = self.settings.get(self.settings.SETTING_DELETE_VIDEOS)
@@ -137,15 +141,12 @@ class ReeplayitPlugin:
 				messageOK("ERROR", str(sys.exc_info()[ 1 ]))
 				xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=False)
 
-		self.debug("< __init__()")
-
-	def debug(self, msg=""):
-		debug("%s.%s" % (self.__class__.__name__, msg))
+		log("< __init__()")
 
 	########################################################################################################################
 	def loadSettings(self):
 		""" Settings are set in the script, this is just to check all settings exist """
-		self.debug( "> loadSettings")
+		log( "> loadSettings")
 
 		self.settings = reeplayit.ReeplayitSettings()
 		success = self.settings.check()
@@ -161,7 +162,7 @@ class ReeplayitPlugin:
 				traceback.print_exc()
 				messageOK(__lang__(0), __lang__(107))
 
-		self.debug( "< loadSettings() success=%s" % success)
+		log( "< loadSettings() success=%s" % success)
 		return success
 
 	########################################################################################################################
@@ -181,14 +182,12 @@ class ReeplayitPlugin:
 				value = "=".join(param[1:]).replace('^','&')	# frig to avoid being split prematurely
 				paramDict[param[0]] = value
 
-		if DEBUG:
-			print "paramDict=%s" % paramDict
 		return paramDict
 
 	########################################################################################################################
 	def getPlaylists(self):
 		""" Return a list of Playlists """
-		self.debug( "> getPlaylists()")
+		log( "> getPlaylists()")
 		ok = False
 		try:
 			sz = self.reeplayitLib.getPlaylists()
@@ -217,7 +216,7 @@ class ReeplayitPlugin:
 							url=li_url, listitem=li, isFolder=True, totalItems=sz)
 				if ( not ok ): break
 		except "Empty":
-			self.debug("Empty raised")
+			log("Empty raised")
 			messageOK(__plugin__, __lang__(104))	# no pls found
 			ok = False
 		except:
@@ -232,18 +231,18 @@ class ReeplayitPlugin:
 			xbmcplugin.setContent( handle=int( sys.argv[ 1 ] ), content="files" )
 
 		xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=ok)
-		self.debug( "< getPlaylists() ok=%s" % ok)
+		log( "< getPlaylists() ok=%s" % ok)
 
 	########################################################################################################################
 	def getPlaylist(self, plsTitle, plsId, plsCount, plsPage=1):
 		""" Discover a list of Categories within a Directory """
-		self.debug( "> getplaylist() plsId=%s plsCount=%s plsPage=%s" % (plsId,plsCount,plsPage))
+		log( "> getplaylist() plsId=%s plsCount=%s plsPage=%s" % (plsId,plsCount,plsPage))
 
 		ok = False
 		try:
 			maxPages = self.reeplayitLib.getMaxPages( plsCount )
 			isNextPage = (plsPage < maxPages)
-			self.debug("isNextPage=%s" % isNextPage)
+			log("isNextPage=%s" % isNextPage)
 
 			msg = "%s - %s %s" % (plsTitle, __lang__(219), plsPage)
 			dialogProgress.create(__lang__(0), __lang__(217), msg) # DL playlist content
@@ -286,7 +285,7 @@ class ReeplayitPlugin:
 							url=li_url, listitem=li, isFolder=False, totalItems=videoCount)
 				if ( not ok ): break
 		except "Empty":
-			self.debug("Empty raised")
+			log("Empty raised")
 		except:
 			traceback.print_exc()
 			messageOK("ERROR:", str(sys.exc_info()[ 1 ]))
@@ -295,19 +294,19 @@ class ReeplayitPlugin:
 		if not ok:
 			messageOK(__plugin__, __lang__(105), plsTitle)	# no video
 		else:
-			xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )
 			xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_DATE )
+			xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )
 			xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_VIDEO_RUNTIME )
 			xbmcplugin.setContent( handle=int( sys.argv[ 1 ] ), content="movies" )
 
 		xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=ok )
-		self.debug( "< getPlaylist() ok=%s" % ok)
+		log( "< getPlaylist() ok=%s" % ok)
 
 	############################################################################################################
 	def getVideo(self, videoTitle, videoId):
 		""" Discover media link from video content """
 
-		self.debug( "> getVideo() videoId=%s" % (videoId))
+		log( "> getVideo() videoId=%s" % (videoId))
 		source = ''
 		try:
 			dialogProgress.create(__lang__(0), videoTitle)
@@ -323,12 +322,12 @@ class ReeplayitPlugin:
 			traceback.print_exc()
 			messageOK("ERROR:", str(sys.exc_info()[ 1 ]))
 
-		self.debug( "< getVideo()")
+		log( "< getVideo()")
 
 	########################################################################################################################
 	def playPlaylist(self, plsTitle, plsId, plsCount):
 		""" Discover a list of Categories within a Directory """ 
-		self.debug( "> playPlaylist() plsId=%s plsCount=%s" % (plsId,plsCount))
+		log( "> playPlaylist() plsId=%s plsCount=%s" % (plsId,plsCount))
 		ok = False
 
 		try:
@@ -359,31 +358,31 @@ class ReeplayitPlugin:
 			dialogProgress.close()
 
 			# play all in xbmc pls
-			debug("Playlist size=%d" % xbmcPlaylist.size())
+			log("Playlist size=%d" % xbmcPlaylist.size())
 			if xbmcPlaylist.size() <= 0: raise "Empty"
 
 			if xbmcgui.Dialog().yesno(__lang__(0), __lang__(234), "","", __lang__(236), __lang__(235)):
 				xbmcPlaylist.shuffle()
 			playMedia(xbmcPlaylist)
 		except "Empty":
-			self.debug("Empty raised")
+			log("Empty raised")
 			messageOK(__lang__(0), __lang__(105))		# no videos
 		except:
 			handleException()
 
 		dialogProgress.close()
-		self.debug( "< playPlaylist()")
+		log( "< playPlaylist()")
 
 
 ######################################################################################
 def checkUpdate( silent=False, notifyNotFound=False):
-	debug( "> checkUpdate() silent=%s" % silent)
+	log( "> checkUpdate() silent=%s" % silent)
 
 	updated = False
 	import update
 	up = update.UpdatePlugin(__lang__, __plugin__, "video")
 	version = up.getLatestVersion(silent)
-	debug("Current Version: %s Tag Version: %s" % (__version__,version))
+	log("Current Version: %s Tag Version: %s" % (__version__,version))
 	if version and version != "-1":
 		if __version__ < version:
 			if xbmcgui.Dialog().yesno( __lang__(0), \
@@ -398,7 +397,7 @@ def checkUpdate( silent=False, notifyNotFound=False):
 #		dialogOK(__lang__(0), __lang__(1030))				# no tagged ver found
 
 	del up
-	debug( "< checkUpdate() updated=%s" % updated)
+	log( "< checkUpdate() updated=%s" % updated)
 	return updated
 
 #######################################################################################################################    
