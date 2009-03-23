@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
 	<setting id="user" type="text" label="30003" default="" />
-	<setting id="pwd" type="text" label="30004" default="" />
+	<setting id="pwd" type="text" option="hidden" label="30004" enable="!eq(-1,)" default="" />
 	<setting id="page_size" type="labelenum" values="20|50|100|250|500|1000" label="30005" default="50" />
 	<setting id="hq_video" type="bool" label="30006" default="false" />
 	<setting id="stream_videos" type="bool" label="30008" default="true" />
