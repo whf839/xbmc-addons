@@ -148,7 +148,7 @@ def genreVideos(genre):
         for entry in  feed.entries:
                 video = []
                 video.append(entry.id)
-                video.append(entry.title)
+                video.append(entry.author + ' - ' +entry.title)
                 video.append('')
                 videos.append(video)
         return videos
@@ -164,20 +164,24 @@ def getrtmp(url):
         print uri
         smilurl = 'http://api-media.mtvnservices.com/player/embed/includes/mediaGen.jhtml?uri='+uri+'&vid='+uri.split(':')[4]+'&ref={ref}'
         smil = getURL(smilurl)
-        rtmpurl = re.compile('<src>(.+?)</src>').findall(smil)[0]
-        rtmpurl = rtmpurl.replace('rtmp://','')
-        rtmpsplit = rtmpurl.split('/ondemand/')
-        rtmphost = rtmpsplit[0]
-        playpath = rtmpsplit[1].replace('.flv','')
-        app = 'ondemand' 
-        identurl = 'http://'+rtmphost+'/fcs/ident'
-        ident = getURL(identurl)
-        ip = re.compile('<fcs><ip>(.+?)</ip></fcs>').findall(ident)[0]
-        rtmpurl = 'rtmp://'+ip+'/'+app+'?_fcs_vhost='+rtmphost
-        rtmp = []
-        rtmp.append(rtmpurl)
-        rtmp.append(playpath)
-        return rtmp
+        urls = re.compile('<src>(.+?)</src>').findall(smil)
+        rtmps = []
+        for rtmpurl in urls:
+                if 'rtmp' in rtmpurl:
+                        rtmpurl = rtmpurl.replace('rtmp://','')
+                        rtmpsplit = rtmpurl.split('/ondemand/')
+                        rtmphost = rtmpsplit[0]
+                        playpath = rtmpsplit[1].replace('.flv','')
+                        app = 'ondemand' 
+                        identurl = 'http://'+rtmphost+'/fcs/ident'
+                        ident = getURL(identurl)
+                        ip = re.compile('<fcs><ip>(.+?)</ip></fcs>').findall(ident)[0]
+                        rtmpurl = 'rtmp://'+ip+'/'+app+'?_fcs_vhost='+rtmphost
+                        rtmp = []
+                        rtmp.append(rtmpurl)
+                        rtmp.append(playpath)
+                        rtmps.append(rtmp)
+        return rtmps
 
 def getswfUrl():
         swfUrl = "http://media.mtvnservices.com/player/release/?v=3.9.0"
