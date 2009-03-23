@@ -90,7 +90,7 @@ def listGenreVideos(genre):
         print videos
         for url, name, thumbnail in videos:
                 name = name.replace('&amp;','&').replace('&#039;',"'")
-                addDir(name, url, 4, thumbnail)
+                addLink(name, url, 4, thumbnail)
         return
 
 def listArtistVideos(artist):
@@ -98,19 +98,45 @@ def listArtistVideos(artist):
         print videos
         for url, name, thumbnail in videos:
                 name = name.replace('&amp;','&').replace('&#039;',"'")
-                addDir(name, url, 4, thumbnail)
+                addLink(name, url, 4, thumbnail)
         return        
 
 #Get SMIL url and play video
 def playRTMP(url, name):
-        rtmpfull = mtvn.getrtmp(url)
+        ret = ''
+        if (xbmcplugin.getSetting("quality") == '0'):
+                dia = xbmcgui.Dialog()
+                ret = dia.select(xbmc.getLocalizedString(30006), [xbmc.getLocalizedString(30002),xbmc.getLocalizedString(30003),xbmc.getLocalizedString(30007)])
+                if (ret == 2):
+                        return
+        rtmps = mtvn.getrtmp(url)
         swfUrl = mtvn.getswfUrl()
-        rtmpurl = rtmpfull[0]
-        playpath = rtmpfull[1]
-        item=xbmcgui.ListItem(name, iconImage='', thumbnailImage='')
-        item.setInfo( type="Video",infoLabels={ "Title": name})
-        item.setProperty("SWFPlayer", swfUrl)
-        item.setProperty("PlayPath", playpath)
+        print rtmps
+        for _url,_playpath in rtmps:
+                if '_320' in _playpath and (xbmcplugin.getSetting("quality") == '1' or '_320' in _playpath and (ret == 0)):
+                        item=xbmcgui.ListItem(name, iconImage='', thumbnailImage='')
+                        item.setInfo( type="Video",infoLabels={ "Title": name})
+                        item.setProperty("SWFPlayer", swfUrl)
+                        item.setProperty("PlayPath", _playpath)
+                        rtmpurl = _url
+                elif '_240' in _playpath and (xbmcplugin.getSetting("quality") == '2') or '_240' in _playpath and (ret == 1):
+                        item=xbmcgui.ListItem(name, iconImage='', thumbnailImage='')
+                        item.setInfo( type="Video",infoLabels={ "Title": name})
+                        item.setProperty("SWFPlayer", swfUrl)
+                        item.setProperty("PlayPath", _playpath)
+                        rtmpurl = _url
+                elif '_650' in _playpath and (xbmcplugin.getSetting("quality") == '1' or '_650' in _playpath and (ret == 0)):
+                        item=xbmcgui.ListItem(name, iconImage='', thumbnailImage='')
+                        item.setInfo( type="Video",infoLabels={ "Title": name})
+                        item.setProperty("SWFPlayer", swfUrl)
+                        item.setProperty("PlayPath", _playpath)
+                        rtmpurl = _url
+                elif '_300' in _playpath and (xbmcplugin.getSetting("quality") == '2') or '_300' in _playpath and (ret == 1):
+                        item=xbmcgui.ListItem(name, iconImage='', thumbnailImage='')
+                        item.setInfo( type="Video",infoLabels={ "Title": name})
+                        item.setProperty("SWFPlayer", swfUrl)
+                        item.setProperty("PlayPath", _playpath)
+                        rtmpurl = _url
         if xbmcplugin.getSetting("dvdplayer") == "true":
                 player_type = xbmc.PLAYER_CORE_DVDPLAYER
         else:
