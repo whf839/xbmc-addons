@@ -19,6 +19,7 @@ Changes:
 11-02-2009 Change: To use xbmc.translatePath() which converts Q: T: etc to their special:// equiv.
             Replace os.path.join with "/".join( [ ] ) as all paths now url form, using '/'
 13-02-2009 Change: Plugin version: Using svn xbmc-addons.googlecode.com
+23-03-2009 Change: module moved from resources/lib to pluginAPI
 """
 
 import sys
@@ -150,7 +151,7 @@ class UpdatePlugin:
 
 	def issueUpdate( self, version ):
 		log("> issueUpdate() version=%s" % version)
-		path = os.path.join( self.local_backup_dir, 'resources','lib','update.py' )
+		path = os.path.join( self.local_backup_dir, 'pluginAPI','update.py' )
 		command = 'XBMC.RunScript(%s,%s,%s,%s)'%(path, self.pluginName.replace('%20',' '), self.pluginType, version)
 		log(command)
 		xbmc.executebuiltin(command)
