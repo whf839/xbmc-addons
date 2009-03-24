@@ -33,5 +33,23 @@
     <string id="30030">Items per page</string>
     <string id="30040">Download List Images (slower)?</string>
     <string id="30050">Show Read Items?</string>
+    <string id="30060">Check For Update</string>
+
+    <!-- Update messages -->
+    <string  id="1000">Your version is up to date.</string>
+    <string  id="1001">Checking for update...</string>
+    <string  id="1002">is newer</string>
+    <string  id="1003">Would you like to update?</string>
+    <string  id="1004">Fetching file list...</string>
+    <string  id="1005">Please wait...</string>
+    <string  id="1006">Version</string>
+    <string  id="1007">Fetching:</string>
+    <string  id="1008">Path:</string>
+    <string  id="1009">File:</string>
+    <string  id="1010">Installed.</string>
+
+	<!-- Update error messages -->
+	<string id="1030">No tagged versions were found!</string>
+	<string id="1031">There was an error updating script!</string>
 
 </strings>

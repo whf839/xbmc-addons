@@ -34,4 +34,20 @@
     <string id="30040">Lataa luettelon kuvat (hitaampi)</string>
     <string id="30050">Näytä luetut kohteet</string>
 
+	<!-- Update messages -->
+	<string id="1000">Sinun ohjelmasi on ajantasalla.</string>
+	<string id="1001">Tarkistetaan uusinta versiota...</string>
+	<string id="1002">on uudempi</string>
+	<string id="1003">Haluatko päivittää ohjelman?</string>
+	<string id="1004">Noudetaan tiedostoluetteloa...</string>
+	<string id="1005">Odota hetki..</string>
+	<string id="1006">Versio</string>
+	<string id="1007">Noudetaan:</string>
+	<string id="1008">Polku:</string>
+	<string id="1009">Tiedosto:</string>
+	<string id="1010">asennettu.</string>
+
+	<string id="1030">Uutta versiota ei löytynyt!</string>
+	<string id="1031">Päivitys ei onnistunut!</string>
+
 </strings>
