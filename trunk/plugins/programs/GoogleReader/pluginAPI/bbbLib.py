@@ -158,3 +158,33 @@ def checkBuildDate(scriptName, minDate):
 	log("< checkBuildDate() ok=%s" % ok)
 	return ok
 
+######################################################################################
+def checkUpdate( currVersion, silent=False, notifyNotFound=False):
+	log( "> checkUpdate()")
+
+	try:
+		updated = False
+		import update
+		__lang__ = xbmc.Language( os.getcwd() ).getLocalizedString
+		up = update.UpdatePlugin(__lang__, __plugin__, "Programs")
+		version = up.getLatestVersion(silent)
+		log("Current Version: %s Tag Version: %s" % (currVersion, version))
+		if version and version != "-1":
+			if currVersion < version:
+				if xbmcgui.Dialog().yesno( __plugin__, \
+									"%s %s %s." % ( __lang__(1006), version, __lang__(1002) ), \
+									__lang__(1003)):
+					up.makeBackup()
+					up.issueUpdate(version)
+					updated = True
+			elif notifyNotFound:
+				messageOK(__plugin__, __lang__(1000))
+		elif not silent:
+			messageOK(__plugin__, __lang__(1030))				# no tagged ver found
+
+		del up
+	except:
+		handleException("checkUpdate()")
+	log( "< checkUpdate() updated=%s" % updated)
+	return updated
+

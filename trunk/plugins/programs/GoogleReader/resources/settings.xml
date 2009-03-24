@@ -6,4 +6,6 @@
     <setting id="pagesize" type="labelenum" values="20|50|100|250|500|1000" label="30030" default="50" />
     <setting id="list_images" type="bool" label="30040" default="false" />
     <setting id="show_read" type="bool" label="30050" default="true" />
+    <setting type="sep" />
+    <setting type="action" label="30060" option="close" default="RunPlugin(plugin://Programs/GoogleReader/?check_update)" />
 </settings>

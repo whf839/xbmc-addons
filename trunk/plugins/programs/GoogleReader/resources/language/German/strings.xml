@@ -35,4 +35,20 @@
     <string id="30040">Listenbilder laden (langsamer)?</string>
     <string id="30050">Gelesene Beiträge anzeigen?</string>
 
+    <!-- Update messages -->
+    <string id="1000">Deine Version ist aktuell.</string>
+    <string id="1001">Nach Skript-Updates suchen ...</string>
+    <string id="1002">ist neuer</string>
+    <string id="1003">Möchtest du aktualisieren?</string>
+    <string id="1004">Abruf der Dateiliste...</string>
+    <string id="1005">Bitte warten...</string>
+    <string id="1006">Version</string>
+    <string id="1007">Laden:</string>
+    <string id="1008">Pfad:</string>
+    <string id="1009">Datei:</string>
+    <string id="1010">Plugin installiert.</string>
+
+    <!-- Update error messages -->
+    <string id="1030">Keine neuere Version verfügbar!</string>
+    <string id="1031">Fehler beim Aktualisieren des Skripts!</string>
 </strings>
