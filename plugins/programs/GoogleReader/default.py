@@ -16,8 +16,8 @@ __plugin__ = "GoogleReader"
 __author__ = "BigBellyBilly"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/programs/GoogleReader"
-__version__ = "0.1"
-__date__ = '23-03-2009'
+__version__ = "1.0"
+__date__ = '24-03-2009'
 xbmc.log( "[PLUGIN] %s: v%s Dated: %s initialized!" % ( __plugin__, __version__, __date__), xbmc.LOGNOTICE )
 
 if ( __name__ == "__main__" ):

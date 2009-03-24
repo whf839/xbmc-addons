@@ -166,7 +166,7 @@ def checkUpdate( currVersion, silent=False, notifyNotFound=False):
 		updated = False
 		import update
 		__lang__ = xbmc.Language( os.getcwd() ).getLocalizedString
-		up = update.UpdatePlugin(__lang__, __plugin__, "Programs")
+		up = update.UpdatePlugin(__lang__, __plugin__, "programs")      # svn folder for plugin type is case sensitive
 		version = up.getLatestVersion(silent)
 		log("Current Version: %s Tag Version: %s" % (currVersion, version))
 		if version and version != "-1":
