@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>    <!--   Finnish 24.3.2009   -->
+    <!-- Errors -->
+    <string id="30900">Virhe!</string>
+    <string id="30901">Kirjautumisen asetukset puuttuvat!</string>
+    <string id="30902">Asetukset käyttäen Context valikkoa - Lisäkkeen asetukset</string>
+    <string id="30903">Mikäli lisäke ei toimi, yritä päivittää xbmc uudempaan</string>
+    <string id="30904">Kirjautuminen epäonnistui, tarkista asetukset</string>
+    <string id="30905">Tilauksia ei löytynyt</string>
+    <string id="30906">Kohteita ei löytynyt</string>
+    <string id="30907">Tunnisteita ei löytynyt</string>
+
+    <!-- Plugin -->
+    <string id="30920">Käyttäjän todennus...</string>
+    <string id="30921">Seuraava sivu</string>
+
+    <!-- item skin -->
+    <string id="30940">Päivitetty:</string>
+    <string id="30941">Tekijä:</string>
+
+    <!-- Category -->
+    <string id="30950">Tilaukset</string>
+    <string id="30951">Tilausten lajityypit</string>
+    <string id="30952">Kohteet</string>
+    <string id="30953">Kohteiden lajityypit</string>
+    <string id="30954">Merkityt</string>
+    <string id="30955">Jaetut</string>
+    <string id="30956">Huomautukset</string>
+
+    <!-- Settings -->
+    <string id="30000">Sähköpostiosoite</string>
+    <string id="30010">Salasana</string>
+    <string id="30030">Kohteiden määrä sivua kohti</string>
+    <string id="30040">Lataa luettelon kuvat (hitaampi)</string>
+    <string id="30050">Näytä luetut kohteet</string>
+
+</strings>
