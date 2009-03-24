@@ -7,4 +7,10 @@
 	<string id="30004">Default Quality</string>
 	<string id="30006">Select Quality Level?</string>
 	<string id="30007">Exit</string>
+
+	<string id="30008">Max Results Per Page</string>
+	<string id="30009">Sort Order</string>
+	<string id="30010">Relevance</string>
+	<string id="30011">Date Ascending</string>
+	<string id="30012">Date Descending</string>
 </strings>

@@ -4,7 +4,7 @@ __credits__ = ""
 __version__ = "0.1"
 
 import urllib, urllib2
-import os, re, sys, md5
+import os, re, sys, md5, string
 import xbmc, xbmcgui, xbmcplugin
 
 import mtvn as mtvn
@@ -17,6 +17,7 @@ def listCategories():
         addDir('Search Video', 'searchVideo', 5)
         #addDir('Favorite Videos', 'favArtist', 1)
         #addDir('Favorite Artists', 'favVideo', 1)
+        return
         
 def listAZ():
         addDir('#', '-', 11)
@@ -70,6 +71,7 @@ def listGenres(mode):
         addDir('Blues / Folk',                  'blues_folk',           linkmode)
         addDir('Alternative',                   'alternative',          linkmode)
         addDir('Soundtracks / Musicals',        'soundtracks_musicals', linkmode)
+        return
 
 def listArtistsAZ(letter):
         artists = mtvn.artistBrowse(letter)
@@ -116,40 +118,48 @@ def listSearch(searchtype):
                         for url, name, thumbnail in videos:
                                 name = name.replace('&amp;','&').replace('&#039;',"'")
                                 addLink(name, url, 4, thumbnail)
-                xbmcplugin.endOfDirectory(int(sys.argv[1]))
+                xbmcplugin.endOfDirectory(int(sys.argv[1]),updateListing=False,cacheToDisc=True)
         return
                 
 #Get SMIL url and play video
 def playRTMP(url, name):
-        ret = ''
-        if (xbmcplugin.getSetting("quality") == '0'):
-                dia = xbmcgui.Dialog()
-                ret = dia.select(xbmc.getLocalizedString(30006), [xbmc.getLocalizedString(30002),xbmc.getLocalizedString(30003),xbmc.getLocalizedString(30007)])
-                if (ret == 2):
-                        return
         rtmps = mtvn.getrtmp(url)
         swfUrl = mtvn.getswfUrl()
+        options = []
+        for _url,_playpath in rtmps:
+                filesplit = _playpath.split('/')[-1].split('_')
+                if 'mp4:' in _playpath:
+                        option = filesplit[-2] + ' ' + filesplit[-1] + 'kbps (h264/aac)'
+                elif 'full' == filesplit[-2] or 'ALL' == filesplit[-2]:
+                        if '320' == filesplit[-1]:
+                                option = filesplit[-1] + 'x240 700kbps (vp6/mp3)'
+                        elif '240' == filesplit[-1]:
+                                option = filesplit[-1] + 'x180 300kbps (vp6/mp3)'
+                else:
+                        option = filesplit[-2] + ' ' + filesplit[-1] + 'kbps (vp6/mp3)'
+                options.append(option) 
+        options.append(xbmc.getLocalizedString(30007))
+        if (xbmcplugin.getSetting("quality") == '0'):
+                dia = xbmcgui.Dialog()
+                ret = dia.select(xbmc.getLocalizedString(30006), options)
+                if (ret == (len(options)-1)):
+                        return
+        elif (xbmcplugin.getSetting("quality") == '1'):
+                ret = 0
+        elif (xbmcplugin.getSetting("quality") == '2'):
+                ret = 1
         print rtmps
         for _url,_playpath in rtmps:
-                if '_320' in _playpath and (xbmcplugin.getSetting("quality") == '1' or '_320' in _playpath and (ret == 0)):
+                optsplit = options[ret].replace('x240','').replace('x180','').replace('kbps','').split(' ')
+                if optsplit[2] == '(vp6/mp3)' and 'mp4:' in _playpath:
+                        continue
+                elif optsplit[0] in _playpath and optsplit[1] in _playpath:
                         item=xbmcgui.ListItem(name, iconImage='', thumbnailImage='')
                         item.setInfo( type="Video",infoLabels={ "Title": name})
                         item.setProperty("SWFPlayer", swfUrl)
                         item.setProperty("PlayPath", _playpath)
                         rtmpurl = _url
-                elif '_240' in _playpath and (xbmcplugin.getSetting("quality") == '2') or '_240' in _playpath and (ret == 1):
-                        item=xbmcgui.ListItem(name, iconImage='', thumbnailImage='')
-                        item.setInfo( type="Video",infoLabels={ "Title": name})
-                        item.setProperty("SWFPlayer", swfUrl)
-                        item.setProperty("PlayPath", _playpath)
-                        rtmpurl = _url
-                elif '_650' in _playpath and (xbmcplugin.getSetting("quality") == '1' or '_650' in _playpath and (ret == 0)):
-                        item=xbmcgui.ListItem(name, iconImage='', thumbnailImage='')
-                        item.setInfo( type="Video",infoLabels={ "Title": name})
-                        item.setProperty("SWFPlayer", swfUrl)
-                        item.setProperty("PlayPath", _playpath)
-                        rtmpurl = _url
-                elif '_300' in _playpath and (xbmcplugin.getSetting("quality") == '2') or '_300' in _playpath and (ret == 1):
+                elif optsplit[0] in _playpath:
                         item=xbmcgui.ListItem(name, iconImage='', thumbnailImage='')
                         item.setInfo( type="Video",infoLabels={ "Title": name})
                         item.setProperty("SWFPlayer", swfUrl)
@@ -222,42 +232,42 @@ except:
 print "Mode: "+str(mode)
 print "URL: "+str(url)
 print "Name: "+str(name)
-print "\n\n\n\n\n\n\nstart of NBC Universal plugin\n\n\n\n\n\n"
+print "\n\n\n\n\n\n\nstart of MTVN plugin\n\n\n\n\n\n"
 
 #List Categories
 if mode==None or url==None or len(url)<1:
         print ""
         listCategories()
-        xbmcplugin.endOfDirectory(int(sys.argv[1]))
+        xbmcplugin.endOfDirectory(int(sys.argv[1]),updateListing=False,cacheToDisc=True)
 #ARTISTS
 elif mode==1:
         print ""+url
         listAZ()
-        xbmcplugin.endOfDirectory(int(sys.argv[1]))
+        xbmcplugin.endOfDirectory(int(sys.argv[1]),updateListing=False,cacheToDisc=True)
 elif mode==11:
         print ""+url
         listArtistsAZ(url)
-        xbmcplugin.endOfDirectory(int(sys.argv[1]))
+        xbmcplugin.endOfDirectory(int(sys.argv[1]),updateListing=False,cacheToDisc=True)
 
 #GENRES
 elif mode==2:
         print ""+url
         listGenres(url)
-        xbmcplugin.endOfDirectory(int(sys.argv[1]))
+        xbmcplugin.endOfDirectory(int(sys.argv[1]),updateListing=False,cacheToDisc=True)
 elif mode==22:
         print ""+url
         listGenreArtist(url)
-        xbmcplugin.endOfDirectory(int(sys.argv[1]))
+        xbmcplugin.endOfDirectory(int(sys.argv[1]),updateListing=False,cacheToDisc=True)
 elif mode==23:
         print ""+url
         listGenreVideos(url)
-        xbmcplugin.endOfDirectory(int(sys.argv[1]))
+        xbmcplugin.endOfDirectory(int(sys.argv[1]),updateListing=False,cacheToDisc=True)
 
 #ARTISTS VIDEOS
 elif mode==3:
         print ""+url
         listArtistVideos(url)
-        xbmcplugin.endOfDirectory(int(sys.argv[1]))
+        xbmcplugin.endOfDirectory(int(sys.argv[1]),updateListing=False,cacheToDisc=True)
 
 #SEARCH ARTISTS or VIDEOS
 elif mode==5:

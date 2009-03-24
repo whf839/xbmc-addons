@@ -41,6 +41,7 @@ def getURL( url ):
 #Returns a list of videos for a specific search term.
 def videoSearch(term):
         VideoSearch = 'http://api.mtvnservices.com/1/video/search/'
+        term = '"'+term+'"'
         encode = urllib.quote_plus(term)
         url = VideoSearch +'?term='+ encode
         feed = feedparser.parse(url)
@@ -71,7 +72,6 @@ def artistAlias(artist):
 def artistVideos(artist):
         #ArtistVideos = 'http://api.mtvnservices.com/1/artist/[artist_uri]/videos'
         #url = ArtistVideos.replace('[artist_uri]',artist)
-        print artist
         url = artist+'videos/'
         feed = feedparser.parse(url)
         videos = []
@@ -87,10 +87,12 @@ def artistVideos(artist):
 #Returns a list of artists for a specific search term.
 def artistSearch(term):
         ArtistSearch = 'http://api.mtvnservices.com/1/artist/search/'
+        term = '"'+term+'"'
         encode = urllib.quote_plus(term)
         url = ArtistSearch +'?term='+ encode
         print url
         feed = feedparser.parse(url)
+        print feed
         artists = []
         for entry in feed.entries:
                 artist = []
@@ -130,7 +132,7 @@ def genreAlias(genre):
 
 #Returns a list of artists for a specified genre.
 def genreArtists(genre):
-        GenreArtists = 'http://api.mtvnservices.com/1/genre/[genre_alias]/artists/'
+        GenreArtists = 'http://api.mtvnservices.com/1/genre/[genre_alias]/artists/?max-results=100'
         url = GenreArtists.replace('[genre_alias]',genre)
         feed = feedparser.parse(url)
         artists = []
@@ -175,7 +177,11 @@ def getrtmp(url):
                         rtmpurl = rtmpurl.replace('rtmp://','')
                         rtmpsplit = rtmpurl.split('/ondemand/')
                         rtmphost = rtmpsplit[0]
-                        playpath = rtmpsplit[1].replace('.flv','')
+                        playpath = rtmpsplit[1]
+                        if '.flv' in playpath:
+                                playpath = playpath.replace('.flv','')
+                        elif '.mp4' in playpath:
+                                playpath = 'mp4:'+ playpath.replace('.mp4','')
                         app = 'ondemand' 
                         identurl = 'http://'+rtmphost+'/fcs/ident'
                         ident = getURL(identurl)
