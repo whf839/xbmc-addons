@@ -1,4 +1,4 @@
-__plugin__ = "NBC Universal"
+__plugin__ = "MTVN Plugin"
 __authors__ = "BlueCop"
 __credits__ = ""
 __version__ = "0.1"
@@ -13,8 +13,8 @@ def listCategories():
         addDir('Browse Artists A-Z', 'artists', 1)
         addDir('Browse Artists by Genre', 'artists', 2)
         addDir('Browse Videos by Genre', 'videos', 2)
-        #addDir('Search Artist', 'searchArtist', 1)
-        #addDir('Search Video', 'searchVideo', 1)
+        addDir('Search Artist', 'searchArtist', 5)
+        addDir('Search Video', 'searchVideo', 5)
         #addDir('Favorite Videos', 'favArtist', 1)
         #addDir('Favorite Artists', 'favVideo', 1)
         
@@ -99,8 +99,26 @@ def listArtistVideos(artist):
         for url, name, thumbnail in videos:
                 name = name.replace('&amp;','&').replace('&#039;',"'")
                 addLink(name, url, 4, thumbnail)
-        return        
+        return
 
+def listSearch(searchtype):
+        keyb = xbmc.Keyboard('', 'Search')
+        keyb.doModal()
+        if (keyb.isConfirmed()):
+                search = keyb.getText()
+                if searchtype == 'searchArtist':
+                        videos = mtvn.artistSearch(search)
+                        for url, name, thumbnail in videos:
+                                name = name.replace('&amp;','&').replace('&#039;',"'")
+                                addDir(name, url, 3, thumbnail)
+                elif searchtype == 'searchVideo':
+                        videos = mtvn.videoSearch(search)
+                        for url, name, thumbnail in videos:
+                                name = name.replace('&amp;','&').replace('&#039;',"'")
+                                addLink(name, url, 4, thumbnail)
+                xbmcplugin.endOfDirectory(int(sys.argv[1]))
+        return
+                
 #Get SMIL url and play video
 def playRTMP(url, name):
         ret = ''
@@ -240,6 +258,11 @@ elif mode==3:
         print ""+url
         listArtistVideos(url)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
+
+#SEARCH ARTISTS or VIDEOS
+elif mode==5:
+        print ""+url
+        listSearch(url)
 
 #Play Video
 elif mode==4:

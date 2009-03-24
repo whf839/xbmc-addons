@@ -39,8 +39,18 @@ def getURL( url ):
 
 #Requires parameters term ?term=
 #Returns a list of videos for a specific search term.
-def videoSearch(terms):
+def videoSearch(term):
         VideoSearch = 'http://api.mtvnservices.com/1/video/search/'
+        encode = urllib.quote_plus(term)
+        url = VideoSearch +'?term='+ encode
+        feed = feedparser.parse(url)
+        videos = []
+        for entry in feed.entries:
+                video = []
+                video.append(entry.id)
+                video.append(entry.author + ' - ' +entry.title)
+                video.append('')
+                videos.append(video)
         return videos
 
 #Returns a single video by encoded ID.
@@ -61,11 +71,11 @@ def artistAlias(artist):
 def artistVideos(artist):
         #ArtistVideos = 'http://api.mtvnservices.com/1/artist/[artist_uri]/videos'
         #url = ArtistVideos.replace('[artist_uri]',artist)
+        print artist
         url = artist+'videos/'
-        print url
         feed = feedparser.parse(url)
         videos = []
-        for entry in  feed.entries:
+        for entry in feed.entries:
                 video = []
                 video.append(entry.id)
                 video.append(entry.title)
@@ -76,7 +86,18 @@ def artistVideos(artist):
 #Requires parameters term ?term=
 #Returns a list of artists for a specific search term.
 def artistSearch(term):
-        ArtistSearch = 'http://api.mtvnservices.com/1/artist/search/[parameters]'
+        ArtistSearch = 'http://api.mtvnservices.com/1/artist/search/'
+        encode = urllib.quote_plus(term)
+        url = ArtistSearch +'?term='+ encode
+        print url
+        feed = feedparser.parse(url)
+        artists = []
+        for entry in feed.entries:
+                artist = []
+                artist.append(entry.id)
+                artist.append(entry.title)
+                artist.append('')
+                artists.append(artist)
         return artists
 
 #Retrieves a list of artists sorted alphabetically.
@@ -86,7 +107,7 @@ def artistBrowse(letter):
         url = ArtistBrowse.replace('[alpha]',letter)
         feed = feedparser.parse(url)
         artists = []
-        for entry in  feed.entries:
+        for entry in feed.entries:
                 artist = []
                 artist.append(entry.id)
                 artist.append(entry.title)
@@ -103,24 +124,6 @@ def relatedArtist(artist):
 #####################################     GENRE     ####################################       
 ########################################################################################
 
-#Genre Alias            Genre Name
-#world_reggae           World/Reggae
-#pop                    Pop
-#metal                  Metal
-#environmental          Environmental
-#latin                  Latin
-#randb                  R&B
-#rock                   Rock
-#easy_listening         Easy Listening
-#jazz                   Jazz
-#country                Country
-#hip_hop                Hip-Hop
-#classical              Classical
-#electronic_dance       Electronic / Dance
-#blues_folk             Blues / Folk
-#alternative            Alternative
-#soundtracks_musicals   Soundtracks / Musicals
-
 #Returns content links for a specified genre.
 def genreAlias(genre):
         GenreAlias = 'http://api.mtvnservices.com/1/genre/[genre_alias]/'
@@ -131,7 +134,7 @@ def genreArtists(genre):
         url = GenreArtists.replace('[genre_alias]',genre)
         feed = feedparser.parse(url)
         artists = []
-        for entry in  feed.entries:
+        for entry in feed.entries:
                 artist = []
                 artist.append(entry.id)
                 artist.append(entry.title)
@@ -145,7 +148,7 @@ def genreVideos(genre):
         url = GenreVideos.replace('[genre_alias]',genre)
         feed = feedparser.parse(url)
         videos = []
-        for entry in  feed.entries:
+        for entry in feed.entries:
                 video = []
                 video.append(entry.id)
                 video.append(entry.author + ' - ' +entry.title)
@@ -168,6 +171,7 @@ def getrtmp(url):
         rtmps = []
         for rtmpurl in urls:
                 if 'rtmp' in rtmpurl:
+                        rtmpurl =rtmpurl.replace('rtmpe','rtmp')
                         rtmpurl = rtmpurl.replace('rtmp://','')
                         rtmpsplit = rtmpurl.split('/ondemand/')
                         rtmphost = rtmpsplit[0]
