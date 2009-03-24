@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!-- German strings.xml by bootsy (bootsycollins82@gmail.com) -->
+<strings>
+    <!-- Errors -->
+    <string id="30900">Fehler!</string>
+    <string id="30901">Anmeldedaten fehlen!</string>
+    <string id="30902">Einstellungen: Kontext Menü - Plugin Einstellungen</string>
+    <string id="30903">Wenn Plugin fehlschlägt, probiere ein neueres XBMC Build</string>
+    <string id="30904">Anmeldung fehlgeschlagen, überprüfe Einstellungen</string>
+    <string id="30905">Keine Abonnements gefunden</string>
+    <string id="30906">Keine Inhalte gefunden</string>
+    <string id="30907">Keine Tags gefunden</string>
+
+    <!-- Plugin -->
+    <string id="30920">Benutzeranmeldung ..</string>
+    <string id="30921">Nächste Seite</string>
+
+    <!-- item skin -->
+    <string id="30940">Aktualisiert:</string>
+    <string id="30941">Author:</string>
+
+    <!-- Category -->
+    <string id="30950">Abonnements</string>
+    <string id="30951">Abonnements nach Label</string>
+    <string id="30952">Beiträge</string>
+    <string id="30953">Beiträge nach Label</string>
+    <string id="30954">Markierte</string>
+    <string id="30955">Shared</string>
+    <string id="30956">Notizen</string>
+
+    <!-- Settings -->
+    <string id="30000">Email Adresse</string>
+    <string id="30010">Benutzerpasswort</string>
+    <string id="30030">Beiträge pro Seite</string>
+    <string id="30040">Listenbilder laden (langsamer)?</string>
+    <string id="30050">Gelesene Beiträge anzeigen?</string>
+
+</strings>
