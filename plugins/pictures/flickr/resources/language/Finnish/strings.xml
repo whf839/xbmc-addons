@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings> <!--  19.3.2009 Finnish   -->
+<strings> <!--  25.3.2009 Finnish   -->
     <!-- Plugin strings -->
     <string id="30900">Flickr-lisäke</string>
     <string id="30901">Käyttäjän Id-tunnnus on sopimaton!</string>
@@ -17,7 +17,7 @@
     <string id="30913">Peruuta</string>
     <string id="30914">Valtuutettu</string>
     <string id="30915">Ota FTP-yhteys xboksiin ja nouda q:\\xbmc.log&#10;tiedosto.'Etsi XBMC Flicker valtuutusosoite:'&#10;Kopioi tämä nettiselaimeen ja varmenna.</string>
-    <string id="30916">Käyttäjänimi tai sähköpostiosoite</string>
+    <string id="30916">Haettava käyttäjänimi tai sähköpostiosoite</string>
 
     <!-- Category strings -->
     <string id="30950">Omat kuvakokoelmat</string>
