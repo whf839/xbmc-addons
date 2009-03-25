@@ -89,7 +89,6 @@ def listGenreArtist(genre):
 
 def listGenreVideos(genre):
         videos = mtvn.genreVideos(genre)
-        print videos
         for url, name, thumbnail in videos:
                 name = name.replace('&amp;','&').replace('&#039;',"'")
                 addLink(name, url, 4, thumbnail)
@@ -97,10 +96,17 @@ def listGenreVideos(genre):
 
 def listArtistVideos(artist):
         videos = mtvn.artistVideos(artist)
-        print videos
+        addDir(' Related Artists', artist, 6, '')
         for url, name, thumbnail in videos:
                 name = name.replace('&amp;','&').replace('&#039;',"'")
                 addLink(name, url, 4, thumbnail)
+        return
+
+def listRelatedArtists(artist):
+        artists = mtvn.relatedArtists(artist)
+        for url, name, thumbnail in artists:
+                name = name.replace('&amp;','&').replace('&#039;',"'")
+                addDir(name, url, 3, thumbnail)
         return
 
 def listSearch(searchtype):
@@ -278,6 +284,12 @@ elif mode==23:
 elif mode==3:
         print ""+url
         listArtistVideos(url)
+        xbmcplugin.endOfDirectory(int(sys.argv[1]),updateListing=False,cacheToDisc=True)
+
+#RELATED ARTISTS
+elif mode==6:
+        print ""+url
+        listRelatedArtists(url)
         xbmcplugin.endOfDirectory(int(sys.argv[1]),updateListing=False,cacheToDisc=True)
 
 #SEARCH ARTISTS or VIDEOS
