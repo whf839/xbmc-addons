@@ -106,17 +106,28 @@ def listArtistVideos(artist):
 def listSearch(searchtype):
         keyb = xbmc.Keyboard('', 'Search')
         keyb.doModal()
+        c = 0
         if (keyb.isConfirmed()):
                 search = keyb.getText()
                 if searchtype == 'searchArtist':
                         videos = mtvn.artistSearch(search)
                         for url, name, thumbnail in videos:
-                                name = name.replace('&amp;','&').replace('&#039;',"'")
+                                c = c + 1
+                                if len(str(c)) == 1:
+                                        count = '0'+str(c)+'. '
+                                else:
+                                        count = str(c)+'. '
+                                name = count + name.replace('&amp;','&').replace('&#039;',"'")
                                 addDir(name, url, 3, thumbnail)
                 elif searchtype == 'searchVideo':
                         videos = mtvn.videoSearch(search)
                         for url, name, thumbnail in videos:
-                                name = name.replace('&amp;','&').replace('&#039;',"'")
+                                c = c + 1
+                                if len(str(c)) == 1:
+                                        count = '0'+str(c)+'. '
+                                else:
+                                        count = str(c)+'. '
+                                name = str(count) +'. '+ name.replace('&amp;','&').replace('&#039;',"'")
                                 addLink(name, url, 4, thumbnail)
                 xbmcplugin.endOfDirectory(int(sys.argv[1]),updateListing=False,cacheToDisc=True)
         return
