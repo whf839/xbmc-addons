@@ -1,23 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings> <!--  12.3.2009 Finnish   -->
+<strings> <!--  25.3.2009 Finnish   -->
     <!-- Plugin strings -->
     <string id="30900">Haun talletus</string>
     <string id="30901">Haluatko tallettaa tämän haun?</string>
     <string id="30902">Haun talletus epäonnistui!</string>
     <string id="30903">Haun talletus epäonnistui virheeseen:</string>
-    <string id="30904">käyttäjällä ei ollut kuvausta itsestä tai se ei ollut utf-8-muodossa</string>
+    <string id="30904">Käyttäjällä ei ollut kuvausta itsestä tai se ei ollut utf-8-muodossa</string>
     <string id="30905">Haun talletusnimi</string>
-    <string id="30906">Hae sanoja</string>
-    <string id="30907">Hae käyttäjätunnistetta</string>
+    <string id="30906">Kuvien hakusana</string>
+    <string id="30907">Haettava käyttäjänimi</string>
     <string id="30908">Kuvat</string>
     <string id="30909">Albumeja</string>
 
     <!-- Category strings -->
     <string id="30950">Omat albumit</string>
-    <string id="30951">Hae kuvia</string>
-    <string id="30952">Hae ihmistä</string>
-    <string id="30953">Hae ihmistä...</string>
-    <string id="30954">Hae kuvia...</string>
+    <string id="30951">Etsi kuvia</string>
+    <string id="30952">Etsi ihmistä</string>
+    <string id="30953">Etsi ihmistä...</string>
+    <string id="30954">Etsi kuvia...</string>
     <string id="30955">Omat kuvat</string>
 
     <!-- Plugin settings strings -->
