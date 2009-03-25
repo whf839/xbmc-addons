@@ -199,10 +199,36 @@ def artistBrowse(letter):
                         artist.append('')
                 artists.append(artist)
         return artists
+
 #Returns a list of artists related to the specified artist.
-def relatedArtist(artist):
-        RelatedArtist = 'http://api.mtvnservices.com/1/artist/[artist_uri]/related/'
-        return related
+def relatedArtists(artist):
+        #RelatedArtist = 'http://api.mtvnservices.com/1/artist/[artist_uri]/related/'
+        #url = RelatedArtist.replace('[artist_uri]',artist)
+        url = artist+'related/'
+        response = getURL(url)
+        tree1 = ElementTree(fromstring(response))
+        artists = []
+        for entry in tree1.getroot().findall('{%s}entry' % atom):
+                artist = []
+                artist.append(entry.find('{%s}id' % atom).text)
+                artist.append(entry.find('{%s}title' % atom).text)
+                turl = [0,'url']
+                for t in entry.findall('{%s}thumbnail' % media):
+                        url = t.get('url')
+                        width = t.get('width')
+                        height = t.get('height')
+                        w = int(width)
+                        h = int(height)
+                        pixels = w*h
+                        if pixels > turl[0]:
+                                turl[0] = pixels
+                                turl[1] = url
+                if turl[1] <> 'url':               
+                        artist.append(turl[1])
+                else:
+                        artist.append('')
+                artists.append(artist)
+        return artists
 
 ########################################################################################
 #####################################     GENRE     ####################################       
