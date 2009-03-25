@@ -19,19 +19,10 @@ def getURL( url ):
                 link=response.read()
                 response.close()
         except urllib2.URLError, e:
+                error = 'Error code: '+ str(e.code)
+                xbmcgui.Dialog().ok(error,error)
                 print 'Error code: ', e.code
-                try:
-                        print 'MTVN --> getURL ERROR RETRY1 :: url = '+url
-                        req = urllib2.Request(url)
-                        req.addheaders = [('Referer', 'http://www.mtv.com'),
-                                          ('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7)')]
-                        response = urllib2.urlopen(req)
-                        link=response.read()
-                        response.close()
-                except urllib2.URLError, e:
-                        print 'Error code: ', e.code
-                        print 'FAILED TO RETRIVE URL'
-                        return False
+                return False
         else:
                 return link
 
@@ -62,6 +53,8 @@ def videoSearch(term):
         encode = urllib.quote_plus(term)
         url = VideoSearch +'?term='+ encode
         response = getURL(url)
+        if response == False:
+                return False
         tree1 = ElementTree(fromstring(response))
         videos = []
         for entry in tree1.getroot().findall('{%s}entry' % atom):
@@ -109,6 +102,8 @@ def artistVideos(artist):
         #url = ArtistVideos.replace('[artist_uri]',artist)
         url = artist+'videos/'
         response = getURL(url)
+        if response == False:
+                return False
         tree1 = ElementTree(fromstring(response))
         videos = []
         count = 0
@@ -146,6 +141,8 @@ def artistSearch(term):
         url = ArtistSearch +'?term='+ encode
         print url
         response = getURL(url)
+        if response == False:
+                return False
         tree1 = ElementTree(fromstring(response))
         artists = []
         for entry in tree1.getroot().findall('{%s}entry' % atom):
@@ -176,6 +173,8 @@ def artistBrowse(letter):
         ArtistBrowse = 'http://api.mtvnservices.com/1/artist/browse/[alpha]'
         url = ArtistBrowse.replace('[alpha]',letter)
         response = getURL(url)
+        if response == False:
+                return False
         tree1 = ElementTree(fromstring(response))
         artists = []
         for entry in tree1.getroot().findall('{%s}entry' % atom):
@@ -206,6 +205,8 @@ def relatedArtists(artist):
         #url = RelatedArtist.replace('[artist_uri]',artist)
         url = artist+'related/'
         response = getURL(url)
+        if response == False:
+                return False
         tree1 = ElementTree(fromstring(response))
         artists = []
         for entry in tree1.getroot().findall('{%s}entry' % atom):
@@ -243,6 +244,8 @@ def genreArtists(genre):
         GenreArtists = 'http://api.mtvnservices.com/1/genre/[genre_alias]/artists/'
         url = GenreArtists.replace('[genre_alias]',genre)
         response = getURL(url)
+        if response == False:
+                return False
         tree1 = ElementTree(fromstring(response))
         artists = []
         for entry in tree1.getroot().findall('{%s}entry' % atom):
@@ -272,6 +275,8 @@ def genreVideos(genre):
         GenreVideos = 'http://api.mtvnservices.com/1/genre/[genre_alias]/videos/'
         url = GenreVideos.replace('[genre_alias]',genre)
         response = getURL(url)
+        if response == False:
+                return False
         tree1 = ElementTree(fromstring(response))
         videos = []
         for entry in tree1.getroot().findall('{%s}entry' % atom):
@@ -307,6 +312,8 @@ def getrtmp(uri):
         print uri
         smilurl = 'http://api-media.mtvnservices.com/player/embed/includes/mediaGen.jhtml?uri='+uri+'&vid='+uri.split(':')[4]+'&ref={ref}'
         smil = getURL(smilurl)
+        if smil == False:
+                return False
         urls = re.compile('<src>(.+?)</src>').findall(smil)
         rtmps = []
         for rtmpurl in urls:

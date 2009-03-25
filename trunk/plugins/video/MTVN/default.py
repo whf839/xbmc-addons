@@ -75,6 +75,8 @@ def listGenres(mode):
 
 def listArtistsAZ(letter):
         artists = mtvn.artistBrowse(letter)
+        if artists == False:
+                return
         for url, name, thumbnail in artists:
                 name = name.replace('&amp;','&').replace('&#039;',"'")
                 addDir(name, url, 3, thumbnail)
@@ -82,6 +84,8 @@ def listArtistsAZ(letter):
 
 def listGenreArtist(genre):
         artists = mtvn.genreArtists(genre)
+        if artists == False:
+                return
         for url, name, thumbnail in artists:
                 name = name.replace('&amp;','&').replace('&#039;',"'")
                 addDir(name, url, 3, thumbnail)
@@ -89,6 +93,8 @@ def listGenreArtist(genre):
 
 def listGenreVideos(genre):
         videos = mtvn.genreVideos(genre)
+        if videos == False:
+                return
         for url, name, thumbnail in videos:
                 name = name.replace('&amp;','&').replace('&#039;',"'")
                 addLink(name, url, 4, thumbnail)
@@ -96,6 +102,8 @@ def listGenreVideos(genre):
 
 def listArtistVideos(artist):
         videos = mtvn.artistVideos(artist)
+        if videos == False:
+                return
         addDir(' Related Artists', artist, 6, '')
         for url, name, thumbnail in videos:
                 name = name.replace('&amp;','&').replace('&#039;',"'")
@@ -104,6 +112,8 @@ def listArtistVideos(artist):
 
 def listRelatedArtists(artist):
         artists = mtvn.relatedArtists(artist)
+        if artists == False:
+                return
         for url, name, thumbnail in artists:
                 name = name.replace('&amp;','&').replace('&#039;',"'")
                 addDir(name, url, 3, thumbnail)
@@ -117,6 +127,8 @@ def listSearch(searchtype):
                 search = keyb.getText()
                 if searchtype == 'searchArtist':
                         videos = mtvn.artistSearch(search)
+                        if videos == False:
+                                return
                         for url, name, thumbnail in videos:
                                 c = c + 1
                                 if len(str(c)) == 1:
@@ -127,6 +139,8 @@ def listSearch(searchtype):
                                 addDir(name, url, 3, thumbnail)
                 elif searchtype == 'searchVideo':
                         videos = mtvn.videoSearch(search)
+                        if videos == False:
+                                return
                         for url, name, thumbnail in videos:
                                 c = c + 1
                                 if len(str(c)) == 1:
@@ -141,6 +155,8 @@ def listSearch(searchtype):
 #Get SMIL url and play video
 def playRTMP(url, name):
         rtmps = mtvn.getrtmp(url)
+        if rtmps == False:
+                return
         swfUrl = mtvn.getswfUrl()
         options = []
         for _url,_playpath in rtmps:
