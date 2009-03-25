@@ -21,7 +21,7 @@
 			<posy>35</posy>
 			<width>570</width>
 			<height>485</height>
-			<texture border="20,10,10,30">dialog-panel2.png</texture>
+			<texture border="20,10,10,30">dialog-panel.png</texture>
 		</control>
 		<control type="label" id="4">
 			<description>Item Title value</description>
@@ -31,7 +31,7 @@
 			<height>30</height>
 			<align>center</align>
 			<aligny>center</aligny>
-			<textcolor>dialogheader</textcolor>
+			<textcolor>DDced8da</textcolor>
 			<label></label>
 			<font>special13</font>
 		</control>
@@ -68,19 +68,19 @@
 			<label>-</label>
 			<font>special11</font>
 			<align>justify</align>
-			<textcolor>white</textcolor>
+			<textcolor>0xFFFFFFFF</textcolor>
 			<pagecontrol>61</pagecontrol>
 		</control>
 		<control type="scrollbar" id="61">
 			<posx>575</posx>
 			<posy>150</posy>
-			<include>scrollbar_width</include>
+			<width>20</width>
 			<height>340</height>
-			<texturesliderbackground border="4">scrollbar_background.png</texturesliderbackground>
+<!--			<texturesliderbackground border="4">scrollbar_background.png</texturesliderbackground>
 			<texturesliderbar border="4">scrollbar_bar.png</texturesliderbar>
 			<texturesliderbarfocus border="4">scrollbar_bar_focus.png</texturesliderbarfocus>
 			<textureslidernib>osd_slider_nibNF.png</textureslidernib>
-			<textureslidernibfocus>osd_slider_nibFO.png</textureslidernibfocus>
+			<textureslidernibfocus>osd_slider_nibFO.png</textureslidernibfocus> -->
 			<onleft>61</onleft>
 			<onright>61</onright>
 			<ondown>61</ondown>
@@ -96,7 +96,7 @@
 			<height>30</height>
 			<align>right</align>
 			<aligny>center</aligny>
-			<textcolor>dialogheader</textcolor>
+			<textcolor>DDced8da</textcolor>
 			<label>$LOCALIZE[30940]</label>
 			<font>special12</font>
 		</control>
@@ -108,7 +108,7 @@
 			<height>30</height>
 			<align>left</align>
 			<aligny>center</aligny>
-			<textcolor>grey</textcolor>
+			<textcolor>0xFFFFFFFF</textcolor>
 			<label></label>
 			<font>special12</font>
 		</control>
@@ -120,7 +120,7 @@
 			<height>25</height>
 			<align>right</align>
 			<aligny>center</aligny>
-			<textcolor>dialogheader</textcolor>
+			<textcolor>DDced8da</textcolor>
 			<label>$LOCALIZE[30941]</label>
 			<font>special12</font>
 		</control>
@@ -132,7 +132,7 @@
 			<height>25</height>
 			<align>left</align>
 			<aligny>center</aligny>
-			<textcolor>grey</textcolor>
+			<textcolor>0xFFFFFFFF</textcolor>
 			<label></label>
 			<font>special12</font>
 		</control>
