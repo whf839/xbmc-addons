@@ -4,7 +4,7 @@
 # Author: stacked < http://xbmc.org/forum/member.php?u=26908 >
 # Changelog & More Info: http://xbmc.org/forum/showthread.php?p=277591
 
-version='r870'
+version='r872'
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 THUMBNAIL_PATH = os.path.join(os.getcwd().replace( ";", "" ),'resources','media')
 
@@ -267,6 +267,10 @@ def playVideo(url, name):
 					dp.close()
 	flv_file = None
 	stream = 'false'
+	drive = xbmc.translatePath( ( "U:\\" , "Q:\\" )[ os.environ.get( "OS", "xbox" ) == "xbox" ] )
+	tempDir = os.path.join( drive, 'cache' )
+	if not os.path.isdir( tempDir) :
+		os.makedirs( tempDir )
 	if (xbmcplugin.getSetting('download') == 'true'):
 			flv_file = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), name))
 			Download(url,flv_file)
