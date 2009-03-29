@@ -4,9 +4,9 @@
 # Author: stacked < http://xbmc.org/forum/member.php?u=26908 >
 # Changelog & More Info: http://xbmc.org/forum/showthread.php?p=277591
 
+version='r663'
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
-
-THUMBNAIL_PATH = os.path.join( os.getcwd(), "thumbnails" )
+THUMBNAIL_PATH = os.path.join(os.getcwd().replace( ";", "" ),'resources','media')
 
 
 def showRoot():
@@ -186,6 +186,7 @@ def showListB(url,name):
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
 def showList(url,name):
+		print url
 		req = urllib2.Request(url)
 		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.6) Gecko/2009011913 Firefox/3.0.6')
 		f=urllib2.urlopen(req)
@@ -193,15 +194,55 @@ def showList(url,name):
 		f.close()
 		p=re.compile('<headline><!\[CDATA\[(.+?)\]\]></headline>')
 		o=re.compile('<caption><!\[CDATA\[(.+?)\]\]></caption>')
-		q=re.compile('<asseturl ><!\[CDATA\[(.+?)\]\]></asseturl>')
+		q=re.compile('<!\[CDATA\[(.+?)\]\]></asseturl>')
 		r=re.compile('<thumbnailurl  onError="/broadband/video/images/thumb_default.gif"><!\[CDATA\[(.+?)\]\]></thumbnailurl>')
 		title=p.findall(a)
 		info=o.findall(a)
 		flv=q.findall(a)
+		print flv
 		thumbs=r.findall(a)
 		url='http://seavideo-ak.espn.go.com/motion/' + flv[0]
 		name=title[0]
 		playVideo(url, name)
+		
+def Update(version):
+	def downloadFile(url):
+		drive = xbmc.translatePath( ( "U:\\" , "Q:\\" )[ os.environ.get( "OS", "xbox" ) == "xbox" ] )
+		tempDir = os.path.join( drive, 'cache' )
+		temp = os.path.join( drive, 'cache' ,'ESPN_Video_'+newVersion+'.zip')
+		if not os.path.isdir( tempDir) :
+			os.makedirs( tempDir )
+		dp = xbmcgui.DialogProgress()       
+		dp.create(xbmc.getLocalizedString( 30017 ), xbmc.getLocalizedString( 30018 ),url)
+		urllib.urlretrieve(url,temp,lambda nb, bs, fs, url=url: _pbhook(nb,bs,fs,url,dp))
+		path = os.path.join( drive,'plugins','Video') 
+		xbmc.executebuiltin("XBMC.Extract("+temp+","+path+")")
+		dp.close()
+		di = xbmcgui.Dialog()
+		ok = di.ok(xbmc.getLocalizedString( 30023 ), xbmc.getLocalizedString( 30024 ))
+		
+	def _pbhook(numblocks, blocksize, filesize, url=None,dp=None):
+		try:
+			percent = min((numblocks*blocksize*100)/filesize, 100)
+			dp.update(percent)
+		except:
+			percent = 100
+			dp.update(percent)
+		if dp.iscanceled():  
+			dp.close()
+
+	req = urllib2.Request('http://code.google.com/p/plugin/downloads/list?q=label:Featured')
+	response = urllib2.urlopen(req)
+	page = response.read()
+	response.close()
+	ALL = re.compile('http://plugin.googlecode.com/files/ESPN_Video_(.+?).zip').findall(page)
+	for link in ALL :
+		if link.find(version) != 0:
+			newVersion=link
+			dia = xbmcgui.Dialog()
+			if dia.yesno(xbmc.getLocalizedString( 30019 ), xbmc.getLocalizedString( 30020 )+'\n'+xbmc.getLocalizedString( 30021 )+version+'\n'+xbmc.getLocalizedString( 30022 )+newVersion):
+				url='http://plugin.googlecode.com/files/ESPN_Video_'+newVersion+'.zip'
+				downloadFile(url)
 			
 def playVideo(url, name):
 	vid = url
@@ -293,6 +334,8 @@ except:
         pass
 
 if mode==None:
+	if xbmcplugin.getSetting("update") == "true":
+		Update(version)
 	showRoot()
 elif mode==1:
 	showList(url, name)
