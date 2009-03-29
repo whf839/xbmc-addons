@@ -52,7 +52,7 @@ class _Parser:
                             video_url = self.BASE_STREAMING_URL % ( video_id[ 7 : ], )
                             tease_txt = video_id
                         # use larger image file and date
-                        elif ( node.tagName == "image_url" ):
+                        elif ( node.tagName == "image_url" or node.tagName == "splash_image_url" ):
                             image_url = node.firstChild.nodeValue
                             if ( not image_url.startswith( "http://" ) ):
                                 image_url = self.BASE_URL + image_url[ 1 : ]
