@@ -145,7 +145,7 @@ class Main:
 
 			if quit: break
 
-		pprint (self.INSTALLED)
+#		pprint (self.INSTALLED)
 		log("< checkUpdates() updated count=%d" % len(self.INSTALLED))
 
 	#####################################################################################################
