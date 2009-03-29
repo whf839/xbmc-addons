@@ -4,7 +4,7 @@
 # Author: stacked < http://xbmc.org/forum/member.php?u=26908 >
 # Changelog & More Info: http://xbmc.org/forum/showthread.php?p=277591
 
-version='r865'
+version='r870'
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 THUMBNAIL_PATH = os.path.join(os.getcwd().replace( ";", "" ),'resources','media')
 
@@ -173,9 +173,9 @@ def showListB(url,name):
 		x=0
 		for url2 in thumbs:
 			name=title[x]
-			url='http://sports.espn.go.com/broadband/mpf/config/player/playlist.xml?id=' + thumbs[x][1]
+			url='http://sports.espn.go.com/broadband/mpf/config/player/playlist.xml?id=' + thumbs[x][1] + '&player=videoHub09'
 			thumb=thumbs[x][3]
-			name1 = str(int(x+1))+'. '+name
+			name1 = str(int(x+1+12*int(page)))+'. '+name
 			li=xbmcgui.ListItem(name1, iconImage=thumb, thumbnailImage=thumb)
 			li.setInfo( type="Video", infoLabels={ "Title": name1 } )
 			u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
@@ -186,7 +186,6 @@ def showListB(url,name):
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
 def showList(url,name):
-		print url
 		req = urllib2.Request(url)
 		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.6) Gecko/2009011913 Firefox/3.0.6')
 		f=urllib2.urlopen(req)
@@ -194,14 +193,14 @@ def showList(url,name):
 		f.close()
 		p=re.compile('<headline><!\[CDATA\[(.+?)\]\]></headline>')
 		o=re.compile('<caption><!\[CDATA\[(.+?)\]\]></caption>')
-		q=re.compile('<!\[CDATA\[(.+?)\]\]></asseturl>')
+		#q=re.compile('<!\[CDATA\[(.+?)\]\]></asseturl>')
+		q=re.compile('<mediaid >(.+?)</mediaid>')
 		r=re.compile('<thumbnailurl  onError="/broadband/video/images/thumb_default.gif"><!\[CDATA\[(.+?)\]\]></thumbnailurl>')
 		title=p.findall(a)
 		info=o.findall(a)
 		flv=q.findall(a)
-		print flv
 		thumbs=r.findall(a)
-		url='http://seavideo-ak.espn.go.com/motion/' + flv[0]
+		url='http://seavideo-ak.espn.go.com/motion/' + flv[0] + '.flv'
 		name=title[0]
 		playVideo(url, name)
 		
