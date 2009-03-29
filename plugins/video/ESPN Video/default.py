@@ -4,7 +4,7 @@
 # Author: stacked < http://xbmc.org/forum/member.php?u=26908 >
 # Changelog & More Info: http://xbmc.org/forum/showthread.php?p=277591
 
-version='r663'
+version='r664'
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 THUMBNAIL_PATH = os.path.join(os.getcwd().replace( ";", "" ),'resources','media')
 
