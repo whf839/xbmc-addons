@@ -66,6 +66,7 @@ def showMP4Links(site):
             url=temp.replace('%2F','/').replace('%3A',':')
             print url
         addLink(str(i+1)+'. '+name,url,date,'')
+
 def showList(url):
     addDir(xbmc.getLocalizedString(30007),url,8)
     tree=BeautifulSoup(getLink(url))
@@ -81,29 +82,22 @@ def playRandom(url):
     tree=BeautifulSoup(getLink(url))
     videos=tree.findAll('li')
     li=BeautifulSoup(''.join(str(choice(videos))))
-    #li=BeautifulSoup(''.join(str(videos[0])))
     title=li('a')[1].contents[0].string
     page='http://www.theonion.com'+li('a')[0]['href']
     thumb=li('img')[0]['src']
     playItem(page,title,thumb)
 
 def playItem(url,name,thumb):
-    b=[]
     link=getLink(url)
-    p=re.compile('flashvars=&quot;file=(.*embedded_video)&quot;&gt;')
-    match=p.findall(link)
-    for a in match:
-        link=getLink(a)
+    p=re.compile('name="nid" content="([0-9]*)"')
+    link=getLink('http://www.theonion.com/content/xml/'+p.findall(link)[0]+'/video')
     p=re.compile('<enclosure url="(.+?)" type')
     match=p.findall(link)
-    for a in match:
-        b.append(a)
-    for i in range(len(b)):
-	p=b[i].rindex('.')
-	q=b[i].rindex('/')
-	#if (b[i][q:p].isupper()):
-        url=b[i]
-    addLink(name,url,'',thumb)
+    for video in match:
+        if 'bookend' not in video:
+            url = video
+    xbmc.Player.play(url)
+    #addLink(name,url,'',thumb)
 	    
         
 ########################################
@@ -131,12 +125,12 @@ except:
     pass
 if mode==None or url==None or len(url)<1:
     addDir('1. '+xbmc.getLocalizedString(30000),'http://theonion.com/content/onn/ajax_videolist/onn',1)
-    addDir('2. '+xbmc.getLocalizedString(30001),'http://theonion.com/content/onn/ajax_videolist/most_viewed',1)
-    addDir('3. '+xbmc.getLocalizedString(30002),'http://theonion.com/content/onn/ajax_videolist/ospan',1)
-    addDir('4. '+xbmc.getLocalizedString(30003),'http://theonion.com/content/onn/ajax_videolist/in_the_know',1)
-    addDir('5. '+xbmc.getLocalizedString(30004),'http://theonion.com/content/onn/ajax_videolist/wftwh',1)
-    addDir('6. '+xbmc.getLocalizedString(30005),'http://theonion.com/content/onn/ajax_videolist/today_now',1)
-    addDir('7. '+xbmc.getLocalizedString(30006),'http://feeds.theonion.com/onionnewsnetwork',7)
+    addDir(xbmc.getLocalizedString(30001),'http://www.theonion.com/content/ajax/onn/list/8/0/mostpopular',1)
+    addDir(xbmc.getLocalizedString(30002),'http://www.theonion.com/content/ajax/onn/list/8/0/ospan',1)
+    addDir(xbmc.getLocalizedString(30003),'http://www.theonion.com/content/ajax/onn/list/8/0/intheknow',1)
+    addDir(xbmc.getLocalizedString(30005),'http://www.theonion.com/content/ajax/onn/list/8/0/todaynow',1)
+    addDir(xbmc.getLocalizedString(30004),'http://www.theonion.com/content/ajax/onn/list/8/0/sports',1)
+    addDir(xbmc.getLocalizedString(30006),'http://feeds.theonion.com/onionnewsnetwork',7)
 if mode==1:
     showList(url)
 if mode==2:
