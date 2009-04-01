@@ -1,10 +1,11 @@
-# XBMC Video Plugin
-# NBA.com Videos
-# Updated: 01/10/08
-# ver. 1.02
-# Author: stacked < http://xbmc.org/forum/member.php?u=26908 >
-# Changelog & More Info: http://xbmc.org/forum/showthread.php?t=42321
 
+__scriptname__ = "NBA.com Videos"
+__author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
+__svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/NBA.com%20Videos"
+__date__ = '2009-04-01'
+__version__ = "r878"
+
+HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.8) Gecko/2009032609 Firefox/3.0.8'
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 
 def showRoot():
@@ -19,6 +20,17 @@ def showRoot():
 		li4=xbmcgui.ListItem("Top Plays")
 		u4=sys.argv[0]+"?mode=2&url="+urllib.quote_plus(url2)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u4,li4,True)
+		# li5=xbmcgui.ListItem("TNT OverTime")
+		# u5=sys.argv[0]+"?mode=6"
+		# xbmcplugin.addDirectoryItem(int(sys.argv[1]),u5,li5,True)
+		url="http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/channels/video_channel_nbatv.txt"
+		li3=xbmcgui.ListItem("NBA TV")
+		u3=sys.argv[0]+"?mode=2&url="+urllib.quote_plus(url)
+		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u3,li3,True)
+		url="http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/channels/video_channel_tntovertime.txt"
+		li3=xbmcgui.ListItem("TNT OverTime")
+		u3=sys.argv[0]+"?mode=2&url="+urllib.quote_plus(url)
+		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u3,li3,True)
 
 def showTeams():
 		li=xbmcgui.ListItem("Team Highlights")
@@ -27,13 +39,37 @@ def showTeams():
 		li2=xbmcgui.ListItem("Team Originals")
 		u2=sys.argv[0]+"?mode=4"
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u2,li2,True)
+
+# def showTNT():
+		# url="http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/channels/video_channel_tntovertime_topfiveofinside.txt"
+		# li=xbmcgui.ListItem("Top 5 of Inside the NBA: #1")
+		# u=sys.argv[0]+"?mode=2&url="+urllib.quote_plus(url)
+		# xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+		# url="http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/channels/video_channel_tntovertime_reggiesmailbag.txt"
+		# li=xbmcgui.ListItem("Reggie's Mailbag")
+		# u=sys.argv[0]+"?mode=2&url="+urllib.quote_plus(url)
+		# xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+		# url="http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/channels/video_channel_tntovertime_soundoff.txt"
+		# li=xbmcgui.ListItem("TNT Soundoff")
+		# u=sys.argv[0]+"?mode=2&url="+urllib.quote_plus(url)
+		# xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+		# url="http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/channels/video_channel_tntovertime_insidethenba.txt"
+		# li=xbmcgui.ListItem("Inside the NBA")
+		# u=sys.argv[0]+"?mode=2&url="+urllib.quote_plus(url)
+		# xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+		# url="http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/channels/video_channel_tntovertime_insiderreport.txt"
+		# li=xbmcgui.ListItem("Insider Report with David Aldridge")
+		# u=sys.argv[0]+"?mode=2&url="+urllib.quote_plus(url)
+		# xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 		
 def showCategories():
 		nba=['bos', 'njn', 'nyk', 'phi', 'tor', 'chi', 'cle', 'det', 'ind', 'mil', 'atl', 'cha', 'mia', 'orl', 'was', 'dal', 'hou', 'mem', 'noh', 'sas', 'den', 'min', 'por', 'okc', 'uth', 'gsw', 'lac', 'lal', 'pho', 'sac']
 		teams=['Boston Celtics', 'New Jersey Nets', 'New York Knicks', 'Philadelphia 76ers', 'Toronto Raptors', 'Chicago Bulls', 'Cleveland Cavaliers', 'Detroit Pistons', 'Indiana Pacers', 'Milwaukee Bucks', 'Atlanta Hawks', 'Charlotte Bobcats', 'Miami Heat', 'Orlando Magic', 'Washington Wizards', 'Dallas Mavericks', 'Houston Rockets', 'Memphis Grizzlies', 'New Orleans Hornets', 'San Antonio Spurs','Denver Nuggets', 'Minnesota Timberwolves', 'Portland Trail Blazers', 'Oklahoma City Thunder', 'Utah Jazz', 'Golden State Warriors', 'Los Angeles Clippers', 'Los Angeles Lakers', 'Phoenix Suns', 'Sacramento Kings' ]         
 		x=0
 		url="http://www.nba.com/rss/"
-		f=urllib2.urlopen(url)
+		req = urllib2.Request(url)
+		req.add_header('User-Agent', HEADER)
+		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
 		p=re.compile('"http://www.nba.com/media/(.+?).gif"')
@@ -54,7 +90,9 @@ def showCategories2():
 		teams=['Boston Celtics', 'New Jersey Nets', 'New York Knicks', 'Philadelphia 76ers', 'Toronto Raptors', 'Chicago Bulls', 'Cleveland Cavaliers', 'Detroit Pistons', 'Indiana Pacers', 'Milwaukee Bucks', 'Atlanta Hawks', 'Charlotte Bobcats', 'Miami Heat', 'Orlando Magic', 'Washington Wizards', 'Dallas Mavericks', 'Houston Rockets', 'Memphis Grizzlies', 'New Orleans Hornets', 'San Antonio Spurs','Denver Nuggets', 'Minnesota Timberwolves', 'Portland Trail Blazers', 'Oklahoma City Thunder', 'Utah Jazz', 'Golden State Warriors', 'Los Angeles Clippers', 'Los Angeles Lakers', 'Phoenix Suns', 'Sacramento Kings' ]         
 		x=0
 		url="http://www.nba.com/rss/"
-		f=urllib2.urlopen(url)
+		req = urllib2.Request(url)
+		req.add_header('User-Agent', HEADER)
+		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
 		p=re.compile('"http://www.nba.com/media/(.+?).gif"')
@@ -72,13 +110,16 @@ def showCategories2():
 
 def showList(url,page):
 		thisurl=url
-		f=urllib2.urlopen(url)
+		req = urllib2.Request(url)
+		req.add_header('User-Agent', HEADER)
+		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
 		p=re.compile('<div class="nbaVideoImageWrapper"><img src="(.+?)"><span class="nbaSpanOverlay"></span></div></a><a href="javascript:changePlaylist(''(.+?)'');" class="nbaVideoGridContentHeader">(.+?)</a><div class="nbaVideoGridTextBlock">(.+?)</div>')
 		URLS=p.findall(a)
 		x=0
 		for thumb, url, url2, name, info in URLS:
+			print url
 			name = str(int(x+1))+'. '+name
 			url=url.replace('(','')
 			url=url.replace(')','')
@@ -87,6 +128,8 @@ def showList(url,page):
 			url=url.replace('/video/','')
 			url=url.replace('.json','')
 			url = 'http://nba.cdn.turner.com/nba/big/' + url + '_nba_576x324.flv'
+			print url
+			print "+"
 			li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
 			li.setInfo( type="Video", infoLabels={ "Title": name+' - '+info } )
 			u=sys.argv[0]+"?mode=3&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
@@ -186,6 +229,8 @@ elif mode==4:
 	showCategories2()
 elif mode==5:
 	showTeams()
+# elif mode==6:
+	# showTNT()
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
 	
