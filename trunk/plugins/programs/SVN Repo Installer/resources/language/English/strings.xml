@@ -10,6 +10,12 @@
     <string id="30006">Path:</string>
     <string id="30007">File:</string>
     <string id="30008">Your new item was installed to:</string>
+    <string id="30009">Looking for installed Addons ...:</string>
+    <string id="30010">Checking SVN ...</string>
+    <string id="30011">OK</string>
+    <string id="30012">Not in SVN</string>
+    <string id="30013">Unknown Version</string>
+    <string id="30014">New</string>
 
     <string id="30020">Skip</string>
     <string id="30021">Install</string>
