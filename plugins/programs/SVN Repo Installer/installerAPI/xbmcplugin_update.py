@@ -254,7 +254,7 @@ class Main:
                                 repr(info[ "install"] ),
                                 info[ "ioffset"],
                                 info[ "voffset"],)
-                    path='plugin://programs/SVN Repo Installer/?' + url_args
+                    path='%s?%s' % ( sys.argv[ 0 ], url_args, )
                     log("path=" + path)
 
                 # display text
