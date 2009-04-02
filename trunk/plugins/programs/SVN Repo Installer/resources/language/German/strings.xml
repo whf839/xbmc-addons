@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!-- German strings.xml by bootsy (bootsycollins82@gmail.com) -->
+<strings>
+    <!-- Update messages -->
+    <string id="30000">Möchtest du dieses Addon installieren?</string>
+    <string id="30001"></string>
+    <string id="30002">Lade Dateilisten...</string>
+    <string id="30003">Bitte warten...</string>
+    <string id="30004"></string>
+    <string id="30005">Lade:</string>
+    <string id="30006">Pfad:</string>
+    <string id="30007">Datei:</string>
+    <string id="30008">Das Addon wurde hierher installiert:</string>
+    <string id="30009">Suche nach installierten Addons ...:</string>
+    <string id="30010">Checke SVN ...</string>
+    <string id="30011">OK</string>
+    <string id="30012">Nicht in SVN</string>
+    <string id="30013">Unbekannte Version</string>
+    <string id="30014">Neu</string>
+
+    <string id="30020">Überspringen</string>
+    <string id="30021">Installieren</string>
+
+    <!-- settings -->
+    <string id="30500">Nach Updates suchen</string>
+
+    <!-- Update error messages -->
+    <string id="30030">Fehler beim Installieren des Addons!</string>
+</strings>
