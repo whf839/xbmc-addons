@@ -96,8 +96,7 @@ def playItem(url,name,thumb):
     for video in match:
         if 'bookend' not in video:
             url = video
-    xbmc.Player.play(url)
-    #addLink(name,url,'',thumb)
+    addLink(name,url,'',thumb)
 	    
         
 ########################################
@@ -124,7 +123,7 @@ try:
 except:
     pass
 if mode==None or url==None or len(url)<1:
-    addDir('1. '+xbmc.getLocalizedString(30000),'http://theonion.com/content/onn/ajax_videolist/onn',1)
+    addDir(xbmc.getLocalizedString(30000),'http://theonion.com/content/onn/ajax_videolist/onn',1)
     addDir(xbmc.getLocalizedString(30001),'http://www.theonion.com/content/ajax/onn/list/8/0/mostpopular',1)
     addDir(xbmc.getLocalizedString(30002),'http://www.theonion.com/content/ajax/onn/list/8/0/ospan',1)
     addDir(xbmc.getLocalizedString(30003),'http://www.theonion.com/content/ajax/onn/list/8/0/intheknow',1)
