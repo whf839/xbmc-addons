@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings>   <!--  30.3.2009 Finnish   -->
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>   <!--  2.4.2009 Finnish   -->
     <string id="30000">Kaikki videot</string>
     <string id="30001">Katsotuimmat</string>
     <string id="30002">O-Span</string>
@@ -7,5 +7,5 @@
     <string id="30004">Urheilu</string>
     <string id="30005">Tänään nyt</string>
     <string id="30006">25 uusinta (mp4)</string>
-  
+    <string id="30006">Satunnainen toisto</string>
 </strings>

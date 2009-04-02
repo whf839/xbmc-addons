@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings>
-    <!--          Finnish 7.3.2009 -->
+<strings>    <!-- Finnish 2.4.2009 -->
     <!-- Update messages -->
     <string id="30000">Haluatko asentaa valitun kohteen?</string>
     <string id="30001"></string>
@@ -14,6 +13,9 @@
 
     <string id="30020">Poistu</string>
     <string id="30021">Asenna</string>
+
+    <!-- settings -->
+    <string id="30500">Tarkista päivitykset</string>
 
     <!-- Update error messages -->
     <string id="30030">Kohteen asennuksessa tapahtui virhe!</string>
