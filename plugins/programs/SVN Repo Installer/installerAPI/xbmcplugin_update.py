@@ -46,8 +46,11 @@ class Main:
 		log("__init__()")
 		ok = False
 
-		self.SVN_URL_LIST = [ "xbmc-addons", "xbmc-scripting" ]
+		# load settings
+		self.showNoSVN = bool(xbmcplugin.getSetting( "show_no_svn" ) == "true")
+		self.showNoVer = bool(xbmcplugin.getSetting( "show_no_ver" ) == "true")
 
+		self.SVN_URL_LIST = [ "xbmc-addons", "xbmc-scripting" ]
 		#['plugin://programs/SVN Repo Installer/', '-1', '?download_url="%2Ftrunk%2Fplugins%2Fmusic/iTunes%2F"&repo=\'xbmc-addons\'&install=""&ioffset=2&voffset=0']
 		# create all XBMC script/plugin paths
 		paths = ("plugins/programs","plugins/video","plugins/music","plugins/pictures","scripts")
@@ -60,12 +63,11 @@ class Main:
 		self.findInstalled()
 		if self.INSTALLED:
 			self.checkUpdates() 
+			ok = self.showUpdates()
+		else:
+			xbmcgui.Dialog.ok(__plugin__, "No installed Addons found!")
 		self.dialogProgress.close()
 
-# test entry
-#		self.INSTALLED = [ { "filepath": "C:\Program Files\XBMC\plugins\Programs\GoogleReader", "ver": "0.1" , "svn_ver": "0.2", "svn_url": "http://xbmc-addons.googlecode.com/svn/trunk/plugins/programs/GoogleReader", "repo": "xbmc-addons", "ioffset": 2, "voffset": 0, "install": "", }, ]
-		if self.INSTALLED:
-			ok = self.showUpdates()
 		xbmcplugin.endOfDirectory( int( sys.argv[ 1 ] ), ok, True, False)
 
 	#####################################################################################################
@@ -92,7 +94,8 @@ class Main:
 					filepath = os.path.join( p, f )
 					doc = open( os.path.join(filepath, "default.py"), "r" ).read()
 					ver = self.parseVersion(doc)
-					self.INSTALLED.append({"filepath": filepath, "ver": ver})
+					if ver or self.showNoVer:
+						self.INSTALLED.append({"filepath": filepath, "ver": ver})
 				except:
 					traceback.print_exc()
 
@@ -128,7 +131,7 @@ class Main:
 				log("url=" + url)
 
 				percent = int( count * 100.0 / TOTAL_PATHS )
-				self.dialogProgress.update(percent, actionMsg, installedCategory, urlparse.urlparse(url)[1])
+				self.dialogProgress.update(percent, actionMsg, installedCategory)
 				if self.dialogProgress.iscanceled():
 					quit = True
 					break
@@ -161,6 +164,7 @@ class Main:
 #        pprint (self.INSTALLED)
 		log("< checkUpdates() updated count=%d" % len(self.INSTALLED))
 
+	#####################################################################################################
 	def _get_repo_info( self, repo ):
 		# path to info file
 		repopath = os.path.join( os.getcwd(), "resources", "repositories", repo, "repo.xml" )
@@ -220,9 +224,13 @@ class Main:
 				category = self.parseCategory(filepath)
 				repo = info.get('repo','SVN ?')
 
+				# ignore those not in SVN as per settings
+				if (not svn_url or not svn_ver) and not self.showNoSVN:
+					continue
+
 				# make update state according to found information
 				if not ver:
-					verState = xbmc.getLocalizedString( 30013 )			# unknown version - addon has no __version__ doc tag
+					verState = xbmc.getLocalizedString( 30013 )			# unknown version
 					ver = '?'
 				elif not svn_url or not svn_ver:
 					verState = xbmc.getLocalizedString( 30012 ) 		# not in SVN
@@ -277,8 +285,7 @@ class Main:
 					icon = "DefaultFileBig.png"
 				if not thumbnail:
 					thumbnail = icon
-				log("icon=" + icon)
-				log("thumbnail=" + thumbnail)
+				log("icon=%s  thumbnail=%s" % (icon, thumbnail))
 
 				li=xbmcgui.ListItem( text, label2, icon, thumbnail, path=path )
 				li.setInfo( type="Video", infoLabels={ "Title": text, "Genre": label2 } )
@@ -307,7 +314,15 @@ class Main:
 			if not os.path.isfile( filepath ):
 				# fetch thumbnail and save to filepath
 				log("_get_thumbnail() downloading from=%s to %s" % (thumbnail_url, filepath))
+				self.dialogProgress.update(0, xbmc.getLocalizedString( 30005 ),  \
+										   (urlparse.urlparse(thumbnail_url)[2]).replace('%20',' '))
 				info = urllib.urlretrieve( thumbnail_url, filepath )
+				paramList = info[1].getplist()
+				if paramList: 
+					# if info, was a retrieve error, (no such file)
+					log("_get_thumbnail() no file found: " + filepath)
+					os.remove( filepath )
+					filepath = ""
 				# cleanup any remaining urllib cache
 				urllib.urlcleanup()
 			else:
@@ -315,7 +330,7 @@ class Main:
 			return filepath
 		except:
 			# return empty string if retrieval failed
-			print str(sys.exc_info()[ 1 ])
+			print "url error=%s" % str(sys.exc_info()[ 1 ])
 			return ""        
 	
 #################################################################################################################
