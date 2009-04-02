@@ -22,6 +22,8 @@
 
     <!-- settings -->
     <string id="30500">Check for updates</string>
+	<string id="30510">Updates: Show Addons not in SVN?</string>
+	<string id="30520">Updates: Show Addons wihout a version?</string>
 
     <!-- Update error messages -->
     <string id="30030">There was an error installing item!</string>
