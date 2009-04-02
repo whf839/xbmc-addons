@@ -82,15 +82,28 @@ class Main:
 
     def _get_repos( self ):
         try:
+            # add the check for updates item to the media list
+            url = "%s?category='updates'" % ( sys.argv[ 0 ], )
+            # set the default icon
+            icon = "DefaultFolder.png"
+            # set thumbnail
+            thumbnail = os.path.join( os.getcwd(), "resources", "media", "update_checker.png" )
+            # create our listitem, fixing title
+            listitem = xbmcgui.ListItem( xbmc.getLocalizedString( 30500 ), iconImage=icon, thumbnailImage=thumbnail )
+            # set the title
+            listitem.setInfo( type="Video", infoLabels={ "Title": xbmc.getLocalizedString( 30500 ) } )
+            # add our item
+            ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=url, listitem=listitem, isFolder=True )
+            # now add all the repos
             repos = os.listdir( os.path.join( os.getcwd(), "resources", "repositories" ) )
             # enumerate through the list of categories and add the item to the media list
             for repo in repos:
                 if ( os.path.isdir( os.path.join( os.getcwd(), "resources", "repositories", repo ) ) ):
                     url = "%s?category='root'&repo=%s" % ( sys.argv[ 0 ], repr( urllib.quote_plus( repo ) ) )
-                    # set the default icon
-                    icon = "DefaultFolder.png"
+                    # set thumbnail
+                    thumbnail = os.path.join( os.getcwd(), "resources", "media", "svn_repo.png" )
                     # create our listitem, fixing title
-                    listitem = xbmcgui.ListItem( repo, iconImage=icon )
+                    listitem = xbmcgui.ListItem( repo, iconImage=icon, thumbnailImage=thumbnail )
                     # set the title
                     listitem.setInfo( type="Video", infoLabels={ "Title": repo } )
                     # add the item to the media list
@@ -156,7 +169,7 @@ class Main:
                     thumbnail = ""
                 else:
                     heading = "download_url"
-                    thumbnail = self._get_thumbnail( "%s%s/%sdefault.tbn" % ( self.REPO_URL, repo_url.replace( " ", "%20" ), item.replace( " ", "%20" ), ) )
+                    thumbnail = "%s%s/%sdefault.tbn" % ( self.REPO_URL, repo_url.replace( " ", "%20" ), item.replace( " ", "%20" ), )
                 url = '%s?%s="%s/%s"&repo=%s&install="%s"&ioffset=%s&voffset=%s' % ( sys.argv[ 0 ], heading, urllib.quote_plus( repo_url ), urllib.quote_plus( item ), repr( urllib.quote_plus( self.args.repo ) ), install, ioffset, voffset, )
                 # set the default icon
                 icon = "DefaultFolder.png"
@@ -196,21 +209,3 @@ class Main:
         parser = Parser( htmlSource )
         # return results
         return parser.dict
-
-    def _get_thumbnail( self, thumbnail_url ):
-        # make the proper cache filename and path so duplicate caching is unnecessary
-        if ( not thumbnail_url.startswith( "http://" ) ): return thumbnail_url
-        try:
-            filename = xbmc.getCacheThumbName( thumbnail_url )
-            filepath = os.path.join( self.BASE_CACHE_PATH, filename[ 0 ], filename )
-            # if the cached thumbnail does not exist fetch the thumbnail
-            if ( not os.path.isfile( filepath ) ):
-                # fetch thumbnail and save to filepath
-                info = urllib.urlretrieve( thumbnail_url, filepath )
-                # cleanup any remaining urllib cache
-                urllib.urlcleanup()
-            return filepath
-        except:
-            # return empty string if retrieval failed
-            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
-            return ""        
