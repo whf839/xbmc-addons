@@ -257,6 +257,7 @@ class Main:
 				thumbnail = ""
 				if svn_url:
 					thumbnail = "/".join( [svn_url.replace(' ','%20'), "default.tbn"] )
+					thumbnail = self._get_thumbnail(thumbnail)
 
 				# determine default icon according to addon type
 				if svn_url:
@@ -268,14 +269,14 @@ class Main:
 						icon = "defaultAudioBig.png"
 					elif find(svn_url,'pictures/') != -1:
 						icon = "defaultPictureBig.png"
-					elif find(svn_url,'videos/') != -1:
+					elif find(svn_url,'video/') != -1:
 						icon = "defaultVideoBig.png"
 				# check skin for image, else fallback DefaultFile
 				if not icon or not xbmc.skinHasImage(icon):
 					log("skinHasImage() not found: " + icon)
 					icon = "DefaultFileBig.png"
 				if not thumbnail:
-					thumbnail = "DefaultFileBig.png"
+					thumbnail = icon
 				log("icon=" + icon)
 				log("thumbnail=" + thumbnail)
 
@@ -292,6 +293,30 @@ class Main:
 
 		log("< showUpdates() ok=%s" % ok)
 		return ok
+
+
+	########################################################################################################################
+	def _get_thumbnail(self, thumbnail_url ):
+		# make the proper cache filename and path so duplicate caching is unnecessary
+		if ( not thumbnail_url.startswith( "http://" ) ): return thumbnail_url
+		try:
+			filename = xbmc.getCacheThumbName( thumbnail_url )
+			BASE_CACHE_PATH = "/".join( [ "special://masterprofile", "Thumbnails", "Video" ] )
+			filepath =xbmc.translatePath( os.path.join( BASE_CACHE_PATH, filename[ 0 ], filename ) )
+			# if the cached thumbnail does not exist fetch the thumbnail
+			if not os.path.isfile( filepath ):
+				# fetch thumbnail and save to filepath
+				log("_get_thumbnail() downloading from=%s to %s" % (thumbnail_url, filepath))
+				info = urllib.urlretrieve( thumbnail_url, filepath )
+				# cleanup any remaining urllib cache
+				urllib.urlcleanup()
+			else:
+				log("_get_thumbnail() use existing=" + filepath)
+			return filepath
+		except:
+			# return empty string if retrieval failed
+			print str(sys.exc_info()[ 1 ])
+			return ""        
 	
 #################################################################################################################
 if ( __name__ == "__main__" ):
