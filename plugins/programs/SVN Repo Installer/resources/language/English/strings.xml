@@ -15,7 +15,7 @@
     <string id="30021">Install</string>
 
     <!-- settings -->
-    <string id="30500">Repository to list</string>
+    <string id="30500">Check for updates</string>
 
     <!-- Update error messages -->
     <string id="30030">There was an error installing item!</string>
