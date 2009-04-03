@@ -2,35 +2,46 @@
 __scriptname__ = "NBA.com Videos"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/NBA.com%20Videos"
-__date__ = '2009-04-01'
-__version__ = "r878"
+__date__ = '2009-04-03'
+__version__ = "r892"
 
 HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.8) Gecko/2009032609 Firefox/3.0.8'
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 
 def showRoot():
-		li=xbmcgui.ListItem("Teams")
+		url="http://www.nba.com/.element/ssi/sect/1.1/video/highlights.html"
+		li=xbmcgui.ListItem("1. Highlights")
+		u=sys.argv[0]+"?mode=6&url="+urllib.quote_plus(url)
+		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+		#
+		url="http://www.nba.com/.element/ssi/sect/1.1/video/topplays.html"
+		li=xbmcgui.ListItem("2. Top Plays")
+		u=sys.argv[0]+"?mode=7&url="+urllib.quote_plus(url)
+		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+		#
+		url="http://www.nba.com/.element/ssi/sect/1.1/video/mostrecent.html"
+		li=xbmcgui.ListItem("3. Most Recent")
+		u=sys.argv[0]+"?mode=6&url="+urllib.quote_plus(url)
+		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+		#
+		url="http://www.nba.com/.element/ssi/sect/1.1/video/nbatv.html"
+		li=xbmcgui.ListItem("4. NBA TV")
+		u=sys.argv[0]+"?mode=7&url="+urllib.quote_plus(url)
+		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+		#
+		url="http://www.nba.com/.element/ssi/sect/1.1/video/tntot.html"
+		li=xbmcgui.ListItem("5. TNT OT")
+		u=sys.argv[0]+"?mode=7&url="+urllib.quote_plus(url)
+		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+		#
+		url="http://www.nba.com/.element/ssi/sect/1.1/video/featured.html"
+		li=xbmcgui.ListItem("6. Special Features")
+		u=sys.argv[0]+"?mode=7&url="+urllib.quote_plus(url)
+		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+		#
+		li=xbmcgui.ListItem("7. Teams")
 		u=sys.argv[0]+"?mode=5"
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
-		url="http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/video_whatsnew.txt"
-		li3=xbmcgui.ListItem("What's New")
-		u3=sys.argv[0]+"?mode=2&url="+urllib.quote_plus(url)
-		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u3,li3,True)
-		url2="http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/channels/video_channel_topplays.txt"
-		li4=xbmcgui.ListItem("Top Plays")
-		u4=sys.argv[0]+"?mode=2&url="+urllib.quote_plus(url2)
-		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u4,li4,True)
-		# li5=xbmcgui.ListItem("TNT OverTime")
-		# u5=sys.argv[0]+"?mode=6"
-		# xbmcplugin.addDirectoryItem(int(sys.argv[1]),u5,li5,True)
-		url="http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/channels/video_channel_nbatv.txt"
-		li3=xbmcgui.ListItem("NBA TV")
-		u3=sys.argv[0]+"?mode=2&url="+urllib.quote_plus(url)
-		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u3,li3,True)
-		url="http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/channels/video_channel_tntovertime.txt"
-		li3=xbmcgui.ListItem("TNT OverTime")
-		u3=sys.argv[0]+"?mode=2&url="+urllib.quote_plus(url)
-		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u3,li3,True)
 
 def showTeams():
 		li=xbmcgui.ListItem("Team Highlights")
@@ -40,27 +51,46 @@ def showTeams():
 		u2=sys.argv[0]+"?mode=4"
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u2,li2,True)
 
-# def showTNT():
-		# url="http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/channels/video_channel_tntovertime_topfiveofinside.txt"
-		# li=xbmcgui.ListItem("Top 5 of Inside the NBA: #1")
-		# u=sys.argv[0]+"?mode=2&url="+urllib.quote_plus(url)
-		# xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
-		# url="http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/channels/video_channel_tntovertime_reggiesmailbag.txt"
-		# li=xbmcgui.ListItem("Reggie's Mailbag")
-		# u=sys.argv[0]+"?mode=2&url="+urllib.quote_plus(url)
-		# xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
-		# url="http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/channels/video_channel_tntovertime_soundoff.txt"
-		# li=xbmcgui.ListItem("TNT Soundoff")
-		# u=sys.argv[0]+"?mode=2&url="+urllib.quote_plus(url)
-		# xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
-		# url="http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/channels/video_channel_tntovertime_insidethenba.txt"
-		# li=xbmcgui.ListItem("Inside the NBA")
-		# u=sys.argv[0]+"?mode=2&url="+urllib.quote_plus(url)
-		# xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
-		# url="http://www.nba.com/.element/ssi/auto/1.0/aps/video/videoplayer/channels/video_channel_tntovertime_insiderreport.txt"
-		# li=xbmcgui.ListItem("Insider Report with David Aldridge")
-		# u=sys.argv[0]+"?mode=2&url="+urllib.quote_plus(url)
-		# xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+def showList2(url):
+	req = urllib2.Request(url)
+	req.add_header('User-Agent', HEADER)
+	f=urllib2.urlopen(req)
+	a=f.read()
+	f.close()
+	img=re.compile('<img src="(.+?)"><div id').findall(a)
+	vidname=re.compile('<a href="javascript:window.top.changePlaylist\(\'(.+?)\'\);">(.+?)</a>\n').findall(a)
+	disc=re.compile('<p(.+?)/p>').findall(a)
+	x=0
+	for thumb in img:
+		info=disc[x]
+		info=info.replace('<','')
+		info=info.replace('>','')
+		name = str(int(x+1))+'. '+vidname[x][1]+' - '+info
+		url=vidname[x][0]
+		url=url.replace('/video/','')
+		url=url.replace('.json','')
+		url = 'http://nba.cdn.turner.com/nba/big/' + url + '_nba_576x324.flv'
+		li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
+		li.setInfo( type="Video", infoLabels={ "Title": name, "Plot": info } )
+		u=sys.argv[0]+"?mode=3&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
+		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
+		x=x+1
+
+def showList3(url):
+	req = urllib2.Request(url)
+	req.add_header('User-Agent', HEADER)
+	f=urllib2.urlopen(req)
+	a=f.read()
+	f.close()
+	link=re.compile('<li><a href="#(.+?)">(.+?)</a></li>').findall(a)
+	x=0
+	for url,title in link:
+		name = str(int(x+1))+'. '+title
+		url='http://www.nba.com/.element/ssi/sect/1.1/video/'+url+'.html'
+		li=xbmcgui.ListItem(name)
+		u=sys.argv[0]+"?mode=6&url="+urllib.quote_plus(url)
+		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+		x=x+1
 		
 def showCategories():
 		nba=['bos', 'njn', 'nyk', 'phi', 'tor', 'chi', 'cle', 'det', 'ind', 'mil', 'atl', 'cha', 'mia', 'orl', 'was', 'dal', 'hou', 'mem', 'noh', 'sas', 'den', 'min', 'por', 'okc', 'uth', 'gsw', 'lac', 'lal', 'pho', 'sac']
@@ -137,9 +167,13 @@ def showList(url,page):
 			x=x+1
 			
 def playVideo(url, name):
+	thisname=name
+	date=url
+	date=date.rsplit('/')
+	name=date[10]
 	def Download(url,dest):
 			dp = xbmcgui.DialogProgress()
-			dp.create('Downloading','',url)
+			dp.create('Downloading',thisname,'Filename: '+name)
 			urllib.urlretrieve(url,dest,lambda nb, bs, fs, url=url: _pbhook(nb,bs,fs,url,dp))
 	def _pbhook(numblocks, blocksize, filesize, url=None,dp=None):
 			try:
@@ -153,7 +187,7 @@ def playVideo(url, name):
 	flv_file = None
 	stream = 'false'
 	if (xbmcplugin.getSetting('download') == 'true'):
-			flv_file = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), name + '.flv'))
+			flv_file = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), name ))
 			Download(url,flv_file)
 	elif (xbmcplugin.getSetting('download') == 'false' and xbmcplugin.getSetting('download_ask') == 'true'):
 		dia = xbmcgui.Dialog()
@@ -229,8 +263,10 @@ elif mode==4:
 	showCategories2()
 elif mode==5:
 	showTeams()
-# elif mode==6:
-	# showTNT()
+elif mode==6:
+	showList2(url)
+elif mode==7:
+	showList3(url)
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
 	
