@@ -23,6 +23,8 @@
 
     <!-- settings -->
     <string id="30500">Nach Updates suchen</string>
+    <string id="30510">Updates: Nicht-SVN Addons anzeigen?</string>
+    <string id="30520">Updates: Addons ohne Version anzeigen?</string>
 
     <!-- Update error messages -->
     <string id="30030">Fehler beim Installieren des Addons!</string>
