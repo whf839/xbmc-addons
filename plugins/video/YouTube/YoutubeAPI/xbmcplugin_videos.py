@@ -51,7 +51,7 @@ class Main:
 
     def _parse_argv( self ):
         # call _Info() with our formatted argv to create the self.args object
-        exec "self.args = _Info(%s)" % ( unquote_plus( sys.argv[ 2 ][ 1 : ] ).replace( "&", ", " ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
+        exec "self.args = _Info(%s)" % ( unquote_plus( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ) ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
 
     def _get_authkey( self ):
         self.authkey = xbmcplugin.getSetting( "authkey" )
@@ -246,7 +246,7 @@ class Main:
                     username = ( "", spell_vq, )[ self.args.issearch == 2 ]
                     vq = ( "", spell_vq, )[ self.args.issearch == 1 ]
                     # create the callback url
-                    url = '%s?title=%s&category=%s&page=%d&vq=%s&username=%s&orderby=%s&related=%s&issearch=%d&update_listing=%d' % ( sys.argv[ 0 ], repr( quote_plus( self.args.title ) ), repr( "videos" ), 1, repr( quote_plus( vq ) ), repr( quote_plus( username ) ), repr( self.args.orderby ), repr( self.args.related ), self.args.issearch, True, )
+                    url = '%s?title=%s&category=%s&page=%d&vq=%s&username=%s&orderby=%s&related=%s&issearch=%d&update_listing=%d' % ( sys.argv[ 0 ], quote_plus( repr( self.args.title ) ), repr( "videos" ), 1, quote_plus( repr( vq ) ), quote_plus( repr( username ) ), repr( self.args.orderby ), repr( self.args.related ), self.args.issearch, True, )
                     # TODO: get rid of self.BASE_PLUGIN_THUMBNAIL_PATH
                     # we set the thumb so XBMC does not try and cache the next pictures
                     thumbnail = os.path.join( self.BASE_PLUGIN_THUMBNAIL_PATH, "spell_page.png" )
@@ -266,7 +266,7 @@ class Main:
                     if ( endno > total ):
                         endno = total
                     # create the callback url
-                    url = '%s?title=%s&category=%s&page=%d&vq=%s&username=%s&orderby=%s&issearch=0&related=%s&update_listing=%d' % ( sys.argv[ 0 ], repr( quote_plus( self.args.title ) ), repr( self.args.category ), page + 1, repr( quote_plus( self.args.vq ) ), repr( quote_plus( self.args.username ) ), repr( self.args.orderby ), repr( self.args.related ), True, )
+                    url = '%s?title=%s&category=%s&page=%d&vq=%s&username=%s&orderby=%s&issearch=0&related=%s&update_listing=%d' % ( sys.argv[ 0 ], quote_plus( repr( self.args.title ) ), repr( self.args.category ), page + 1, quote_plus( repr( self.args.vq ) ), quote_plus( repr( self.args.username ) ), repr( self.args.orderby ), repr( self.args.related ), True, )
                     # TODO: get rid of self.BASE_PLUGIN_THUMBNAIL_PATH
                     # we set the thumb so XBMC does not try and cache the next pictures
                     thumbnail = os.path.join( self.BASE_PLUGIN_THUMBNAIL_PATH, "next.png" )
@@ -283,7 +283,7 @@ class Main:
                     # calculate the ending video
                     endno = startno + perpage - 1
                     # create the callback url
-                    url = '%s?title=%s&category=%s&page=%d&vq=%s&username=%s&orderby=%s&related=%s&issearch=0&update_listing=%d' % ( sys.argv[ 0 ], repr( quote_plus( self.args.title ) ), repr( self.args.category ), page - 1, repr( quote_plus( self.args.vq ) ), repr( quote_plus( self.args.username ) ), repr( self.args.orderby ), repr( self.args.related ), True, )
+                    url = '%s?title=%s&category=%s&page=%d&vq=%s&username=%s&orderby=%s&related=%s&issearch=0&update_listing=%d' % ( sys.argv[ 0 ], quote_plus( repr( self.args.title ) ), repr( self.args.category ), page - 1, quote_plus( repr( self.args.vq ) ), quote_plus( repr( self.args.username ) ), repr( self.args.orderby ), repr( self.args.related ), True, )
                     # TODO: get rid of self.BASE_PLUGIN_THUMBNAIL_PATH
                     # we set the thumb so XBMC does not try and cache the previous pictures
                     thumbnail = os.path.join( self.BASE_PLUGIN_THUMBNAIL_PATH, "previous.png" )
@@ -334,7 +334,7 @@ class Main:
                         # video url
                         exec 'video_url = u"%s"' % ( unicode( video[ "media$group" ][ "media$player" ][ 0 ][ "url" ], encoding ), )
                         # construct our url
-                        url = "%s?category='play_video'&video_url=%s&releated=%s&update_listing=%d" % ( sys.argv[ 0 ], repr( quote_plus( video_url ) ), repr( video[ "id" ][ "$t" ].split( "/" )[ -1 ] ), False, )
+                        url = "%s?category='play_video'&video_url=%s&releated=%s&update_listing=%d" % ( sys.argv[ 0 ], quote_plus( repr( video_url ) ), repr( video[ "id" ][ "$t" ].split( "/" )[ -1 ] ), False, )
                         # set the default icon
                         icon = "DefaultVideo.png"
                         # only need to add label, icon and thumbnail, setInfo() and addSortMethod() takes care of label2
@@ -351,7 +351,7 @@ class Main:
                         cm += [ ( xbmc.getLocalizedString( 30500 ), "XBMC.ActivateWindow(%d,%s?title=%s&category='related'&page=1&vq=''&username=''&orderby='relevance'&related=%s&issearch=False&update_listing=False)" % ( xbmcgui.getCurrentWindowId(), sys.argv[ 0 ], repr( xbmc.getLocalizedString( 30968 ) ), repr( video[ "id" ][ "$t" ].split( "/" )[ -1 ] ), ), ) ]
                         # if download path set, add download item
                         if ( self.settings[ "download_path" ] != "" ):
-                            cm += [ ( xbmc.getLocalizedString( 30501 ), "XBMC.RunPlugin(%s?category='download_video'&video_url=%s)" % ( sys.argv[ 0 ], repr( quote_plus( video_url ) ), ), ) ]
+                            cm += [ ( xbmc.getLocalizedString( 30501 ), "XBMC.RunPlugin(%s?category='download_video'&video_url=%s)" % ( sys.argv[ 0 ], quote_plus( repr( video_url ) ), ), ) ]
                         # add movie info
                         cm += [ ( xbmc.getLocalizedString( 30502 ), "XBMC.Action(Info)", ) ]
                         # add to favourites
