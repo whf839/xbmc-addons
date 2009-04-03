@@ -94,8 +94,11 @@ class Main:
 					filepath = os.path.join( p, f )
 					doc = open( os.path.join(filepath, "default.py"), "r" ).read()
 					ver = self.parseVersion(doc)
+					thumb = ""
+					if os.path.isfile( os.path.join(filepath, "default.tbn") ):
+						thumb = os.path.join(filepath, "default.tbn")
 					if ver or self.showNoVer:
-						self.INSTALLED.append({"filepath": filepath, "ver": ver})
+						self.INSTALLED.append({"filepath": filepath, "ver": ver, "thumb": thumb })
 				except:
 					traceback.print_exc()
 
@@ -262,8 +265,8 @@ class Main:
 				
 				# addons thumbnail from svn_url
 				icon = ""
-				thumbnail = ""
-				if svn_url:
+				thumbnail = info["thumb"]
+				if not thumbnail and svn_url:
 					thumbnail = "/".join( [svn_url.replace(' ','%20'), "default.tbn"] )
 					thumbnail = self._get_thumbnail(thumbnail)
 
