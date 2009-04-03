@@ -36,7 +36,7 @@ class Main:
             self.args = _Info( title="" )
         else:
             # call _Info() with our formatted argv to create the self.args object
-            exec "self.args = _Info(%s)" % ( unquote_plus( sys.argv[ 2 ][ 1 : ] ).replace( "&", ", " ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
+            exec "self.args = _Info(%s)" % ( unquote_plus( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ) ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
 
     def authenticate( self ):
         # if this is first run open settings
@@ -153,7 +153,7 @@ class Main:
                 # if a username is required for category and none supplied, skip category
                 if ( user_required and self.authkey == "" ): continue
                 # set the callback url
-                url = '%s?title=%s&category=%s&page=1&vq=%s&username=%s&orderby=%s&related=""&issearch=%d&update_listing=%d' % ( sys.argv[ 0 ], repr( quote_plus( ltitle ) ), repr( method ), repr( quote_plus( vq ) ), repr( quote_plus( username ) ), repr( orderby ), issearch, False, )
+                url = '%s?title=%s&category=%s&page=1&vq=%s&username=%s&orderby=%s&related=""&issearch=%d&update_listing=%d' % ( sys.argv[ 0 ], quote_plus( repr( ltitle ) ), repr( method ), quote_plus( repr( vq ) ), quote_plus( repr( username ) ), repr( orderby ), issearch, False, )
                 # check for a valid custom thumbnail for the current category
                 thumbnail = thumbnail or self._get_thumbnail( method )
                 # set the default icon
