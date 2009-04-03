@@ -39,6 +39,7 @@ class Main:
         self.settings[ "user_search_kind" ] = ( "album", "photo", )[ int( xbmcplugin.getSetting( "user_search_kind" ) ) ]
         self.settings[ "saved_searches" ] = ( 10, 20, 30, 40, )[ int( xbmcplugin.getSetting( "saved_searches" ) ) ]
         self.settings[ "fanart_image" ] = xbmcplugin.getSetting( "fanart_image" )
+        self.save_search = False
 
     def _get_strings( self ):
         self.localized_string = {}
@@ -50,7 +51,7 @@ class Main:
 
     def _parse_argv( self ):
         # call _Info() with our formatted argv to create the self.args object
-        exec "self.args = _Info(%s)" % ( unquote_plus( sys.argv[ 2 ][ 1 : ] ).replace( "&", ", " ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
+        exec "self.args = _Info(%s)" % ( unquote_plus( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ) ), )
 
     def _get_authkey( self ):
         self.authkey = xbmcplugin.getSetting( "authkey" )
@@ -61,7 +62,7 @@ class Main:
         # send notification we're finished, successfully or unsuccessfully
         xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=ok, updateListing=self.args.update_listing )#, cacheToDisc=not self.args.issearch )
         # if there were photos and this was a search ask to save result as a preset
-        if ( ok and total and self.args.issearch ):
+        if ( ok and total and self.args.issearch and self.save_search ):
             self.save_as_preset()
 
     def save_as_preset( self ):
@@ -178,7 +179,7 @@ class Main:
                 if ( endno > total ):
                     endno = total
                 # create the callback url
-                url = '%s?title=%s&category=%s&access=%s&kind=%s&page=%d&pq=%s&issearch=0&update_listing=%d&user_id=%s&album_id=%s&photo_id=%s' % ( sys.argv[ 0 ], repr( quote_plus( self.args.title ) ), repr( self.args.category ), repr( access ), repr( kind ), page + 1, repr( quote_plus( self.args.pq ) ), True, repr( self.args.user_id ), repr( self.args.album_id ), repr( self.args.photo_id ), )
+                url = '%s?title=%s&category=%s&access=%s&kind=%s&page=%d&pq=%s&issearch=0&update_listing=%d&user_id=%s&album_id=%s&photo_id=%s' % ( sys.argv[ 0 ], quote_plus( repr( self.args.title ) ), repr( self.args.category ), repr( access ), repr( kind ), page + 1, quote_plus( repr( self.args.pq ) ), True, repr( self.args.user_id ), repr( self.args.album_id ), repr( self.args.photo_id ), )
                 # TODO: get rid of self.BASE_PLUGIN_THUMBNAIL_PATH
                 # we set the thumb so XBMC does not try and cache the next pictures
                 thumbnail = os.path.join( self.BASE_PLUGIN_THUMBNAIL_PATH, "next.png" )
@@ -197,7 +198,7 @@ class Main:
                 # calculate the ending video
                 endno = startno + perpage - 1
                 # create the callback url
-                url = '%s?title=%s&category=%s&access=%s&kind=%s&page=%d&pq=%s&issearch=0&update_listing=%d&user_id=%s&album_id=%s&photo_id=%s' % ( sys.argv[ 0 ], repr( quote_plus( self.args.title ) ), repr( self.args.category ), repr( access ), repr( kind ), page - 1, repr( quote_plus( self.args.pq ) ), True, repr( self.args.user_id ), repr( self.args.album_id ), repr( self.args.photo_id ), )
+                url = '%s?title=%s&category=%s&access=%s&kind=%s&page=%d&pq=%s&issearch=0&update_listing=%d&user_id=%s&album_id=%s&photo_id=%s' % ( sys.argv[ 0 ], quote_plus( repr( self.args.title ) ), repr( self.args.category ), repr( access ), repr( kind ), page - 1, quote_plus( repr( self.args.pq ) ), True, repr( self.args.user_id ), repr( self.args.album_id ), repr( self.args.photo_id ), )
                 # TODO: get rid of self.BASE_PLUGIN_THUMBNAIL_PATH
                 # we set the thumb so XBMC does not try and cache the previous pictures
                 thumbnail = os.path.join( self.BASE_PLUGIN_THUMBNAIL_PATH, "previous.png" )
@@ -207,9 +208,6 @@ class Main:
                 stringid = 30908 + ( kind == "album" )
                 # only need to add label and icon, setInfo() and addSortMethod() takes care of label2
                 listitem=xbmcgui.ListItem( label="%s (%d-%d)" % ( xbmc.getLocalizedString( stringid ), startno, endno, ), iconImage=icon, thumbnailImage=thumbnail )
-                # set special properties
-                listitem.setProperty( "IsFolder", "true" )
-                listitem.setProperty( "IsPictureFolder", "true" )
                 # add the folder item to our media list
                 ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=url, listitem=listitem, isFolder=True, totalItems=total_items )
             # set our thumbnail for queries
@@ -236,7 +234,7 @@ class Main:
                         page = 1
                         # set our category to photos
                         self.args.category = "photos"
-                    url = "%s?title=%s&category=%s&access=%s&kind=%s&page=%d&pq=%s&issearch=0&update_listing=%d&user_id=%s&album_id=%s&photo_id=%s" % ( sys.argv[ 0 ], repr( quote_plus( item[ "title" ] ) ), repr( self.args.category ), repr( access ), repr( kind ), page, repr( "" ), False, repr( item[ "user_id" ] ), repr( item[ "album_id" ] ), repr( item[ "photo_id" ] ), )
+                    url = "%s?title=%s&category=%s&access=%s&kind=%s&page=%d&pq=%s&issearch=0&update_listing=%d&user_id=%s&album_id=%s&photo_id=%s" % ( sys.argv[ 0 ], quote_plus( repr( item[ "title" ] ) ), repr( self.args.category ), repr( access ), repr( kind ), page, repr( "" ), False, repr( item[ "user_id" ] ), repr( item[ "album_id" ] ), repr( item[ "photo_id" ] ), )
                     # no photo_url, must be an album
                     isfolder = True
                     # set the default icon
@@ -285,6 +283,7 @@ class Main:
 
     def _get_keyboard( self, default="", heading="", hidden=False ):
         """ shows a keyboard and returns a value """
+        self.save_search = True
         keyboard = xbmc.Keyboard( default, heading, hidden )
         keyboard.doModal()
         if ( keyboard.isConfirmed() ):
