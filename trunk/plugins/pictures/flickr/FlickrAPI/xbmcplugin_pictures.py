@@ -61,7 +61,7 @@ class Main:
 
     def _parse_argv( self ):
         # call _Info() with our formatted argv to create the self.args object
-        exec "self.args = _Info(%s)" % ( unquote_plus( sys.argv[ 2 ][ 1 : ] ).replace( "&", ", " ), )
+        exec "self.args = _Info(%s)" % ( unquote_plus( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ) ), )
 
     def _get_authkey( self ):
         self.authtoken = xbmcplugin.getSetting( "authtoken" )
@@ -91,7 +91,7 @@ class Main:
         url += u'&photosetid=%s' % repr( kwargs[ "photosetid" ] )
         url += u'&photoid=%s' % repr( kwargs[ "photoid" ] )
         url += u'&groupid=%s' % repr( kwargs[ "groupid" ] )
-        url += u'&title=%s' % repr( quote_plus( kwargs[ "title" ] ) )
+        url += u'&title=%s' % quote_plus( repr( kwargs[ "title" ] ) )
         url += u'&category=%s' % repr( kwargs[ "category" ] )
         url += u'&primary=%s' % repr( kwargs[ "primary" ] )
         url += u'&secret=%s' % repr( kwargs[ "secret" ] )
@@ -99,9 +99,9 @@ class Main:
         url += u'&photos=%d' % kwargs[ "photos" ]
         url += u'&page=%d' % kwargs[ "page" ]
         url += u'&prevpage=%d' % kwargs[ "prevpage" ]
-        url += u'&pq=%s' % repr( quote_plus( self.args.pq ) )
-        url += u'&gq=%s' % repr( quote_plus( self.args.gq ) )
-        url += u'&uq=%s' % repr( quote_plus( self.args.uq ) )
+        url += u'&pq=%s' % quote_plus( repr( self.args.pq ) )
+        url += u'&gq=%s' % quote_plus( repr( self.args.gq ) )
+        url += u'&uq=%s' % quote_plus( repr( self.args.uq ) )
         url += u'&issearch=%d' % self.args.issearch
         url += u'&update_listing=%d' % kwargs[ "update_listing" ]
         return url

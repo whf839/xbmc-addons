@@ -45,7 +45,8 @@ class Main:
             self.args = _Info( title="" )
         else:
             # call _Info() with our formatted argv to create the self.args object
-            exec "self.args = _Info(%s)" % ( unquote_plus( sys.argv[ 2 ][ 1 : ] ).replace( "&", ", " ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
+            #exec "self.args = _Info(%s)" % ( unquote_plus( sys.argv[ 2 ][ 1 : ] ).replace( "&", ", " ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
+            exec "self.args = _Info(%s)" % ( unquote_plus( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ) ), )
 
     def _get_user( self ):
         try:
@@ -196,7 +197,7 @@ class Main:
                 if ( userid_required and self.user_id == "" ): continue
                 if ( authtoken_required and self.authtoken == "" ): continue
                 # set the callback url with all parameters
-                url = '%s?title=%s&category=%s&userid=%s&usernsid=%s&photosetid=""&photoid=""&groupid=""&primary=""&secret=""&server=""&photos=0&page=1&prevpage=0&pq=%s&gq=%s&uq=%s&issearch=%d&update_listing=%d&' % ( sys.argv[ 0 ], repr( quote_plus( ltitle ) ), repr( method ), repr( self.user_id ), repr( self.user_nsid ), repr( quote_plus( pq ) ), repr( quote_plus( gq ) ), repr( quote_plus( uq ) ), issearch, False, )
+                url = '%s?title=%s&category=%s&userid=%s&usernsid=%s&photosetid=""&photoid=""&groupid=""&primary=""&secret=""&server=""&photos=0&page=1&prevpage=0&pq=%s&gq=%s&uq=%s&issearch=%d&update_listing=%d&' % ( sys.argv[ 0 ], quote_plus( repr( ltitle ) ), repr( method ), repr( self.user_id ), repr( self.user_nsid ), quote_plus( repr( pq ) ), quote_plus( repr( gq ) ), quote_plus( repr( uq ) ), issearch, False, )
                 # check for a valid custom thumbnail for the current method
                 thumbnail = thumbnail or self._get_thumbnail( method )
                 # set the default icon
