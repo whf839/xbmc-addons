@@ -21,7 +21,7 @@ from string import find
 # Script constants
 __plugin__ = "xbmcplugin_update"
 __author__ = 'BigBellyBilly [BigBellyBilly@gmail.com]'
-__date__ = '02-04-2009'
+__date__ = '04-04-2009'
 xbmc.output( "[PLUGIN]: %s Dated: %s started!" % (__plugin__, __date__))
 
 def log(msg):
@@ -35,6 +35,9 @@ if not os.path.isdir(xbmc.translatePath(XBMC_HOME)):    # if fails to convert to
 	XBMC_HOME = 'Q:'
 log("XBMC_HOME=%s" % XBMC_HOME)
 
+class _Info:
+	def __init__( self, *args, **kwargs ):
+		self.__dict__.update( kwargs )
 
 #############################################################################################################
 class Main:
@@ -45,6 +48,9 @@ class Main:
 	def __init__( self ):
 		log("__init__()")
 		ok = False
+
+		# parse sys.argv for our current url
+		self._parse_argv()
 
 		# load settings
 		self.showNoSVN = bool(xbmcplugin.getSetting( "show_no_svn" ) == "true")
@@ -69,6 +75,12 @@ class Main:
 		self.dialogProgress.close()
 
 		xbmcplugin.endOfDirectory( int( sys.argv[ 1 ] ), ok, True, False)
+
+	def _parse_argv( self ):
+		# call _Info() with our formatted argv to create the self.args object
+		cmd = "self.args = _Info(%s)" % ( urllib.unquote_plus( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ) ), )
+		print "_parse_argv() cmd=" + cmd
+		exec cmd
 
 	#####################################################################################################
 	def findInstalled(self):
@@ -213,13 +225,14 @@ class Main:
 	def showUpdates(self):
 		log("> showUpdates()")
 		ok = False
+		print "showUpdates() sys.argv[ 0 ]=" + sys.argv[ 0 ]
 
 		try:
 			# create display list
 			sz = len(self.INSTALLED)
 			for info in self.INSTALLED:
 #				print info
-				path = ''
+				path = ""
 				ver = info.get('ver', '')
 				filepath = info.get('filepath', '')
 				svn_ver = info.get('svn_ver','')
@@ -239,11 +252,11 @@ class Main:
 					verState = xbmc.getLocalizedString( 30012 ) 		# not in SVN
 				elif ver >= svn_ver:
 					verState = xbmc.getLocalizedString( 30011 )			# OK
+					path = os.path.join(filepath, 'default.tbn')        # so we have a unique path still
 				else:
 					# NEW AVAILABLE - setup callback url for plugin SVN Repo Installer
 					verState = "!%s! v%s" % ( xbmc.getLocalizedString( 30014 ), svn_ver )		# eg. !New! v1.0
 					trunk_url = re.search('(/trunk.*?)$', svn_url, re.IGNORECASE).group(1)
-
 					#['plugin://programs/SVN Repo Installer/', '-1', '?download_url="%2Ftrunk%2Fplugins%2Fmusic/iTunes%2F"&repo=\'xbmc-addons\'&install=""&ioffset=2&voffset=0']
 					url_args = "download_url=%s&repo=%s&install=%s&ioffset=%s&voffset=%s" % \
 								(repr(urllib.quote_plus(trunk_url + "/")),
@@ -251,8 +264,9 @@ class Main:
 								repr(info["install"]),
 								info["ioffset"],
 								info["voffset"],)
-					path='%s?%s' % ( sys.argv[ 0 ], url_args, )
-					log("path=" + path)
+					path = '%s?%s' % ( sys.argv[ 0 ], url_args, )
+
+				log("path=" + path)
 
 				# display text
 				text = "[%s] %s v%s" % (repo, category, ver)
@@ -268,73 +282,39 @@ class Main:
 				thumbnail = info["thumb"]
 				if not thumbnail and svn_url:
 					thumbnail = "/".join( [svn_url.replace(' ','%20'), "default.tbn"] )
-					thumbnail = self._get_thumbnail(thumbnail)
 
 				# determine default icon according to addon type
-				if svn_url:
-					if svn_url.startswith(self.URL_BASE_SVN_SCRIPTING) or find(svn_url,'scripts/') != -1:
-						icon = "DefaultScriptBig.png"
-					elif find(svn_url,'programs/') != -1:
-						icon = "DefaultProgramBig.png"
-					elif find(svn_url,'music/') != -1:
-						icon = "defaultAudioBig.png"
-					elif find(svn_url,'pictures/') != -1:
-						icon = "defaultPictureBig.png"
-					elif find(svn_url,'video/') != -1:
-						icon = "defaultVideoBig.png"
+				if find(filepath,'scripts') != -1:
+					icon = "DefaultScriptBig.png"
+				elif find(filepath,'programs') != -1:
+					icon = "DefaultProgramBig.png"
+				elif find(filepath,'music') != -1:
+					icon = "defaultAudioBig.png"
+				elif find(filepath,'pictures') != -1:
+					icon = "defaultPictureBig.png"
+				elif find(filepath,'video') != -1:
+					icon = "defaultVideoBig.png"
 				# check skin for image, else fallback DefaultFile
 				if not icon or not xbmc.skinHasImage(icon):
-					log("skinHasImage() not found: " + icon)
 					icon = "DefaultFileBig.png"
 				if not thumbnail:
 					thumbnail = icon
-				log("icon=%s  thumbnail=%s" % (icon, thumbnail))
+				log("icon=%s    thumbnail=%s" % (icon, thumbnail))
 
-				li=xbmcgui.ListItem( text, label2, icon, thumbnail, path=path )
+				li=xbmcgui.ListItem( text, label2, icon, thumbnail)
 				li.setInfo( type="Video", infoLabels={ "Title": text, "Genre": label2 } )
 
 				xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=path, listitem=li, isFolder=False, totalItems=sz )
 
 			xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_GENRE )
-			xbmcplugin.setContent( handle=int( sys.argv[ 1 ] ), content="files")
+#			xbmcplugin.setContent( handle=int( sys.argv[ 1 ] ), content="files")
 			ok = True
 		except:
 			traceback.print_exc()
+			xbmcgui.Dialog().ok(__plugin__ + " - ERROR!", str(sys.exc_info()[ 1 ]) )
 
 		log("< showUpdates() ok=%s" % ok)
 		return ok
-
-
-	########################################################################################################################
-	def _get_thumbnail(self, thumbnail_url ):
-		# make the proper cache filename and path so duplicate caching is unnecessary
-		if ( not thumbnail_url.startswith( "http://" ) ): return thumbnail_url
-		try:
-			filename = xbmc.getCacheThumbName( thumbnail_url )
-			BASE_CACHE_PATH = "/".join( [ "special://masterprofile", "Thumbnails", "Video" ] )
-			filepath =xbmc.translatePath( os.path.join( BASE_CACHE_PATH, filename[ 0 ], filename ) )
-			# if the cached thumbnail does not exist fetch the thumbnail
-			if not os.path.isfile( filepath ):
-				# fetch thumbnail and save to filepath
-				log("_get_thumbnail() downloading from=%s to %s" % (thumbnail_url, filepath))
-				self.dialogProgress.update(0, xbmc.getLocalizedString( 30005 ),  \
-										   (urlparse.urlparse(thumbnail_url)[2]).replace('%20',' '))
-				info = urllib.urlretrieve( thumbnail_url, filepath )
-				paramList = info[1].getplist()
-				if paramList: 
-					# if info, was a retrieve error, (no such file)
-					log("_get_thumbnail() no file found: " + filepath)
-					os.remove( filepath )
-					filepath = ""
-				# cleanup any remaining urllib cache
-				urllib.urlcleanup()
-			else:
-				log("_get_thumbnail() use existing=" + filepath)
-			return filepath
-		except:
-			# return empty string if retrieval failed
-			print "url error=%s" % str(sys.exc_info()[ 1 ])
-			return ""        
 	
 #################################################################################################################
 if ( __name__ == "__main__" ):
