@@ -74,7 +74,7 @@ class Main:
 			xbmcgui.Dialog.ok(__plugin__, "No installed Addons found!")
 		self.dialogProgress.close()
 
-		xbmcplugin.endOfDirectory( int( sys.argv[ 1 ] ), ok, True, False)
+		xbmcplugin.endOfDirectory( int( sys.argv[ 1 ] ), ok)
 
 	def _parse_argv( self ):
 		# call _Info() with our formatted argv to create the self.args object
