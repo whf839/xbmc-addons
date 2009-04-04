@@ -12,6 +12,7 @@ __author__  = "topfs2@xbmc.org"
 
 import sys, os
 sys.path.append("/usr/lib/python2.5/site-packages") 
+from install import installScript
 from apt.progress import *
 import apt_pkg
 import apt
@@ -62,14 +63,17 @@ else:
     downloadString = str(len(changes)) + " packages to install, needs to download " + str(downloadSize / 1024 / 1024) + " mb. Continue?"
 
     if dialog.yesno("Info", downloadString):
-        pathToInstallScript = xbmc.translatePath('special://xbmc/') + 'scripts/Aptitude/install.py'
+        pathToInstallScript = xbmc.translatePath('special://temp/') + 'install.py'
+        installpy = open(pathToInstallScript, 'w')
+        installpy.write(installScript)
+        installpy.close()
         tmp = xbmc.translatePath('special://temp/') + 'workfile'
         kb = xbmc.Keyboard('', 'Password needed', True)
         kb.doModal()
         if kb.isConfirmed():
             password = kb.getText()
-            install = 'echo "' + password + '" | sudo -S python ' + pathToInstallScript + ' > ' + tmp
-            os.system(install)
+            installCMD = 'echo "' + password + '" | sudo -S python ' + pathToInstallScript + ' > ' + tmp
+            os.system(installCMD)
             f = open(tmp, 'r')
             progress = xbmcgui.DialogProgress()
             res = False
