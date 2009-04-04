@@ -1,3 +1,4 @@
+installScript = '''
 #!/usr/bin/python
 # Aptitude script for XBMC
 #
@@ -80,3 +81,4 @@ iprogress = TerminalInstallProgress()
 res = c.commit(fprogress, iprogress)
 
 print "Complete;%s" % str(res)
+'''
