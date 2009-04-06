@@ -15,6 +15,8 @@ import os
 import urllib
 import xbmcplugin
 
+from urllib import unquote_plus
+
 from YoutubeAPI.YoutubeClient import YoutubeClient
 
 
@@ -36,7 +38,7 @@ class Main:
 
     def _parse_argv( self ):
         # call _Info() with our formatted argv to create the self.args object
-        exec "self.args = _Info(%s)" % ( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
+        exec "self.args = _Info(%s)" % ( unquote_plus( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ) ).replace( "\\u0027", "'" ).replace( "\\u0022", '"' ).replace( "\\u0026", "&" ), )
 
     def _get_settings( self ):
         self.settings = {}
