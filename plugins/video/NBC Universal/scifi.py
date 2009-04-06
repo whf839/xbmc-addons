@@ -42,7 +42,7 @@ def getHTML( url ):
 
 
 def shows():
-        url = 'http://www.scifi.com/rewind/playlist.xml'
+        url = 'http://www.scifi.com/rewind/includes/playlist_new.xml'
         showsxml=getHTML(url)
         xml = ElementTree(fromstring(showsxml))
         shows = []
