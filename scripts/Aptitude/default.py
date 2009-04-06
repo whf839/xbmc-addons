@@ -18,6 +18,19 @@ import apt_pkg
 import apt
 import xbmc, xbmcgui
 import time
+from threading import Thread
+
+class InstallThread(Thread):
+    def __init__ (self, execPath):
+        Thread.__init__(self)
+        self.execPath = execPath
+    def run(self):
+        self.running = True
+        os.system(self.execPath)
+        self.running = False
+    def isRunning(self):
+        return self.running
+   
 
 class XBMCInstallProgress(InstallProgress):
     def __init__(self):
@@ -50,6 +63,7 @@ apt_pkg.init()
 
 c = apt.Cache(XBMCTextProgress())
 c.upgrade()
+
 changes = c.getChanges()
 
 dialog = xbmcgui.Dialog()
@@ -68,12 +82,15 @@ else:
         installpy.write(installScript)
         installpy.close()
         tmp = xbmc.translatePath('special://temp/') + 'workfile'
+        f = open(tmp, 'w')
+        f.close()
         kb = xbmc.Keyboard('', 'Password needed', True)
         kb.doModal()
         if kb.isConfirmed():
             password = kb.getText()
             installCMD = 'echo "' + password + '" | sudo -S python ' + pathToInstallScript + ' > ' + tmp
-            os.system(installCMD)
+            execution = InstallThread(installCMD)
+            execution.start()
             f = open(tmp, 'r')
             progress = xbmcgui.DialogProgress()
             res = False
@@ -81,31 +98,39 @@ else:
             line2 = ""
             line3 = ""
             progress.create("Installing")
-            for line in f.readlines():
-                tokens = line.strip('\n').split(';')
-                if "Start" in tokens:
-                    if len(tokens) >= 4:
-                        line1 = tokens[1]
-                        line2 = tokens[2]
-                        line3 = tokens[3]
-                    progress.update(0)
-                elif "Finish" in tokens:
-                    pass
-                elif "Progress" in tokens:
-                    if len(tokens) >= 5:
-                        line1 = tokens[2]
-                        line2 = tokens[3]
-                        line3 = tokens[4]
-                    progress.update(float(tokens[1]), line1, line2, line3)
-                elif "Complete" in tokens:
-                    res = bool(tokens[1])
-                    progress.close()
-                    break
-                time.sleep(0.001)
+            run = True
+            res = False
+            while run:
                 if progress.iscanceled():
                     progress.close()
+                    run = False
                     break
-            
+                line = f.readline()
+                if line is not '':
+                    tokens = line.strip('\n').split(';')
+                    if "Start" in tokens:
+                        if len(tokens) >= 4:
+                            line1 = tokens[1]
+                            line2 = tokens[2]
+                            line3 = tokens[3]
+                        progress.update(0)
+                    elif "Finish" in tokens:
+                        pass
+                    elif "Progress" in tokens:
+                        if len(tokens) >= 5:
+                            line1 = tokens[2]
+                            line2 = tokens[3]
+                            line3 = tokens[4]
+                        progress.update(float(tokens[1]), line1, line2, line3)
+                    elif "Complete" in tokens:
+                        res = bool(tokens[1])
+                        progress.close()
+                        run = False
+                        break
+                else:
+                    run = execution.isRunning()
+                time.sleep(0.001)
+
             if res:
                 dialog.ok("Info", "Upgraded completed sucessfully")
             else:
