@@ -34,6 +34,7 @@
     <string id="30030">Beiträge pro Seite</string>
     <string id="30040">Listenbilder laden (langsamer)?</string>
     <string id="30050">Gelesene Beiträge anzeigen?</string>
+    <string id="30060">Nach Update suchen</string>
 
     <!-- Update messages -->
     <string id="1000">Deine Version ist aktuell.</string>
