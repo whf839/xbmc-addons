@@ -196,7 +196,8 @@ class Main:
         # starting video
         start_index = ( self.args.page - 1 ) * self.settings[ "perpage" ] + 1
         # fetch the videos
-        exec 'feeds = client.%s( format=5, orderby=self.args.orderby, related=self.args.related, region_id=region_id, time=feed_time, racy=self.settings[ "include_racy" ], start__index=start_index, max__results=self.settings[ "perpage" ], vq=self.args.vq, author=self.args.username )' % ( self.args.category, )
+        # TODO: format=5, <- put this back if videos fail
+        exec 'feeds = client.%s( orderby=self.args.orderby, related=self.args.related, region_id=region_id, time=feed_time, racy=self.settings[ "include_racy" ], start__index=start_index, max__results=self.settings[ "perpage" ], vq=self.args.vq, author=self.args.username )' % ( self.args.category, )
         # calculate total pages
         pages = self._get_total_pages( int( feeds[ "feed" ][ "openSearch$totalResults" ][ "$t" ] ) )
         # if this was a search and there is a spelling correction get the correction
@@ -349,6 +350,8 @@ class Main:
                         cm += [ ( xbmc.getLocalizedString( 30504 ), "XBMC.Action(Queue)", ) ]
                         # add related videos
                         cm += [ ( xbmc.getLocalizedString( 30500 ), "XBMC.ActivateWindow(%d,%s?title=%s&category='related'&page=1&vq=''&username=''&orderby='relevance'&related=%s&issearch=False&update_listing=False)" % ( xbmcgui.getCurrentWindowId(), sys.argv[ 0 ], repr( xbmc.getLocalizedString( 30968 ) ), repr( video[ "id" ][ "$t" ].split( "/" )[ -1 ] ), ), ) ]
+                        # add author videos
+                        cm += [ ( xbmc.getLocalizedString( 30507 ) % ( director, ), "XBMC.ActivateWindow(%d,%s?title=%s&category='users__uploads'&page=1&vq=''&username=%s&orderby='relevance'&related=''&issearch=False&update_listing=False)" % ( xbmcgui.getCurrentWindowId(), sys.argv[ 0 ], quote_plus( repr( director ) ), quote_plus( repr( director ) ), ), ) ]
                         # if download path set, add download item
                         if ( self.settings[ "download_path" ] != "" ):
                             cm += [ ( xbmc.getLocalizedString( 30501 ), "XBMC.RunPlugin(%s?category='download_video'&video_url=%s)" % ( sys.argv[ 0 ], quote_plus( repr( video_url ) ), ), ) ]
@@ -357,8 +360,9 @@ class Main:
                         # add to favourites
                         if ( self.args.category != "my_favorites" and self.authkey ):
                             cm += [ ( xbmc.getLocalizedString( 30503 ), "XBMC.RunPlugin(%s?category='add__favorite'&video_id=%s&update_listing=False)" % ( sys.argv[ 0 ], repr( video[ "id" ][ "$t" ].split( "/" )[ -1 ] ), ) ) ]
-                        else:
-                            cm += [ ( xbmc.getLocalizedString( 30506 ), "XBMC.RunPlugin(%s?category='delete__favorite'&video_id=%s&update_listing=False)" % ( sys.argv[ 0 ], repr( video[ "id" ][ "$t" ].split( "/" )[ -1 ] ), ) ) ]
+                        # TODO: add this back in when it works
+                        ##else:
+                        ##    cm += [ ( xbmc.getLocalizedString( 30506 ), "XBMC.RunPlugin(%s?category='delete__favorite'&video_id=%s&update_listing=False)" % ( sys.argv[ 0 ], repr( video[ "id" ][ "$t" ].split( "/" )[ -1 ] ), ) ) ]
                         # add now playing
                         cm += [ ( xbmc.getLocalizedString( 30505 ), "XBMC.ActivateWindow(10028)", ) ]
                         # add context menu items
