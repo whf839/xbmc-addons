@@ -186,8 +186,11 @@ class Main:
 
     def delete__favorite( self ):
         # Youtube client
-        ##client = YoutubeClient( YoutubeClient.BASE_USERS_URL, self.authkey )
-        ##client.delete_favorites( self.args.video_id )
+        client = YoutubeClient( YoutubeClient.BASE_USERS_URL, self.authkey )
+        ok = client.delete_favorites( self.args.edit_url )
+        # only need to refresh if successful
+        if ( ok ):
+            xbmc.executebuiltin( "Container.Refresh" )
         return False, 0
 
     def fetch_videos( self, url, feed_time="", region_id="" ):
@@ -360,9 +363,15 @@ class Main:
                         # add to favourites
                         if ( self.args.category != "my_favorites" and self.authkey ):
                             cm += [ ( xbmc.getLocalizedString( 30503 ), "XBMC.RunPlugin(%s?category='add__favorite'&video_id=%s&update_listing=False)" % ( sys.argv[ 0 ], repr( video[ "id" ][ "$t" ].split( "/" )[ -1 ] ), ) ) ]
-                        # TODO: add this back in when it works
-                        ##else:
-                        ##    cm += [ ( xbmc.getLocalizedString( 30506 ), "XBMC.RunPlugin(%s?category='delete__favorite'&video_id=%s&update_listing=False)" % ( sys.argv[ 0 ], repr( video[ "id" ][ "$t" ].split( "/" )[ -1 ] ), ) ) ]
+                        else:
+                            # find the edit url
+                            for link in video["link"]:
+                                # this is the edit url, so set the context menu item
+                                if ( link["rel"] == "edit" ):
+                                    # set url using this hack to clean the result (exec is a hack for unescaping \u#### characters)
+                                    exec 'edit_url = u"%s"' % ( unicode( link[ "href" ], encoding ), )
+                                    # add context menu item
+                                    cm += [ ( xbmc.getLocalizedString( 30506 ), "XBMC.RunPlugin(%s?category='delete__favorite'&edit_url=%s&update_listing=False)" % ( sys.argv[ 0 ], quote_plus( repr( edit_url ) ), ), ) ]
                         # add now playing
                         cm += [ ( xbmc.getLocalizedString( 30505 ), "XBMC.ActivateWindow(10028)", ) ]
                         # add context menu items
