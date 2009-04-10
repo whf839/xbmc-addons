@@ -17,7 +17,7 @@ __plugin__ = "TED Talks"
 __author__ = "rwparris2"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/TED%20Talks"
-__version__ = "1.5"
+__version__ = "1.5.1"
 
 
 if ( __name__ == "__main__" ):

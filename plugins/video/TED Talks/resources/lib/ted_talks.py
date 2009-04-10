@@ -19,7 +19,7 @@ class Main:
     auFeed='http://feeds.feedburner.com/tedtalks_audio'
 
     def __init__(self):
-        xbmcplugin.setContent(int(sys.argv[1]), 'movies')#skin/xbmc will present vids as movies
+        xbmcplugin.setContent(int(sys.argv[1]), 'movies')
         self._parse_argv()
         self._get_settings()
     ####
@@ -67,7 +67,7 @@ class Main:
     def addFullLink(self,name,url,plot,date,year,genre,author,episode=''):
         ok=True
         liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png")
-        liz.setInfo( type="Video", infoLabels={"Title":name,"Studio":"Ted","Writer":author,"Plot":plot,"Date":date,"Year":year,"Genre":genre,"Episode":episode } )
+        liz.setInfo( type="Video", infoLabels={"Title":name,"Studio":"Ted","Writer":author,"Plot":plot,"Plotoutline":plot,"Date":date,"Year":year,"Genre":genre,"Episode":episode } )
         if(os.path.isdir(self.settings['download_path']) and self.settings['download_mode']=='1'):
             action = "XBMC.RunPlugin(%s?downloadTalk=True)" % ( sys.argv[ 0 ], )
             liz.addContextMenuItems([(xbmc.getLocalizedString(30020), action,)])
@@ -93,7 +93,7 @@ class Main:
                         download_plot=xbmc.getLocalizedString(30033)
                         download_thumb='http://images.ted.com/images/ted/215_291x218.jpg'
             except: pass
-            #set plots and thumbs
+            ##set plots and thumbs
         all_plot=xbmc.getLocalizedString(30004)
         all_thumb='http://images.ted.com/images/ted/474_291x218.jpg'
         theme_plot=xbmc.getLocalizedString(30003)
@@ -197,7 +197,6 @@ class Main:
             if d.entries[i].has_key('summary'):
                 q=re.compile('<img .* />') #remove useless image tag from summary
                 plot=q.sub('',d.entries[i].summary)
-                plot=plot+'\n'+vid
                 
             else:
                 plot=''
