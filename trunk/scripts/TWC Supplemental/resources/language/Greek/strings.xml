@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+<string id="0">The Weather Channel - Συμπληρωματικά στοιχεία καιρού</string>
+<string id="1">xbmc media center</string>
+<!-- language strings credit -->
+<string id="2">Ydatografida</string>
+
+<string id="10">Φόρτωση...</string>
+
+<string id="50">DISPLAY: εναλλαγή χάρτη σε πλήρη οθόνη</string>
+<string id="51">CONTEXT: ορισμός του παρόντος χάρτη ως προεπιλεγμένη προβολή</string>
+<string id="52">MENU: έξοδος από το script</string>
+<string id="53">CONTEXT: ορισμός της τριάντα εξάωρης πρόγνωσης ως προεπιλεγμένη προβολή</string>
+<string id="54">CONTEXT: ορισμός της ωριαίας πρόγνωσης ως προεπιλεγμένη προβολή</string>
+<string id="55">CONTEXT: ορισμός της πρόγνωσης σαββατοκύριακου ως προεπιλεγμένη προβολή</string>
+<string id="56">CONTEXT: ορισμός της δεκαήμερης πρόγνωσης ως προεπιλεγμένη προβολή</string>
+<string id="57">CONTEXT: ορισμός των προειδοποιήσεων καιρού ως προεπιλεγμένη προβολή</string>
+
+<string id="100">Ανάκτηση χαρτών πρόγνωσης...</string>
+<string id="101">Ανάκτηση τριάντα εξάωρης πρόγνωσης...</string>
+<string id="102">Ανάκτηση ωριαίας πρόγνωσης...</string>
+<string id="103">Ανάκτηση πρόγνωσης σαββατοκύριακου...</string>
+<string id="104">Ανάκτηση δεκαήμερης πρόγνωσης...</string>
+
+<string id="200">Χάρτες</string>
+<string id="201">36ωρη πρόγνωση</string>
+<string id="202">Ωριαία πρόγνωση</string>
+<string id="203">Σαββατοκύριακο</string>
+<string id="204">Δεκαήμερη πρόγνωση</string>
+<string id="205">Ρυθμίσεις</string>
+<string id="206">Προειδοποιήσεις</string>
+<string id="2060">Προειδοποίηση</string>
+
+<string id="300">Λεπτομέρειες</string>
+<string id="301">Πρόβλεψη</string>
+<string id="302">Βίντεο</string>
+
+<!-- Settings strings -->
+<string id="400">Ενεργοποίηση κίνησης χαρτών</string>
+<string id="401">Χρήση μονάδων μετρικού συστήματος</string>
+<string id="402">Εξ ορισμού εμφάνιση της καρτέλας προειδοποιήσεων</string>
+<string id="403">Κατηγορία χαρτών 1ης καρτέλας</string>
+<string id="404">Κατηγορία χαρτών 2ης καρτέλας</string>
+<string id="405">Κατηγορία χαρτών 3ης καρτέλας</string>
+<string id="406">Διαδρομή των fanart καιρού</string>
+<string id="407">- Χρήση συνθήκης καιρού</string>
+<string id="408">- Επίπεδο εξασθένησης</string>
+
+<string id="450">Επιλογή κατηγορίας χάρτη</string>
+
+<string id="600">Έκδοση</string>
+<string id="601">Συγγραφέας</string>
+<string id="602">Μεταφραστής</string>
+<string id="603">Προεπιλεγμένη προβολή</string>
+
+</strings> 

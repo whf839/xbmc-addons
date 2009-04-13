@@ -3177,7 +3177,7 @@
                                 <selectedcolor>FFe2ff43</selectedcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>[B]$INFO[ListItem.Property(high)][B]&#10;$INFO[ListItem.Property(low)]</label>
+                                <label>[B]$INFO[ListItem.Property(high)][/B]&#10;$INFO[ListItem.Property(low)]</label>
                             </control>
                             <control type="label">
                                 <posx>360</posx>
@@ -3271,7 +3271,7 @@
                                 <selectedcolor>FFe2ff43</selectedcolor>
                                 <align>center</align>
                                 <aligny>center</aligny>
-                                <label>[B]$INFO[ListItem.Property(high)][B]&#10;$INFO[ListItem.Property(low)]</label>
+                                <label>[B]$INFO[ListItem.Property(high)][/B]&#10;$INFO[ListItem.Property(low)]</label>
                             </control>
                             <control type="label">
                                 <posx>360</posx>
