@@ -53,6 +53,12 @@
     <string id="30602">To: %s</string>
     <string id="30603">Copying: %s</string>
 
+    <!-- compatible messages -->
+    <string id="30700">version</string>
+    <string id="30701">This version of %s requires an</string>
+    <string id="30702">XBMC revision of %s or greater to run.</string>
+    <string id="30703">Please update your XBMC.</string>
+
     <!-- Plugin settings strings -->
     <string id="30000">Username</string>
     <string id="30005">Password</string>
