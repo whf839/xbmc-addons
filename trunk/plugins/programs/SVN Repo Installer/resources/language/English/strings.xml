@@ -16,7 +16,7 @@
     <string id="30012">Not in SVN</string>
     <string id="30013">Unknown Version</string>
     <string id="30014">New</string>
-    <string id="30015">Incompatable</string>
+    <string id="30015">Incompatible</string>
 
     <string id="30020">Skip</string>
     <string id="30021">Install</string>
@@ -25,6 +25,12 @@
     <string id="30500">Check for updates</string>
 	<string id="30510">Updates: Show Addons not in SVN?</string>
 	<string id="30520">Updates: Show Addons wihout a version?</string>
+
+    <!-- compatible messages -->
+    <string id="30700">version</string>
+    <string id="30701">This version of %s requires an</string>
+    <string id="30702">XBMC revision of %s or greater to run.</string>
+    <string id="30703">Please update your XBMC.</string>
 
     <!-- Update error messages -->
     <string id="30030">There was an error installing item!</string>
