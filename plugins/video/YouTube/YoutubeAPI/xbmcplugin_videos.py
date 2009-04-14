@@ -302,7 +302,7 @@ class Main:
                 # enumerate through the list of pictures and add the item to the media list
                 for video in videos:
                     # only add videos with an embeddable video
-                    if ( video[ "media$group" ].has_key( "media$content" ) ):
+                    if ( video[ "media$group" ].has_key( "media$player" ) ):
                         # create the title, we use video title and author (exec is a hack for unescaping \u#### characters)
                         exec 'title = u"%s"' % ( unicode( video[ "title" ][ "$t" ].replace( '"', '\\"' ), encoding, "replace" ), )
                         # set the director with author (exec is a hack for unescaping \u#### characters)
@@ -352,9 +352,9 @@ class Main:
                         # add queue video
                         cm += [ ( xbmc.getLocalizedString( 30504 ), "XBMC.Action(Queue)", ) ]
                         # add related videos
-                        cm += [ ( xbmc.getLocalizedString( 30500 ), "XBMC.ActivateWindow(%d,%s?title=%s&category='related'&page=1&vq=''&username=''&orderby='relevance'&related=%s&issearch=False&update_listing=False)" % ( xbmcgui.getCurrentWindowId(), sys.argv[ 0 ], repr( xbmc.getLocalizedString( 30968 ) ), repr( video[ "id" ][ "$t" ].split( "/" )[ -1 ] ), ), ) ]
+                        cm += [ ( xbmc.getLocalizedString( 30500 ), "Container.Update(%s?title=%s&category='related'&page=1&vq=''&username=''&orderby='relevance'&related=%s&issearch=False&update_listing=False)" % ( sys.argv[ 0 ], repr( xbmc.getLocalizedString( 30968 ) ), repr( video[ "id" ][ "$t" ].split( "/" )[ -1 ] ), ), ) ]
                         # add author videos
-                        cm += [ ( xbmc.getLocalizedString( 30507 ) % ( director, ), "XBMC.ActivateWindow(%d,%s?title=%s&category='users__uploads'&page=1&vq=''&username=%s&orderby='relevance'&related=''&issearch=False&update_listing=False)" % ( xbmcgui.getCurrentWindowId(), sys.argv[ 0 ], quote_plus( repr( director ) ), quote_plus( repr( director ) ), ), ) ]
+                        cm += [ ( xbmc.getLocalizedString( 30507 ) % ( director, ), "Container.Update(%s?title=%s&category='users__uploads'&page=1&vq=''&username=%s&orderby='relevance'&related=''&issearch=False&update_listing=False)" % ( sys.argv[ 0 ], quote_plus( repr( director ) ), quote_plus( repr( director ) ), ), ) ]
                         # if download path set, add download item
                         if ( self.settings[ "download_path" ] != "" ):
                             cm += [ ( xbmc.getLocalizedString( 30501 ), "XBMC.RunPlugin(%s?category='download_video'&video_url=%s)" % ( sys.argv[ 0 ], quote_plus( repr( video_url ) ), ), ) ]
