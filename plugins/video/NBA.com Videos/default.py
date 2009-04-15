@@ -3,43 +3,44 @@ __scriptname__ = "NBA.com Videos"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/NBA.com%20Videos"
 __date__ = '2009-04-03'
-__version__ = "r892"
+__version__ = "r918"
 
-HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.8) Gecko/2009032609 Firefox/3.0.8'
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
+HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.8) Gecko/2009032609 Firefox/3.0.8'
+THUMBNAIL_PATH = os.path.join(os.getcwd().replace( ";", "" ),'resources','media')
 
 def showRoot():
-		url="http://www.nba.com/.element/ssi/sect/1.1/video/highlights.html"
+		url="http://www.nba.com/.element/ssi/auto/1.1/aps/video/videoplayer/games1.html"
 		li=xbmcgui.ListItem("1. Highlights")
 		u=sys.argv[0]+"?mode=6&url="+urllib.quote_plus(url)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 		#
-		url="http://www.nba.com/.element/ssi/sect/1.1/video/topplays.html"
+		url="http://www.nba.com/.element/ssi/auto/1.1/aps/video/videoplayer/channels/top_plays1.html"
 		li=xbmcgui.ListItem("2. Top Plays")
-		u=sys.argv[0]+"?mode=7&url="+urllib.quote_plus(url)
+		u=sys.argv[0]+"?mode=6&url="+urllib.quote_plus(url)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 		#
-		url="http://www.nba.com/.element/ssi/sect/1.1/video/mostrecent.html"
+		url="http://www.nba.com/.element/ssi/auto/1.1/aps/video/videoplayer/general1.html"
 		li=xbmcgui.ListItem("3. Most Recent")
 		u=sys.argv[0]+"?mode=6&url="+urllib.quote_plus(url)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 		#
-		url="http://www.nba.com/.element/ssi/sect/1.1/video/nbatv.html"
+		url="http://www.nba.com/.element/ssi/auto/1.1/aps/video/videoplayer/channels/nba_tv1.html"
 		li=xbmcgui.ListItem("4. NBA TV")
-		u=sys.argv[0]+"?mode=7&url="+urllib.quote_plus(url)
+		u=sys.argv[0]+"?mode=6&url="+urllib.quote_plus(url)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 		#
-		url="http://www.nba.com/.element/ssi/sect/1.1/video/tntot.html"
+		url="http://www.nba.com/.element/ssi/auto/1.1/aps/video/videoplayer/channels/tnt_overtime1.html"
 		li=xbmcgui.ListItem("5. TNT OT")
-		u=sys.argv[0]+"?mode=7&url="+urllib.quote_plus(url)
+		u=sys.argv[0]+"?mode=6&url="+urllib.quote_plus(url)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 		#
-		url="http://www.nba.com/.element/ssi/sect/1.1/video/featured.html"
-		li=xbmcgui.ListItem("6. Special Features")
-		u=sys.argv[0]+"?mode=7&url="+urllib.quote_plus(url)
-		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+		# url="http://www.nba.com/.element/ssi/sect/1.1/video/featured.html"
+		# li=xbmcgui.ListItem("6. Special Features")
+		# u=sys.argv[0]+"?mode=6&url="+urllib.quote_plus(url)
+		# xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 		#
-		li=xbmcgui.ListItem("7. Teams")
+		li=xbmcgui.ListItem("6. Teams")
 		u=sys.argv[0]+"?mode=5"
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
@@ -51,14 +52,16 @@ def showTeams():
 		u2=sys.argv[0]+"?mode=4"
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u2,li2,True)
 
-def showList2(url):
-	req = urllib2.Request(url)
+def showList2(url,page):
+	thisurl=url
+	url=url.replace('1.html','')
+	req = urllib2.Request(url+str(int(page))+'.html')
 	req.add_header('User-Agent', HEADER)
 	f=urllib2.urlopen(req)
 	a=f.read()
 	f.close()
-	img=re.compile('<img src="(.+?)"><div id').findall(a)
-	vidname=re.compile('<a href="javascript:window.top.changePlaylist\(\'(.+?)\'\);">(.+?)</a>\n').findall(a)
+	img=re.compile('<img src="(.+?)"><div ').findall(a)
+	vidname=re.compile('<a href="javascript:changePlaylist\(\'(.+?)\'\);">(.+?)</a>\n').findall(a)
 	disc=re.compile('<p(.+?)/p>').findall(a)
 	x=0
 	for thumb in img:
@@ -75,6 +78,9 @@ def showList2(url):
 		u=sys.argv[0]+"?mode=3&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
 		x=x+1
+	li=xbmcgui.ListItem("Next Page",iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'next.png'))
+	u=sys.argv[0]+"?mode=6&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(thisurl)+"&page="+str(int(page)+1)
+	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
 def showList3(url):
 	req = urllib2.Request(url)
@@ -264,7 +270,7 @@ elif mode==4:
 elif mode==5:
 	showTeams()
 elif mode==6:
-	showList2(url)
+	showList2(url,page)
 elif mode==7:
 	showList3(url)
 
