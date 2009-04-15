@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings> <!--  9.4.2009 Finnish   -->
+<strings> <!--  15.4.2009 Finnish   -->
     <!-- Plugin strings -->
     <string id="30900">Tallenna esiasetukseksi</string>
     <string id="30901">Haluatko lisätä tämän haun esiasetukseksi?</string>
     <string id="30902">Haun tallennus epäonnistui!</string>
     <string id="30903">Haun tallennus epäonnistui virheeseen:</string>
-    <string id="30904">Käyttäjästä ei ollut kuvausta tai se ei ollut utf-8-muodossa</string>
-    <string id="30905">Esiasetettu hakunimi</string>
+    <string id="30904">Ei kuvausta</string>
+    <string id="30905">Esiasetettu hakusana</string>
     <string id="30906">Etsi sanalla</string>
     <string id="30907">Etsi käyttäjänimeä</string>
     <string id="30908">Ladataan videota...</string>
     <string id="30909">Noudetaan satunnaista musiikkivideota...</string>
-    <string id="30910">Toista tunnisteen id video</string>
+    <string id="30910">Toista tunnisteen video</string>
     <string id="30911">Tarkoititko</string>
     <string id="30912"></string>
     <string id="30913"></string>
@@ -27,7 +27,7 @@
     <string id="30957">Arvostetuimmat</string>
     <string id="30958">Katso kannettavalla</string>
     <string id="30959">Katso satunnaisia musiikkivideoita</string>
-    <string id="30960">Toista ID tunnisteen videoita</string>
+    <string id="30960">Toista tunnisteen videoita</string>
     <string id="30961">Omat videot</string>
     <string id="30962">Omat suosikit</string>
     <string id="30963">Suosituimmat</string>
@@ -52,6 +52,12 @@
     <string id="30601">Tallennetaan: %s</string>
     <string id="30602">Kohteeseen: %s</string>
     <string id="30603">Kopioidaan: %s</string>
+
+    <!-- compatible messages -->
+    <string id="30700">versio</string>
+    <string id="30701">Tämä %s:n versio vaatii toimiakseen</string>
+    <string id="30702">XBMC revision %s tai uudemman.</string>
+    <string id="30703">Päivitä XBMC uudempaan versioon.</string>
 
     <!-- Plugin settings strings -->
     <string id="30000">Käyttäjänimi</string>
