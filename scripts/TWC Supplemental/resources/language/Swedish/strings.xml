@@ -2,7 +2,7 @@
 <!--Language file translated with Team XBMC Translator-->
 <!--Translator: blittan-->
 <!--Email: blittan@xbmc.org-->
-<!--Date of translation: 01/20/2009-->
+<!--Date of translation: 04/16/2009-->
 <!--$Revision$-->
 <strings>
   <string id="0">Väderkanalen - Tillägg</string>
@@ -31,13 +31,17 @@
   <string id="206">Larm</string>
   <string id="300">Detaljer</string>
   <string id="301">Utsikt</string>
-  <string id="302">Film</string>
+  <string id="302">Video</string>
   <string id="400">Aktivera animerade kartor</string>
   <string id="401">Använd metriska värden</string>
   <string id="402">Sökväg till väder-fankonst</string>
-  <string id="403">- Toningsnivå</string>
-  <string id="404">- Använd väderförhållande</string>
-  <string id="405">Öppna larmfliken som standard</string>
+  <string id="403">Kartlista #1 kategori</string>
+  <string id="404">Kartlista #2 kategori</string>
+  <string id="405">Kartlista #3 kategori</string>
+  <string id="406">Väder-fankonst sökväg</string>
+  <string id="407">- Använd vädervillkor</string>
+  <string id="408">- Toningsnivå</string>
+  <string id="450">Välj kartkategori</string>
   <string id="600">Version</string>
   <string id="601">Författare</string>
   <string id="602">Språk av</string>
