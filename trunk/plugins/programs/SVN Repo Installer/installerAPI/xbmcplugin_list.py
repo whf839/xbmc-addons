@@ -60,13 +60,15 @@ class _Info:
 
 class Main:
     # base path
-    BASE_CACHE_PATH = xbmc.translatePath( "/".join( [ "special://profile", "Thumbnails", "Pictures" ] ) )
+    BASE_CACHE_PATH = os.path.join( xbmc.translatePath( "special://profile/" ), "Thumbnails", "Pictures" )
 
     def __init__( self ):
         # if this is first run list all the repos
         if ( sys.argv[ 2 ] == "" ):
             ok = self._get_repos()
         else:
+            # get XBMC revision
+            self._get_xbmc_revision()
             # parse sys.argv for our current url
             self._parse_argv()
             # get the repository info
@@ -76,12 +78,18 @@ class Main:
         # send notification we're finished, successfully or unsuccessfully
         xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=ok )
 
+    def _get_xbmc_revision( self ):
+        xbmc_version = xbmc.getInfoLabel( "System.BuildVersion" )
+        self.XBMC_REVISION = int( xbmc_version.split( " " )[ 1 ].replace( "r", "" ) )
+
     def _parse_argv( self ):
         # call _Info() with our formatted argv to create the self.args object
         exec "self.args = _Info(%s)" % ( urllib.unquote_plus( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ) ), )
 
     def _get_repos( self ):
         try:
+            # we fetch the log here only at start of plugin
+            import xbmcplugin_logviewer
             # add the check for updates item to the media list
             url = "%s?category='updates'" % ( sys.argv[ 0 ], )
             # set the default icon
@@ -92,13 +100,17 @@ class Main:
             listitem = xbmcgui.ListItem( xbmc.getLocalizedString( 30500 ), iconImage=icon, thumbnailImage=thumbnail )
             # set the title
             listitem.setInfo( type="Video", infoLabels={ "Title": xbmc.getLocalizedString( 30500 ) } )
+            cm = [ ( xbmc.getLocalizedString( 30610 ), "XBMC.RunPlugin(%s?showreadme=True&repo=None)" % ( sys.argv[ 0 ], ), ) ]
+            listitem.addContextMenuItems( cm, replaceItems=True )
             # add our item
             ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=url, listitem=listitem, isFolder=True )
             # now add all the repos
             repos = os.listdir( os.path.join( os.getcwd(), "resources", "repositories" ) )
             # enumerate through the list of categories and add the item to the media list
             for repo in repos:
+                cm = []
                 if ( os.path.isdir( os.path.join( os.getcwd(), "resources", "repositories", repo ) ) ):
+                    # create the url
                     url = "%s?category='root'&repo=%s" % ( sys.argv[ 0 ], repr( urllib.quote_plus( repo ) ) )
                     # set thumbnail
                     thumbnail = os.path.join( os.getcwd(), "resources", "media", "svn_repo.png" )
@@ -106,6 +118,14 @@ class Main:
                     listitem = xbmcgui.ListItem( repo, iconImage=icon, thumbnailImage=thumbnail )
                     # set the title
                     listitem.setInfo( type="Video", infoLabels={ "Title": repo } )
+                    # grab the log for this repo
+                    if ( "tagged" not in repo ):
+                        parser = xbmcplugin_logviewer.ChangelogParser( repo, parse=False )
+                        parser.fetch_changelog()
+                        cm += [ ( xbmc.getLocalizedString( 30600 ), "XBMC.RunPlugin(%s?showlog=True&repo=%s&category=None&revision=None&parse=True)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( repo ) ), ), ) ]
+                    cm += [ ( xbmc.getLocalizedString( 30610 ), "XBMC.RunPlugin(%s?showreadme=True&repo=None)" % ( sys.argv[ 0 ], ), ) ]
+                    # add context menu items
+                    listitem.addContextMenuItems( cm, replaceItems=True )
                     # add the item to the media list
                     ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=url, listitem=listitem, isFolder=True )
                     # if user cancels, call raise to exit loop
@@ -156,6 +176,7 @@ class Main:
             ok = False
             # enumerate through the list of categories and add the item to the media list
             for item in assets:
+                cm = []
                 isFolder = True
                 for name, noffset, install, ioffset, voffset in self.REPO_STRUCTURES:
                     try:
@@ -167,16 +188,29 @@ class Main:
                 if ( isFolder ):
                     heading = "category"
                     thumbnail = ""
+                    label2 = ""
+                    version = ""
                 else:
                     heading = "download_url"
                     thumbnail = "%s%s/%sdefault.tbn" % ( self.REPO_URL, repo_url.replace( " ", "%20" ), item.replace( " ", "%20" ), )
-                url = '%s?%s="%s/%s"&repo=%s&install="%s"&ioffset=%s&voffset=%s' % ( sys.argv[ 0 ], heading, urllib.quote_plus( repo_url ), urllib.quote_plus( item ), repr( urllib.quote_plus( self.args.repo ) ), install, ioffset, voffset, )
+                    version, label2, path = self._check_compatible( "%s%s/%sdefault.py" % ( self.REPO_URL, repo_url.replace( " ", "%20" ), item.replace( " ", "%20" ), ), self.REPO_URL, install, int( ioffset ), int( voffset ) )
+                    version = " (%s)" % version
+                    
+                if ( label2.startswith( "[COLOR=FF00FF00]" ) or label2.startswith( "[COLOR=FFFF0000]" ) ):
+                    url = path
+                else:
+                    url = '%s?%s="%s/%s"&repo=%s&install="%s"&ioffset=%s&voffset=%s' % ( sys.argv[ 0 ], heading, urllib.quote_plus( repo_url ), urllib.quote_plus( item ), repr( urllib.quote_plus( self.args.repo ) ), install, ioffset, voffset, )
                 # set the default icon
                 icon = "DefaultFolder.png"
                 # create our listitem, fixing title
-                listitem = xbmcgui.ListItem( urllib.unquote_plus( item[ : -1 ] ), iconImage=icon, thumbnailImage=thumbnail )
+                listitem = xbmcgui.ListItem( "%s%s" % ( urllib.unquote_plus( item[ : -1 ] ), version, ), label2=label2, iconImage=icon, thumbnailImage=thumbnail )
                 # set the title
-                listitem.setInfo( type="Video", infoLabels={ "Title": urllib.unquote_plus( item[ : -1 ] ) } )
+                listitem.setInfo( type="Video", infoLabels={ "Title": "%s%s" % ( urllib.unquote_plus( item[ : -1 ] ), version, ), "Genre": label2 } )
+                if ( not isFolder ):
+                    cm += [ ( xbmc.getLocalizedString( 30600 ), "XBMC.RunPlugin(%s?showlog=True&repo=%s&category=%s&revision=None&parse=True)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( self.args.repo ) ), urllib.quote_plus( repr( item[ : -1 ].replace( "%20", " " )  )  ), ), ) ]
+                    # add context menu items
+                cm += [ ( xbmc.getLocalizedString( 30610 ), "XBMC.RunPlugin(%s?showreadme=True&repo=None)" % ( sys.argv[ 0 ], ), ) ]
+                listitem.addContextMenuItems( cm, replaceItems=True )
                 # add the item to the media list
                 ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=url, listitem=listitem, isFolder=isFolder, totalItems=len( assets ) )
                 # if user cancels, call raise to exit loop
@@ -186,8 +220,59 @@ class Main:
             print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             ok = False
         if ( ok ):
-            xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )
+            xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_GENRE )
         return ok
+
+    def _check_compatible( self, url, repo_url, install, ioffset, voffset ):
+        try:
+            # get items svn info
+            ok = True
+            version = xbmc.getLocalizedString( 30013 )
+            # open url
+            usock = urllib.urlopen( url )
+            # read source
+            htmlSource = usock.read()
+            # close socket
+            usock.close()
+            # parse source for revision and version
+            version, revision = self._parse_version_revision( htmlSource )
+            # compatible
+            ok = self.XBMC_REVISION >= revision
+        except:
+            pass
+
+        # creat path
+        items = url.replace( repo_url, "" ).split( "/" )
+        # base path
+        drive = xbmc.translatePath( "/".join( [ "special://home", install ] ) )
+        if ( voffset != 0 ):
+            del items[ voffset ]
+            items[ voffset - 1 ] = parts[ voffset - 1 ].replace( "%20", " " )
+        path = os.path.join( drive, os.path.sep.join( items[ ioffset : ] ).replace( "%20", " " ) )
+
+        # if compatible, check for existing install
+        if ( not ok ):
+            return version, "[COLOR=FFFF0000]%s[/COLOR]" % ( xbmc.getLocalizedString( 30015 ), ), path
+
+        if ( os.path.isfile( path ) ):
+            htmlSource = open( path, "r" ).read()
+            # parse source for revision and version
+            ver, revision = self._parse_version_revision( htmlSource )
+            label2 = ( "[COLOR=FF00FFFF]%s[/COLOR]" % ( xbmc.getLocalizedString( 30016 ), ), "[COLOR=FF00FF00]%s[/COLOR]" % ( xbmc.getLocalizedString( 30011 ), ), )[ ver == version ]
+        else:
+            label2 = "[COLOR=FF00FFFF]%s[/COLOR]" % ( xbmc.getLocalizedString( 30021 ), )
+        return version, label2, path
+
+    def _parse_version_revision( self, htmlSource ):
+        try:
+            revision = int( re.search( "__XBMC_Revision__.*?[\"'](.*?)[\"']",  htmlSource, re.IGNORECASE ).group(1) )
+        except:
+            revision = 0
+        try:
+            version = re.search( "__version__.*?[\"'](.*?)[\"']",  htmlSource, re.IGNORECASE ).group(1)
+        except:
+            version = ""
+        return version, revision
 
     def _get_items( self ):
         try:
