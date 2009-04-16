@@ -304,6 +304,9 @@ class Main:
 
                 li=xbmcgui.ListItem( text, label2, icon, thumbnail)
                 li.setInfo( type="Video", infoLabels={ "Title": text, "Genre": label2 } )
+                cm = [ ( xbmc.getLocalizedString( 30600 ), "XBMC.RunPlugin(%s?showlog=True&repo=%s&category=%s&revision=None&parse=True)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( repo ) ), urllib.quote_plus( repr( category.split( "/" )[ -1 ] )  ), ), ) ]
+                cm += [ ( xbmc.getLocalizedString( 30610 ), "XBMC.RunPlugin(%s?showreadme=True&repo=None)" % ( sys.argv[ 0 ], ), ) ]
+                li.addContextMenuItems( cm, replaceItems=True )
 
                 xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=path, listitem=li, isFolder=False, totalItems=sz )
 
