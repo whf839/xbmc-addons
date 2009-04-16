@@ -14,7 +14,7 @@ __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/programs/SVN%
 __credits__ = "Team XBMC"
 __version__ = "1.5.4a"
 __XBMC_Revision__ = "19001"
-
+__svn_revision = "$Revision$"
 
 def _check_compatible():
     try:
