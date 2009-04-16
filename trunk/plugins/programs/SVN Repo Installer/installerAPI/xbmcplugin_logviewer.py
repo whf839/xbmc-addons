@@ -87,7 +87,7 @@ class ChangelogParser:
                 author = regex_authors.findall( item )[ 0 ]
                 detail = regex_details.findall( item )[ 0 ]
                 # add to log
-                if ( self.category is not None and re.findall( "[.*%s.*]" % self.category, detail, re.IGNORECASE ) ):
+                if ( self.category is not None and re.findall( "\[.*%s.*\]" % self.category, detail, re.IGNORECASE ) ):
                     if ( self.revision is not None and int( revision[ 1 : ] ) <= self.revision ):
                         self.log += "[I]%s - %s - %s[/I]\n%s\n----\n" % ( revision, date, author, unescape( re.sub( regex_subst, "", detail ).strip(), { "&#39;": "'", "&quot;": '"' } ), )
                     elif ( self.revision is None ):
