@@ -1,5 +1,4 @@
-SVN Repo Installer - Readme
-
+OVERVIEW:
 
 Plugin to browse and install XBMC Addons (Scripts/Plugins) from SVN Repositories. 
 Can also check for updates of your installed Addons.
@@ -22,7 +21,6 @@ To Browse and Install an Addon:
  2) Select Addon
  3) Select INSTALL
 
-
 To Check For Updates:
   1) Select "Check For Updates"
      Your installed Addon versions will be checked against those in SVN Repositories.
@@ -35,6 +33,11 @@ To Check For Updates:
     Not in SVN or SVN ?   = Not found in any SVN Repo.
     Unknown Version or v? = Addon does not contain __version__ tag.
  
+CHANGELOGS:
+ Selecting "View Changelog" from Plugin settings will show installers full changelog.
+
+ Selecting "View Changelog" whilst browsing addons will show the selected addon changelog.
+
 
 CREDITS:
  Written By Nuka1195/BigBellyBilly
