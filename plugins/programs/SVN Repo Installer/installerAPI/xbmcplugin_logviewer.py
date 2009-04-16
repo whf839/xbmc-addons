@@ -27,7 +27,10 @@ class ChangelogParser:
     PAGES = 3
 
     def __init__( self, repo, category=None, revision=None, parse=True ):
-        self.log = "[B]%s: %s[/B]\n----\n" % ( category or repo, xbmc.getLocalizedString( 30017 ) )
+        if ( DEBUG ):
+            self.log = "[B]%s: %s[/B]\n----\n" % ( category or repo, "ChangeLog" )
+        else:
+            self.log = "[B]%s: %s[/B]\n----\n" % ( category or repo, xbmc.getLocalizedString( 30017 ) )
         self.repo = repo
         self.category = category
         self.revision = revision
@@ -84,7 +87,7 @@ class ChangelogParser:
                 author = regex_authors.findall( item )[ 0 ]
                 detail = regex_details.findall( item )[ 0 ]
                 # add to log
-                if ( self.category is not None and re.findall( "[.*%s.*]" % self.category.lower(), detail, re.IGNORECASE ) ):
+                if ( self.category is not None and re.findall( "[.*%s.*]" % self.category, detail, re.IGNORECASE ) ):
                     if ( self.revision is not None and int( revision[ 1 : ] ) <= self.revision ):
                         self.log += "[I]%s - %s - %s[/I]\n%s\n----\n" % ( revision, date, author, unescape( re.sub( regex_subst, "", detail ).strip(), { "&#39;": "'", "&quot;": '"' } ), )
                     elif ( self.revision is None ):
@@ -171,7 +174,7 @@ if ( __name__ == "__main__" ):
     if ( not DEBUG ):
         Main()
     else:
-        parser = ChangelogParser( "xbmc-addons", "YouTube" )
+        parser = ChangelogParser( "xbmc-addons", "SVN Repo Installer" )
         parser.fetch_changelog()
         print parser.log
 
