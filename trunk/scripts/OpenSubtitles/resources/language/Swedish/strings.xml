@@ -2,11 +2,11 @@
 <!--Language file translated with Team XBMC Translator-->
 <!--Translator: blittan-->
 <!--Email: blittan@xbmc.org-->
-<!--Date of translation: 01/20/2009-->
+<!--Date of translation: 04/16/2009-->
 <!--$Revision$-->
 <strings>
   <string id="0">OpenSubtitles</string>
-  <string id="1">Xbox Media Center</string>
+  <string id="1">XBMC Media Center</string>
   <string id="2">blittan</string>
   <string id="100">Undantag för</string>
   <string id="201">Server</string>
