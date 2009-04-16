@@ -12,11 +12,13 @@
     <string id="30008">Your new item was installed to:</string>
     <string id="30009">Looking for installed Addons ...</string>
     <string id="30010">Checking SVN ...</string>
-    <string id="30011">OK</string>
+    <string id="30011">Ok</string>
     <string id="30012">Not in SVN</string>
     <string id="30013">Unknown Version</string>
     <string id="30014">New</string>
     <string id="30015">Incompatible</string>
+    <string id="30016">Update</string>
+    <string id="30017">ChangeLog</string>
 
     <string id="30020">Skip</string>
     <string id="30021">Install</string>
@@ -25,6 +27,12 @@
     <string id="30500">Check for updates</string>
 	<string id="30510">Updates: Show Addons not in SVN?</string>
 	<string id="30520">Updates: Show Addons wihout a version?</string>
+    <string id="30530">View Readme</string>
+    <string id="30540">View Changelog</string>
+
+    <!-- context menu -->
+    <string id="30600">View Changelog</string>
+    <string id="30610">View Readme</string>
 
     <!-- compatible messages -->
     <string id="30700">version</string>

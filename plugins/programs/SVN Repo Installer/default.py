@@ -11,15 +11,15 @@ __plugin__ = "SVN Repo Installer"
 __author__ = "nuka1195/BigBellyBilly"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/programs/SVN%20Repo%20Installer"
+__svn_revision__ = "$Revision$"
 __credits__ = "Team XBMC"
-__version__ = "1.5.4a"
+__version__ = "1.6"
 __XBMC_Revision__ = "19001"
-__svn_revision = "$Revision$"
 
 def _check_compatible():
     try:
         # spam plugin statistics to log
-        xbmc.log( "[PLUGIN] '%s: version %s' initialized!" % ( __plugin__, __version__, ), xbmc.LOGNOTICE )
+        xbmc.log( "[PLUGIN] '%s: Version: %s-r%s' initialized!" % ( __plugin__, __version__, __svn_revision__.replace( "$", "" ).replace( "Revision:", "" ).strip() ), xbmc.LOGNOTICE )
         # get xbmc revision
         xbmc_version = xbmc.getInfoLabel( "System.BuildVersion" )
         xbmc_rev = 0
@@ -38,7 +38,7 @@ def _check_compatible():
         xbmcgui.Dialog().ok( "%s - %s: %s" % ( __plugin__, xbmc.getLocalizedString( 30700 ), __version__, ), xbmc.getLocalizedString( 30701 ) % ( __plugin__, ), xbmc.getLocalizedString( 30702 ) % ( __XBMC_Revision__, ), xbmc.getLocalizedString( 30703 ) )
     #return result
     return ok
-    
+
 
 if ( __name__ == "__main__" ):
     if ( not sys.argv[ 2 ] ):
@@ -51,10 +51,14 @@ if ( __name__ == "__main__" ):
         from installerAPI import xbmcplugin_downloader as plugin
     elif ( sys.argv[ 2 ] == "?category='updates'" ):
         from installerAPI import xbmcplugin_update as plugin
+    elif ( sys.argv[ 2 ].startswith( "?showlog=True" ) or sys.argv[ 2 ].startswith( "?showreadme=True" ) ):
+        from installerAPI import xbmcplugin_logviewer as plugin
     else:
         from installerAPI import xbmcplugin_list as plugin
 
     try:
         plugin.Main()
     except:
+        import traceback
+        traceback.print_exc()
         pass

@@ -270,10 +270,10 @@ class Main:
                 # display text
                 text = "[%s] %s v%s" % (repo, category, ver)
                 if verState.endswith( "(%s)" % xbmc.getLocalizedString( 30014 ) ):                            # !New! - checking against ! as its constant regardless of lang
-                    label2 = "[COLOR=FFFF0000]%s[/COLOR]" % verState
-                elif verState.endswith( "(%s)" % xbmc.getLocalizedString( 30015 ) ):
                     label2 = "[COLOR=FF00FFFF]%s[/COLOR]" % verState
-                elif verState == "OK":
+                elif verState.endswith( "(%s)" % xbmc.getLocalizedString( 30015 ) ):
+                    label2 = "[COLOR=FFFF0000]%s[/COLOR]" % verState
+                elif verState == xbmc.getLocalizedString( 30011 ):
                     label2 = "[COLOR=FF00FF00]%s[/COLOR]" % verState
                 else:
                     label2 = "[COLOR=FFFFFF00]%s[/COLOR]" % verState
