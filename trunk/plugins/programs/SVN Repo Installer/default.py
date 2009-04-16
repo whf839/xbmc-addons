@@ -12,7 +12,7 @@ __author__ = "nuka1195/BigBellyBilly"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/programs/SVN%20Repo%20Installer"
 __credits__ = "Team XBMC"
-__version__ = "1.6.2c"
+__version__ = "1.6.3"
 __svn_revision__ = "$Revision$"
 __XBMC_Revision__ = "19001"
 
@@ -42,8 +42,8 @@ def _check_compatible():
 
 if ( __name__ == "__main__" ):
     if ( not sys.argv[ 2 ] ):
-        # check for compatibility, only need to check this once
-        if _check_compatible():     # only run if ok
+        # check for compatibility, only need to check this once, continue if ok
+        if ( _check_compatible() ):
             from installerAPI import xbmcplugin_list as plugin
     elif ( "download_url=" in sys.argv[ 2 ] ):
         from installerAPI import xbmcplugin_downloader as plugin
@@ -57,6 +57,4 @@ if ( __name__ == "__main__" ):
     try:
         plugin.Main()
     except:
-        import traceback
-        traceback.print_exc()
         pass
