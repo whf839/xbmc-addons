@@ -12,7 +12,7 @@ __author__ = "nuka1195/BigBellyBilly"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/programs/SVN%20Repo%20Installer"
 __credits__ = "Team XBMC"
-__version__ = "1.6.2a"
+__version__ = "1.6.2b"
 __svn_revision__ = "$Revision$"
 __XBMC_Revision__ = "19001"
 
@@ -27,8 +27,8 @@ def _check_compatible():
         # compatible?
         ok = xbmc_rev >= int( __XBMC_Revision__ )
     except:
-        # error, so make incompatible
-        ok = False
+        # error, so make compatible
+        ok = True
     # spam revision info
     xbmc.log( "     ** Required XBMC Revision: r%s **" % ( __XBMC_Revision__, ), xbmc.LOGNOTICE )
     xbmc.log( "     ** Found XBMC Revision: r%d [%s] **" % ( xbmc_rev, ( "Not Compatible", "Compatible", )[ ok ], ), xbmc.LOGNOTICE )

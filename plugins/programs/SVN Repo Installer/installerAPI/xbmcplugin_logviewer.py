@@ -128,8 +128,10 @@ if ( not DEBUG ):
 
         def _fetch_changelog( self ):
             if ( self.args.revision == True ):
-                self.args.revision = int( re.findall( "\$Revision: ([0-9]+) \$", sys.modules[ "__main__" ].__svn_revision__ )[ 0 ] )
-
+                try:
+                    self.args.revision = int( re.findall( "\$Revision: ([0-9]+) \$", sys.modules[ "__main__" ].__svn_revision__ )[ 0 ] )
+                except:
+                    self.args.revision = None
             parser = ChangelogParser( self.args.repo, self.args.category, self.args.revision, self.args.parse )
             parser.fetch_changelog()
             return parser.log
