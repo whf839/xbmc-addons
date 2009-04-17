@@ -11,7 +11,7 @@ __plugin__ = "YouTube"
 __author__ = "nuka1195"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/YouTube"
-__version__ = "1.5.2"
+__version__ = "1.5.2a"
 __XBMC_Revision__ = "19457"
 
 
@@ -27,7 +27,7 @@ def _check_compatible():
         ok = xbmc_rev >= int( __XBMC_Revision__ )
     except:
         # error, so make incompatible
-        ok = False
+        ok = True
     # spam revision info
     xbmc.log( "     ** Required XBMC Revision: r%s **" % ( __XBMC_Revision__, ), xbmc.LOGNOTICE )
     xbmc.log( "     ** Found XBMC Revision: r%d [%s] **" % ( xbmc_rev, ( "Not Compatible", "Compatible", )[ ok ], ), xbmc.LOGNOTICE )
