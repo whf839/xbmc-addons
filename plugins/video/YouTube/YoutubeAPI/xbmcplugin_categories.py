@@ -75,27 +75,31 @@ class Main:
             # default categories
             if ( root ):
                 categories = (
-                                        ( xbmc.getLocalizedString( 30951 ), "most_viewed", "", "", True, "viewCount", 0, "", False, ),
-                                        ( xbmc.getLocalizedString( 30952 ), "presets_videos", "", "", True, "updated", 0, "", False, ),
-                                        ( xbmc.getLocalizedString( 30953 ), "presets_users", "", "", True, "updated", 0, "", False, ),
-                                        ( xbmc.getLocalizedString( 30954 ), "recently_featured", "", "", True, "updated", 0, "", False, ),
-                                        ( xbmc.getLocalizedString( 30957 ), "top_rated", "", "", True, "rating", 0, "", False, ),
-                                        ( xbmc.getLocalizedString( 30958 ), "watch_on_mobile", "", "", True, "updated", 0, "", False, ),
-                                        ( xbmc.getLocalizedString( 30960 ), "play_video_by_id", "", "", False, "relevance", 0, "", False, ),
-                                        ( xbmc.getLocalizedString( 30961 ), "my_uploads", "", "", True, "updated", 0, "", True, ),
-                                        ( xbmc.getLocalizedString( 30962 ), "my_favorites", "", "", True, "updated", 0, "", True, ),
-                                        ( xbmc.getLocalizedString( 30963 ), "top_favorites", "", "", True, "relevance", 0, "", False, ),
-                                        ( xbmc.getLocalizedString( 30964 ), "most_discussed", "", "", True, "relevance", 0, "", False, ),
-                                        ( xbmc.getLocalizedString( 30965 ), "most_linked", "", "", True, "relevance", 0, "", False, ),
-                                        ( xbmc.getLocalizedString( 30966 ), "most_responded", "", "", True, "relevance", 0, "", False, ),
-                                        ( xbmc.getLocalizedString( 30967 ), "most_recent", "", "", True, "relevance", 0, "", False, ),
+                                        ( xbmc.getLocalizedString( 30951 ), "most_viewed", "", "", "", True, "viewCount", 0, "", False, ),
+                                        ( xbmc.getLocalizedString( 30952 ), "presets_videos", "", "", "", True, "updated", 0, "", False, ),
+                                        ( xbmc.getLocalizedString( 30953 ), "presets_users", "", "", "", True, "updated", 0, "", False, ),
+                                        ( xbmc.getLocalizedString( 30954 ), "recently_featured", "", "", "", True, "updated", 0, "", False, ),
+                                        ( xbmc.getLocalizedString( 30957 ), "top_rated", "", "", "", True, "rating", 0, "", False, ),
+                                        ( xbmc.getLocalizedString( 30958 ), "watch_on_mobile", "", "", "", True, "updated", 0, "", False, ),
+                                        ( xbmc.getLocalizedString( 30960 ), "play_video_by_id", "", "", "", False, "relevance", 0, "", False, ),
+                                        ( xbmc.getLocalizedString( 30961 ), "my_uploads", "", "", "", True, "updated", 0, "", True, ),
+                                        ( xbmc.getLocalizedString( 30962 ), "my_favorites", "", "", "", True, "updated", 0, "", True, ),
+                                        ( xbmc.getLocalizedString( 30963 ), "top_favorites", "", "", "", True, "relevance", 0, "", False, ),
+                                        ( xbmc.getLocalizedString( 30964 ), "most_discussed", "", "", "", True, "relevance", 0, "", False, ),
+                                        ( xbmc.getLocalizedString( 30965 ), "most_linked", "", "", "", True, "relevance", 0, "", False, ),
+                                        ( xbmc.getLocalizedString( 30966 ), "most_responded", "", "", "", True, "relevance", 0, "", False, ),
+                                        ( xbmc.getLocalizedString( 30967 ), "most_recent", "", "", "", True, "relevance", 0, "", False, ),
+                                        ( xbmc.getLocalizedString( 30969 ), "presets_categories", "", "", "", True, "updated", 0, "", False, ),
                                     )
             # search preset category
             elif ( "category='presets_videos'" in sys.argv[ 2 ] ):
-                categories = self.get_presets()
+                categories = self.get_presets( 0 )
             # user preset category
             elif ( "category='presets_users'" in sys.argv[ 2 ] ):
-                categories = self.get_presets( True )
+                categories = self.get_presets( 1 )
+            # category preset category
+            elif ( "category='presets_categories'" in sys.argv[ 2 ] ):
+                categories = self.get_presets( 2 )
             # fill media list
             ok = self._fill_media_list( categories )
         except:
@@ -103,24 +107,26 @@ class Main:
             print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             ok = False
         # set cache to disc
-        cacheToDisc = ( ok and not ( "category='presets_videos'" in sys.argv[ 2 ] or "category='presets_users'" in sys.argv[ 2 ] ) )
+        cacheToDisc = ( ok and not ( "category='presets_videos'" in sys.argv[ 2 ] or "category='presets_users'" in sys.argv[ 2 ] or "category='presets_categories'" in sys.argv[ 2 ] ) )
         # send notification we're finished, successfully or unsuccessfully
         xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=ok, cacheToDisc=cacheToDisc )
 
-    def get_presets( self, ptype=False ):
+    def get_presets( self, ptype ):
         # set category
-        category = ( "videos", "users", )[ ptype ]
+        search_type = ( "videos", "users", "categories", )[ ptype ]
         # initialize our category tuple
         categories = ()
         # add our new search item
-        if ( ptype ):
-            categories += ( ( xbmc.getLocalizedString( 30955 ), "search_users", "", "", True, "updated", 2, "", False, ), )
+        if ( ptype == 2 ):
+            categories += ( ( xbmc.getLocalizedString( 30970 ), "search_categories", "", "", "", True, "updated", 3, "", False, ), )
+        elif ( ptype == 1 ):
+            categories += ( ( xbmc.getLocalizedString( 30955 ), "search_users", "", "", "", True, "updated", 2, "", False, ), )
         else:
-            categories += ( ( xbmc.getLocalizedString( 30956 ), "search_videos", "", "", True, "updated", 1, "", False, ), )
+            categories += ( ( xbmc.getLocalizedString( 30956 ), "search_videos", "", "", "", True, "updated", 1, "", False, ), )
         # fetch saved presets
         try:
             # read the queries
-            presets = eval( xbmcplugin.getSetting( "presets_%s" % ( category, ) ) )
+            presets = eval( xbmcplugin.getSetting( "presets_%s" % ( search_type, ) ) )
             # sort items
             presets.sort()
         except:
@@ -130,16 +136,22 @@ class Main:
         for query in presets:
             try:
                 # set video query and user query to empty
-                vq = username = u""
+                vq = username = cat = u""
                 # set thumbnail
-                thumbnail = query.split( " | " )[ 1 ].encode( "utf-8" )
+                thumbnail = query.split( " | " )[ 2 ].encode( "utf-8" )
                 # if this is the user presets set username else set video query
-                if ( ptype ):
+                if ( ptype == 2 ):
+                    vq = query.split( " | " )[ 0 ].encode( "utf-8" )
+                    cat = query.split( " | " )[ 1 ].encode( "utf-8" )
+                    title = "%s (%s)" % ( vq, cat, )
+                elif ( ptype == 1 ):
                     username = query.split( " | " )[ 0 ].encode( "utf-8" )
+                    title = query.split( " | " )[ 0 ].encode( "utf-8" )
                 else:
                     vq = query.split( " | " )[ 0 ].encode( "utf-8" )
+                    title = query.split( " | " )[ 0 ].encode( "utf-8" )
                 # add preset to our dictionary
-                categories += ( ( query.split( " | " )[ 0 ].encode( "utf-8" ), "videos", vq, username, True, "updated", 0, thumbnail, False, ), )
+                categories += ( ( title, "videos", vq, username, cat, True, "updated", 0, thumbnail, False, ), )
             except:
                 # oops print error message
                 print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
@@ -149,11 +161,11 @@ class Main:
         try:
             ok = True
             # enumerate through the tuple of categories and add the item to the media list
-            for ( ltitle, method, vq, username, isfolder, orderby, issearch, thumbnail, user_required, ) in categories:
+            for ( ltitle, method, vq, username, cat, isfolder, orderby, issearch, thumbnail, user_required, ) in categories:
                 # if a username is required for category and none supplied, skip category
                 if ( user_required and self.authkey == "" ): continue
                 # set the callback url
-                url = '%s?title=%s&category=%s&page=1&vq=%s&username=%s&orderby=%s&related=""&issearch=%d&update_listing=%d' % ( sys.argv[ 0 ], quote_plus( repr( ltitle ) ), repr( method ), quote_plus( repr( vq ) ), quote_plus( repr( username ) ), repr( orderby ), issearch, False, )
+                url = '%s?title=%s&category=%s&page=1&vq=%s&username=%s&cat=%s&orderby=%s&related=""&issearch=%d&update_listing=%d' % ( sys.argv[ 0 ], quote_plus( repr( ltitle ) ), repr( method ), quote_plus( repr( vq ) ), quote_plus( repr( username ) ), quote_plus( repr( cat ) ), repr( orderby ), issearch, False, )
                 # check for a valid custom thumbnail for the current category
                 thumbnail = thumbnail or self._get_thumbnail( method )
                 # set the default icon
@@ -168,7 +180,7 @@ class Main:
                 # if user cancels, call raise to exit loop
                 if ( not ok ): raise
             # we do not want to sort queries list
-            if ( "category='presets_videos'" in sys.argv[ 2 ] or "category='presets_users'" in sys.argv[ 2 ] ):
+            if ( "category='presets_videos'" in sys.argv[ 2 ] or "category='presets_users'" in sys.argv[ 2 ] or "category='presets_categories'" in sys.argv[ 2 ] ):
                 xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_NONE )
             # set our plugin category
             xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title )

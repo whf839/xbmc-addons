@@ -13,7 +13,7 @@
     <string id="30909">Getting random music video...</string>
     <string id="30910">Play by video id</string>
     <string id="30911">Did you mean</string>
-    <string id="30912"></string>
+    <string id="30912">Choose category</string>
     <string id="30913"></string>
 
     <!-- Category strings -->
@@ -36,6 +36,8 @@
     <string id="30966">Most Responded</string>
     <string id="30967">Most Recent</string>
     <string id="30968">Related Videos</string>
+    <string id="30969">Search Categories</string>
+    <string id="30970">Search Categories...</string>
 
     <!-- Context menu strings -->
     <string id="30500">Related videos</string>

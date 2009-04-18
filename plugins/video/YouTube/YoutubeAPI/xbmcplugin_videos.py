@@ -67,13 +67,13 @@ class Main:
 
     def save_as_preset( self ):
         # select correct query
-        query = ( self.args.vq, self.args.username, )[ self.args.issearch - 1 ]
-        # if user search and user was found then proceed, should never be an issue for video search
+        query = ( self.args.vq, self.args.username, self.args.vq, )[ self.args.issearch - 1 ]
+        # if user or category search and query was found then proceed, should never be an issue for video search
         if ( query ):
             # fetch saved presets
             try:
                 # read the queries
-                presets = eval( xbmcplugin.getSetting( "presets_%s" % ( "videos", "users", )[ self.args.issearch - 1  ], ) )
+                presets = eval( xbmcplugin.getSetting( "presets_%s" % ( "videos", "users", "categories", )[ self.args.issearch - 1  ], ) )
                 # if this is an existing search, move it up
                 for count, preset in enumerate( presets ):
                     if ( repr( query + " | " )[ : -1 ] in repr( preset ) ):
@@ -86,9 +86,9 @@ class Main:
                 # no presets found
                 presets = []
             # insert our new search
-            presets = [ query + " | " + self.query_thumbnail ] + presets
+            presets = [ query + " | " + self.args.cat + " | " + self.query_thumbnail ] + presets
             # save search query
-            xbmcplugin.setSetting( "presets_%s" % ( "videos", "users", )[ self.args.issearch - 1  ], repr( presets ) )
+            xbmcplugin.setSetting( "presets_%s" % ( "videos", "users", "categories", )[ self.args.issearch - 1  ], repr( presets ) )
 
     def most_viewed( self ):
         return self.fetch_videos( YoutubeClient.BASE_STANDARD_URL, feed_time=self.settings[ "feed_time" ], region_id=self.settings[ "region_id" ] )
@@ -152,6 +152,26 @@ class Main:
         self.args.username = ""
         return self.fetch_videos( YoutubeClient.BASE_SEARCH_URL )
 
+    def search_categories( self ):
+        # categories: TODO: maybe download or download in xbmcplugin_categories
+        categories = [('Animals', 'Pets & Animals'), ('Autos', 'Autos & Vehicles'), ('Comedy', 'Comedy'), ('Education', 'Education'), ('Entertainment', 'Entertainment'), ('Film', 'Film & Animation'), ('Games', 'Gaming'), ('Howto', 'Howto & Style'), ('Movies', 'Movies'), ('Movies_Action_adventure', 'Movies - Action/Adventure'), ('Movies_Anime_animation', 'Movies - Anime/Animation'), ('Movies_Classics', 'Movies - Classics'), ('Movies_Comedy', 'Movies - Comedy'), ('Movies_Documentary', 'Movies - Documentary'), ('Movies_Drama', 'Movies - Drama'), ('Movies_Family', 'Movies - Family'), ('Movies_Foreign', 'Movies - Foreign'), ('Movies_Horror', 'Movies - Horror'), ('Movies_Sci_fi_fantasy', 'Movies - Sci-Fi/Fantasy'), ('Movies_Shorts', 'Movies - Shorts'), ('Movies_Thriller', 'Movies - Thriller'), ('Music', 'Music'), ('News', 'News & Politics'), ('Nonprofit', 'Nonprofits & Activism'), ('People', 'People & Blogs'), ('Shortmov', 'Short Movies'), ('Shows', 'Shows'), ('Sports', 'Sports'), ('Tech', 'Science & Technology'), ('Trailers', 'Trailers'), ('Travel', 'Travel & Events'), ('Videoblog', 'Videoblogging')]
+        # get users choice
+        choice = xbmcgui.Dialog().select( xbmc.getLocalizedString( 30912 ), [ title for category, title in categories ] )
+        # if user didn't cancel dialog continue
+        if ( choice != -1 ):
+            # set our category
+            self.args.cat = categories[ choice ][ 0 ]
+            self.args.cat_title = categories[ choice ][ 1 ]
+            # get the query to search for from the user
+            self.args.vq = self._get_keyboard( heading=xbmc.getLocalizedString( 30906 ) )
+            # if blank or the user cancelled the keyboard, return
+            if ( not self.args.vq ): return False, 0
+            # we need to set the title to our query
+            self.args.title = self.args.vq
+            # we need to set the function to videos
+            self.args.category = "videos"
+            return self.fetch_videos( YoutubeClient.BASE_SEARCH_URL )
+
     def my_uploads( self ):
         # logged in users uploads
         return self.fetch_videos( YoutubeClient.BASE_USERS_URL )
@@ -200,7 +220,7 @@ class Main:
         start_index = ( self.args.page - 1 ) * self.settings[ "perpage" ] + 1
         # fetch the videos
         # TODO: format=5, <- put this back if videos fail
-        exec 'feeds = client.%s( orderby=self.args.orderby, related=self.args.related, region_id=region_id, time=feed_time, racy=self.settings[ "include_racy" ], start__index=start_index, max__results=self.settings[ "perpage" ], vq=self.args.vq, author=self.args.username )' % ( self.args.category, )
+        exec 'feeds = client.%s( orderby=self.args.orderby, related=self.args.related, region_id=region_id, time=feed_time, racy=self.settings[ "include_racy" ], start__index=start_index, max__results=self.settings[ "perpage" ], vq=self.args.vq, author=self.args.username, category=self.args.cat )' % ( self.args.category, )
         # calculate total pages
         pages = self._get_total_pages( int( feeds[ "feed" ][ "openSearch$totalResults" ][ "$t" ] ) )
         # if this was a search and there is a spelling correction get the correction
