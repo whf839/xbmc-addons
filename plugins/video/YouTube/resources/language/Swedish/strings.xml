@@ -2,7 +2,7 @@
 <!--Language file translated with Team XBMC Translator-->
 <!--Translator: blittan-->
 <!--Email: blittan@xbmc.org-->
-<!--Date of translation: 04/16/2009-->
+<!--Date of translation: 04/18/2009-->
 <!--$Revision$-->
 <strings>
   <string id="30000">Användarnamn</string>
@@ -72,10 +72,8 @@
   <string id="30909">Hämtar slumpmässig musikvideo...</string>
   <string id="30910">Spela video efter id</string>
   <string id="30911">Menade du</string>
-  <string id="30912">
-  </string>
-  <string id="30913">
-  </string>
+  <string id="30912">Välj kategori</string>
+  <string id="30913">Sök nyckelord - * för alla videor</string>
   <string id="30950">Alla videor</string>
   <string id="30951">Mest visade</string>
   <string id="30952">Sök videor</string>
@@ -95,4 +93,6 @@
   <string id="30966">Mest besvarade</string>
   <string id="30967">Nyligaste</string>
   <string id="30968">Relaterade videor</string>
+  <string id="30969">Sök kategorier</string>
+  <string id="30970">Sök kategorier...</string>
 </strings>
