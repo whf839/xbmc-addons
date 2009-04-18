@@ -71,45 +71,44 @@ class Main:
         self.username = xbmcplugin.getSetting( "username" )
 
     def get_categories( self, root=True ):
-        try:
-            # default categories
-            if ( root ):
-                categories = (
-                                        ( xbmc.getLocalizedString( 30951 ), "most_viewed", "", "", "", True, "viewCount", 0, "", False, ),
-                                        ( xbmc.getLocalizedString( 30952 ), "presets_videos", "", "", "", True, "updated", 0, "", False, ),
-                                        ( xbmc.getLocalizedString( 30953 ), "presets_users", "", "", "", True, "updated", 0, "", False, ),
-                                        ( xbmc.getLocalizedString( 30954 ), "recently_featured", "", "", "", True, "updated", 0, "", False, ),
-                                        ( xbmc.getLocalizedString( 30957 ), "top_rated", "", "", "", True, "rating", 0, "", False, ),
-                                        ( xbmc.getLocalizedString( 30958 ), "watch_on_mobile", "", "", "", True, "updated", 0, "", False, ),
-                                        ( xbmc.getLocalizedString( 30960 ), "play_video_by_id", "", "", "", False, "relevance", 0, "", False, ),
-                                        ( xbmc.getLocalizedString( 30961 ), "my_uploads", "", "", "", True, "updated", 0, "", True, ),
-                                        ( xbmc.getLocalizedString( 30962 ), "my_favorites", "", "", "", True, "updated", 0, "", True, ),
-                                        ( xbmc.getLocalizedString( 30963 ), "top_favorites", "", "", "", True, "relevance", 0, "", False, ),
-                                        ( xbmc.getLocalizedString( 30964 ), "most_discussed", "", "", "", True, "relevance", 0, "", False, ),
-                                        ( xbmc.getLocalizedString( 30965 ), "most_linked", "", "", "", True, "relevance", 0, "", False, ),
-                                        ( xbmc.getLocalizedString( 30966 ), "most_responded", "", "", "", True, "relevance", 0, "", False, ),
-                                        ( xbmc.getLocalizedString( 30967 ), "most_recent", "", "", "", True, "relevance", 0, "", False, ),
-                                        ( xbmc.getLocalizedString( 30969 ), "presets_categories", "", "", "", True, "updated", 0, "", False, ),
-                                    )
-            # search preset category
-            elif ( "category='presets_videos'" in sys.argv[ 2 ] ):
-                categories = self.get_presets( 0 )
-            # user preset category
-            elif ( "category='presets_users'" in sys.argv[ 2 ] ):
-                categories = self.get_presets( 1 )
-            # category preset category
-            elif ( "category='presets_categories'" in sys.argv[ 2 ] ):
-                categories = self.get_presets( 2 )
+        # default categories
+        if ( root ):
+            categories = (
+                                    ( xbmc.getLocalizedString( 30951 ), "most_viewed", "", "", "", True, "viewCount", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30952 ), "presets_videos", "", "", "", True, "updated", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30953 ), "presets_users", "", "", "", True, "updated", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30954 ), "recently_featured", "", "", "", True, "updated", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30957 ), "top_rated", "", "", "", True, "rating", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30958 ), "watch_on_mobile", "", "", "", True, "updated", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30960 ), "play_video_by_id", "", "", "", False, "relevance", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30961 ), "my_uploads", "", "", "", True, "updated", 0, "", True, ),
+                                    ( xbmc.getLocalizedString( 30962 ), "my_favorites", "", "", "", True, "updated", 0, "", True, ),
+                                    ( xbmc.getLocalizedString( 30963 ), "top_favorites", "", "", "", True, "relevance", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30964 ), "most_discussed", "", "", "", True, "relevance", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30965 ), "most_linked", "", "", "", True, "relevance", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30966 ), "most_responded", "", "", "", True, "relevance", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30967 ), "most_recent", "", "", "", True, "relevance", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30969 ), "presets_categories", "", "", "", True, "updated", 0, "", False, ),
+                                )
+        # search preset category
+        elif ( "category='presets_videos'" in sys.argv[ 2 ] ):
+            categories = self.get_presets( 0 )
+        # user preset category
+        elif ( "category='presets_users'" in sys.argv[ 2 ] ):
+            categories = self.get_presets( 1 )
+        # category preset category
+        elif ( "category='presets_categories'" in sys.argv[ 2 ] ):
+            categories = self.get_presets( 2 )
+        elif ( "category='delete_preset'" in sys.argv[ 2 ] ):
+            categories = self.delete_preset()
+        # do not run for delete preset
+        if ( categories ):
             # fill media list
             ok = self._fill_media_list( categories )
-        except:
-            # oops print error message
-            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
-            ok = False
-        # set cache to disc
-        cacheToDisc = ( ok and not ( "category='presets_videos'" in sys.argv[ 2 ] or "category='presets_users'" in sys.argv[ 2 ] or "category='presets_categories'" in sys.argv[ 2 ] ) )
-        # send notification we're finished, successfully or unsuccessfully
-        xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=ok, cacheToDisc=cacheToDisc )
+            # set cache to disc
+            cacheToDisc = ( ok and not ( "category='presets_videos'" in sys.argv[ 2 ] or "category='presets_users'" in sys.argv[ 2 ] or "category='presets_categories'" in sys.argv[ 2 ] ) )
+            # send notification we're finished, successfully or unsuccessfully
+            xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=ok, cacheToDisc=cacheToDisc )
 
     def get_presets( self, ptype ):
         # set category
@@ -138,24 +137,38 @@ class Main:
                 # set video query and user query to empty
                 vq = username = cat = u""
                 # set thumbnail
-                thumbnail = query.split( " | " )[ 2 ].encode( "utf-8" )
+                thumbnail = query.split( " | " )[ 3 ].encode( "utf-8" )
                 # if this is the user presets set username else set video query
                 if ( ptype == 2 ):
                     vq = query.split( " | " )[ 0 ].encode( "utf-8" )
-                    cat = query.split( " | " )[ 1 ].encode( "utf-8" )
-                    title = "%s (%s)" % ( vq, cat, )
+                    cat = query.split( " | " )[ 2 ].encode( "utf-8" )
                 elif ( ptype == 1 ):
                     username = query.split( " | " )[ 0 ].encode( "utf-8" )
-                    title = query.split( " | " )[ 0 ].encode( "utf-8" )
                 else:
                     vq = query.split( " | " )[ 0 ].encode( "utf-8" )
-                    title = query.split( " | " )[ 0 ].encode( "utf-8" )
                 # add preset to our dictionary
-                categories += ( ( title, "videos", vq, username, cat, True, "updated", 0, thumbnail, False, ), )
+                categories += ( ( query.split( " | " )[ 1 ].encode( "utf-8" ), "videos", vq, username, cat, True, "updated", 0, thumbnail, False, ), )
             except:
                 # oops print error message
                 print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
         return categories
+
+    def delete_preset( self ):
+        try:
+            # read the queries
+            presets = eval( xbmcplugin.getSetting( "presets_%s" % ( "videos", "users", "categories", )[ self.args.issearch - 1  ], ) )
+            # if this is an existing search, move it up
+            for count, preset in enumerate( presets ):
+                if ( self.args.query in repr( preset ) ):
+                    del presets[ count ]
+                    break
+        except:
+            # no presets found
+            presets = []
+        # save presets
+        xbmcplugin.setSetting( "presets_%s" % ( "videos", "users", "categories", )[ self.args.issearch - 1  ], repr( presets ) )
+        # refresh container so item is removed
+        xbmc.executebuiltin( "Container.Refresh" )
 
     def _fill_media_list( self, categories ):
         try:
@@ -175,6 +188,19 @@ class Main:
                 # TODO: verify if this should work
                 # set fanart
                 listitem.setProperty( "fanart_image", "%s-fanart.png" % os.path.join( sys.modules[ "__main__" ].__plugin__, method, ) )
+                # add context menu items
+                cm = []
+                # add queue video
+                if ( not issearch and not method.startswith( "presets_" ) and isfolder ):
+                    cm += [ ( xbmc.getLocalizedString( 30509 ), "XBMC.Action(Queue)", ) ]
+                # add remove from search for presets
+                if ( method == "videos" ):
+                    issearch = 1 + ( "category='presets_users'" in sys.argv[ 2 ] in sys.argv[ 2 ] ) + ( 2 * ( "category='presets_categories'" in sys.argv[ 2 ] ) )
+                    query = vq or username
+                    query += " | " + ltitle + " | "
+                    cm += [ ( xbmc.getLocalizedString( 30508 ), "XBMC.RunPlugin(%s?category='delete_preset'&issearch=%d&query=%s&update_listing=False)" % ( sys.argv[ 0 ], issearch, quote_plus( repr( query ) ), ) ) ]
+                # add context menu items
+                listitem.addContextMenuItems( cm, replaceItems=True )
                 # add the item to the media list
                 ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=url, listitem=listitem, isFolder=isfolder, totalItems=len( categories ) )
                 # if user cancels, call raise to exit loop
