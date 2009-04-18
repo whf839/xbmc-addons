@@ -69,7 +69,7 @@ class Main:
         # select correct query
         query = ( self.args.vq, self.args.username, self.args.vq, )[ self.args.issearch - 1 ]
         # if user or category search and query was found then proceed, should never be an issue for video search
-        if ( query ):
+        if ( query or self.args.cat ):
             # fetch saved presets
             try:
                 # read the queries
@@ -162,9 +162,12 @@ class Main:
             # set our category
             self.args.cat = categories[ choice ][ 0 ]
             # get the query to search for from the user
-            self.args.vq = self._get_keyboard( heading=xbmc.getLocalizedString( 30906 ) )
+            self.args.vq = self._get_keyboard( heading=xbmc.getLocalizedString( 30913 ) )
             # if blank or the user cancelled the keyboard, return
-            if ( not self.args.vq ): return False, 0
+            if ( not self.args.vq ):
+                self.args.cat = ""
+                return False, 0
+            self.args.vq = ( self.args.vq, "", )[ self.args.vq == "*" ]
             # we need to set the title to our query
             self.args.title = "%s (%s)" % ( self.args.vq, self.args.cat, )
             # we need to set the function to videos
