@@ -161,13 +161,12 @@ class Main:
         if ( choice != -1 ):
             # set our category
             self.args.cat = categories[ choice ][ 0 ]
-            self.args.cat_title = categories[ choice ][ 1 ]
             # get the query to search for from the user
             self.args.vq = self._get_keyboard( heading=xbmc.getLocalizedString( 30906 ) )
             # if blank or the user cancelled the keyboard, return
             if ( not self.args.vq ): return False, 0
             # we need to set the title to our query
-            self.args.title = self.args.vq
+            self.args.title = "%s (%s)" % ( self.args.vq, self.args.cat, )
             # we need to set the function to videos
             self.args.category = "videos"
             return self.fetch_videos( YoutubeClient.BASE_SEARCH_URL )
@@ -267,10 +266,11 @@ class Main:
                 # if this was a search and there is a correction
                 if ( spell_vq ):
                     # set the correct query
+                    cat = ( "", spell_vq, )[ self.args.issearch == 3 ]
                     username = ( "", spell_vq, )[ self.args.issearch == 2 ]
                     vq = ( "", spell_vq, )[ self.args.issearch == 1 ]
                     # create the callback url
-                    url = '%s?title=%s&category=%s&page=%d&vq=%s&username=%s&orderby=%s&related=%s&issearch=%d&update_listing=%d' % ( sys.argv[ 0 ], quote_plus( repr( self.args.title ) ), repr( "videos" ), 1, quote_plus( repr( vq ) ), quote_plus( repr( username ) ), repr( self.args.orderby ), repr( self.args.related ), self.args.issearch, True, )
+                    url = '%s?title=%s&category=%s&page=%d&vq=%s&username=%s&cat=%s&orderby=%s&related=%s&issearch=%d&update_listing=%d' % ( sys.argv[ 0 ], quote_plus( repr( self.args.title ) ), repr( "videos" ), 1, quote_plus( repr( vq ) ), quote_plus( repr( username ) ), quote_plus( repr( cat ) ), repr( self.args.orderby ), repr( self.args.related ), self.args.issearch, True, )
                     # TODO: get rid of self.BASE_PLUGIN_THUMBNAIL_PATH
                     # we set the thumb so XBMC does not try and cache the next pictures
                     thumbnail = os.path.join( self.BASE_PLUGIN_THUMBNAIL_PATH, "spell_page.png" )
@@ -290,7 +290,7 @@ class Main:
                     if ( endno > total ):
                         endno = total
                     # create the callback url
-                    url = '%s?title=%s&category=%s&page=%d&vq=%s&username=%s&orderby=%s&issearch=0&related=%s&update_listing=%d' % ( sys.argv[ 0 ], quote_plus( repr( self.args.title ) ), repr( self.args.category ), page + 1, quote_plus( repr( self.args.vq ) ), quote_plus( repr( self.args.username ) ), repr( self.args.orderby ), repr( self.args.related ), True, )
+                    url = '%s?title=%s&category=%s&page=%d&vq=%s&username=%s&cat=%s&orderby=%s&issearch=0&related=%s&update_listing=%d' % ( sys.argv[ 0 ], quote_plus( repr( self.args.title ) ), repr( self.args.category ), page + 1, quote_plus( repr( self.args.vq ) ), quote_plus( repr( self.args.username ) ), quote_plus( repr( self.args.cat ) ), repr( self.args.orderby ), repr( self.args.related ), True, )
                     # TODO: get rid of self.BASE_PLUGIN_THUMBNAIL_PATH
                     # we set the thumb so XBMC does not try and cache the next pictures
                     thumbnail = os.path.join( self.BASE_PLUGIN_THUMBNAIL_PATH, "next.png" )
@@ -307,7 +307,7 @@ class Main:
                     # calculate the ending video
                     endno = startno + perpage - 1
                     # create the callback url
-                    url = '%s?title=%s&category=%s&page=%d&vq=%s&username=%s&orderby=%s&related=%s&issearch=0&update_listing=%d' % ( sys.argv[ 0 ], quote_plus( repr( self.args.title ) ), repr( self.args.category ), page - 1, quote_plus( repr( self.args.vq ) ), quote_plus( repr( self.args.username ) ), repr( self.args.orderby ), repr( self.args.related ), True, )
+                    url = '%s?title=%s&category=%s&page=%d&vq=%s&username=%s&cat=%s&orderby=%s&related=%s&issearch=0&update_listing=%d' % ( sys.argv[ 0 ], quote_plus( repr( self.args.title ) ), repr( self.args.category ), page - 1, quote_plus( repr( self.args.vq ) ), quote_plus( repr( self.args.username ) ), quote_plus( repr( self.args.cat ) ), repr( self.args.orderby ), repr( self.args.related ), True, )
                     # TODO: get rid of self.BASE_PLUGIN_THUMBNAIL_PATH
                     # we set the thumb so XBMC does not try and cache the previous pictures
                     thumbnail = os.path.join( self.BASE_PLUGIN_THUMBNAIL_PATH, "previous.png" )
