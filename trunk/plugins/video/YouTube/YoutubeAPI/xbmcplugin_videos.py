@@ -76,7 +76,7 @@ class Main:
                 presets = eval( xbmcplugin.getSetting( "presets_%s" % ( "videos", "users", "categories", )[ self.args.issearch - 1  ], ) )
                 # if this is an existing search, move it up
                 for count, preset in enumerate( presets ):
-                    if ( repr( query + " | " )[ : -1 ] in repr( preset ) ):
+                    if ( repr( query + " | " + self.args.title + " | " )[ : -1 ] in repr( preset ) ):
                         del presets[ count ]
                         break
                 # limit to number of searches to save
@@ -86,7 +86,7 @@ class Main:
                 # no presets found
                 presets = []
             # insert our new search
-            presets = [ query + " | " + self.args.cat + " | " + self.query_thumbnail ] + presets
+            presets = [ query + " | " + self.args.title + " | " + self.args.cat + " | " + self.query_thumbnail ] + presets
             # save search query
             xbmcplugin.setSetting( "presets_%s" % ( "videos", "users", "categories", )[ self.args.issearch - 1  ], repr( presets ) )
 
@@ -154,7 +154,7 @@ class Main:
 
     def search_categories( self ):
         # categories: TODO: maybe download or download in xbmcplugin_categories
-        categories = [('Animals', 'Pets & Animals'), ('Autos', 'Autos & Vehicles'), ('Comedy', 'Comedy'), ('Education', 'Education'), ('Entertainment', 'Entertainment'), ('Film', 'Film & Animation'), ('Games', 'Gaming'), ('Howto', 'Howto & Style'), ('Movies', 'Movies'), ('Movies_Action_adventure', 'Movies - Action/Adventure'), ('Movies_Anime_animation', 'Movies - Anime/Animation'), ('Movies_Classics', 'Movies - Classics'), ('Movies_Comedy', 'Movies - Comedy'), ('Movies_Documentary', 'Movies - Documentary'), ('Movies_Drama', 'Movies - Drama'), ('Movies_Family', 'Movies - Family'), ('Movies_Foreign', 'Movies - Foreign'), ('Movies_Horror', 'Movies - Horror'), ('Movies_Sci_fi_fantasy', 'Movies - Sci-Fi/Fantasy'), ('Movies_Shorts', 'Movies - Shorts'), ('Movies_Thriller', 'Movies - Thriller'), ('Music', 'Music'), ('News', 'News & Politics'), ('Nonprofit', 'Nonprofits & Activism'), ('People', 'People & Blogs'), ('Shortmov', 'Short Movies'), ('Shows', 'Shows'), ('Sports', 'Sports'), ('Tech', 'Science & Technology'), ('Trailers', 'Trailers'), ('Travel', 'Travel & Events'), ('Videoblog', 'Videoblogging')]
+        categories = [('Autos', 'Autos & Vehicles'), ('Comedy', 'Comedy'), ('Education', 'Education'), ('Entertainment', 'Entertainment'), ('Film', 'Film & Animation'), ('Games', 'Gaming'), ('Howto', 'Howto & Style'), ('Movies', 'Movies'), ('Movies_Action_adventure', 'Movies - Action/Adventure'), ('Movies_Anime_animation', 'Movies - Anime/Animation'), ('Movies_Classics', 'Movies - Classics'), ('Movies_Comedy', 'Movies - Comedy'), ('Movies_Documentary', 'Movies - Documentary'), ('Movies_Drama', 'Movies - Drama'), ('Movies_Family', 'Movies - Family'), ('Movies_Foreign', 'Movies - Foreign'), ('Movies_Horror', 'Movies - Horror'), ('Movies_Sci_fi_fantasy', 'Movies - Sci-Fi/Fantasy'), ('Movies_Shorts', 'Movies - Shorts'), ('Movies_Thriller', 'Movies - Thriller'), ('Music', 'Music'), ('News', 'News & Politics'), ('Nonprofit', 'Nonprofits & Activism'), ('People', 'People & Blogs'), ('Animals', 'Pets & Animals'), ('Tech', 'Science & Technology'), ('Shortmov', 'Short Movies'), ('Shows', 'Shows'), ('Sports', 'Sports'), ('Trailers', 'Trailers'), ('Travel', 'Travel & Events'), ('Videoblog', 'Videoblogging')]
         # get users choice
         choice = xbmcgui.Dialog().select( xbmc.getLocalizedString( 30912 ), [ title for category, title in categories ] )
         # if user didn't cancel dialog continue
@@ -169,7 +169,8 @@ class Main:
                 return False, 0
             self.args.vq = ( self.args.vq, "", )[ self.args.vq == "*" ]
             # we need to set the title to our query
-            self.args.title = "%s (%s)" % ( self.args.vq, self.args.cat, )
+            self.args.title = "%s (%s)" % ( self.args.vq, categories[ choice ][ 1 ], )
+            self.args.title = self.args.title.strip()
             # we need to set the function to videos
             self.args.category = "videos"
             return self.fetch_videos( YoutubeClient.BASE_SEARCH_URL )
