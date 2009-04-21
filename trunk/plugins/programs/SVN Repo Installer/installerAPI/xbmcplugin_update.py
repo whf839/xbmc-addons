@@ -130,6 +130,7 @@ class Main:
                     installedCategory = installedCategory.replace('scripts/','')
 
                 url = "/".join( [base_url, installedCategory, "default.py"] )
+                readme_url = "/".join( [base_url, installedCategory, "resources", "readme.txt"] )
                 log("url=" + url)
 
                 percent = int( count * 100.0 / TOTAL_PATHS )
@@ -154,6 +155,7 @@ class Main:
                     if svn_ver:
                         self.INSTALLED[count]['svn_ver'] = svn_ver
                         self.INSTALLED[count]['svn_xbmc_rev'] = self.parseXBMCRevision(doc)
+                        self.INSTALLED[count]['readme'] = self._check_readme( readme_url.replace(' ','%20') )
                         self.INSTALLED[count]['svn_url'] = url.replace('/default.py','')
                         self.INSTALLED[count]['repo'] = repo
                         self.INSTALLED[count]['install'] = repo_info[ 2 ][ 2 ]
@@ -206,6 +208,22 @@ class Main:
         log("parseVersion() version=%s" % ver)
         return ver
 
+    def _check_readme( self, url ):
+        try:
+            # open url
+            usock = urllib.urlopen( url )
+            # read source
+            htmlSource = usock.read()
+            # close socket
+            usock.close()
+            # compatible
+            if ( "404 Not Found" in htmlSource ):
+                return None
+            else:
+                return url
+        except:
+            return None
+
     #####################################################################################################
     def parseCategory(self, filepath):
         try:
@@ -232,6 +250,7 @@ class Main:
                 filepath = info.get('filepath', '')
                 svn_ver = info.get('svn_ver','')
                 svn_xbmc_rev = info.get('svn_xbmc_rev','')
+                readme = info.get('readme',None)
                 svn_url = info.get('svn_url','')
                 category = self.parseCategory(filepath)
                 repo = info.get('repo','SVN ?')
@@ -305,7 +324,8 @@ class Main:
                 li=xbmcgui.ListItem( text, label2, icon, thumbnail)
                 li.setInfo( type="Video", infoLabels={ "Title": text, "Genre": label2 } )
                 cm = [ ( xbmc.getLocalizedString( 30600 ), "XBMC.RunPlugin(%s?showlog=True&repo=%s&category=%s&revision=None&parse=True)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( repo ) ), urllib.quote_plus( repr( category.split( "/" )[ -1 ] )  ), ), ) ]
-                cm += [ ( xbmc.getLocalizedString( 30610 ), "XBMC.RunPlugin(%s?showreadme=True&repo=None)" % ( sys.argv[ 0 ], ), ) ]
+                if ( readme is not None ):
+                    cm += [ ( xbmc.getLocalizedString( 30610 ), "XBMC.RunPlugin(%s?showreadme=True&repo=None&readme=%s)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( readme ) ), ), ) ]
                 li.addContextMenuItems( cm, replaceItems=True )
 
                 xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=path, listitem=li, isFolder=False, totalItems=sz )

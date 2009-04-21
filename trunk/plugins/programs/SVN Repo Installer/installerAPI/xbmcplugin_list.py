@@ -123,7 +123,7 @@ class Main:
                         parser = xbmcplugin_logviewer.ChangelogParser( repo, parse=False )
                         parser.fetch_changelog()
                         cm += [ ( xbmc.getLocalizedString( 30600 ), "XBMC.RunPlugin(%s?showlog=True&repo=%s&category=None&revision=None&parse=True)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( repo ) ), ), ) ]
-                    cm += [ ( xbmc.getLocalizedString( 30610 ), "XBMC.RunPlugin(%s?showreadme=True&repo=None)" % ( sys.argv[ 0 ], ), ) ]
+                    cm += [ ( xbmc.getLocalizedString( 30610 ), "XBMC.RunPlugin(%s?showreadme=True&repo=None&readme=None)" % ( sys.argv[ 0 ], ), ) ]
                     # add context menu items
                     listitem.addContextMenuItems( cm, replaceItems=True )
                     # add the item to the media list
@@ -195,6 +195,7 @@ class Main:
                     thumbnail = "%s%s/%sdefault.tbn" % ( self.REPO_URL, repo_url.replace( " ", "%20" ), item.replace( " ", "%20" ), )
                     version, label2, path = self._check_compatible( "%s%s/%sdefault.py" % ( self.REPO_URL, repo_url.replace( " ", "%20" ), item.replace( " ", "%20" ), ), self.REPO_URL, install, int( ioffset ), int( voffset ) )
                     version = " (%s)" % version
+                    readme = self._check_readme( "%s%s/%sresources/readme.txt" % ( self.REPO_URL, repo_url.replace( " ", "%20" ), item.replace( " ", "%20" ), ) )
                     
                 if ( label2.startswith( "[COLOR=FF00FF00]" ) or label2.startswith( "[COLOR=FFFF0000]" ) ):
                     url = path
@@ -209,7 +210,8 @@ class Main:
                 if ( not isFolder ):
                     cm += [ ( xbmc.getLocalizedString( 30600 ), "XBMC.RunPlugin(%s?showlog=True&repo=%s&category=%s&revision=None&parse=True)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( self.args.repo ) ), urllib.quote_plus( repr( item[ : -1 ].replace( "%20", " " )  )  ), ), ) ]
                     # add context menu items
-                cm += [ ( xbmc.getLocalizedString( 30610 ), "XBMC.RunPlugin(%s?showreadme=True&repo=None)" % ( sys.argv[ 0 ], ), ) ]
+                    if ( readme is not None ):
+                        cm += [ ( xbmc.getLocalizedString( 30610 ), "XBMC.RunPlugin(%s?showreadme=True&repo=None&readme=%s)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( readme ) ), ), ) ]
                 listitem.addContextMenuItems( cm, replaceItems=True )
                 # add the item to the media list
                 ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=url, listitem=listitem, isFolder=isFolder, totalItems=len( assets ) )
@@ -222,6 +224,22 @@ class Main:
         if ( ok ):
             xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_GENRE )
         return ok
+
+    def _check_readme( self, url ):
+        try:
+            # open url
+            usock = urllib.urlopen( url )
+            # read source
+            htmlSource = usock.read()
+            # close socket
+            usock.close()
+            # compatible
+            if ( "404 Not Found" in htmlSource ):
+                return None
+            else:
+                return url
+        except:
+            return None
 
     def _check_compatible( self, url, repo_url, install, ioffset, voffset ):
         try:
