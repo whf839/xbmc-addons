@@ -3,10 +3,12 @@
 """
 
 # main imports
-import os, sys, traceback
+import os, sys
 from urllib import urlretrieve, urlcleanup
 from string import find
 import xbmc, xbmcgui, xbmcplugin
+from urllib import unquote_plus
+#from pprint import pprint
 
 from pluginAPI.xbmcplugin_const import *
 from pluginAPI.bbbLib import get_thumbnail, log, handleException, loadFileObj, decodeText
@@ -22,7 +24,7 @@ class DialogVideoInfo( xbmcgui.WindowXMLDialog ):
 		pass
 		
 	def onInit( self ):
-		log( "DialogVideoInfo.onInit()" )
+		log( "> DialogVideoInfo.onInit()" )
 		title = self.info['title']
 		image = self.info['image']
 		updated = self.info['updated']
@@ -34,6 +36,7 @@ class DialogVideoInfo( xbmcgui.WindowXMLDialog ):
 		self.getControl( 6 ).setImage( image )
 		self.getControl( 21 ).setLabel( updated )
 		self.getControl( 23 ).setLabel( author )
+		log( "< DialogVideoInfo.onInit()" )
 		
 	def onClick( self, controlId ):
 		pass
@@ -58,7 +61,7 @@ class DialogVideoInfo( xbmcgui.WindowXMLDialog ):
 class _Info:
 	def __init__(self, *args, **kwargs ):
 		self.__dict__.update( kwargs )
-		log( "Info() self.__dict__=%s" % self.__dict__ )
+		log( "_Info() self.__dict__=%s" % self.__dict__ )
 	def has_key(self, key):
 		return self.__dict__.has_key(key)
 
@@ -80,7 +83,10 @@ class Main:
 		else:
 			# call Info() with our formatted argv to create the self.args object
 			# replace & with , first as they're the args split char.  Then decode.
-			exec "self.args = _Info(%s)" % ( decodeText( (sys.argv[ 2 ][ 1 : ]).replace( "&", ", " ) ), )
+			try:
+				exec "self.args = _Info(%s)" % ( unquote_plus( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ) ), )
+			except Exception, e:
+				print str(e)
 
 	########################################################################################################################
 	def show_item(self):

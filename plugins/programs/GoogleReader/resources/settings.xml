@@ -7,5 +7,6 @@
     <setting id="list_images" type="bool" label="30040" default="false" />
     <setting id="show_read" type="bool" label="30050" default="true" />
     <setting type="sep" />
-    <setting type="action" label="30060" option="close" default="RunPlugin(plugin://Programs/GoogleReader/?check_update)" />
+    <setting type="action" label="30060" option="close" default="RunPlugin(plugin://Programs/GoogleReader/?info=readme.txt)" />
+    <setting type="action" label="30070" option="close" default="RunPlugin(plugin://Programs/GoogleReader/?info=changelog.txt)" />
 </settings>

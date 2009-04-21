@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <!-- German strings.xml by bootsy (bootsycollins82@gmail.com) -->
 <strings>
     <!-- Errors -->
@@ -34,22 +34,13 @@
     <string id="30030">Beiträge pro Seite</string>
     <string id="30040">Listenbilder laden (langsamer)?</string>
     <string id="30050">Gelesene Beiträge anzeigen?</string>
-    <string id="30060">Nach Update suchen</string>
+    <string id="30060">Readme anzeigen</string>
+    <string id="30070">Changelog anzeigen</string>
 
-    <!-- Update messages -->
-    <string id="1000">Deine Version ist aktuell.</string>
-    <string id="1001">Nach Skript-Updates suchen ...</string>
-    <string id="1002">ist neuer</string>
-    <string id="1003">Möchtest du aktualisieren?</string>
-    <string id="1004">Abruf der Dateiliste...</string>
-    <string id="1005">Bitte warten...</string>
-    <string id="1006">Version</string>
-    <string id="1007">Laden:</string>
-    <string id="1008">Pfad:</string>
-    <string id="1009">Datei:</string>
-    <string id="1010">Plugin installiert.</string>
+    <!-- compatible messages -->
+    <string id="30700">version</string>
+    <string id="30701">Diese Version von %s benötigt eine</string>
+    <string id="30702">XBMC Revision von %s oder höher.</string>
+    <string id="30703">Bitte aktualisiere dein XBMC.</string>
 
-    <!-- Update error messages -->
-    <string id="1030">Keine neuere Version verfügbar!</string>
-    <string id="1031">Fehler beim Aktualisieren des Skripts!</string>
 </strings>

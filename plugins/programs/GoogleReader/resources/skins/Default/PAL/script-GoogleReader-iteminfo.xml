@@ -67,7 +67,7 @@
 			<height>330</height>
 			<label>-</label>
 			<font>special11</font>
-			<align>justify</align>
+			<align>left</align>
 			<textcolor>0xFFFFFFFF</textcolor>
 			<pagecontrol>61</pagecontrol>
 		</control>

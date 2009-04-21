@@ -65,7 +65,7 @@
 			<height>450</height>
 			<label>-</label>
 			<font>font11</font>
-			<align>justify</align>
+			<align>left</align>
 			<textcolor>white</textcolor>
 			<shadowcolor>black</shadowcolor>
 			<pagecontrol>61</pagecontrol>
