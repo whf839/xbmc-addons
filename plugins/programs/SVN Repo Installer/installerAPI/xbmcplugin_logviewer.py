@@ -137,9 +137,12 @@ if ( not DEBUG ):
             return parser.log
 
         def _fetch_readme( self ):
-            path = os.path.join( os.getcwd(), "resources", "readme.txt" )
-            # open socket
-            usock = open( path, "r" )
+            if ( self.args.readme is None ):
+                path = os.path.join( os.getcwd(), "resources", "readme.txt" )
+                # open socket
+                usock = open( path, "r" )
+            else:
+                usock = urllib.urlopen( self.args.readme )
             #read html source
             readme = usock.read()
             # close socket

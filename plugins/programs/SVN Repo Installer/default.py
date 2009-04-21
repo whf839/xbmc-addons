@@ -12,7 +12,7 @@ __author__ = "nuka1195/BigBellyBilly"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/programs/SVN%20Repo%20Installer"
 __credits__ = "Team XBMC"
-__version__ = "1.6.3"
+__version__ = "1.6.4"
 __svn_revision__ = "$Revision$"
 __XBMC_Revision__ = "19001"
 
@@ -22,16 +22,16 @@ def _check_compatible():
         xbmc.log( "[PLUGIN] '%s: Version - %s-r%s' initialized!" % ( __plugin__, __version__, __svn_revision__.replace( "$", "" ).replace( "Revision:", "" ).strip() ), xbmc.LOGNOTICE )
         # get xbmc revision
         xbmc_version = xbmc.getInfoLabel( "System.BuildVersion" )
-        xbmc_rev = 0
         xbmc_rev = int( xbmc_version.split( " " )[ 1 ].replace( "r", "" ) )
         # compatible?
         ok = xbmc_rev >= int( __XBMC_Revision__ )
     except:
-        # error, so make compatible
-        ok = True
+        # error, so unknown, allow to run
+        xbmc_rev = 0
+        ok = 2
     # spam revision info
     xbmc.log( "     ** Required XBMC Revision: r%s **" % ( __XBMC_Revision__, ), xbmc.LOGNOTICE )
-    xbmc.log( "     ** Found XBMC Revision: r%d [%s] **" % ( xbmc_rev, ( "Not Compatible", "Compatible", )[ ok ], ), xbmc.LOGNOTICE )
+    xbmc.log( "     ** Found XBMC Revision: r%d [%s] **" % ( xbmc_rev, ( "Not Compatible", "Compatible", "Unknown", )[ ok ], ), xbmc.LOGNOTICE )
     # if not compatible, inform user
     if ( not ok ):
         import xbmcgui
@@ -42,7 +42,7 @@ def _check_compatible():
 
 if ( __name__ == "__main__" ):
     if ( not sys.argv[ 2 ] ):
-        # check for compatibility, only need to check this once, continue if ok
+        # check for compatibility, only need to check this once, continue if compatible
         if ( _check_compatible() ):
             from installerAPI import xbmcplugin_list as plugin
     elif ( "download_url=" in sys.argv[ 2 ] ):
@@ -57,4 +57,6 @@ if ( __name__ == "__main__" ):
     try:
         plugin.Main()
     except:
+        import traceback
+        traceback.print_exc()
         pass
