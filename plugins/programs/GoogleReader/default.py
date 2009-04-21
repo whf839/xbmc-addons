@@ -18,7 +18,7 @@ __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/programs/GoogleReader"
 __version__ = "1.1"
 __date__ = '20-04-2009'
-__svn_revision__ = "$Revision:$"
+__svn_revision__ = "$Revision$"
 __XBMC_Revision__ = "19001"
 
 def _check_compatible():
