@@ -8,6 +8,7 @@ import sys
 import time
 from xml.dom import minidom
 #from pprint import pprint
+import traceback
 
 def log(msg):
 	if True:
@@ -16,6 +17,25 @@ def log(msg):
 GOOGLE_SCHEME = 'http://www.google.com'
 ATOM_PREFIXE_USER = 'user/-/'
 ATOM_PREFIXE_USER_NUMBER = 'user/'+'0'*20+'/'
+
+# search All Items
+# URL=http://www.google.com/reader/api/0/search/items/ids?q=yamaha&num=1000&output=json&ck=1239194610062&client=scroll
+
+# search Read items
+# URL=http://www.google.com/reader/api/0/search/items/ids?q=yamaha&num=1000&s=user%2F13198985849186505357%2Fstate%2Fcom.google%2Fread&output=json&ck=1239194664734&client=scroll
+
+# search notes
+# URL=http://www.google.com/reader/api/0/search/items/ids?q=yamaha&num=1000&s=user%2F13198985849186505357%2Fstate%2Fcom.google%2Fcreated&output=json&ck=1239194444748&client=scroll
+
+# search label
+# URL=http://www.google.com/reader/api/0/search/items/ids?q=yamaha&num=1000&s=user%2F13198985849186505357%2Flabel%2Faudiovideo&output=json&ck=1239193799534&client=scroll
+
+# search feed
+# URL=http://www.google.com/reader/api/0/search/items/ids?q=yamaha&num=1000&s=feed%2Fhttp%3A%2F%2Fwww.avreview.co.uk%2Fnews%2Frss.asp&output=json&ck=1239194372139&client=scroll
+
+# search contents for each id
+# URL=http://www.google.com/reader/api/0/stream/items/contents?ck=1239232302557&client=scroll
+# POST=i=<item id>
 
 class GoogleReaderClient:
 
@@ -36,6 +56,8 @@ class GoogleReaderClient:
 	subscription_list_url = api_url + 'subscription/list'  
 	subscription_url = api_url + 'subscription/edit'
 	tag_list_url = api_url + 'tag/list'
+	search_url = api_url + 'search/items/ids'
+	search_contents_url = api_url + 'stream/items/contents'
 
 	def __init__( self, SID='', email='', password='', source='XBMC GoogleReader', pagesize=20, show_read=True ):
 
@@ -61,8 +83,8 @@ class GoogleReaderClient:
 			post_data = urllib.urlencode(post_data)
 
 		print "retrieve() url=%s" % url
-		print "retrieve() header=%s" % header.items()
-		print "retrieve() post_data=%s" % post_data
+#		print "retrieve() header=%s" % header.items()
+#		print "retrieve() post_data=%s" % post_data
 
 		try :
 			request = urllib2.Request(url, post_data, header)
@@ -71,7 +93,7 @@ class GoogleReaderClient:
 			f.close()
 		except:
 			result = 'ERROR: %s' % sys.exc_info()[ 1 ]
-			print result
+#		print result
 		return result
 
 	#login / get SID
@@ -84,9 +106,10 @@ class GoogleReaderClient:
 			try:
 				self.SID = re.search('SID=(\S*)', result).group(1) 
 			except: pass
-
-		print "authenticate() SID=%s" % self.SID
-		return self.SID
+#			print "authenticate() SID=%s" % self.SID
+			return self.SID
+		else:
+			return result
 
 	#get results from url
 	def get_results(self, url, post_data=None):
@@ -155,7 +178,7 @@ class GoogleReaderClient:
 	#    url = subscription_url + '?client=client:%s&ac=%s&s=%s&token=%s' % \
 	#                  ( login, do.encode('utf-8'), 'feed%2F' + what.encode('utf-8'), get_token() )
 		url = self.subscription_url + '?client=%s' % self.source
-		post_data = { 'ac' : do, 's' : "feed/"+what, 'T' : self.get_token(self.SID) }
+		post_data = { 'ac' : do, 's' : "feed/"+what, 'T' : self.get_token() }
 		return self.get_results(url, post_data)
 		
 	#subscribe to a feed
@@ -166,7 +189,55 @@ class GoogleReaderClient:
 	def unsubscribe_from(self, url):
 		return modify_subscription(url, 'unsubscribe')
 
-	def _add_api_get_params(self, url, continuation, showRead=True):
+	# search All Items
+	def search_all_items(self, text):
+		return self.search(text)
+
+	# search by label
+	def search_label(self, text, what):
+		return self.search(text, 'user/-/label/' + what)
+
+	# search by feed
+	def search_feed(self, text, what):
+		return self.search(text, 'user/-/feed/' + what)
+
+	# search Notes
+	def search_notes(self, text):
+		return self.search(text, 'user/-/state/com.google/created/')
+
+	# search Read
+	def search_read(self, text):
+		return self.search(text, 'user/-/state/com.google/read/')
+
+	# search
+	def search(self, text, what=''):
+		url = "%s?q=%s" % (self.search_url, urllib.quote_plus(text.replace("'", "\\u0027")))
+		if what:
+			url += "&s=%s" % urllib.quote_plus(what.replace("'", "\\u0027"))
+		url += "&num=250&output=xml"
+		url = self._add_api_get_params(url, None, True)		# no continuation, incl read
+		results = self.get_results(url.encode('utf-8'))
+		if results and not results.startswith("ERROR"):
+			# parse ids from result
+			reObj = re.compile('"id">(.*?)<',re.IGNORECASE)
+			idList = reObj.findall(results)
+			if idList:
+				return self.get_search_contents(idList)	# returns json string
+			else:
+				return None
+
+		return results
+
+	def get_search_contents(self, idList):
+		post = []
+		for id in idList:
+			post.append( ('i', id) )
+		post.append( ('T', self.get_token() ) )	# mandatory
+		url = self._add_api_get_params(self.search_contents_url)
+		return self.get_results(url, post)
+
+	# append additional GET params
+	def _add_api_get_params(self, url, continuation='', showRead=True):
 		if url.find("?") == -1:
 			url += "?"
 		else:
@@ -199,7 +270,7 @@ class GoogleFeed(object) :
 					else :
 						self._properties[feedelements.localName] = feedelements
 		except:
-			print str(sys.exc_info()[ 1 ])
+			print "GoogleFeed() " + str(sys.exc_info()[ 1 ])
 			
 	def get_size(self):
 		return len(self._entries)
@@ -322,6 +393,69 @@ class GoogleObject(object) :
 		elif dom_element.localName == 'null' :
 			value = None
 		return value
+
+class GoogleReaderSearchObject(object):
+	""" hacky way of decoding a json object """
+
+	def __init__(self, jsonString):
+		try:
+			self.jsonItems = eval(jsonString.replace(':true',':True'))['items']
+		except:
+			print "GoogleReaderSearchObject() " + str(sys.exc_info()[ 1 ])
+			self.jsonItems = []
+
+	def get_entries(self):
+		""" Uses a recursive Generator to parse """
+		for item in self.jsonItems:
+#			pprint (item)
+			entry = {}
+			entry['sources'] = {}
+			entry['crawled'] = item.get('crawlTimeMsec',u'')
+			entry['google_id'] = item.get('id','')
+			try:
+				entry['original_id'] = item['origin']['streamId']
+			except:
+				entry['original_id'] = u''
+			entry['title'] = item.get('title','')
+			try:
+				entry['link'] = item['alternate'][0]['href']	# [{'alternate': [{'href': 'http://','type': 'text/html'}]
+			except:
+				entry['link'] = u''
+			entry['categories'] = item.get('categories','')
+			try:
+				entry['content'] = item['content']['content']
+			except:
+				entry['content'] = u''
+			try:
+				entry['summary'] = item['summary']['content']
+			except:
+				entry['summary'] = u''
+			entry['author'] = item.get('author',u'')
+			entry['title'] = item.get('title',u'')
+			entry['published'] = item.get('published',u'')
+			entry['updated'] = item.get('updated',u'')
+			entry['origin'] = item.get('origin', {})
+			try:
+				streamid = entry['origin']['streamId']
+				title =  entry['origin']['title']
+				entry['sources'][streamid] = ( streamid, title )
+			except:
+				entry['sources'] = {}
+
+#			pprint (entry)
+			yield entry
+
+	def get_items(self):
+		return self.jsonItems
+
+	def get_item(self, itemIdx):
+		try:
+			return self.jsonItems[itemIdx]
+		except:
+			return None
+
+	def get_size(self):
+		return len(self.jsonItems)
 
 #if ( __name__ == "__main__" ):
 #	print "GOOGLE READER started"

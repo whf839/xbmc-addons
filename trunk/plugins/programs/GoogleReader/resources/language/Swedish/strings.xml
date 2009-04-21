@@ -5,25 +5,17 @@
 <!--Date of translation: 04/06/2009-->
 <!--$Revision$-->
 <strings>
-  <string id="1000">Din version är aktuell.</string>
-  <string id="1001">Söker efter uppdatering...</string>
-  <string id="1002">är nyare</string>
-  <string id="1003">Vill du uppdatera?</string>
-  <string id="1004">Hämtar fillista...</string>
-  <string id="1005">Var god vänta...</string>
-  <string id="1006">Version</string>
-  <string id="1007">Hämtar:</string>
-  <string id="1008">Sökväg:</string>
-  <string id="1009">Fil:</string>
-  <string id="1010">Installerad.</string>
-  <string id="1030">Inga taggade versioner hittades!</string>
-  <string id="1031">Ett fel uppstod under uppdateing av scriptet!</string>
   <string id="30000">E-post</string>
   <string id="30010">Lösenord</string>
   <string id="30030">Objekt per sida</string>
   <string id="30040">Ladda ner listbilder (långsammare)?</string>
   <string id="30050">Visa lästa objekt?</string>
-  <string id="30060">Kontrollera efter uppdatering</string>
+  <string id="30060">Visa LäsMig</string>
+  <string id="30070">Visa ändringslogg</string>
+  <string id="30700">version</string>
+  <string id="30701">Denna version av %s kräver en</string>
+  <string id="30702">XBMC version %s eller höre för att köras.</string>
+  <string id="30703">Var god uppdatera ditt XBMC.</string>
   <string id="30900">Fel!</string>
   <string id="30901">Inloggningsdetaljer saknas!</string>
   <string id="30902">Ställ in via submeny - Tilläggsinställningar</string>

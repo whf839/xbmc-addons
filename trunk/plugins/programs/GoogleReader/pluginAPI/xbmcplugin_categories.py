@@ -8,19 +8,14 @@ import time
 #from pprint import pprint
 from string import find
 import xbmc, xbmcgui, xbmcplugin
+from urllib import unquote_plus
 
 from pluginAPI.xbmcplugin_const import *
 from pluginAPI.bbbLib import *
 import pluginAPI.GoogleReaderClient as grc
 
 __plugin__ = sys.modules[ "__main__" ].__plugin__
-xbmc.output("Loading from: %s Module: %s" % (__plugin__, __name__))
-
-#################################################################################################################
-try:
-	__lang__ = xbmc.Language( HOME_DIR ).getLocalizedString
-except:
-	xbmcBuildError()
+__lang__ = xbmc.Language( HOME_DIR ).getLocalizedString
 
 #################################################################################################################
 class _Info:
@@ -36,7 +31,7 @@ class _Info:
 class Main:
 	# base paths
 	BASE_PLUGIN_THUMBNAIL_PATH = os.path.join( HOME_DIR, "thumbnails" )
-	IMAGE_AVAILABLE = os.path.join(HOME_DIR,"default.tbn")
+	DEFAULT_THUMB_IMAGE = os.path.join(HOME_DIR,"default.tbn")
 	NEXT_IMG =  os.path.join( BASE_PLUGIN_THUMBNAIL_PATH, "next.png" )
 	TAGS_FILENAME = "/".join( [TEMP_DIR, __plugin__+"_tags.dat"] )
 	SUBS_FILENAME = "/".join( [TEMP_DIR, __plugin__+"_subs.dat"] )
@@ -80,22 +75,29 @@ class Main:
 		else:
 			# call Info() with our formatted argv to create the self.args object
 			# replace & with , first as they're the args split char.  Then decode.
-			exec "self.args = _Info(%s)" % ( decodeText( (sys.argv[ 2 ][ 1 : ]).replace( "&", ", " ) ), )
+			try:
+				exec "self.args = _Info(%s)" % ( unquote_plus( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ) ), )
+			except Exception, e:
+				print str(e)
 
 	########################################################################################################################
 	def authenticate( self ):
 		log( " > authenticate()")
 		ok = False
 		# make the authentication call
-		authkey = self.client.authenticate( self.email, self.password )
-		if not authkey:
-			messageOK(__plugin__, __lang__(30904))
-		else:
-			try:
-				xbmcplugin.setSetting( "authkey", authkey )
-				ok = True
-			except:
-				xbmcBuildError()
+		try:
+			authkey = self.client.authenticate( self.email, self.password )
+			if authkey.startswith("ERROR"): raise "neterror", authkey
+			if not authkey:
+				messageOK(__plugin__, __lang__(30904))
+			else:
+				try:
+					xbmcplugin.setSetting( "authkey", authkey )
+					ok = True
+				except: pass
+		except "neterror", e:
+			messageOK(__plugin__, e)
+
 		log( "< authenticate() ok=%s" % ok)
 		return ok
 
@@ -138,7 +140,8 @@ class Main:
 					( __lang__( 30953 ), "select_items_tag",  None,),                       # items by label
 					( __lang__( 30954 ), "get_items_by_type", "starred", ),
 					( __lang__( 30955 ), "get_items_by_type", "shared", ),
-					( __lang__( 30956 ), "get_items_by_type", "notes", )
+					( __lang__( 30956 ), "get_items_by_type", "notes", ),
+					( __lang__( 30957 ), "select_search_tag", None, )
 				)
 
 			sz = len( categories )
@@ -197,6 +200,10 @@ class Main:
 		return self.select_tag('get_items_by_type')
 
 	########################################################################################################################
+	def select_search_tag(self):
+		return self.select_tag('search')
+
+	########################################################################################################################
 	def select_tag( self, method):
 		""" Select a tag and setup next listitem url call using given method """
 		log("> select_tag() method=" + method)
@@ -206,12 +213,14 @@ class Main:
 			tags, sz = self._get_tags_file()
 			if not tags: raise "empty"
 			title = self.args.title + ": "
+			# add SEARCH ALL if method is search
+			if method == 'search':
+				tags.insert(0,'0 - Search All')
 
 			for tag in tags:
 				# set the callback url
 				li_url = '%s?title=%s&category=%s&tag=%s' % \
 						( sys.argv[ 0 ], encodeText( title+tag ), repr( method ), encodeText( tag ), )
-
 				li=xbmcgui.ListItem( tag )
 				# add the item to the media list
 				ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=li_url, listitem=li, isFolder=True, totalItems=sz )
@@ -245,7 +254,7 @@ class Main:
 				tag = self.args.tag
 				log( "tag=" + tag )
 				for sub in subs:
-					print "sub['categories']=", sub['categories']
+#					print "sub['categories']=", sub['categories']
 					for category in sub['categories']:
 						if tag == category['label']:
 							li_details.append( (sub['title'], sub['id'] ) )
@@ -371,7 +380,7 @@ class Main:
 			ok = self._fill_item_list(xmlfeed, continuation)
 		except "empty":
 			messageOK(decodeText(self.args.title), __lang__(30906))
-		except "network", e:
+		except "neterror", e:
 			messageOK(__plugin__, e)
 		except:
 			handleException(self.__class__.__name__)
@@ -381,35 +390,75 @@ class Main:
 		return ok
 
 	########################################################################################################################
+	def search(self):
+		log("> search()")
+		ok = False
+
+		try:
+			if self.args.has_key('searchText'):
+				text = self.args.searchText
+			else:
+				text = ''
+			text = self._get_keyboard(text)
+			if text:
+				self.args.searchText = text
+
+				if 'Search All' in self.args.tag:
+					jsonString = self.client.search_all_items(text)
+				else:
+					jsonString = self.client.search_label(text, self.args.tag)
+				if jsonString and jsonString.startswith("ERROR"): raise "neterror", jsonString
+
+				grso = grc.GoogleReaderSearchObject(jsonString)
+				sz = grso.get_size()
+				log("search results sz=%d" % sz)
+				if not sz: raise "empty"
+
+				ok = self._fill_item_list(grso)
+		except "empty":
+			messageOK(decodeText(self.args.title), __lang__(30906))
+		except "neterror", e:
+			messageOK(__plugin__, e)
+		except:
+			handleException(self.__class__.__name__)
+			ok = False
+
+		log("< search()")
+		return ok
+
+	########################################################################################################################
 	def _fill_item_list(self, xmlfeed, continuation=''):
-		log("> _fill_item_list()")
+		log("> _fill_item_list() continuation=%s" % continuation)
 		ok = False
 
 		try:        
 			sz = xmlfeed.get_size()
-			log("xmlfeed sz=%d" % sz)
+			log("_fill_item_list() items sz=%d" % sz)
 			if not sz: raise "empty"
 
 			# loop throu all entries making listitems
+			download_images = bool(xbmcplugin.getSetting( "list_images" ) == "true")
 			saveEntries = {}
 			for entry in xmlfeed.get_entries():
-				google_id = entry['google_id']
+#				print "entry="
 #				pprint (entry)
+				google_id = entry['google_id']
+				if not google_id:
+					continue
 				updated = entry.get('updated','')
 				if not updated:
-					updated = entry['published']
+					updated = entry.get('published','')
 				updated = time.strftime("%d-%m-%Y %H:%M", time.localtime(updated))
-				title = decodeText(entry['title'])
+				title = cleanHTML(entry['title'])
 				sourceTitle = decodeText(entry['sources'].values()[0][1])		# [first source](id, title)
-				author = entry['author']
-				content = entry['content']
+				author = entry.get('author','')
+				content = entry.get('content','')
 				if not content:
-					content = entry['summary']
+					content = entry.get('summary','')
 				thumbnail = findImgSrc(content)											# find first image in content
 				# only fetch image if settings permit, but image always fetched when item shown
-				download_images = bool(xbmcplugin.getSetting( "list_images" ) == "true")
 				thumbnail = get_thumbnail(thumbnail, download_images)			# load or download
-				content = cleanHTML(content)								# now clean content
+				content = cleanHTML(content)
 
 				# store these clean values to our saved entry
 				cleanEntry = {}
@@ -419,13 +468,14 @@ class Main:
 				cleanEntry['author'] = author
 				cleanEntry['image'] = thumbnail
 				saveEntries[google_id] = cleanEntry
+#				pprint (cleanEntry)
 
 				# continuation in this url is used to form a unique items filename that can be loaded when item selected
 				li_url = '%s?title=%s&category=%s&google_id=%s&continuation=%s' % \
 							(sys.argv[ 0 ], encodeText( entry['title'] ), repr('show_item'), repr( entry['google_id'] ), repr( continuation ))
 
 				if thumbnail.startswith('http') and not download_images:
-					thumbnail = self.IMAGE_AVAILABLE								# indicates image available
+					thumbnail = self.DEFAULT_THUMB_IMAGE
 				if thumbnail:
 					li=xbmcgui.ListItem( title, sourceTitle, thumbnail, thumbnail )
 				else:
@@ -434,6 +484,7 @@ class Main:
 				# add the item to the media list
 				ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=li_url, listitem=li, isFolder=False, totalItems=sz )
 
+#			pprint (saveEntries)
 			# save to file so we can read it in if an item selected
 			saveFileObj(ITEMS_FILENAME % continuation, saveEntries)
 
@@ -450,3 +501,17 @@ class Main:
 
 		log( "< _fill_item_list() ok=%s" % ok)
 		return ok
+
+
+	########################################################################################################################
+	def _get_keyboard(self, default="", heading="", isHidden=False):
+		if not heading:
+			heading = self.args.title
+		kb = xbmc.Keyboard(default, heading, isHidden)
+		kb.doModal()
+		if kb.isConfirmed():
+			text = kb.getText().strip()
+			log("_get_keyboard() " + text)
+			return text
+		else:
+			return ''
