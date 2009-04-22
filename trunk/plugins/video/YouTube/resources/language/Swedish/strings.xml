@@ -2,7 +2,7 @@
 <!--Language file translated with Team XBMC Translator-->
 <!--Translator: blittan-->
 <!--Email: blittan@xbmc.org-->
-<!--Date of translation: 04/18/2009-->
+<!--Date of translation: 04/19/2009-->
 <!--$Revision$-->
 <strings>
   <string id="30000">Användarnamn</string>
@@ -52,6 +52,8 @@
   <string id="30505">Nu spelas...</string>
   <string id="30506">Ta bort från mina favoriter</string>
   <string id="30507">Videor av %s</string>
+  <string id="30508">Ta bort sparade sökningar</string>
+  <string id="30509">Kömapp</string>
   <string id="30600">Laddar ner: %s</string>
   <string id="30601">Sparar: %s</string>
   <string id="30602">Till: %s</string>

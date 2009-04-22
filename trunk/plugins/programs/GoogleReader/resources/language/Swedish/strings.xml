@@ -2,7 +2,7 @@
 <!--Language file translated with Team XBMC Translator-->
 <!--Translator: blittan-->
 <!--Email: blittan@xbmc.org-->
-<!--Date of translation: 04/06/2009-->
+<!--Date of translation: 04/22/2009-->
 <!--$Revision$-->
 <strings>
   <string id="30000">E-post</string>
@@ -34,5 +34,6 @@
   <string id="30953">Objekt efter etikett</string>
   <string id="30954">Medverkad</string>
   <string id="30955">Delad</string>
-  <string id="30956">Noteringar</string>
+  <string id="30956">Anteckningar</string>
+  <string id="30957">Sök</string>
 </strings>
