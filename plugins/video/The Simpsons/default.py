@@ -3,26 +3,16 @@ import cookielib
 
 baseurl = 'http://wtso.net'
 
-rootDir = os.getcwd()
-if rootDir[-1] == ';':
-    rootDir = rootDir[0:-1]
-rootDir = xbmc.translatePath(rootDir)
-resDir = os.path.join(rootDir, 'resources')
-COOKIEFILE  = os.path.join(resDir, 'cookies.lwp')
-
 def getHTML( url, referer, redirect=False):
         try:
                 print 'THE SIMPSONS --> getHTML :: url = ' + url
                 cj = cookielib.LWPCookieJar()
-                if os.path.isfile(COOKIEFILE):
-                        cj.load(COOKIEFILE)
                 req = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
                 req.addheaders = [('Referer', referer),
                                   ('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')]
                 response = req.open(url)
                 link = response.read()
                 response.close()
-                cj.save(COOKIEFILE)
                 reurl = response.geturl()
         except urllib2.URLError, e:
                 print 'Error code: ', e.code
@@ -51,7 +41,7 @@ def EPISODES(url):
         data = getHTML(url,baseurl)
         episodes = re.compile('<a href="(.+?)" title="(.+?)">\s*<img src="(.+?)" width=".+?" height=".+?" alt=".+?" />\s*</a>\s*</div>\s*<h3>.+?</h3>\s*<p>\s*(.+?)</p>').findall(data, re.DOTALL)
         for url, title, thumb, plot in episodes:
-                title = title.replace('&#039;',"'").replace('&amp;','&').replace('  ',' ').replace('The Simpsons ','')
+                title = title.replace('&#039;',"'").replace('&amp;','&').replace('  ',' ').replace('The Simpsons ','').replace('The SImpsons ','')
                 plot = plot.replace('&#039;',"'").replace('&amp;','&')
                 addDir(title,url,2,thumb)
 
@@ -62,11 +52,7 @@ def VIDEOLINKS(url,name):
         videolink = re.compile('<location>(.+?)</location>').findall(data, re.DOTALL)[0]
         item=xbmcgui.ListItem(name, iconImage='', thumbnailImage='')
         item.setInfo( type="Video", infoLabels={ "Title": name})
-        if xbmcplugin.getSetting("dvdplayer") == "true":
-                player_type = xbmc.PLAYER_CORE_DVDPLAYER
-        else:
-                player_type = xbmc.PLAYER_CORE_MPLAYER
-        xbmc.Player(player_type).play(videolink, item)
+        xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(videolink, item)
 
 
 def get_params():
