@@ -16,8 +16,8 @@ __plugin__ = "GoogleReader"
 __author__ = "BigBellyBilly"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/programs/GoogleReader"
-__version__ = "1.1"
-__date__ = '20-04-2009'
+__version__ = "1.1.1"
+__date__ = '23-04-2009'
 __svn_revision__ = "$Revision$"
 __XBMC_Revision__ = "19001"
 

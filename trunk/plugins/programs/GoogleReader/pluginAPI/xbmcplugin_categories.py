@@ -87,7 +87,7 @@ class Main:
 		# make the authentication call
 		try:
 			authkey = self.client.authenticate( self.email, self.password )
-			if authkey.startswith("ERROR"): raise "neterror", authkey
+			if authkey and authkey.startswith("ERROR"): raise "neterror", authkey
 			if not authkey:
 				messageOK(__plugin__, __lang__(30904))
 			else:
@@ -176,6 +176,7 @@ class Main:
 				tags = loadFileObj(self.TAGS_FILENAME, [])
 			else:
 				xmlObject = self.client.get_tag_list()
+				if xmlObject and xmlObject.startswith("ERROR"): raise "neterror", xmlObject
 				if xmlObject:
 					result = grc.GoogleObject(xmlObject).parse()
 #					pprint (result)
@@ -185,6 +186,8 @@ class Main:
 					# save to file
 					if tags:
 						saveFileObj(self.TAGS_FILENAME, tags)
+		except "neterror", e:
+			messageOK(__plugin__, e)
 		except:
 			handleException(self.__class__.__name__)
 		sz = len(tags)
@@ -296,6 +299,7 @@ class Main:
 				data = loadFileObj(self.SUBS_FILENAME, [])
 			else:
 				xmlObject = self.client.get_subscription_list()
+				if xmlObject and xmlObject.startswith("ERROR"): raise "neterror", xmlObject
 				if xmlObject:
 					result = grc.GoogleObject(xmlObject).parse()
 					# extract subs
@@ -303,6 +307,8 @@ class Main:
 					if data:
 						# save to file
 						saveFileObj(self.SUBS_FILENAME, data)
+		except "neterror", e:
+			messageOK(__plugin__, e)
 		except:
 			handleException(self.__class__.__name__)
 
@@ -354,7 +360,7 @@ class Main:
 				log("feed=%s" % arg_value)
 				atomfeed = self.client.get_feed(arg_value, continuation=continuation)
 
-			if atomfeed.startswith("ERROR"): raise "neterror", atomfeed
+			if atomfeed and atomfeed.startswith("ERROR"): raise "neterror", atomfeed
 
 			xmlfeed = grc.GoogleFeed(atomfeed)
 			sz = xmlfeed.get_size()
