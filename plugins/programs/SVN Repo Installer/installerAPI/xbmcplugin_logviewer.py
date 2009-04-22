@@ -20,7 +20,6 @@ class _Info:
     def __init__( self, *args, **kwargs ):
         self.__dict__.update( kwargs )
 
-
 class ChangelogParser:
     # TODO: make these settings
     BASE_URL = "http://code.google.com/p/%s/updates/list?start=%d"
@@ -110,17 +109,18 @@ if ( not DEBUG ):
 
         def __init__( self, *args, **kwargs ):
             xbmcgui.WindowXMLDialog.__init__( self )
-            self.dialog = xbmcgui.DialogProgress()
-            self.dialog.create( sys.modules[ "__main__" ].__plugin__, "Fetching changelog..." )
             self._parse_argv()
 
         def onInit( self ):
+            self.dialog = xbmcgui.DialogProgress()
             if ( self.args.repo is None ):
+                self.dialog.create( sys.modules[ "__main__" ].__plugin__, "Fetching changelog..." )
                 log = self._fetch_readme()
             else:
+                self.dialog.create( sys.modules[ "__main__" ].__plugin__, "Fetching readme..." )
                 log = self._fetch_changelog()
-            self._paste_log( log )
             self.dialog.close()
+            self._paste_log( log )
 
         def _parse_argv( self ):
             # call _Info() with our formatted argv to create the self.args object
@@ -136,20 +136,31 @@ if ( not DEBUG ):
             parser.fetch_changelog()
             return parser.log
 
+        def getReadmePath(self):
+            base_path = os.path.join( os.getcwd(), "resources", "language" )
+            path = os.path.join( base_path, xbmc.getLanguage(), "readme.txt" )
+            if not os.path.exists(path):
+                path = os.path.join( base_path, "English", "readme.txt" )
+            return path
+
         def _fetch_readme( self ):
-            if ( self.args.readme is None ):
-                path = os.path.join( os.getcwd(), "resources", "readme.txt" )
-                # open socket
-                usock = open( path, "r" )
-            else:
-                usock = urllib.urlopen( self.args.readme )
-            #read html source
-            readme = usock.read()
-            # close socket
-            usock.close()
-            # set category
-            self.args.category = "readme.txt"
-            # return text
+            try:
+                self.args.category = "readme.txt"
+                if ( self.args.readme is None ):
+                    # local readme - determine correct language path
+                    path = self.getReadmePath()
+                    # open socket
+                    usock = open( path, "r" )
+                else:
+                    usock = urllib.urlopen( self.args.readme )
+                #read html source
+                readme = usock.read()
+                # close socket
+                usock.close()
+                # set category
+                # return text
+            except Exception, e:
+                readme = "Error: %s" % e
             return readme
 
         def _paste_log( self, log ):
