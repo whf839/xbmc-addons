@@ -40,11 +40,11 @@ def EPISODES(url):
         data = getHTML(url,baseurl)
         episodes = re.compile('<a href="(.+?)" title="(.+?)">\s*<img src="(.+?)" width=".+?" height=".+?" alt=".+?" .+? />\s*</a>\s*<h3>.+?</h3>').findall(data, re.DOTALL)
         for url, title, thumb in episodes:
+                url = baseurl + url
                 title = title.replace('&#039;',"'").replace('&amp;','&').replace('  ',' ').replace('Family Guy ','')
                 addDir(title,url,2,thumb)
 
 def VIDEOLINKS(url,name):
-        url = baseurl + url
         data = getHTML(url,baseurl)
         coldlink =  re.compile('<param name="movie" value="(.+?)" />').findall(data, re.DOTALL)[0]
         data = getHTML(coldlink , url, True)
