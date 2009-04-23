@@ -14,6 +14,7 @@ import xbmcplugin
 import urllib
 import re
 from xml.sax.saxutils import unescape
+xbmc.log("[PLUGIN] Module: %s loaded!" % __name__, xbmc.LOGDEBUG)
 
 
 class Parser:
@@ -23,6 +24,7 @@ class Parser:
     asset_regex = re.compile( '<li><a href="([^"]*)">([^"]*)</a></li>' )
 
     def __init__( self, htmlSource ):
+        xbmc.log("[PLUGIN] %s __init__!" % (self.__class__))
         # set our initial status
         self.dict = { "status": "fail", "revision": 0, "assets": [], "url": "" }
         # fetch revision number
@@ -63,6 +65,7 @@ class Main:
     BASE_CACHE_PATH = os.path.join( xbmc.translatePath( "special://profile/" ), "Thumbnails", "Pictures" )
 
     def __init__( self ):
+        xbmc.log("[PLUGIN] %s __init__!" % (self.__class__))
         # if this is first run list all the repos
         if ( sys.argv[ 2 ] == "" ):
             ok = self._get_repos()
@@ -100,7 +103,7 @@ class Main:
             listitem = xbmcgui.ListItem( xbmc.getLocalizedString( 30500 ), iconImage=icon, thumbnailImage=thumbnail )
             # set the title
             listitem.setInfo( type="Video", infoLabels={ "Title": xbmc.getLocalizedString( 30500 ) } )
-            cm = [ ( xbmc.getLocalizedString( 30610 ), "XBMC.RunPlugin(%s?showreadme=True&repo=None)" % ( sys.argv[ 0 ], ), ) ]
+            cm = [ ( xbmc.getLocalizedString( 30610 ), "XBMC.RunPlugin(%s?showreadme=True&repo=None&readme=None)" % ( sys.argv[ 0 ], ), ) ]
             listitem.addContextMenuItems( cm, replaceItems=True )
             # add our item
             ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=url, listitem=listitem, isFolder=True )
@@ -120,8 +123,8 @@ class Main:
                     listitem.setInfo( type="Video", infoLabels={ "Title": repo } )
                     # grab the log for this repo
                     if ( "tagged" not in repo ):
-                        parser = xbmcplugin_logviewer.ChangelogParser( repo, parse=False )
-                        parser.fetch_changelog()
+#                        parser = xbmcplugin_logviewer.ChangelogParser( repo, parse=False )
+#                        parser.fetch_changelog()
                         cm += [ ( xbmc.getLocalizedString( 30600 ), "XBMC.RunPlugin(%s?showlog=True&repo=%s&category=None&revision=None&parse=True)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( repo ) ), ), ) ]
                     cm += [ ( xbmc.getLocalizedString( 30610 ), "XBMC.RunPlugin(%s?showreadme=True&repo=None&readme=None)" % ( sys.argv[ 0 ], ), ) ]
                     # add context menu items
@@ -226,6 +229,7 @@ class Main:
         return ok
 
     def _check_readme( self, url ):
+        xbmc.log("[PLUGIN] %s url=%s" % (self.__class__.__name__, url), xbmc.LOGDEBUG)
         try:
             # open url
             usock = urllib.urlopen( url )
@@ -242,6 +246,7 @@ class Main:
             return None
 
     def _check_compatible( self, url, repo_url, install, ioffset, voffset ):
+        xbmc.log("[PLUGIN] %s url=%s" % (self.__class__.__name__, url), xbmc.LOGDEBUG)
         try:
             # get items svn info
             ok = True
@@ -295,7 +300,9 @@ class Main:
     def _get_items( self ):
         try:
             # open url
-            usock = urllib.urlopen( self.REPO_URL + self.args.category )
+            url = self.REPO_URL + self.args.category
+            xbmc.log("[PLUGIN] %s url=%s" % (self.__class__.__name__, url), xbmc.LOGDEBUG)
+            usock = urllib.urlopen( url )
             # read source
             htmlSource = usock.read()
             # close socket

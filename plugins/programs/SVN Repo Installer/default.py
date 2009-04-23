@@ -12,7 +12,7 @@ __author__ = "nuka1195/BigBellyBilly"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/programs/SVN%20Repo%20Installer"
 __credits__ = "Team XBMC"
-__version__ = "1.6.4a"
+__version__ = "1.6.5"
 __svn_revision__ = "$Revision$"
 __XBMC_Revision__ = "19001"
 
@@ -41,16 +41,24 @@ def _check_compatible():
 
 
 if ( __name__ == "__main__" ):
+    print "sys.argv=", sys.argv
     if ( not sys.argv[ 2 ] ):
-        # check for compatibility, only need to check this once, continue if compatible
+        # check for compatibility, only need to check this once, continue if ok
         if ( _check_compatible() ):
+            # remove working files on startup
+            try:
+                import os
+                os.remove(os.path.join( os.getcwd(), "installed_items.dat" ))
+            except: pass
             from installerAPI import xbmcplugin_list as plugin
     elif ( "download_url=" in sys.argv[ 2 ] ):
         from installerAPI import xbmcplugin_downloader as plugin
     elif ( sys.argv[ 2 ] == "?category='updates'" ):
         from installerAPI import xbmcplugin_update as plugin
-    elif ( sys.argv[ 2 ].startswith( "?showlog=True" ) or sys.argv[ 2 ].startswith( "?showreadme=True" ) ):
+    elif ( "showreadme=" in sys.argv[ 2 ] or "showlog=" in sys.argv[ 2 ] ):
         from installerAPI import xbmcplugin_logviewer as plugin
+    elif ( "delete=" in sys.argv[ 2 ] ):
+        from installerAPI import xbmcplugin_actions as plugin
     else:
         from installerAPI import xbmcplugin_list as plugin
 
@@ -59,4 +67,3 @@ if ( __name__ == "__main__" ):
     except:
         import traceback
         traceback.print_exc()
-        pass

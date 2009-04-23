@@ -42,12 +42,19 @@ CHANGELOGS:
 
  Selecting "View Changelog" whilst browsing addons or updates will show the selected addon changelog.
 
-readme.txt:
+README:
  Selecting "View Readme" from Plugin settings will show installers /resources/readme.txt.
 
  Selecting "View Readme" whilst in root folder will show installers /resources/readme.txt.
 
  Selecting "View Readme" whilst browsing addons or updates (if avaliable) will show the selected addon /resources/readme.txt.
+
+DELETING AN ADDON:
+  From "Check for Updates" in each addons Context Menu, there is a "Delete" option.
+
+  When deleting an installed Addon, it first makes a backup copy to <category/.backups/<addonname>, then deletes Addon.
+
+  When deleting a Backup of an Addon, it delete it from <category/.backups/<addonname>.
 
 
 CREDITS:
