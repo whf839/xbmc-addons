@@ -2,10 +2,10 @@
 <strings>
     <!-- Update messages -->
     <string id="30000">Would you like to install this item?</string>
-    <string id="30001"></string>
+    <string id="30001">Fetching file ...</string>
     <string id="30002">Fetching file list...</string>
     <string id="30003">Please wait...</string>
-    <string id="30004"></string>
+    <string id="30004">Backup Created</string>
     <string id="30005">Fetching:</string>
     <string id="30006">Path:</string>
     <string id="30007">File:</string>
@@ -19,14 +19,16 @@
     <string id="30015">Incompatible</string>
     <string id="30016">Update</string>
     <string id="30017">ChangeLog</string>
+    <string id="30018">Deleted</string>
 
     <string id="30020">Skip</string>
     <string id="30021">Install</string>
+    <string id="30022">Delete</string>
 
     <!-- settings -->
     <string id="30500">Check for updates</string>
-	<string id="30510">Updates: Show Addons not in SVN?</string>
-	<string id="30520">Updates: Show Addons wihout a version?</string>
+    <string id="30510">Updates: Show Addons not in SVN?</string>
+    <string id="30520">Updates: Show Addons wihout a version?</string>
     <string id="30530">View Readme</string>
     <string id="30540">View Changelog</string>
 

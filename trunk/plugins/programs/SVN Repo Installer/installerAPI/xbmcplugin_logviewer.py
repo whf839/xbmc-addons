@@ -7,6 +7,7 @@ import sys
 try:
     import xbmcgui
     import xbmc
+    xbmc.log("[PLUGIN] Module: %s loaded!" % __name__, xbmc.LOGDEBUG)
     DEBUG = False
 except:
     DEBUG = True
@@ -26,6 +27,7 @@ class ChangelogParser:
     PAGES = 3
 
     def __init__( self, repo, category=None, revision=None, parse=True ):
+        xbmc.log("[PLUGIN] %s __init__!" % (self.__class__))
         if ( DEBUG ):
             self.log = "[B]%s: %s[/B]\n----\n" % ( category or repo, "ChangeLog" )
         else:
@@ -48,9 +50,12 @@ class ChangelogParser:
                 path = os.path.join( base_path, "%s%d.txt" % ( self.repo, page, ) )
                 # open socket
                 if ( ( DEBUG or self.parse == True ) and os.path.isfile( path ) and self.revision is None):
+                    xbmc.log("[PLUGIN] %s path=%s" % (self.__class__.__name__, path))
                     usock = open( path, "r" )
                 else:
-                    usock = urllib.urlopen( self.BASE_URL % ( self.repo, page * 50, ) )
+                    url = self.BASE_URL % ( self.repo, page * 50, )
+                    xbmc.log("[PLUGIN] %s url=%s" % (self.__class__.__name__, url))
+                    usock = urllib.urlopen( url )
                 #read html source
                 htmlSource = usock.read()
                 # close socket
@@ -65,6 +70,7 @@ class ChangelogParser:
                     self._parse_html_source( htmlSource )
         except Exception, e:
             print str( e )
+            self.log = str(e)
 
     def _parse_html_source( self, htmlSource ):
         # regex's
@@ -108,16 +114,16 @@ if ( not DEBUG ):
         ACTION_EXIT_SCRIPT = ( 9, 10, )
 
         def __init__( self, *args, **kwargs ):
+            xbmc.log("[PLUGIN] %s __init__!" % (self.__class__))
             xbmcgui.WindowXMLDialog.__init__( self )
             self._parse_argv()
 
         def onInit( self ):
             self.dialog = xbmcgui.DialogProgress()
+            self.dialog.create( sys.modules[ "__main__" ].__plugin__, xbmc.getLocalizedString( 30001 ) )
             if ( self.args.repo is None ):
-                self.dialog.create( sys.modules[ "__main__" ].__plugin__, "Fetching changelog..." )
                 log = self._fetch_readme()
             else:
-                self.dialog.create( sys.modules[ "__main__" ].__plugin__, "Fetching readme..." )
                 log = self._fetch_changelog()
             self.dialog.close()
             self._paste_log( log )
@@ -150,17 +156,22 @@ if ( not DEBUG ):
                     # local readme - determine correct language path
                     path = self.getReadmePath()
                     # open socket
+                    xbmc.log("[PLUGIN] %s path=%s" % (self.__class__.__name__, path))
                     usock = open( path, "r" )
                 else:
+                    xbmc.log("[PLUGIN] %s url=%s" % (self.__class__.__name__, self.args.readme))
                     usock = urllib.urlopen( self.args.readme )
+
                 #read html source
                 readme = usock.read()
+                if ( "404 Not Found" in readme ):
+                    readme = "Readme not found:\n" + self.args.readme
+
                 # close socket
                 usock.close()
-                # set category
-                # return text
             except Exception, e:
-                readme = "Error: %s" % e
+                print str(e)
+                readme = str(e)
             return readme
 
         def _paste_log( self, log ):
