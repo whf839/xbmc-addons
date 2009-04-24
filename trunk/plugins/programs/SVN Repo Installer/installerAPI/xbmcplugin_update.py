@@ -20,7 +20,7 @@ from xbmcplugin_lib import *
 
 # Script constants
 __plugin__ = sys.modules["__main__"].__plugin__
-__date__ = '23-04-2009'
+__date__ = '24-04-2009'
 xbmc.log("[PLUGIN] Module: %s loaded!" % __name__, xbmc.LOGDEBUG)
 
 # check if build is special:// aware - set roots paths accordingly
@@ -44,31 +44,23 @@ class Main:
 		self.showNoSVN = bool(xbmcplugin.getSetting( "show_no_svn" ) == "true")
 		self.showNoVer = bool(xbmcplugin.getSetting( "show_no_ver" ) == "true")
 
-		self.XBMC_REVISION = re.search("r([0-9]+)",  xbmc.getInfoLabel( "System.BuildVersion" ), re.IGNORECASE).group(1)
+		self._get_xbmc_revision()
+		self.SVN_URL_LIST = [ "xbmc-addons", "xbmc-scripting" ]
+		#['plugin://programs/SVN Repo Installer/', '-1', '?download_url="%2Ftrunk%2Fplugins%2Fmusic/iTunes%2F"&repo=\'xbmc-addons\'&install=""&ioffset=2&voffset=0']
+		# create all XBMC script/plugin paths
+		paths = ("plugins/programs","plugins/video","plugins/music","plugins/pictures","scripts")
+		self.XBMC_PATHS = []
+		for p in paths:
+			self.XBMC_PATHS.append( xbmc.translatePath( "/".join( [XBMC_HOME, p] ) ) )
 
-		xbmc_version = xbmc.getInfoLabel( "System.BuildVersion" )
-		self.XBMC_REVISION = int( xbmc_version.split( " " )[ 1 ].replace( "r", "" ) )
-		log("XBMC_REVISION-%s" % self.XBMC_REVISION)
-		
-		if not os.path.exists(self.INSTALLED_ITEMS_FILENAME):
-			self.SVN_URL_LIST = [ "xbmc-addons", "xbmc-scripting" ]
-			#['plugin://programs/SVN Repo Installer/', '-1', '?download_url="%2Ftrunk%2Fplugins%2Fmusic/iTunes%2F"&repo=\'xbmc-addons\'&install=""&ioffset=2&voffset=0']
-			# create all XBMC script/plugin paths
-			paths = ("plugins/programs","plugins/video","plugins/music","plugins/pictures","scripts")
-			self.XBMC_PATHS = []
-			for p in paths:
-				self.XBMC_PATHS.append( xbmc.translatePath( "/".join( [XBMC_HOME, p] ) ) )
-
-			self.dialogProgress = xbmcgui.DialogProgress()
-			self.dialogProgress.create(__plugin__)
-			self.findInstalled()
+		self.dialogProgress = xbmcgui.DialogProgress()
+		self.dialogProgress.create(__plugin__)
+		self.findInstalled()
 #			self.INSTALLED = [ {"filepath": "C:\\Documents and Settings\\itnmh\\Application Data\\XBMC\\plugins\\Programs\\TestPlugin\\", "ver": "0.0", "thumb": "", "xbmc_rev": "19001", "svn_ver": "0.1", "svn_url": "xbmc-addons/trunk/Programs/TestFolder", 'svn_xbmc_rev':'19010', 'repo': 'xbmc-addons', 'install': 0, 'ioffset': 0, 'voffset': 0 }, \
 #							   {"filepath": "C:\\Documents and Settings\\itnmh\\Application Data\\XBMC\\plugins\\Programs\\TestPlugin2\\", "ver": "0.1", "thumb": "", "xbmc_rev": "19001", "svn_ver": "0.3", "svn_url": "xbmc-addons/trunk/Programs/TestFolder2", 'svn_xbmc_rev':'19010', 'repo': 'xbmc-addons', 'install': 0, 'ioffset': 0, 'voffset': 0 }]
-			if self.INSTALLED:
-				self.checkUpdates()
-			self.dialogProgress.close()
-		else:
-			self.INSTALLED = loadFileObj(self.INSTALLED_ITEMS_FILENAME)
+		if self.INSTALLED:
+			self.checkUpdates()
+		self.dialogProgress.close()
 
 #		pprint (self.INSTALLED)
 		if self.INSTALLED:
@@ -80,6 +72,13 @@ class Main:
 
 		log("ok=%s" % ok)
 		xbmcplugin.endOfDirectory( int( sys.argv[ 1 ] ), ok, cacheToDisc=False)
+
+	def _get_xbmc_revision( self ):
+		try:
+			self.XBMC_REVISION = re.search("r([0-9]+)",  xbmc.getInfoLabel( "System.BuildVersion" ), re.IGNORECASE).group(1)
+		except:
+			self.XBMC_REVISION = 0
+		log("XBMC_REVISION-%s" % self.XBMC_REVISION)
 
 	def findInstalled(self):
 		log("> findInstalled()")
