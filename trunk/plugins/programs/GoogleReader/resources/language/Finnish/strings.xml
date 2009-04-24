@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings>    <!--   Finnish 25.3.2009   -->
+<strings>    <!--   Finnish 24.4.2009   -->
     <!-- Errors -->
     <string id="30900">Virhe!</string>
-    <string id="30901">Kirjautumisen asetukset puuttuvat!</string>
-    <string id="30902">Asetukset käyttäen Ponnahdusvalikkoa - Lisäkkeen asetukset</string>
+    <string id="30901">Kirjautumisasetukset puuttuvat!</string>
+    <string id="30902">Asetukset käyttäen ponnahdusvalikkoa - Lisäkkeen asetukset</string>
     <string id="30903">Mikäli lisäke ei toimi, yritä päivittää xbmc uudempaan</string>
     <string id="30904">Kirjautuminen epäonnistui, tarkista asetukset</string>
     <string id="30905">Tilauksia ei löytynyt</string>
@@ -26,7 +26,7 @@
     <string id="30954">Merkityt</string>
     <string id="30955">Jaetut</string>
     <string id="30956">Huomautukset</string>
-    <string id="30957">Söka</string>
+    <string id="30957">Etsi</string>
 
     <!-- Settings -->
     <string id="30000">Sähköpostiosoite</string>
