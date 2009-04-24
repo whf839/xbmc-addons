@@ -1,22 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings> <!--  25.3.2009 Finnish   -->
+<strings> <!--  24.4.2009 Finnish   -->
     <!-- Plugin strings -->
     <string id="30900">Flickr-lisäke</string>
-    <string id="30901">Käyttäjän Id-tunnnus on sopimaton!</string>
+    <string id="30901">Käyttäjän id-tunnus on sopimaton!</string>
     <string id="30902">Tarkista asetukset.</string>
     <string id="30903">Kuvien hakusana</string>
     <string id="30904">Ryhmien hakusana</string>
     <string id="30905">*Ryhmät</string>
     <string id="30906">Kuvat</string>
     <string id="30907">XBMC Flickr</string>
-    <string id="30908">Jotkut ominaisuudet vaativat valtuutuksen&#10;ennen kuin voit käyttää niitä.</string>
+    <string id="30908">Jotkut ominaisuudet vaativat valtuutuksen,&#10;ennen kuin voit käyttää niitä.</string>
     <string id="30909">Haluatko valtuuttaa tämän lisäkkeen?</string>
     <string id="30910">Ei kiitos</string>
     <string id="30911">Valtuuta</string>
     <string id="30912">Palaa XBMC Media Center-ohjelmaan kun olet&#10;suorittanut valtuutuksen flickr.com-osoitteessa</string>
     <string id="30913">Peruuta</string>
     <string id="30914">Valtuutettu</string>
-    <string id="30915">Ota FTP-yhteys xboksiin ja nouda q:\\xbmc.log&#10;tiedosto.'Etsi XBMC Flicker valtuutusosoite:'&#10;Kopioi tämä nettiselaimeen ja varmenna.</string>
+    <string id="30915">Ota FTP-yhteys xboksiin ja nouda q:\\xbmc.log&#10;tiedosto.'Etsi XBMC Flicker authorization url:'&#10;Kopioi tämä nettiselaimeen ja varmenna.</string>
     <string id="30916">Haettava käyttäjänimi tai sähköpostiosoite</string>
 
     <!-- Category strings -->
@@ -42,7 +42,7 @@
     <string id="30021">Yleiset kuvat</string>
     <string id="30022">Ystäville näkyvät kuvat</string>
     <string id="30023">Perheelle näkyvät kuvat</string>
-    <string id="30024">Ystäville &amp; perheelle näkyvät kuvat</string>
+    <string id="30024">Ystäville ja perheelle näkyvät kuvat</string>
     <string id="30025">Yksityiset kuvat</string>
     <string id="30030">Suojattu hakumenetelmä (ryhmä &amp; kuvat)</string>
     <string id="30031">Suojaus</string>
