@@ -334,10 +334,11 @@ class Main:
                         # thumbnail url
                         thumbnail_url = video[ "media$group" ][ "media$thumbnail" ][ -1 ][ "url" ]
                         # plot
-                        plot = xbmc.getLocalizedString( 30904 )
-                        if ( "media$description" in video[ "media$group" ] ):
+                        try:
                             # we need to replace \n and \r as it messes up our exec hack (exec is a hack for unescaping \u#### characters)
                             exec 'plot = u"%s"' % ( unicode( video[ "media$group" ][ "media$description" ][ "$t" ].replace( '"', '\\"' ).replace( "\n", "\\n" ).replace( "\r", "\\r" ), encoding, "replace" ), )
+                        except:
+                            plot = xbmc.getLocalizedString( 30904 )    
                         # format runtime as 00:00
                         runtime = int( video[ "media$group" ][ "yt$duration" ][ "seconds" ] )
                         # video runtime
