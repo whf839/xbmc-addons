@@ -9,9 +9,9 @@ from shutil import rmtree, copy
 import traceback
 
 __plugin__ = "UlmenTV"
-__version__ = '1.35'
+__version__ = '1.36'
 __author__ = 'bootsy [bootsy82@gmail.com] with much help from BigBellyBilly'
-__date__ = '26-02-2009'
+__date__ = '26-04-2009'
 
 #DIR_USERDATA = "/".join( ["special://masterprofile","plugin_data","video", __plugin__] )      # T:// - new drive
 DIR_USERDATA = "/".join( ["T:"+os.sep,"plugin_data","video", __plugin__] )  # translatePath() will convert to new special://
@@ -25,8 +25,8 @@ local_dir = xbmc.translatePath( "/".join( [local_base_dir, __plugin__] ) )
 backup_base_dir = xbmc.translatePath( "/".join( [local_base_dir,'.backups'] ) )
 local_backup_dir = os.path.join( backup_base_dir, __plugin__ )
 
-print 'local dir: ' + local_dir
-print 'backup dir: ' + local_backup_dir
+#print 'local dir: ' + local_dir
+#print 'backup dir: ' + local_backup_dir
 
 def log(msg):
 	if isinstance(msg,list):
@@ -251,8 +251,14 @@ def fetchBinary(url):
 	except:
 		msg = sys.exc_info()[ 1 ]
 		print msg
-		xbmcgui.Dialog().ok("Media Download failed!", msg)
-		fn = ''
+		url = 'http://xbmc.svn.sourceforge.net/svnroot/xbmc/trunk/XBMC/skin/Project%20Mayhem%20III/media/defaultVideoBig.png'
+		fn = os.path.join(DIR_USERDATA, 'defaultVideoBig.png')
+		fn = xbmc.translatePath(fn)
+		if not os.path.isfile(fn):
+			opener = urllib.FancyURLopener()
+			fn, resp = opener.retrieve(url, fn)
+			opener.close()
+			os.path.isfile(fn)
 
 	if fn and os.path.isfile(fn):
 		return fn
@@ -273,15 +279,16 @@ def get_params():
     except:
         errorOK()
     return paramDict
-
+    
 # add a link to directory
-def addLink(name, url, img):
+def addLink(name, url, img, mode):
 	log("addLink() url=%s" % url)
 	liz=xbmcgui.ListItem(name, '', img, img)
 	liz.setInfo( type="Video", infoLabels={ "Title": name } )
 	url = fetchVideoLink(url)
+	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
 	log("addLink() videourl=%s" % url)
-	return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
+	return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
 
 # add a folder to directory
 def addDir(name,url,mode):
@@ -310,14 +317,18 @@ def showShows(url,name):
 		ep = "%s - %s" % (part, name)
 		dialogProgress.update(0, chname, ep, os.path.basename(thumbnail))
 		img = fetchBinary(thumbnail)
+		infolabels = {}
 		if not img:
 			img = "DefaultVideo.png"
-		if (chname=='Neueste Videos'):
-			show=name
+		if chname=='Neueste Videos':
+			show = name
 		else:
 			show = "%s - %s - %s" % (chname, part, name)
-		addLink(show,url,img)
+		addLink(show,url,img,2)
 	dialogProgress.close()
+	
+def playVideo(url,name):
+	xbmc.Player(xbmc.PLAYER_CORE_AUTO).play(str(url))
 
 #######################################################################################################################    
 # BEGIN !
@@ -357,19 +368,10 @@ if not updating:
 	log("Name: "+str(name))
 
 	if mode==0 or not url:
-		log("categories")
 		showCats(url,name)
 	elif mode==1:
-		log("shows")
 		showShows(url,name)
 	elif mode==2:
-		log("Next: "+url)
-		#showVidlinks(url)
-	elif mode==3:
-		log("show eps: "+url+" - "+name)
-		showEpisodes(url)
-	elif mode==4:
-		log("show vidlinks")
-		showVidLinks(url)
+		playVideo(url,name)
 	ok = True
 	xbmcplugin.endOfDirectory(int(sys.argv[1]), ok)
