@@ -10,7 +10,7 @@ from xbmcplugin_lib import *
 from shutil import rmtree, copytree
 
 __plugin__ = sys.modules["__main__"].__plugin__
-__date__ = '22-04-2009'
+__date__ = '29-04-2009'
 log("Module: %s Dated: %s loaded!" % (__name__, __date__))
 
 class Main:
@@ -23,6 +23,8 @@ class Main:
 			self._parse_argv()
 			if ( self.args.has_key("delete") ):
 				self.delete_update_item()
+			elif ( self.args.has_key("self_update") ):
+				self.self_update()
 		except Exception, e:
 			xbmcgui.Dialog().ok(__plugin__ + " ERROR!", str(e))
 
@@ -89,8 +91,10 @@ class Main:
 		log("> makeBackup() installedPath=%s" % installedPath)
 
 		try:
+			dialog = xbmcgui.DialogProgress()
+			dialog.create( __plugin__, "Making Backup ..." )
 			category = ""
-			if installedPath[-1] == os.sep:
+			if installedPath[-1] in ('\\','/'):
 				installedPath = installedPath[:-1]
 
 			# extract rootpath , addon name
@@ -116,6 +120,7 @@ class Main:
 			except: pass
 
 			# copy to backup path
+			log("copytree %s -> %s" % (installedPath, backupPath))
 			copytree(installedPath, backupPath)
 			log("copytree success")
 
@@ -128,21 +133,39 @@ class Main:
 		except:
 			handleException("makeBackup()")
 			backupPath = ""
+		dialog.close()
 		log("< makeBackup() backupPath=%s category=%s" % (backupPath, category))
 		return (backupPath, category)
 
+	########################################################################################################################
 	def _parseCategoryPath(self):
 			# extract category in .backups
 			category = re.search("(plugins.*|scripts.*)$", backupPath).group(1)
 
+	########################################################################################################################
+	def self_update(self):
+		log("> self_update()")
+
+		# make backup
+		filepath= xbmc.translatePath("special://home/plugins/programs/" + __plugin__)
+		backupPath, category = self.makeBackup(filepath)
+
+		# launch download from backup
+		if backupPath and category:
+			# remove self_update arg from downloader url
+			url_args = sys.argv[2].replace("self_update=True&", "")
+			# create path to module in backups
+			filepath= "plugin://programs/.backups/" + __plugin__
+			path = '%s%s' % ( filepath, url_args, )
+
+			# run module from backup
+			command = 'XBMC.RunPlugin(%s)' % path
+			log(command)
+			xbmc.executebuiltin(command)
+
+		log("< self_update()")
 
 	
-#def deleteInstalledFile():
-#	try:
-#		os.remove(Main.INSTALLED_ITEMS_FILENAME)
-#		log("deleteInstalledFile() deleted: " + Main.INSTALLED_ITEMS_FILENAME)
-#	except: pass
-
 if ( __name__ == "__main__" ):
 	Main()
 
