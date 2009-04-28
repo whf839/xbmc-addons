@@ -95,7 +95,7 @@ class Main:
 	def _get_repos( self ):
 		try:
 			# we fetch the log here only at start of plugin
-			import xbmcplugin_logviewer
+#			import xbmcplugin_logviewer
 			# add the check for updates item to the media list
 			url = "%s?category='updates'" % ( sys.argv[ 0 ], )
 			# set the default icon
@@ -198,6 +198,7 @@ class Main:
 					label2 = ""
 					version = ""
 				else:
+					# set special case if self updating
 					heading = "download_url"
 					thumbnail = "%s%s/%sdefault.tbn" % ( self.REPO_URL, repo_url.replace( " ", "%20" ), item.replace( " ", "%20" ), )
 					version, label2, path = self._check_compatible( "%s%s/%sdefault.py" % ( self.REPO_URL, repo_url.replace( " ", "%20" ), item.replace( " ", "%20" ), ), self.REPO_URL, install, int( ioffset ), int( voffset ) )
@@ -206,8 +207,11 @@ class Main:
 					
 				if ( label2.startswith( "[COLOR=FF00FF00]" ) or label2.startswith( "[COLOR=FFFF0000]" ) ):
 					url = path
+				elif "SVN%20Repo%20Installer" in item:
+					url = '%s?self_update=True&%s="%s/%s"&repo=%s&install="%s"&ioffset=%s&voffset=%s' % ( sys.argv[ 0 ], heading, urllib.quote_plus( repo_url ), urllib.quote_plus( item ), repr( urllib.quote_plus( self.args.repo ) ), install, ioffset, voffset, )
 				else:
 					url = '%s?%s="%s/%s"&repo=%s&install="%s"&ioffset=%s&voffset=%s' % ( sys.argv[ 0 ], heading, urllib.quote_plus( repo_url ), urllib.quote_plus( item ), repr( urllib.quote_plus( self.args.repo ) ), install, ioffset, voffset, )
+
 				# set the default icon
 				icon = "DefaultFolder.png"
 				# create our listitem, fixing title
@@ -233,7 +237,7 @@ class Main:
 		return ok
 
 	def _check_readme( self, url ):
-		xbmc.log("[PLUGIN] %s url=%s" % (self.__class__.__name__, url), xbmc.LOGDEBUG)
+		xbmc.log("[PLUGIN] _check_readme() url=%s" % (url), xbmc.LOGDEBUG)
 		try:
 			# open url
 			usock = urllib.urlopen( url )
@@ -250,7 +254,7 @@ class Main:
 			return None
 
 	def _check_compatible( self, url, repo_url, install, ioffset, voffset ):
-		xbmc.log("[PLUGIN] %s url=%s" % (self.__class__.__name__, url), xbmc.LOGDEBUG)
+		xbmc.log("[PLUGIN] _check_compatible() url=%s" % (url), xbmc.LOGDEBUG)
 		try:
 			# get items svn info
 			ok = True
@@ -263,8 +267,8 @@ class Main:
 			usock.close()
 			# parse source for revision and version
 			version, revision = self._parse_version_revision( htmlSource )
-			# compatible
-			ok = self.XBMC_REVISION >= revision
+			# compatible - 0 == unknown, so allow it
+			ok = (self.XBMC_REVISION == 0 or self.XBMC_REVISION >= revision)
 		except:
 			pass
 
@@ -285,7 +289,7 @@ class Main:
 			htmlSource = open( path, "r" ).read()
 			# parse source for revision and version
 			ver, revision = self._parse_version_revision( htmlSource )
-			label2 = ( "[COLOR=FF00FFFF]%s[/COLOR]" % ( xbmc.getLocalizedString( 30016 ), ), "[COLOR=FF00FF00]%s[/COLOR]" % ( xbmc.getLocalizedString( 30011 ), ), )[ ver == version ]
+			label2 = ( "[COLOR=FF00FFFF]%s[/COLOR]" % ( xbmc.getLocalizedString( 30016 ), ), "[COLOR=FF00FF00]%s[/COLOR]" % ( xbmc.getLocalizedString( 30011 ), ), )[ ver >= version ]
 		else:
 			label2 = "[COLOR=FF00FFFF]%s[/COLOR]" % ( xbmc.getLocalizedString( 30021 ), )
 		return version, label2, path
@@ -305,7 +309,7 @@ class Main:
 		try:
 			# open url
 			url = self.REPO_URL + self.args.category
-			xbmc.log("[PLUGIN] %s url=%s" % (self.__class__.__name__, url), xbmc.LOGDEBUG)
+			xbmc.log("[PLUGIN] _get_items() url=%s" % (url), xbmc.LOGDEBUG)
 			usock = urllib.urlopen( url )
 			# read source
 			htmlSource = usock.read()
