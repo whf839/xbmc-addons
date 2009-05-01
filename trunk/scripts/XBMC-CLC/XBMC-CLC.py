@@ -30,9 +30,6 @@ class MyClass(xbmcgui.Window):
         sys.stdout = self.text
         sys.displayhook = self.text.display
 
-        self.g = globals()
-        self.l = locals()
-
         # Set up the GUI
         self.pic = xbmcgui.ControlImage(0,0,0,0, os.path.join(RootDir, "background.png"))   # (0,0,0,0) Makes it draw the image full size, starting at the top left
         self.addControl(self.pic)
@@ -208,7 +205,7 @@ class MyClass(xbmcgui.Window):
             if self.multiline:
                 command = command.replace("\n...", "\n")
             try:
-                exec(command, self.g, self.l)
+                exec(command, g, l)
             except Exception:
                 self.printError(sys.exc_info())
             self.multiline = False
