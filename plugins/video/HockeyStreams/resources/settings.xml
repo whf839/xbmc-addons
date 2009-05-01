@@ -1,0 +1,5 @@
+<settings>
+	<setting id="username" type="text" label="Username:" default="enter user"/>
+	<setting id="password" type="text" label="Password:" default="enter pass"/>
+	<setting id="archiveDate" type="text" label="Archive Date:" default="/04-30-2009/"/>
+</settings>
