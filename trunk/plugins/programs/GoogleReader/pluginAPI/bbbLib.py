@@ -5,6 +5,7 @@
 import os, sys, os.path, re
 from urllib import quote_plus, unquote_plus, urlretrieve, urlcleanup
 from string import find
+import codecs
 import xbmc, xbmcgui
 
 from pluginAPI.xbmcplugin_const import *
@@ -18,8 +19,8 @@ def log(msg, loglevel=xbmc.LOGDEBUG):
 	except: pass
 
 #################################################################################################################
-def logError():
-	log("ERROR: %s" % sys.exc_info()[ 1 ])
+def logError(msg=""):
+	log("ERROR: %s %s" % (msg, sys.exc_info()[ 1 ]))
 
 #################################################################################################################
 def messageOK(title='', line1='', line2='',line3=''):
@@ -39,13 +40,7 @@ def loadFileObj( filename, dataType={} ):
 		loadObj = eval( file_handle.read() )
 		file_handle.close()
 	except:
-		# reset to empty according to dataType
-		if isinstance(dataType, dict):
-			loadObj = {}
-		elif isinstance(dataType, list) or isinstance(dataType, tuple):
-			loadObj = ()
-		else:
-			loadObj = None
+		loadObj = None
 	return loadObj
 
 #################################################################################################################
@@ -95,7 +90,12 @@ def findImgSrc(text):
 #################################################################################################################
 def encodeText(text):
 	""" convert chars to make suitable for url """
-	return repr( quote_plus(text.replace("'", '"')) )
+#	return repr( quote_plus(text.replace("'", '"')) )
+	try:
+		return  repr( quote_plus(text.replace("'", '"').encode('utf-8')) )
+	except:
+		logError("encodeText()")
+	return repr(text.replace("'", '"'))
 
 #################################################################################################################
 def decodeText(text):
@@ -106,6 +106,40 @@ def decodeText(text):
 		return unquote_plus(text).decode("unicode-escape")
 	except:
 		return unquote_plus(text)
+
+
+def safe_unicode(obj, *args):
+	""" return the unicode representation of obj """
+	try:
+		return unicode(obj, *args)
+	except UnicodeDecodeError:
+		# obj is byte string
+		ascii_text = str(obj).encode('string_escape')
+		return unicode(ascii_text)
+
+def safe_str(obj):
+	""" return the byte string representation of obj """
+	try:
+		return str(obj)
+	except UnicodeEncodeError:
+		# obj is unicode
+		return unicode(obj).encode('unicode_escape')
+
+
+# ------------------------------------------------------------------------
+# Sample code below to illustrate their usage
+
+def write_unicode_to_file(filename, unicode_text):
+	"""
+	Write unicode_text to filename in UTF-8 encoding.
+	Parameter is expected to be unicode. But it will also tolerate byte string.
+	"""
+	fp = file(filename,'wb')
+	# workaround problem if caller gives byte string instead
+	unicode_text = safe_unicode(unicode_text)
+	utf8_text = unicode_text.encode('utf-8')
+	fp.write(utf8_text)
+	fp.close()
 
 ########################################################################################################################
 def get_thumbnail(thumbnail_url, allowDownload=True ):
