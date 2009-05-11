@@ -174,7 +174,7 @@ class Main:
 		try:
 			if os.path.isfile(self.TAGS_FILENAME):
 				tags = loadFileObj(self.TAGS_FILENAME, [])
-			else:
+			if not tags:
 				xmlObject = self.client.get_tag_list()
 				if xmlObject and xmlObject.startswith("ERROR"): raise "neterror", xmlObject
 				if xmlObject:
@@ -297,7 +297,7 @@ class Main:
 		try:
 			if os.path.isfile(self.SUBS_FILENAME):
 				data = loadFileObj(self.SUBS_FILENAME, [])
-			else:
+			if not data:
 				xmlObject = self.client.get_subscription_list()
 				if xmlObject and xmlObject.startswith("ERROR"): raise "neterror", xmlObject
 				if xmlObject:
