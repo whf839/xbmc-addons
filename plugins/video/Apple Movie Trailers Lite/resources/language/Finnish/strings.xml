@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings> <!--  Finnish 14.3.2009 -->
+<strings> <!--  Finnish 19.5.2009 -->
     <!-- settings labels -->
     <string id="30000">Kuvanlaatu</string>
     <string id="30001">Normaali</string>
@@ -11,9 +11,9 @@
     <string id="30030">Toistotapa</string>
     <string id="30031">Katso</string>
     <string id="30032">Lataa</string>
-    <string id="30033">Lataa &amp; Tallenna</string>
+    <string id="30033">Lataa ja tallenna</string>
     <string id="30040">Latauspolku</string>
-    <string id="30050">Postikoodi, kaupunki tai Valtio</string>
+    <string id="30050">Postinumero, kaupunki tai valtio</string>
     <string id="30060">Hakupaikka</string>
     <string id="30070">Näytä elokuvat</string>
     <string id="30071">Tänään</string>

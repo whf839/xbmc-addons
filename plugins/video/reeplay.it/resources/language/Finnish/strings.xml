@@ -11,7 +11,7 @@
 	<string id="105">Videoita ei löydy!</string>
 	<string id="106">Videon lataus epäonnistui!</string>
 	<string id="107">Sisäänkirjautumis tiedot puuttuvat[CR]Kirjaudutaanko sisään nyt?</string>
-	<string id="108">Kirjautuminen epäonnistui![CR]Tarkasta sisäänkirjautumis asetukset</string>
+	<string id="108">Kirjautuminen epäonnistui![CR]Tarkasta kirjautumisasetukset</string>
 	<string id="109">Videon toisto epäonnistui!</string>
 
 	<!-- General -->
@@ -45,7 +45,7 @@
 	<string id="30003">Käyttäjänimi:</string>
 	<string id="30004">Salasana:</string>
 	<string id="30005">Videoiden määrä sivua kohti:</string>
-	<string id="30006">Korkea videon kuvanlaatu</string>
+	<string id="30006">Videon korkea kuvanlaatu</string>
 	<string id="30007">Poista videot lopettaessa </string>
 	<string id="30008">Videot katsotaan</string>
 
@@ -61,7 +61,7 @@
 	<string id="1008">Polku:</string>
 	<string id="1009">Tiedosto:</string>
 	<string id="1010">Skripti päivitetty, voit käynnistää nyt uudelleen.</string>
-	<string id="1015">Lisäke on asennettu.</string>
+	<string id="1015">Lisäosa on asennettu.</string>
 	<string id="1016">Viimeistele asennus 'Lisää sijainti'-toiminnolla.</string>
 
 	<!-- Update error messages -->
