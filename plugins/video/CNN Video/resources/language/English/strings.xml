@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <!-- Category strings -->
+    <string id="30900">Main categories</string>
+    <string id="30901">iReports</string>
+    <string id="30902">On TV</string>
+    <string id="30903">Español</string>
+    <string id="30904">CNN Live</string>
+
+    <!-- Subcategory strings -->
+    <string id="30950">Most Popular</string>
+    <string id="30951">U.S.</string>
+    <string id="30952">World</string>
+    <string id="30953">Politics</string>
+    <string id="30954">Entertainment</string>
+    <string id="30955">Crime</string>
+    <string id="30956">Offbeat</string>
+    <string id="30957">Tech</string>
+    <string id="30958">Living</string>
+    <string id="30959">Health</string>
+    <string id="30960">Student News</string>
+    <string id="30961">Business</string>
+    <string id="30962">Sports</string>
+    <string id="30963">Weather</string>
+    <string id="30964">Latest</string>
+
+    <string id="30965">Newsiest Now</string>
+    <string id="30966">On CNN</string>
+    <string id="30967">Sound Off</string>
+    <string id="30968">Offbeat</string>
+    <string id="30969">CNN Show</string>
+
+    <string id="30970">Elecciones</string>
+    <string id="30971">Economía</string>
+    <string id="30972">Tu Dinero</string>
+    <string id="30973">Vida</string>
+    <string id="30974">Entretenimiento</string>
+    <string id="30975">Tecnología</string>
+    <string id="30976">Estados Unidos</string>
+    <string id="30977">América Latina</string>
+    <string id="30978">Mundo</string>
+
+    <string id="30980">American Morning</string>
+
+    <string id="30990">Stream #1</string>
+    <string id="30991">Stream #2</string>
+    <string id="30992">Stream #3</string>
+    <string id="30993">Stream #4</string>
+
+    <!-- compatible messages -->
+    <string id="30700">version</string>
+    <string id="30701">This version of %s requires an</string>
+    <string id="30702">XBMC revision of %s or greater to run.</string>
+    <string id="30703">Please update your XBMC.</string>
+
+    <!-- Plugin settings strings -->
+    <string id="30000">Use large thumbnail</string>
+</strings>
