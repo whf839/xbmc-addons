@@ -30,6 +30,7 @@ class _Parser:
     def __init__( self, xmlSource ):
         # list of _Info() objects
         self.videos = []
+        self.large_thumb = xbmcplugin.getSetting( "use_large_thumb" )
         self._get_videos( xmlSource )
 
     def _get_videos( self, xmlSource ):
@@ -52,7 +53,7 @@ class _Parser:
                             video_url = self.BASE_STREAMING_URL % ( video_id[ 7 : ], )
                             tease_txt = video_id
                         # use larger image file and date
-                        elif ( node.tagName == "image_url" or node.tagName == "splash_image_url" ):
+                        elif ( node.tagName == "image_url" or ( self.large_thumb and node.tagName == "splash_image_url" ) ):
                             image_url = node.firstChild.nodeValue
                             if ( not image_url.startswith( "http://" ) ):
                                 image_url = self.BASE_URL + image_url[ 1 : ]
@@ -94,7 +95,7 @@ class Main:
 
     def _parse_argv( self ):
         # call _Info() with our formatted argv to create the title and url constants
-        exec "self.args = _Info(%s)" % ( sys.argv[ 2 ].replace( "?", "" ).replace( "=", "='" ).replace( "&", "', " ) + "'", )
+        exec "self.args = _Info(%s)" % ( urllib.unquote_plus( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ) ), )
 
     def get_videos( self ):
         try:
@@ -126,7 +127,7 @@ class Main:
                 # only need to add label, icon and thumbnail, setInfo() and addSortMethod() takes care of label2
                 listitem=xbmcgui.ListItem( label=video.title, iconImage=icon, thumbnailImage=video.image_url )
                 # add the different infolabels we want to sort by
-                listitem.setInfo( type="Video", infoLabels={ "TVShowTitle": video.title, "Title": video.title, "Genre": unicode( self.args.title, "utf-8" ), "Duration": video.duration, "Date": video.date } )
+                listitem.setInfo( type="Video", infoLabels={ "TVShowTitle": video.title, "Title": video.title, "Genre": self.args.title, "Duration": video.duration, "Date": video.date } )
                 # set content
                 xbmcplugin.setContent( handle=int( sys.argv[ 1 ] ), content="tvshows" )
                 # add the item to the media list
@@ -143,7 +144,7 @@ class Main:
             xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_DATE )
             xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_VIDEO_RUNTIME )
             # set our plugin category
-            xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=unicode( self.args.title, "utf-8" ) )
+            xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title )
         return ok
 
     def _clear_asx_thumbnail( self, url ):
