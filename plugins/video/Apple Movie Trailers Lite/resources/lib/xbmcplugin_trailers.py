@@ -92,7 +92,7 @@ class _Parser:
                 trailer = re.findall( "<large[^>]*>(.*?)</large>", preview[ 0 ] )[ 0 ]
                 # replace with 1080p if quality == 1080p
                 if ( self.settings[ "quality" ] == "_1080p" ):
-                    trailer = trailer.replace( "a720p.", "h1080p." )
+                    trailer = trailer.replace( "a720p.m4v", "h1080p.mov" )
                 # size
                 size = long( re.findall( "filesize=\"([0-9]*)", preview[ 0 ] )[ 0 ] )
                 # add the item to our media list
