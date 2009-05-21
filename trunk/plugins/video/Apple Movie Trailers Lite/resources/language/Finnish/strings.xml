@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings> <!--  Finnish 19.5.2009 -->
+<strings> <!--  Finnish 21.5.2009 -->
     <!-- settings labels -->
     <string id="30000">Kuvanlaatu</string>
     <string id="30001">Normaali</string>
@@ -40,15 +40,15 @@
 
     <!-- showtimes -->
     <string id="30600">Esityksiä ei löydy!</string>
-    <string id="30601">Etsitään esityksiä, odota hetki...</string>
+    <string id="30601">Etsitään esityksiä, odota hetki ...</string>
     <string id="30602">Päivä</string>
     <string id="30603">Sijainti</string>
    
     <!-- PluginCategory infolabel -->
     <string id="30700">Normaali videot</string>
-    <string id="30701">480p videot</string>
-    <string id="30702">720p videot</string>
-    <string id="30703">1080p videot</string>
+    <string id="30701">480p-videot</string>
+    <string id="30702">720p-videot</string>
+    <string id="30703">1080p-videot</string>
 
     <!-- context menu labels -->
     <string id="30900">Teatteriesitykset</string>
