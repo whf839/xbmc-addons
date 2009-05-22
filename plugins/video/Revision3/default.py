@@ -1,9 +1,9 @@
-# XBMC Video Plugin
-# Revision3 - Internet Television
-# Date: 01/10/08
-# ver. 1.02
-# Author: stacked < http://xbmc.org/forum/member.php?u=26908 >
-# Changelog & More Info: http://xbmc.org/forum/showthread.php?t=42458
+
+__scriptname__ = "Revision3"
+__author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
+__svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Revision3"
+__date__ = '22-05-2009'
+__version__ = "r999"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 
@@ -16,15 +16,15 @@ def showCategoriesA():
 		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
-		p=re.compile('<div class="page">(.+?)<h3 class="archive">', re.DOTALL)
+		p=re.compile('<ul id="shows">(.+?)<div id="footer" class="clear">', re.DOTALL)
 		match=p.findall(a)
 		o=re.compile('<h3><a href="(.+?)">(.+?)</a></h3>')
 		data=o.findall(match[0])
-		q=re.compile('img src="(.+?)"')
+		q=re.compile('class="thumbnail"><img src="(.+?)" /></a>')
 		thumb=q.findall(match[0])
 		x=0
 		for url, name in data:
-			url=url + '/feed/' + quality
+			url='http://revision3.com' + url + '/feed/' + quality
 			li=xbmcgui.ListItem(name, iconImage=thumb[x], thumbnailImage=thumb[x])
 			u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
@@ -54,6 +54,7 @@ def showListA(url):
 			name='Episode '+date+' - '+name
 			name = str(int(x+1))+'. '+name
 			url=URLS[x]
+			print url
 			thumb=thumbs[x]
 			li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
 			li.setInfo( type="Video", infoLabels={ "Title": name } )
@@ -113,14 +114,15 @@ def showCategories():
 		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
-		p=re.compile('<div class="page">(.+?)<h3 class="archive">', re.DOTALL)
+		p=re.compile('<ul id="shows">(.+?)<div id="footer" class="clear">', re.DOTALL)
 		match=p.findall(a)
 		o=re.compile('<h3><a href="(.+?)">(.+?)</a></h3>')
 		data=o.findall(match[0])
-		q=re.compile('img src="(.+?)"')
+		q=re.compile('class="thumbnail"><img src="(.+?)" /></a>')
 		thumb=q.findall(match[0])
 		x=0
 		for url, name in data:
+			url='http://revision3.com' + url
 			li=xbmcgui.ListItem(name, iconImage=thumb[x], thumbnailImage=thumb[x])
 			u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
@@ -148,23 +150,25 @@ def newShow(url):
 			
 def showList(url):
 		newShow(url)
-		url=url+'/page/all/#episodes'
+		url=url+'/episodes'
 		req = urllib2.Request(url)
 		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5')
 		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
-		p=re.compile('<div class="pagination">(.+?)<!-- end pagination_bottom -->', re.DOTALL)
+		p=re.compile('<!-- <span class="label">Page: </span> -->(.+?)<!-- <span class="label">Page: </span> -->', re.DOTALL)
 		match=p.findall(a)
-		o=re.compile('<p><a href="(.+?)">(.+?)</a><br />')
+		o=re.compile('<a class="thumbnail" href="(.+?)"><img class="thumbnail" src="(.+?)"')
 		data=o.findall(match[0])
-		q=re.compile('class="watch_thumb"><img src="(.+?)"')
-		thumbs=q.findall(match[0])
+		q=re.compile('Episode (.+?)<br />  (.+?)</a></p>')
+		data2=q.findall(match[0])
 		x=1
 		y=0
-		for url, name in data:
-			thumb=thumbs[y]
-			name = str(int(x+1))+'. '+name
+		for url, thumb in data:
+			url='http://revision3.com'+url
+			print url
+			name = 'Episode ' + data2[y][0] + ': ' + data2[y][1]
+			name = str(int(x))+'. '+name
 			li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
 			li.setInfo( type="Video", infoLabels={ "Title": name } )
 			u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
@@ -182,8 +186,10 @@ def showList2(url):
 	f=urllib2.urlopen(req)
 	a=f.read()
 	f.close()
-	p=re.compile('href="(.+?)" title="Download"><img')
-	match=p.findall(a)
+	p=re.compile('<div id="episode-sidebar-download">(.+?)<div id="episode-sidebar-subscribe"', re.DOTALL)
+	n=re.compile('<a href="(.+?)">')
+	match1=p.findall(a)
+	match=n.findall(match1[0])
 	if len(match) == 8:
 		quality=int(quality)+1
 	else:
