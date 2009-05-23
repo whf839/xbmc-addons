@@ -34,7 +34,7 @@ class Main:
         self.settings = {}
         self.settings[ "username" ] = xbmcplugin.getSetting( "username" )
         self.settings[ "include_racy" ] = ( "exclude", "include", )[ xbmcplugin.getSetting( "include_racy" ) == "true" ]
-        self.settings[ "perpage" ] = ( 10, 15, 20, 25, 30, 40, 50, 75, 100, )[ int( xbmcplugin.getSetting( "perpage" ) ) ]
+        self.settings[ "perpage" ] = ( 10, 15, 20, 25, 30, 40, 50, )[ int( xbmcplugin.getSetting( "perpage" ) ) ]
         self.settings[ "feed_time" ] = ( "all_time", "today", "this_week", "this_month", )[ int( xbmcplugin.getSetting( "feed_time" ) ) ]
         self.settings[ "region_id" ] = ( "", "AU", "BR", "CA", "FR", "DE", "GB", "NL", "HK", "IE", "IT", "JP", "MX", "NZ", "PL", "RU", "KR", "ES", "TW", "US", )[ int( xbmcplugin.getSetting( "region_id" ) ) ]
         self.settings[ "saved_searches" ] = ( 10, 20, 30, 40, )[ int( xbmcplugin.getSetting( "saved_searches" ) ) ]
