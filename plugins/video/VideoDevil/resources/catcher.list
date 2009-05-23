@@ -54,7 +54,7 @@ action=unquote
 quality=standard
 ########################################################
 title=kcoolonline.com
-target=<a href='(.+?\.flv)
+target=<a href='(.+?)' title='Download Flv Here'>
 url=http://www.kcoolonline.com/index.php?url=%s
 quality=standard
 ########################################################
@@ -66,12 +66,13 @@ header=Referer|http://www.videodown.net/?op=18
 quality=standard
 ########################################################
 title=downloadpornhubvideos.com
-target='/dl_videos/(http.+?\.flv)'\);">Click Here to Download Video
+target='(/dl_videos/http.+?\.flv).+?'\);">Click Here to Download Video
 url=http://www.downloadpornhubvideos.com/?v=%s
+build=http://www.downloadpornhubvideos.com%s
 quality=standard
 ########################################################
 title=downloadshufunivideos.com
-target='/dl_videos/(http.+?\.flv)'\);">Click Here to Download Video
+target='/dl_videos/(http.+?\.flv).+?'\);">Click Here to Download Video
 url=http://www.downloadshufunivideos.com/?v=%s
 quality=standard
 ########################################################
@@ -85,13 +86,24 @@ quality=standard
 title=tube8.com
 target=so.addVariable\('videoUrl','([^']+)'\)
 url=%s
-extension=flv
+quality=standard
+########################################################
+title=xclips.ws
+target=var video_id = "(.+)"[;]
+url=%s
+build=http://www.xclips.ws/media/videos/flv/%s.flv
 quality=standard
 ########################################################
 title=boysfood.com
-target=<a href="(http[^"]+)"[^>]+>.......Download this video
+target=href="([^"]+wmv)">GET</a></td>
 url=%s
 extension=wmv
+quality=standard
+########################################################
+title=clipa.tv
+target=<a href="([/]get-video.flv[?]uri=.+?)" class="download"
+url=http://en.clipa.tv/?uri=%s
+build=http://en.clipa.tv%s
 quality=standard
 ########################################################
 #title=grabit.to
