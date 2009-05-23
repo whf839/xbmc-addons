@@ -50,7 +50,7 @@ director=VideoDevil
 icon=video.devil.image|pacoporn.png
 url=pacoporn.com.cfg
 ########################################################
-title=Shufuni
+title=Shufuni (catcher still broken)
 type=rss
 genre=Shufuni
 director=VideoDevil
@@ -70,6 +70,13 @@ genre=Tube8
 director=VideoDevil
 icon=video.devil.image|tube8.png
 url=tube8.com.cfg
+########################################################
+title=XClips
+type=rss
+genre=XClips
+director=VideoDevil
+icon=video.devil.image|xclips.png
+url=xclips.ws.cfg
 ########################################################
 #title=Metacafe
 #type=rss
