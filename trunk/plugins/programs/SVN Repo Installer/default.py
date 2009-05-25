@@ -12,7 +12,7 @@ __author__ = "nuka1195/BigBellyBilly"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/programs/SVN%20Repo%20Installer"
 __credits__ = "Team XBMC"
-__version__ = "1.7.2"
+__version__ = "1.7.2a"
 __svn_revision__ = "$Revision$"
 __XBMC_Revision__ = "19001"
 
@@ -41,7 +41,6 @@ def _check_compatible():
 
 
 if ( __name__ == "__main__" ):
-    print "sys.argv=", sys.argv
     if ( not sys.argv[ 2 ] ):
         # check for compatibility, only need to check this once, continue if ok
         if ( _check_compatible() ):
@@ -62,5 +61,4 @@ if ( __name__ == "__main__" ):
     try:
         plugin.Main()
     except:
-        import traceback
-        traceback.print_exc()
+        pass
