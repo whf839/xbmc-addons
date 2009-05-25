@@ -99,7 +99,7 @@ class Main:
     def _get_repos( self ):
         try:
             # we fetch the log here only at start of plugin
-#            import xbmcplugin_logviewer
+            import xbmcplugin_logviewer
             # add the check for updates item to the media list
             url = "%s?category='updates'" % ( sys.argv[ 0 ], )
             # set the default icon
@@ -131,8 +131,8 @@ class Main:
                     listitem.setInfo( type="Video", infoLabels={ "Title": repo } )
                     # grab the log for this repo
                     if ( "(tagged)" not in repo ):
-#                        parser = xbmcplugin_logviewer.ChangelogParser( repo, parse=False )
-#                        parser.fetch_changelog()
+                        parser = xbmcplugin_logviewer.ChangelogParser( repo, parse=False )
+                        parser.fetch_changelog()
                         cm += [ ( xbmc.getLocalizedString( 30600 ), "XBMC.RunPlugin(%s?showlog=True&repo=%s&category=None&revision=None&parse=True)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( repo ) ), ), ) ]
                     cm += [ ( xbmc.getLocalizedString( 30610 ), "XBMC.RunPlugin(%s?showreadme=True&repo=None&readme=None)" % ( sys.argv[ 0 ], ), ) ]
                     # add context menu items
