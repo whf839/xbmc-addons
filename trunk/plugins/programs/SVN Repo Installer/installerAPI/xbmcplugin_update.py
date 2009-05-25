@@ -39,6 +39,8 @@ class Main:
 	def __init__( self ):
 		xbmc.log("[PLUGIN] %s __init__!" % (self.__class__), xbmc.LOGDEBUG )
 		ok = False
+		# set our plugin category
+		xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=xbmc.getLocalizedString( 30500 ) )
 
 		# load settings
 		self.showNoSVN = bool(xbmcplugin.getSetting( "show_no_svn" ) == "true")
