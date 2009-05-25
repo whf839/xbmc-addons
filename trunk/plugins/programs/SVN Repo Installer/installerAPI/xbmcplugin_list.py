@@ -276,11 +276,9 @@ class Main:
         # base path
         drive = xbmc.translatePath( "/".join( [ "special://home", install ] ) )
         if ( voffset != 0 ):
-            parts = url.split( "/" )
+            items[ voffset - 1 ] = "%s - %s" % ( items[ voffset - 1 ].replace( "%20", " " ), items[ voffset ], )
             del items[ voffset ]
-            items[ voffset - 1 ] = parts[ voffset - 1 ].replace( "%20", " " )
         path = os.path.join( drive, os.path.sep.join( items[ ioffset : ] ).replace( "%20", " " ) )
-
         # if compatible, check for existing install
         if ( not ok ):
             return version, "[COLOR=FFFF0000]%s[/COLOR]" % ( xbmc.getLocalizedString( 30015 ), ), path
