@@ -81,6 +81,14 @@ class Main:
         # send notification we're finished, successfully or unsuccessfully
         xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=ok )
 
+    def _clear_log( self, repo ):
+        base_path = os.path.join( xbmc.translatePath( "special://profile/" ), "plugin_data", "programs", os.path.basename( os.getcwd() ) )
+        for page in range( 3 ):
+            path = os.path.join( base_path, "%s%d.txt" % ( repo, page, ) )
+            # remove log file
+            if ( os.path.isfile( path ) ):
+                os.remove( path )
+
     def _get_xbmc_revision( self ):
         try:
             self.XBMC_REVISION = re.search("r([0-9]+)",  xbmc.getInfoLabel( "System.BuildVersion" ), re.IGNORECASE).group(1)
@@ -99,7 +107,7 @@ class Main:
     def _get_repos( self ):
         try:
             # we fetch the log here only at start of plugin
-            import xbmcplugin_logviewer
+            #import xbmcplugin_logviewer
             # add the check for updates item to the media list
             url = "%s?category='updates'" % ( sys.argv[ 0 ], )
             # set the default icon
@@ -131,9 +139,13 @@ class Main:
                     listitem.setInfo( type="Video", infoLabels={ "Title": repo } )
                     # grab the log for this repo
                     if ( "(tagged)" not in repo ):
-                        parser = xbmcplugin_logviewer.ChangelogParser( repo, parse=False )
-                        parser.fetch_changelog()
+                        #parser = xbmcplugin_logviewer.ChangelogParser( repo, parse=False )
+                        #parser.fetch_changelog()
+                        # clear logs on first run
+                        self._clear_log( repo )
+                        # add view log context menu item
                         cm += [ ( xbmc.getLocalizedString( 30600 ), "XBMC.RunPlugin(%s?showlog=True&repo=%s&category=None&revision=None&parse=True)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( repo ) ), ), ) ]
+                    # add view readme context menu item
                     cm += [ ( xbmc.getLocalizedString( 30610 ), "XBMC.RunPlugin(%s?showreadme=True&repo=None&readme=None)" % ( sys.argv[ 0 ], ), ) ]
                     # add context menu items
                     listitem.addContextMenuItems( cm, replaceItems=True )
