@@ -66,14 +66,14 @@ class Main:
 
     def __init__( self ):
         xbmc.log("[PLUGIN] %s __init__!" % (self.__class__), xbmc.LOGDEBUG)
+        # parse sys.argv for our current url
+        self._parse_argv()
         # if this is first run list all the repos
         if ( sys.argv[ 2 ] == "" ):
             ok = self._get_repos()
         else:
             # get XBMC revision
             self._get_xbmc_revision()
-            # parse sys.argv for our current url
-            self._parse_argv()
             # get the repository info
             self._get_repo_info()
             # get the list
@@ -89,8 +89,12 @@ class Main:
         xbmc.log("XBMC_REVISION-%s" % self.XBMC_REVISION, xbmc.LOGDEBUG)
 
     def _parse_argv( self ):
-        # call _Info() with our formatted argv to create the self.args object
-        exec "self.args = _Info(%s)" % ( urllib.unquote_plus( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ) ), )
+        # if first run set title to blank
+        if ( sys.argv[ 2 ] == "" ):
+            self.args = _Info( title="" )
+        else:
+            # call _Info() with our formatted argv to create the self.args object
+            exec "self.args = _Info(%s)" % ( urllib.unquote_plus( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ) ), )
 
     def _get_repos( self ):
         try:
@@ -118,7 +122,7 @@ class Main:
                 cm = []
                 if ( os.path.isdir( os.path.join( os.getcwd(), "resources", "repositories", repo ) ) ):
                     # create the url
-                    url = "%s?category='root'&repo=%s" % ( sys.argv[ 0 ], repr( urllib.quote_plus( repo ) ) )
+                    url = "%s?category='root'&repo=%s&title=%s" % ( sys.argv[ 0 ], repr( urllib.quote_plus( repo ) ), repr( urllib.quote_plus( repo ) ), )
                     # set thumbnail
                     thumbnail = os.path.join( os.getcwd(), "resources", "media", "svn_repo.png" )
                     # create our listitem, fixing title
@@ -208,9 +212,9 @@ class Main:
                 if ( label2.startswith( "[COLOR=FF00FF00]" ) or label2.startswith( "[COLOR=FFFF0000]" ) ):
                     url = path
                 elif "SVN%20Repo%20Installer" in item:
-                    url = '%s?self_update=True&%s="%s/%s"&repo=%s&install="%s"&ioffset=%s&voffset=%s' % ( sys.argv[ 0 ], heading, urllib.quote_plus( repo_url ), urllib.quote_plus( item ), repr( urllib.quote_plus( self.args.repo ) ), install, ioffset, voffset, )
+                    url = '%s?self_update=True&%s="%s/%s"&repo=%s&install="%s"&ioffset=%s&voffset=%s&title=%s' % ( sys.argv[ 0 ], heading, urllib.quote_plus( repo_url ), urllib.quote_plus( item ), repr( urllib.quote_plus( self.args.repo ) ), install, ioffset, voffset, repr( urllib.quote_plus( self.args.repo ) ), )
                 else:
-                    url = '%s?%s="%s/%s"&repo=%s&install="%s"&ioffset=%s&voffset=%s' % ( sys.argv[ 0 ], heading, urllib.quote_plus( repo_url ), urllib.quote_plus( item ), repr( urllib.quote_plus( self.args.repo ) ), install, ioffset, voffset, )
+                    url = '%s?%s="%s/%s"&repo=%s&install="%s"&ioffset=%s&voffset=%s&title=%s' % ( sys.argv[ 0 ], heading, urllib.quote_plus( repo_url ), urllib.quote_plus( item ), repr( urllib.quote_plus( self.args.repo ) ), install, ioffset, voffset, repr( urllib.quote_plus( self.args.repo ) ), )
                 # set the default icon
                 icon = "DefaultFolder.png"
                 # create our listitem, fixing title
@@ -232,6 +236,9 @@ class Main:
             print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             ok = False
         if ( ok ):
+            # set our plugin category
+            xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title )
+            # sort by genre so all update status' are grouped
             xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_GENRE )
         return ok
 
