@@ -37,7 +37,7 @@ class Main:
 	INSTALLED_ITEMS_FILENAME = os.path.join( os.getcwd(), "installed_items.dat" )
 
 	def __init__( self ):
-		xbmc.log("[PLUGIN] %s __init__!" % (self.__class__))
+		xbmc.log("[PLUGIN] %s __init__!" % (self.__class__), xbmc.LOGDEBUG )
 		ok = False
 
 		# load settings
@@ -80,7 +80,7 @@ class Main:
 			repos = os.listdir( os.path.join( os.getcwd(), "resources", "repositories" ) )
 			# enumerate through the list of categories and add the item to the media list
 			for repo in repos:
-				if ( os.path.isdir( os.path.join( os.getcwd(), "resources", "repositories", repo ) ) and "tagged" not in repo ):
+				if ( os.path.isdir( os.path.join( os.getcwd(), "resources", "repositories", repo ) ) and "(tagged)" not in repo ):
 					repo_list += [ repo ]
 			return repo_list
 
