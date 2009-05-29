@@ -1,0 +1,8 @@
+Date: 29 May 2009
+v1.0.1
+Moved to xbmc-addons SVN from xbmc-scripting
+Includes Finnish and Swedish languages
+----
+Date: 15 May 2009
+v1.0
+Commited
