@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings><!--  Finnish 1.6.2009 -->
+    <string id="30000">Käytä DVD Player-soitinta</string>
+    <string id="30001">Lataa ja toista</string>
+    <string id="30002">Latauspolku</string>
+    <string id="30003">Kysy latauksesta ennen toistoa</string>
+    <string id="30004">Kuvanlaatu (Vaatii lisäosan uudellenkäynnistämisen)</string>
+    <string id="30005">quicktime (hd)</string>
+    <string id="30006">quicktime (suuri)</string>
+    <string id="30007">quicktime (pieni)</string>
+    <string id="30008">wmv (suuri)</string>
+    <string id="30009">wmv (pieni)</string>
+    <string id="30010">xvid (suuri)</string>
+    <string id="30011">xvid (pieni)</string>
+    <string id="30012">Näytä kaikki jaksot (Vaatii lisäosan uudellenkäynnistämisen)</string>
+</strings>
