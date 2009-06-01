@@ -13,7 +13,7 @@ __author__ = "Nuka1195"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/scripts/TWC%20Supplemental"
 __credits__ = "Team XBMC"
-__version__ = "1.5.5"
+__version__ = "1.5.6"
 __svn_revision__ = 0
 
 xbmc.log( "[SCRIPT] '%s: version %s' initialized!" % ( __scriptname__, __version__, ), xbmc.LOGNOTICE )

@@ -468,7 +468,7 @@ class GUI( module ):
             self.timer.cancel()
         # TODO: remove this if dialogs get properties
         # we call this as dialogs do not support properties
-        self.CURRENT_WINDOW.clearProperties()
+        #self.CURRENT_WINDOW.clearProperties()
         # close dialog
         self.close()
 
