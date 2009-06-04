@@ -40,11 +40,12 @@ class GUI( xbmcgui.WindowXMLDialog ):
         exec "self.args = _Info(%s)" % ( unquote_plus( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ) ), )
 
     def _show_dialog( self ):
-        self._set_title_info( self.args.title, "%s: %s" % ( xbmc.getLocalizedString( 30603 ), self.settings[ "local" ] ), "%s:" % ( xbmc.getLocalizedString(30602 ), ), "" )
+        self._set_title_info( self.args.title, "", "%s:" % ( xbmc.getLocalizedString(30602 ), ), "" )
 
     def _set_title_info( self, title="", location="", date="", phone="" ):
         self.clearList()
         self.setProperty( "Title", title )
+        self.setProperty( "Locale", self.settings[ "local" ] )
         self.setProperty( "Location", location )
         self.setProperty( "Date", date )
         self.setProperty( "Phone", phone )
