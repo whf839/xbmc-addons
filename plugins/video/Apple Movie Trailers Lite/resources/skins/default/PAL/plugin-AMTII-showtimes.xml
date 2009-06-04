@@ -35,7 +35,7 @@
 			<align>left</align>
 			<font>font10</font>
 			<textcolor>DDced8da</textcolor>
-            <label>$INFO[Container(50).Property(Location)]</label>
+            <label>$INFO[Container(50).Property(Location)]$INFO[Container(50).Property(Phone), - ,]</label>
 		</control>
 		<!-- ** Required ** Do not change <description> or <type> -->
 		<control type="label">
@@ -57,7 +57,7 @@
 			<align>right</align>
 			<font>font10</font>
 			<textcolor>DDced8da</textcolor>
-            <label>$INFO[Container(50).Property(Phone)]</label>
+            <label>$INFO[Container(50).Property(Locale)]</label>
 		</control>
 		<!-- ** Required ** Do not change <id> or <type> -->
 		<control type="list" id="50">
