@@ -2,11 +2,13 @@
 __scriptname__ = "G4TV"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/G4TV"
-__date__ = '2009-06-03'
-__version__ = "1.1"
+__date__ = '2009-06-04'
+__version__ = "1.2"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 THUMBNAIL_PATH = os.path.join( os.getcwd(), "thumbnails" )
+HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.10) Gecko/2009042316 Firefox/3.0.10'
+# THUMBNAIL_PATH = os.path.join(os.getcwd().replace( ";", "" ),'resources','media')
 
 def showRoot():	
 		li=xbmcgui.ListItem("TV Shows")
@@ -15,6 +17,61 @@ def showRoot():
 		li3=xbmcgui.ListItem("G4 Podcasts")
 		u3=sys.argv[0]+"?mode=6"
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u3,li3,True)
+		li3=xbmcgui.ListItem("G4 Video Index")
+		u3=sys.argv[0]+"?mode=10"
+		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u3,li3,True)
+
+def videoIn(name,url):
+	url='http://e3.g4tv.com/videos/index.html'
+	req = urllib2.Request(url)
+	req.add_header('User-Agent', HEADER)
+	f=urllib2.urlopen(req)
+	a=f.read()
+	f.close()
+	viewstate=re.compile('<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="(.+?)" />').findall(a)
+	validation=re.compile('<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="(.+?)" />').findall(a)
+	drop='-1'
+	# if page > 1:
+		# results = 'ctl00$ctl00$objContentPlaceholder$objContentPlaceholder$grdSearchResults$ctl103$btnNext'
+		# data = urllib.urlencode([('__EVENTTARGET', results),('__EVENTARGUMENT', ''),('__VIEWSTATE', viewstate[0]),('__EVENTVALIDATION', validation[0]),('ctl00$ctl00$objContentPlaceholder$objContentPlaceholder$ddlCategoryDropDown', drop),('ctl00$ctl00$objContentPlaceholder$objContentPlaceholder$objSearchWordsTextBox', ''),('ctl00$ctl00$objContentPlaceholder$objContentPlaceholder$objSearchButton', ''),('ctl00$ctl00$objContentPlaceholder$objContentPlaceholder$inpSortExpression', '')])
+	# else:
+	results = 'ctl00$ctl00$objContentPlaceholder$objContentPlaceholder$btnResultsCount4'
+	data = urllib.urlencode([('__EVENTTARGET', results),('__EVENTARGUMENT', ''),('__VIEWSTATE', viewstate[0]),('__EVENTVALIDATION', validation[0]),('ctl00$ctl00$objContentPlaceholder$objContentPlaceholder$ddlCategoryDropDown', drop),('ctl00$ctl00$objContentPlaceholder$objContentPlaceholder$objSearchWordsTextBox', ''),('ctl00$ctl00$objContentPlaceholder$objContentPlaceholder$objSearchButton', ''),('ctl00$ctl00$objContentPlaceholder$objContentPlaceholder$inpSortExpression', '')])
+	req = urllib2.Request(url)
+	req.add_header('User-Agent', HEADER)
+	f=urllib2.urlopen(req, data)
+	a=f.read()
+	f.close()
+	data=re.compile('lnkItemTitle" href="javascript:openPile\(\'(.+?)\'\);">(.+?)</a></span>').findall(a)
+	thumbs=re.compile('<img src="(.+?)" id="ctl00_ctl00_objContentPlaceholder').findall(a)
+	disc=re.compile('lblItemDescription">(.+?)</span>').findall(a)
+	show=re.compile('lblShow">(.+?)</span>').findall(a)
+	x=0
+	for vid,title in data:
+		name = str(int(x+1))+'. '+show[x]+': '+title+' - '+disc[x]
+		url='http://e3.g4tv.com/xml/broadbandplayerservice.asmx/GetEmbeddedVideo?videoKey='+vid+'&playLargeVideo=true&excludedVideoKeys=&playlistType=normal&maxPlaylistSize=0'
+		li=xbmcgui.ListItem(name, iconImage=thumbs[x], thumbnailImage=thumbs[x])
+		li.setInfo( type="Video", infoLabels={ "Title": title, "Plot":disc[x] } )
+		u=sys.argv[0]+"?mode=11&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
+		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
+		x=x+1
+	# if len(data) >= 100:	
+		# li=xbmcgui.ListItem("Next Page",iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'next.png'))
+		# u=sys.argv[0]+"?mode=10&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)+"&page="+str(int(page)+1)
+		# xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+
+def getID(name,url):
+	req = urllib2.Request(url)
+	req.add_header('User-Agent', HEADER)
+	f=urllib2.urlopen(req)
+	a=f.read()
+	f.close()
+	p=re.compile('&amp;r=(.+?)</FilePath>')
+	data=p.findall(a)
+	for flv in data:
+		url=flv.replace('%3a', ':')
+		url=url.replace('%2f', '/')
+	showList2(url)
 
 def showXPLAY():
 	links=[
@@ -31,7 +88,9 @@ def showXPLAY():
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
 def newShowX(url):
-		f=urllib2.urlopen(url)
+		req = urllib2.Request(url)
+		req.add_header('User-Agent', HEADER)
+		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
 		p=re.compile('<div class="thumb">\r\n        <a href="(.+?)" title="(.+?)" rel="(.+?)">\r\n            <img src="(.+?)" alt="(.+?)" />\r\n            <span class="icn-play">', re.DOTALL).findall(a)
@@ -46,7 +105,9 @@ def newShowX(url):
 
 def showCategories():
 	url='http://e3.g4tv.com/attackoftheshow/segments.aspx'
-	f=urllib2.urlopen(url)
+	req = urllib2.Request(url)
+	req.add_header('User-Agent', HEADER)
+	f=urllib2.urlopen(req)
 	a=f.read()
 	f.close()
 	p=re.compile('class="thumbnail" href="(.+?)"><img src="(.+?)"')
@@ -280,6 +341,10 @@ elif mode==8:
 	showList2(url)
 elif mode==9:
 	showCategories()
+elif mode==10:
+	videoIn(name,url)
+elif mode==11:
+	getID(name,url)
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
 	
