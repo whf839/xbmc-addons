@@ -231,7 +231,7 @@ class Main:
         for day, forecast in enumerate( forecasts ):
             self.WEATHER_WINDOW.setProperty( "36Hour.%d.OutlookIcon" % ( day + 1, ), forecast[ 1 ] )
             self.WEATHER_WINDOW.setProperty( "36Hour.%d.Outlook" % ( day + 1, ), forecast[ 2 ] )
-            self.WEATHER_WINDOW.setProperty( "36Hour.%d.TemperatureColor" % ( day + 1, ), "[COLOR=%s]" % ( forecast[ 3 ].lower(), ) )
+            self.WEATHER_WINDOW.setProperty( "36Hour.%d.TemperatureColor" % ( day + 1, ), forecast[ 3 ].lower() )
             self.WEATHER_WINDOW.setProperty( "36Hour.%d.TemperatureHeading" % ( day + 1, ), ( xbmc.getLocalizedString( 393 ), xbmc.getLocalizedString( 391 ), )[ forecast[ 3 ] == "Low" ] )
             self.WEATHER_WINDOW.setProperty( "36Hour.%d.Temperature" % ( day + 1, ), forecast[ 4 ] )
             self.WEATHER_WINDOW.setProperty( "36Hour.%d.Precipitation" % ( day + 1, ), forecast[ 6 ] )
@@ -296,11 +296,9 @@ class Main:
             self.WEATHER_WINDOW.setProperty( "Weekend.%d.ObservedRecordHighTemperature" % ( day + 1, ), forecast[ 29 ] )
             self.WEATHER_WINDOW.setProperty( "Weekend.%d.ObservedRecordLowTemperature" % ( day + 1, ), forecast[ 31 ] )
             self.WEATHER_WINDOW.setProperty( "Weekend.%d.DepartureHigh" % ( day + 1, ), forecast[ 33 ] )
-            self.WEATHER_WINDOW.setProperty( "Weekend.%d.DepartureHighColorBegin" % ( day + 1, ), ( "[COLOR=low]", "[COLOR=high]", "", )[ ( len( forecast[ 33 ] ) and forecast[ 33 ][ 0 ] == "+" ) + ( forecast[ 33 ] == "+0" ) ] )
-            self.WEATHER_WINDOW.setProperty( "Weekend.%d.DepartureHighColorEnd" % ( day + 1, ), ( "", "[/COLOR]", )[ len( forecast[ 33 ] ) and forecast[ 33 ] != "+0" ] )
+            self.WEATHER_WINDOW.setProperty( "Weekend.%d.DepartureHighColor" % ( day + 1, ), ( "low", "high", "default", )[ ( len( forecast[ 33 ] ) and forecast[ 33 ][ 0 ] == "+" ) + ( forecast[ 33 ] == "+0" ) ] )
             self.WEATHER_WINDOW.setProperty( "Weekend.%d.DepartureLow" % ( day + 1, ), forecast[ 34 ] )
-            self.WEATHER_WINDOW.setProperty( "Weekend.%d.DepartureLowColorBegin" % ( day + 1, ), ( "[COLOR=low]", "[COLOR=high]", "", )[ ( len( forecast[ 34 ] ) and forecast[ 34 ][ 0 ] == "+" ) + ( forecast[ 34 ] == "+0" ) ] )
-            self.WEATHER_WINDOW.setProperty( "Weekend.%d.DepartureLowColorEnd" % ( day + 1, ), ( "", "[/COLOR]", )[ len( forecast[ 34 ] ) and forecast[ 34 ] != "+0" ] )
+            self.WEATHER_WINDOW.setProperty( "Weekend.%d.DepartureLowColor" % ( day + 1, ), ( "low", "high", "default", )[ ( len( forecast[ 34 ] ) and forecast[ 34 ][ 0 ] == "+" ) + ( forecast[ 34 ] == "+0" ) ] )
             # do this last so skin's visibilty works better
             self.WEATHER_WINDOW.setProperty( "Weekend.%d.Date" % ( day + 1, ), forecast[ 1 ] )
 
