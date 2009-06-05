@@ -33,7 +33,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
     def onInit( self ):
         self._show_dialog()
-        self._get_showtimes()
+        self._get_showtimes( movie=self.args.title, day=self.settings[ "day" ] )
 
     def _parse_argv( self ):
         # call _Info() with our formatted argv to create the self.args object
@@ -62,8 +62,6 @@ class GUI( xbmcgui.WindowXMLDialog ):
         self.ShowtimesFetcher = showtimesScraper.ShowtimesFetcher( self.settings[ "local" ] )
 
     def _get_showtimes( self, movie=None, day=0 ):
-        if ( movie is None ):
-            movie = self.args.title
         self.movie_showtimes = self.ShowtimesFetcher.get_showtimes( movie, day )
         if ( self.movie_showtimes[ "date" ] is None ):
             date = xbmc.getLocalizedString( 30600 )

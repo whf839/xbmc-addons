@@ -147,6 +147,8 @@ class _Parser:
                 items += [ ( xbmc.getLocalizedString( 30910 ), "XBMC.RunPlugin(%s?Download_Trailer=True&trailer_url=%s)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "trailer" ] ) ), ), ) ]
             # add the movie information item
             items += [ ( xbmc.getLocalizedString( 30930 ), "XBMC.Action(Info)", ) ]
+            # add settings menu item
+            items += [ ( xbmc.getLocalizedString( 1045 ), "XBMC.RunPlugin(%s?OpenSettings)" % ( sys.argv[ 0 ], ) ) ]
             # add items to listitem with replaceItems = True so only ours show
             dirItem.listitem.addContextMenuItems( items, replaceItems=True )
             # add the item to the media list
@@ -179,7 +181,7 @@ class Main:
         self.MediaWindow.end( self.get_videos() )
 
     def _set_buttons( self ):
-        self.MediaWindow.setButton( 30202, onclick="RunPlugin(%s?OpenSettings)" % ( sys.argv[ 0 ], ), bId=2 )
+        self.MediaWindow.setButton( 1045, onclick="XBMC.RunPlugin(%s?OpenSettings)" % ( sys.argv[ 0 ], ), bId=2 )
 
     def _get_settings( self ):
         self.settings = {}
