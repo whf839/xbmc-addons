@@ -377,9 +377,9 @@ class Main:
                         # add queue video
                         cm += [ ( xbmc.getLocalizedString( 30504 ), "XBMC.Action(Queue)", ) ]
                         # add related videos
-                        cm += [ ( xbmc.getLocalizedString( 30500 ), "Container.Update(%s?title=%s&category='related'&page=1&vq=''&username=''&orderby='relevance'&related=%s&issearch=False&update_listing=False)" % ( sys.argv[ 0 ], repr( xbmc.getLocalizedString( 30968 ) ), repr( video[ "id" ][ "$t" ].split( "/" )[ -1 ] ), ), ) ]
+                        cm += [ ( xbmc.getLocalizedString( 30500 ), "Container.Update(%s?title=%s&category='related'&page=1&vq=''&username=''&cat=''&orderby='relevance'&related=%s&issearch=False&update_listing=False)" % ( sys.argv[ 0 ], repr( xbmc.getLocalizedString( 30968 ) ), repr( video[ "id" ][ "$t" ].split( "/" )[ -1 ] ), ), ) ]
                         # add author videos
-                        cm += [ ( xbmc.getLocalizedString( 30507 ) % ( director, ), "Container.Update(%s?title=%s&category='users__uploads'&page=1&vq=''&username=%s&orderby='relevance'&related=''&issearch=False&update_listing=False)" % ( sys.argv[ 0 ], quote_plus( repr( director ) ), quote_plus( repr( director ) ), ), ) ]
+                        cm += [ ( xbmc.getLocalizedString( 30507 ) % ( director, ), "Container.Update(%s?title=%s&category='users__uploads'&page=1&vq=''&username=%s&cat=''&orderby='relevance'&related=''&issearch=False&update_listing=False)" % ( sys.argv[ 0 ], quote_plus( repr( director ) ), quote_plus( repr( director ) ), ), ) ]
                         # if download path set, add download item
                         if ( self.settings[ "download_path" ] != "" ):
                             cm += [ ( xbmc.getLocalizedString( 30501 ), "XBMC.RunPlugin(%s?category='download_video'&video_url=%s)" % ( sys.argv[ 0 ], quote_plus( repr( video_url ) ), ), ) ]
