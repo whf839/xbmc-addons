@@ -28,7 +28,6 @@ class _Info:
 #################################################################################################################
 #################################################################################################################
 class Main:
-	# base paths
 
 	def __init__( self ):
 		self._parse_argv()                      # parse sys.argv
@@ -84,6 +83,7 @@ class Main:
 				)
 
 			sz = len( categories )
+			icon = "DefaultFolderBig.png"
 			for ( ltitle, method, arg ) in categories:
 				# set the callback url
 				url = '%s?title=%s&category=%s' % ( sys.argv[ 0 ], encodeText( ltitle ), repr( method ), )
@@ -91,7 +91,8 @@ class Main:
 					url += "&arg=%s" % repr (arg )
 
 				# only need to add label, icon and thumbnail, setInfo() and addSortMethod() takes care of label2
-				li=xbmcgui.ListItem( ltitle )
+				thumb = "/".join( [HOME_DIR, "resources", "thumbnails", arg[:arg.find("/")]] ) + ".png"
+				li=xbmcgui.ListItem( ltitle, "", icon, thumb )
 				# add the item to the media list
 				ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=url, listitem=li, isFolder=True, totalItems=sz )
 
