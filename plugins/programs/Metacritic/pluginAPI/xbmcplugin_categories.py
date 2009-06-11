@@ -91,7 +91,8 @@ class Main:
 					url += "&arg=%s" % repr (arg )
 
 				# only need to add label, icon and thumbnail, setInfo() and addSortMethod() takes care of label2
-				thumb = "/".join( [HOME_DIR, "resources", "thumbnails", arg[:arg.find("/")]] ) + ".png"
+				thumb = os.path.join( HOME_DIR, "resources", "thumbnails", arg[:arg.find("/")] ) + ".png"
+				print thumb
 				li=xbmcgui.ListItem( ltitle, "", icon, thumb )
 				# add the item to the media list
 				ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=url, listitem=li, isFolder=True, totalItems=sz )
