@@ -2,8 +2,8 @@
 __scriptname__ = "G4TV"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/G4TV"
-__date__ = '2009-06-04'
-__version__ = "1.2"
+__date__ = '2009-06-11'
+__version__ = "1.3"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 THUMBNAIL_PATH = os.path.join( os.getcwd(), "thumbnails" )
@@ -22,7 +22,7 @@ def showRoot():
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u3,li3,True)
 
 def videoIn(name,url):
-	url='http://e3.g4tv.com/videos/index.html'
+	url='http://g4tv.com/videos/index.html'
 	req = urllib2.Request(url)
 	req.add_header('User-Agent', HEADER)
 	f=urllib2.urlopen(req)
@@ -49,7 +49,7 @@ def videoIn(name,url):
 	x=0
 	for vid,title in data:
 		name = str(int(x+1))+'. '+show[x]+': '+title+' - '+disc[x]
-		url='http://e3.g4tv.com/xml/broadbandplayerservice.asmx/GetEmbeddedVideo?videoKey='+vid+'&playLargeVideo=true&excludedVideoKeys=&playlistType=normal&maxPlaylistSize=0'
+		url='http://g4tv.com/xml/broadbandplayerservice.asmx/GetEmbeddedVideo?videoKey='+vid+'&playLargeVideo=true&excludedVideoKeys=&playlistType=normal&maxPlaylistSize=0'
 		li=xbmcgui.ListItem(name, iconImage=thumbs[x], thumbnailImage=thumbs[x])
 		li.setInfo( type="Video", infoLabels={ "Title": title, "Plot":disc[x] } )
 		u=sys.argv[0]+"?mode=11&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
@@ -75,12 +75,12 @@ def getID(name,url):
 
 def showXPLAY():
 	links=[
-		("Reviews","http://e3.g4tv.com/games/reviews", "http://cache.g4tv.com/images/xplay/logos/xplay_reviews.png"),
-		("Previews","http://e3.g4tv.com/games/previews", "http://cache.g4tv.com/images/xplay/logos/xplay_previews.png"),
-		("Cheats","http://e3.g4tv.com/games/cheats", "http://cache.g4tv.com/images/xplay/logos/xplay_cheat.png"),
-		("Features","http://e3.g4tv.com/games/features", "http://cache.g4tv.com/images/xplay/logos/xplay_features.png"),
-		("Trailers","http://e3.g4tv.com/games/trailers", "http://cache.g4tv.com/images/xplay/logos/xplay_trailers.png"),
-		("Latest Vidoes","http://e3.g4tv.com/games/videos", "http://cache.g4tv.com/images/xplay/logos/xplay_videos.png")
+		("Reviews","http://g4tv.com/games/reviews", "http://cache.g4tv.com/images/xplay/logos/xplay_reviews.png"),
+		("Previews","http://g4tv.com/games/previews", "http://cache.g4tv.com/images/xplay/logos/xplay_previews.png"),
+		("Cheats","http://g4tv.com/games/cheats", "http://cache.g4tv.com/images/xplay/logos/xplay_cheat.png"),
+		("Features","http://g4tv.com/games/features", "http://cache.g4tv.com/images/xplay/logos/xplay_features.png"),
+		("Trailers","http://g4tv.com/games/trailers", "http://cache.g4tv.com/images/xplay/logos/xplay_trailers.png"),
+		("Latest Vidoes","http://g4tv.com/games/videos", "http://cache.g4tv.com/images/xplay/logos/xplay_videos.png")
 		]
 	for name, url, thumb in links:
 			li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
@@ -104,7 +104,7 @@ def newShowX(url):
 			x=x+1
 
 def showCategories():
-	url='http://e3.g4tv.com/attackoftheshow/segments.aspx'
+	url='http://g4tv.com/attackoftheshow/segments.aspx'
 	req = urllib2.Request(url)
 	req.add_header('User-Agent', HEADER)
 	f=urllib2.urlopen(req)
@@ -122,7 +122,7 @@ def showCategories():
 			u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 			x=x+1
-	url='http://e3.g4tv.com/attackoftheshow/videos/index.html'
+	url='http://g4tv.com/attackoftheshow/videos/index.html'
 	name='.: Most Recent'
 	thumbs='http://media.g4tv.com/podcasts/5_RSS.jpg'
 	li=xbmcgui.ListItem(name, iconImage=thumbs, thumbnailImage=thumbs)
@@ -130,7 +130,7 @@ def showCategories():
 	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
 def newShow(url,page):
-	#url='http://e3.g4tv.com/attackoftheshow/thefeed/index.html'
+	#url='http://g4tv.com/attackoftheshow/thefeed/index.html'
 	thisurl=url
 	find=url
 	find=find.rsplit('/')
@@ -162,20 +162,18 @@ def newShow(url,page):
 	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 		
 def showList(name, url):
-		#url='http://e3.g4tv.com/attackoftheshow/thefeed/65945/The-Daily-Feed-with-Alison-Haislip-122408.html'
-		print url
+		#url='http://g4tv.com/attackoftheshow/thefeed/65945/The-Daily-Feed-with-Alison-Haislip-122408.html'
 		f=urllib2.urlopen(url)
 		a=f.read()
 		f.close()
 		if name == 'xplay':
 			p=re.compile('videokey: \'(.+?)\',')
 		else:
-			p=re.compile('videokey=(.+?)&')
+			p=re.compile('<input type="hidden" id="entityKey" value="(.+?)" />')
 		data=p.findall(a)
 		for url in data:
-			url='http://e3.g4tv.com/xml/broadbandplayerservice.asmx/GetEmbeddedVideo?videoKey='+url+'&playLargeVideo=true&excludedVideoKeys=&playlistType=normal&maxPlaylistSize=0'
-		#url='http://e3.g4tv.com/xml/broadbandplayerservice.asmx/GetEmbeddedVideo?videoKey=35787&playLargeVideo=true&excludedVideoKeys=&playlistType=normal&maxPlaylistSize=0'
-		print url
+			url='http://g4tv.com/xml/broadbandplayerservice.asmx/GetEmbeddedVideo?videoKey='+url+'&playLargeVideo=true&excludedVideoKeys=&playlistType=normal&maxPlaylistSize=0'
+		#url='http://g4tv.com/xml/broadbandplayerservice.asmx/GetEmbeddedVideo?videoKey=35787&playLargeVideo=true&excludedVideoKeys=&playlistType=normal&maxPlaylistSize=0'
 		f=urllib2.urlopen(url)
 		a=f.read()
 		f.close()
@@ -187,7 +185,7 @@ def showList(name, url):
 		showList2(url)		
 
 def RSSList():
-		url='http://e3.g4tv.com/podcasts/index.html'
+		url='http://g4tv.com/podcasts/index.html'
 		f=urllib2.urlopen(url)
 		a=f.read()
 		f.close()
