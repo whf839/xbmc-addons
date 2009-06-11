@@ -14,8 +14,8 @@ __plugin__ = "Metacritic"
 __author__ = "BigBellyBilly"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/programs/metacritic"
-__version__ = "1.0.2"
-__date__ = '10-06-2009'
+__version__ = "1.0.3"
+__date__ = '12-06-2009'
 __svn_revision__ = "$Revision: 984 $"
 __XBMC_Revision__ = "19001"
 

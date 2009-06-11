@@ -1,3 +1,7 @@
+Date: 12 June 2009
+v1.0.3
+Fix root categories not showing on xbox
+-----
 Date: 10 June 2009
 v1.0.2
 Added some root Category thumbnails.
