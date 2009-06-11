@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <string id="30000">Language:</string>
+    <string id="30001">English (en)</string>
+    <string id="30002">Arabic (ar)</string>
+    <string id="30003">Bulgarian (bg)</string>
+    <string id="30004">Catalan (ca)</string>
+    <string id="30005">Deutsch (de)</string>
+    <string id="30006">Greek (el)</string>
+    <string id="30007">Spanish (es)</string>
+    <string id="30008">French (fr)</string>
+    <string id="30009">Hindi (hi)</string>
+    <string id="30010">Hungarian (hu)</string>
+    <string id="30011">Indonesian (id)</string>
+    <string id="30012">Icelandic (is)</string>
+    <string id="30013">Italian (it)</string>
+    <string id="30014">Hebrew (iw)</string>
+    <string id="30015">Japanese (ja)</string>
+    <string id="30016">Korean (ko)</string>
+    <string id="30017">Lithuanian (lt)</string>
+    <string id="30018">Nederlands (nl)</string>
+    <string id="30019">Norwegian (no)</string>
+    <string id="30020">Polish (pl)</string>
+    <string id="30021">Portuguese (pt)</string>
+    <string id="30022">Romanian (ro)</string>
+    <string id="30023">Russian (ru)</string>
+    <string id="30024">Serbian (sr)</string>
+    <string id="30025">Tagalog (tl)</string>
+    <string id="30026">Turkish (tr)</string>
+    <string id="30027">Ukrainian (uk)</string>
+    <string id="30028">Chinese (zh-TW)</string>
+</strings>
