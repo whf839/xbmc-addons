@@ -2,8 +2,8 @@
 __scriptname__ = "G4TV"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/G4TV"
-__date__ = '2009-06-11'
-__version__ = "1.3"
+__date__ = '2009-06-12'
+__version__ = "1.4"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 THUMBNAIL_PATH = os.path.join( os.getcwd(), "thumbnails" )
@@ -44,8 +44,11 @@ def videoIn(name,url):
 	f.close()
 	data=re.compile('lnkItemTitle" href="javascript:openPile\(\'(.+?)\'\);">(.+?)</a></span>').findall(a)
 	thumbs=re.compile('<img src="(.+?)" id="ctl00_ctl00_objContentPlaceholder').findall(a)
-	disc=re.compile('lblItemDescription">(.+?)</span>').findall(a)
+	disc=re.compile('lblItemDescription">(.*?)</span>').findall(a)
 	show=re.compile('lblShow">(.+?)</span>').findall(a)
+	print len(data)
+	print len(disc)
+	print len(show)
 	x=0
 	for vid,title in data:
 		name = str(int(x+1))+'. '+show[x]+': '+title+' - '+disc[x]
