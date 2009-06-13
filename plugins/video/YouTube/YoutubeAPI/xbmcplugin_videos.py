@@ -279,7 +279,7 @@ class Main:
                     # we set the thumb so XBMC does not try and cache the next pictures
                     thumbnail = os.path.join( self.BASE_PLUGIN_THUMBNAIL_PATH, "spell_page.png" )
                     # set the default icon
-                    icon = "DefaultFolderBig.png"
+                    icon = "DefaultFolder.png"
                     # only need to add label and icon, setInfo() and addSortMethod() takes care of label2
                     listitem=xbmcgui.ListItem( label="%s: %s" % ( xbmc.getLocalizedString( 30911 ), spell_vq, ), iconImage=icon, thumbnailImage=thumbnail )
                     # add the folder item to our media list
@@ -299,7 +299,7 @@ class Main:
                     # we set the thumb so XBMC does not try and cache the next pictures
                     thumbnail = os.path.join( self.BASE_PLUGIN_THUMBNAIL_PATH, "next.png" )
                     # set the default icon
-                    icon = "DefaultFolderBig.png"
+                    icon = "DefaultFolder.png"
                     # only need to add label and icon, setInfo() and addSortMethod() takes care of label2
                     listitem=xbmcgui.ListItem( label="%s (%d-%d)" % ( xbmc.getLocalizedString( 3 ), startno, endno, ), iconImage=icon, thumbnailImage=thumbnail )
                     # add the folder item to our media list
@@ -316,7 +316,7 @@ class Main:
                     # we set the thumb so XBMC does not try and cache the previous pictures
                     thumbnail = os.path.join( self.BASE_PLUGIN_THUMBNAIL_PATH, "previous.png" )
                     # set the default icon
-                    icon = "DefaultFolderBig.png"
+                    icon = "DefaultFolder.png"
                     # only need to add label and icon, setInfo() and addSortMethod() takes care of label2
                     listitem=xbmcgui.ListItem( label="%s (%d-%d)" % ( xbmc.getLocalizedString( 3 ), startno, endno, ), iconImage=icon, thumbnailImage=thumbnail )
                     # add the folder item to our media list
