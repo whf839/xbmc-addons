@@ -112,7 +112,7 @@ class Main:
                 # check for a valid custom thumbnail for the current category
                 thumbnail = self._get_thumbnail( category )
                 # set the default icon
-                icon = "defaultfolder.png"
+                icon = "DefaultFolder.png"
                 # only need to add label, icon and thumbnail, setInfo() and addSortMethod() takes care of label2
                 listitem=xbmcgui.ListItem( title, iconImage=icon, thumbnailImage=thumbnail )
                 # add the different infolabels we want to sort by
