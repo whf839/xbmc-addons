@@ -11,7 +11,7 @@ __plugin__ = "YouTube"
 __author__ = "nuka1195"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/YouTube"
-__version__ = "1.6.7"
+__version__ = "1.6.8"
 __XBMC_Revision__ = "19457"
 
 
