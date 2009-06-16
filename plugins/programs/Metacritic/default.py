@@ -14,8 +14,8 @@ __plugin__ = "Metacritic"
 __author__ = "BigBellyBilly"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/programs/metacritic"
-__version__ = "1.0.3"
-__date__ = '12-06-2009'
+__version__ = "1.1"
+__date__ = '16-06-2009'
 __svn_revision__ = "$Revision: 984 $"
 __XBMC_Revision__ = "19001"
 
@@ -48,6 +48,8 @@ if ( __name__ == "__main__" ):
 		# check for compatibility, only need to check this once, continue if ok
 		if _check_compatible():
 			from pluginAPI import xbmcplugin_categories as plugin
+	elif "info=" in sys.argv[ 2 ]:
+		from pluginAPI import xbmcplugin_textview as plugin
 	elif "show_item" in sys.argv[ 2 ]:
 		from pluginAPI import xbmcplugin_show_item as plugin
 	else:
