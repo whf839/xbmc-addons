@@ -20,7 +20,7 @@ from xbmcplugin_lib import *
 
 # Script constants
 __plugin__ = sys.modules["__main__"].__plugin__
-__date__ = '24-04-2009'
+__date__ = '16-06-2009'
 xbmc.log("[PLUGIN] Module: %s loaded!" % __name__, xbmc.LOGDEBUG)
 
 # check if build is special:// aware - set roots paths accordingly
@@ -308,12 +308,17 @@ class Main:
 					verState = "v%s (%s)" % ( svn_ver, xbmc.getLocalizedString( 30014 ) )        # eg. !New! v1.0
 					trunk_url = re.search('(/trunk.*?)$', svn_url, re.IGNORECASE).group(1)
 					#['plugin://programs/SVN Repo Installer/', '-1', '?download_url="%2Ftrunk%2Fplugins%2Fmusic/iTunes%2F"&repo=\'xbmc-addons\'&install=""&ioffset=2&voffset=0']
+
+					# special self update url
 					url_args = "download_url=%s&repo=%s&install=%s&ioffset=%s&voffset=%s" % \
 								(repr(urllib.quote_plus(trunk_url + "/")),
 								repr(urllib.quote_plus(repo)),
 								repr(info["install"]),
 								info["ioffset"],
 								info["voffset"],)
+					# for self update alter url
+					if "SVN Repo Installer" in category:
+						url_args = "self_update=True&" + url_args
 					path = '%s?%s' % ( sys.argv[ 0 ], url_args, )
 				else:
 					verState = "v%s (%s)" % ( svn_ver, xbmc.getLocalizedString( 30015 ), )	# eg. Incompatible
@@ -350,7 +355,6 @@ class Main:
 				# check skin for image, else fallback DefaultFile
 				if not icon or not xbmc.skinHasImage(icon):
 					icon = "DefaultFileBig.png"
-				log("icon=" + icon)
 
 				# assign thumbnail, in order from: local, svn, icon
 				thumbnail = info["thumb"]
@@ -371,8 +375,6 @@ class Main:
 				# add ContextMenu: Readme
 				if readme:
 					cm +=  self._contextMenuItem( 30610, { "showreadme": True, "repo": None, "readme": readme } )
-
-#				pprint (cm)
 
 				li.addContextMenuItems( cm, replaceItems=True )
 				xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=path, listitem=li, isFolder=False, totalItems=sz )
