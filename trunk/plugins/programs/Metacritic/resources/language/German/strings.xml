@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!-- German strings.xml by bootsy (bootsycollins82@gmail.com) -->
+<strings>
+	<!-- Settings -->
+	<string id="30000">Readme anzeigen</string>
+	<string id="30001">Changelog anzeigen</string>
+
+	<!-- Errors -->
+	<string id="30900">Fehler!</string>
+	<string id="30901">Webseite nicht gefunden!</string>
+	<string id="30902">Fehler beim RSS auslesen!</string>
+
+	<!-- Plugin -->
+	<string id="30920">Verarbeite ...</string>
+	<string id="30921">Lade ...</string>
+
+	<!-- Category -->
+	<string id="30950">Film</string>
+	<string id="30951">DVD/Video</string>
+	<string id="30952">Musik</string>
+	<string id="30953">TV</string>
+	<string id="30954">Bücher</string>
+	<string id="30955">Games: Microsoft Xbox360</string>
+	<string id="30956">Games: Microsoft Xbox</string>
+	<string id="30957">Games: Nintendo Wii</string>
+	<string id="30958">Games: Nintendo GameCube</string>
+	<string id="30959">Games: Nintendo DS</string>
+	<string id="30960">Games: Nintendo GBA</string>
+	<string id="30961">Games: Sony PS3</string>
+	<string id="30962">Games: Sony PS2</string>
+	<string id="30963">Games: Sony PSP</string>
+	<string id="30964">Games: PC</string>
+
+	<!-- compatible messages -->
+	<string id="30700">Version</string>
+	<string id="30701">Diese Version von %s benötigt eine</string>
+	<string id="30702">XBMC Revision von %s oder höher.</string>
+	<string id="30703">Bitte aktualisiere dein XBMC.</string>
+
+</strings>

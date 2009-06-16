@@ -21,9 +21,6 @@ class _Info:
 	def __init__(self, *args, **kwargs ):
 		self.__dict__.update( kwargs )
 		log( "Info() self.__dict__=%s" % self.__dict__ )
-	def has_key(self, key):
-		return self.__dict__.has_key(key)
-
 
 #################################################################################################################
 #################################################################################################################
@@ -92,8 +89,8 @@ class Main:
 
 				# only need to add label, icon and thumbnail, setInfo() and addSortMethod() takes care of label2
 				thumb = os.path.join( HOME_DIR, "resources", "thumbnails", arg[:arg.find("/")] ) + ".png"
-				print thumb
 				li=xbmcgui.ListItem( ltitle, "", icon, thumb )
+
 				# add the item to the media list
 				ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=url, listitem=li, isFolder=True, totalItems=sz )
 
