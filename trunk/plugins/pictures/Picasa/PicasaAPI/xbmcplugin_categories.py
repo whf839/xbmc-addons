@@ -82,6 +82,9 @@ class Main:
                                         ( xbmc.getLocalizedString( 30951 ), "presets_photos", "", "", True, 0, "photo", "", "", False, ),
                                         ( xbmc.getLocalizedString( 30952 ), "presets_users", "", "", True, 0, "album", "", "", False, ),
                                         ( xbmc.getLocalizedString( 30955 ), "users_photos", "", "", True, 0, "photo", "", "", True, ),
+                                        ( xbmc.getLocalizedString( 30956 ), "users_contacts", "", "", True, 0, "user", "", "", True, ),
+                                        ( xbmc.getLocalizedString( 30957 ), "featured_photos", "", "", True, 0, "photo", "", "", False, ),
+                                        ( xbmc.getLocalizedString( 30958 ), "recent_photos", "", "", True, 0, "photo", "", "", False, ),
                                     )
             # photo preset category
             elif ( "category='presets_photos'" in sys.argv[ 2 ] ):
@@ -89,6 +92,9 @@ class Main:
             # user preset category
             elif ( "category='presets_users'" in sys.argv[ 2 ] ):
                 categories = self.get_presets( True )
+            # user preset category
+            elif ( "category='users_contacts'" in sys.argv[ 2 ] ):
+                categories = self.get_users_contacts()
             # fill media list
             ok = self._fill_media_list( categories )
         except:
@@ -99,6 +105,31 @@ class Main:
         cacheToDisc = ( ok and not ( "category='presets_photos'" in sys.argv[ 2 ] or "category='presets_users'" in sys.argv[ 2 ] ) )
         # send notification we're finished, successfully or unsuccessfully
         xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=ok, cacheToDisc=cacheToDisc )
+
+    def get_users_contacts( self ):
+        # get client
+        from PicasaAPI.PicasaClient import PicasaClient
+        client = PicasaClient()
+        # initialize our category tuple
+        categories = ()
+        # get settings
+        user_id = xbmcplugin.getSetting( "user_email" )
+        perpage = ( 10, 15, 20, 25, 30, 40, 50, 75, 100, )[ int( xbmcplugin.getSetting( "perpage" ) ) ]
+        thumbsize = ( 72, 144, 160, 200, 288, 320, 400, 512, )[ int( xbmcplugin.getSetting( "thumbsize" ) ) ]
+        access = ( "all", "private", "public", )[ int( xbmcplugin.getSetting( "access" ) ) ]
+        # starting item
+        start_index = ( self.args.page - 1 ) * perpage + 1
+        # fetch the items
+        feed = client.users_contacts( user_id=user_id, album_id="", photo_id="", pq="", kind="user", imgmax="d", thumbsize=thumbsize, authkey=xbmcplugin.getSetting( "authkey" ), access=access, start__index=start_index, max__results=perpage, q="" )
+        # if there were results
+        if ( feed ):
+            #{'items': [{'thumb_url': u'http://lh3.ggpht.com/_NMYCpWBWM8Y/AAAAW8QQU-U/AAAAAAAAAAA/BPOH5yeOD1M/s64-c/gotoidan.jpg', 'nickname': u'Idan', 'user': u'gotoidan'}], 'totalResults': 1}
+            # enumerate thru and add user
+            for user in feed[ "items" ]:
+                # add user to our dictionary
+                categories += ( ( user[ "nickname" ].encode( "utf-8" ), "users_contacts_photos", "", user[ "user" ].encode( "utf-8" ), True, 0, "photo", access, user[ "thumb_url" ], False, ), )
+        # return results
+        return categories
 
     def get_presets( self, ptype=False ):
         # set category

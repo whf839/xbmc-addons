@@ -113,6 +113,16 @@ class Main:
         # fetch the items
         return self.fetch_photos( user_id=self.args.user_id, kind=self.settings[ "user_search_kind" ], access="public" )
 
+    def recent_photos( self ):
+        # get the query to search for from the user
+        self.args.pq = ""
+        # we need to set the function to photos
+        self.args.category = "photos"
+        # we need to set the title to our query
+        ##self.args.title = self.args.pq
+        # fetch the items
+        return self.fetch_photos( kind="photo" )
+
     def users_albums( self ):
         # set author to user name
         self.args.user_id = self.settings[ "user_email" ]
@@ -128,6 +138,18 @@ class Main:
         self.args.category = "photos"
         # fetch the items
         return self.fetch_photos( user_id=self.args.user_id, kind="photo" )
+
+    def users_contacts_photos( self ):
+        # we need to set the category to users
+        self.args.category = "photos"
+        # fetch the items
+        return self.fetch_photos( user_id=self.args.user_id, kind="photo" )
+
+    def featured_photos( self ):
+        # we need to set the category to users
+        self.args.category = "photos"
+        # fetch the items
+        return self.fetch_photos( kind="photo" )
 
     def photos( self ):
         # we end up here for pages 2 and on
@@ -146,7 +168,7 @@ class Main:
         if ( access == "" ):
             access = self.settings[ "access" ]
         # fetch the items
-        feed = client.get_feed( user_id=user_id, album_id=album_id, photo_id=photo_id, kind=kind, imgmax="d", thumbsize=self.settings[ "thumbsize" ], authkey=self.authkey, access=access, start__index=start_index, max__results=self.settings[ "perpage" ], q=self.args.pq )
+        exec 'feed = client.%s( user_id=user_id, album_id=album_id, photo_id=photo_id, kind=kind, imgmax="d", thumbsize=self.settings[ "thumbsize" ], authkey=self.authkey, access=access, start__index=start_index, max__results=self.settings[ "perpage" ], q=self.args.pq )'  % ( self.args.category, )
         # if there were results
         if ( feed ):
             # set user icon for user query

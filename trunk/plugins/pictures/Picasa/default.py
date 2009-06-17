@@ -11,18 +11,49 @@ __plugin__ = "Picasa"
 __author__ = "nuka1195"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/Picasa"
-__version__ = "1.3.5"
+__version__ = "1.4"
+__svn_revision__ = "$Revision$"
+__XBMC_Revision__ = "19001"
 
-xbmc.log( "[PLUGIN] '%s: version %s' initialized!" % ( __plugin__, __version__, ), xbmc.LOGNOTICE )
+def _check_compatible():
+    try:
+        # spam plugin statistics to log
+        xbmc.log( "[PLUGIN] '%s: Version - %s-r%s' initialized!" % ( __plugin__, __version__, __svn_revision__.replace( "$", "" ).replace( "Revision:", "" ).strip() ), xbmc.LOGNOTICE )
+        # get xbmc revision
+        xbmc_version = xbmc.getInfoLabel( "System.BuildVersion" )
+        xbmc_rev = int( xbmc_version.split( " " )[ 1 ].replace( "r", "" ) )
+        # compatible?
+        ok = xbmc_rev >= int( __XBMC_Revision__ )
+    except:
+        # error, so unknown, allow to run
+        xbmc_rev = 0
+        ok = 2
+    # spam revision info
+    xbmc.log( "     ** Required XBMC Revision: r%s **" % ( __XBMC_Revision__, ), xbmc.LOGNOTICE )
+    xbmc.log( "     ** Found XBMC Revision: r%d [%s] **" % ( xbmc_rev, ( "Not Compatible", "Compatible", "Unknown", )[ ok ], ), xbmc.LOGNOTICE )
+    # if not compatible, inform user
+    if ( not ok ):
+        import xbmcgui
+        xbmcgui.Dialog().ok( "%s - %s: %s" % ( __plugin__, xbmc.getLocalizedString( 30700 ), __version__, ), xbmc.getLocalizedString( 30701 ) % ( __plugin__, ), xbmc.getLocalizedString( 30702 ) % ( __XBMC_Revision__, ), xbmc.getLocalizedString( 30703 ) )
+    #return result
+    return ok
 
 
 if ( __name__ == "__main__" ):
     if ( not sys.argv[ 2 ] ):
-        from PicasaAPI import xbmcplugin_categories as plugin
+        # check for compatibility, only need to check this once, continue if ok
+        if ( _check_compatible() ):
+            from PicasaAPI import xbmcplugin_categories as plugin
     elif ( "category='presets_photos'" in sys.argv[ 2 ] ):
         from PicasaAPI import xbmcplugin_categories as plugin
     elif ( "category='presets_users'" in sys.argv[ 2 ] ):
         from PicasaAPI import xbmcplugin_categories as plugin
+    elif ( "category='users_contacts'" in sys.argv[ 2 ] ):
+        from PicasaAPI import xbmcplugin_categories as plugin
     else:
         from PicasaAPI import xbmcplugin_photos as plugin
-    plugin.Main()
+
+    try:
+        plugin.Main()
+    except:
+        pass
