@@ -19,6 +19,9 @@
     <string id="30953">Search People...</string>
     <string id="30954">Search Pictures...</string>
     <string id="30955">My Pictures</string>
+    <string id="30956">My Contacts</string>
+    <string id="30957">Featured Pictures</string>
+    <string id="30958">Recent Pictures</string>
 
     <!-- Plugin settings strings -->
     <string id="30000">User email</string>
@@ -34,5 +37,11 @@
     <string id="30052">Photos</string>
     <string id="30060">Number of saved searches</string>
     <string id="30130">Fanart image</string>
+
+    <!-- compatible messages -->
+    <string id="30700">version</string>
+    <string id="30701">This version of %s requires an</string>
+    <string id="30702">XBMC revision of %s or greater to run.</string>
+    <string id="30703">Please update your XBMC.</string>
 
 </strings>
