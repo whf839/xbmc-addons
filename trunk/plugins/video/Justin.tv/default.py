@@ -155,9 +155,10 @@ def showLinks(url, name):
 	data=re.compile('<a href="(.+?)"><img alt="" class="li_pic_125o i125x94 lateload" src1="(.+?)"').findall(a)
 	stat1=re.compile('<em>Viewers</em>:&nbsp;<span>(.+?)</span><br />').findall(match[0])
 	stat2=re.compile('<em>Views</em>:&nbsp;<span>(.+?)</span><br />').findall(match[0])
+	stat3=re.compile('</a></h3>\n(.*?)</div>', re.DOTALL).findall(match[0])
 	x=0
 	for url,thumb in data:
-		name=str(int(x+1)+(36*(page-1)))+'. '+cat[x][2]+' - Viewers: '+stat1[x]+' - Views: '+stat2[x]
+		name=str(int(x+1)+(36*(page-1)))+'. '+cat[x][2]+': '+cleanStat(stat3[x])+' - Viewers: '+stat1[x]+' - Views: '+stat2[x]
 		url=url.replace('/','')
 		li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
 		u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
@@ -167,6 +168,12 @@ def showLinks(url, name):
 		li=xbmcgui.ListItem("Next Page",iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'next.png'))
 		u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(thisurl)+"&page="+str(int(page)+1)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+
+def cleanStat(name):
+    remove=[('\n',''),('                            ',''),('<p>',''),('</p>',''),('                    ','')]
+    for trash, crap in remove:
+        name=name.replace(trash,crap)
+    return name
 		
 def runKeyboard():
 	searchStr = ''
