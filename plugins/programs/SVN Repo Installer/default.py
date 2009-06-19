@@ -12,7 +12,7 @@ __author__ = "nuka1195/BigBellyBilly"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/programs/SVN%20Repo%20Installer"
 __credits__ = "Team XBMC"
-__version__ = "1.7.6"
+__version__ = "1.7.7"
 __svn_revision__ = "$Revision$"
 __XBMC_Revision__ = "19001"
 
@@ -61,4 +61,4 @@ if ( __name__ == "__main__" ):
     try:
         plugin.Main()
     except:
-        pass
+        print str(sys.exc_info()[ 1 ])
