@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # XBMCEyetvParser
-# version 1.36
+# version 1.38
 # by prophead
 # ThumbnailOverlayGenerator by Nic Wolfe (midgetspy)
 
@@ -17,7 +17,7 @@ tog = 0
 # ---------------
 
 # import modules
-import os, re, glob, sys
+import os, re, glob, sys, shutil
 import xbmc,xbmcgui,xbmcplugin
 from datetime import datetime
 
@@ -518,8 +518,26 @@ for dirpath, dirnames, filenames in os.walk(path):
                     filePl=""
                     #icon = "defaultVideo.png"
                     #icon2 = "defaultVideoBig.png"
-                    icon = tbn.encode( 'utf8' )
-                    icon2 = tbn.encode( 'utf8' )
+                    #icon = tbn.decode( 'utf8', 'backslashreplace')
+                    #icon = tbn.encode( 'utf8' )
+                    #icon = icon.replace("'", "\'")
+                    
+                    # ugly hack to get XBMC to work with utf-8 thumbnails
+                    tbn = tbn.encode( 'utf8' )
+                    tbn = tbn.replace("'", "\'")
+                    p=re.compile('.+/(.+)\.(tbn|tiff)')
+                    m=p.match(tbn)
+                    shorticonname=m.group(1)
+                    newpath=path+'../thumbnails/'
+                    if not os.path.isdir(newpath):
+                        os.mkdir(newpath)
+                    newicon = newpath+shorticonname+'.tbn'
+                    print 'newicon='+newicon
+                    # cp tbn newicon
+                    shutil.copyfile(tbn, newicon)
+                    icon=newicon
+                    
+                    icon2 = icon
                     # title=shortdirpath
                     liz=xbmcgui.ListItem(shortdirpath, libname, iconImage=icon, thumbnailImage=icon2)
                     # liz.setInfo( type="Video", infoLabels={ "Title": libname, "Date":date, "Size":size, "Plot":plot, "Episode":episode} )
