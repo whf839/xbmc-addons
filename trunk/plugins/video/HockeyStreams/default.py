@@ -1,358 +1,289 @@
-from BeautifulSoup import BeautifulSoup
-from ClientForm import ParseResponse
-from mechanize import Browser
+import urllib2, urllib, time, os, re
 import xbmcplugin, xbmcgui, xbmc
-import ClientCookie, sys, re
-import urllib2, urllib
+from BeautifulSoup import BeautifulSoup
+from mechanize import Browser
 
-#HockeyStreams.com Video Plug-in
-#by f3ar007
-#
-#irc.freenode.net/xbmc-scripting
+# hockeystreams xbmc video plugin v1.2.0b
+# stream live and archived games directly to your television!
+# http://code.google.com/p/hockeystreams
+# http://f3ar.bravehost.com/xbmc/hockeystreams/
+# f3ar007 -at- gmail.com
+
+def ipException(url,username,password):
+    path = os.getcwd()
+    path = os.path.join(path, 'resources')
+    date = open(path + '\\date.txt','r')
+    date = date.read()
+    if date == time.strftime('%A %B %d, %Y'):
+        print 'Exception Already Added!'
+    elif date != time.strftime('%A %B %d, %Y'):
+        br = Browser()
+        br.open(url)
+        br.select_form(nr=0)
+        br['username'] = username
+        br['password'] = password
+        br.submit()
+        br.open(url+'/include/exception.inc.php')
+        br.select_form(nr=0)
+        br.submit()
+        print 'Exception Added!'
+        date = open(path + '\\date.txt','w')
+        today = time.strftime('%A %B %d, %Y')
+        date.write(today)
+        date.close()
 
 def categories():
-    addDir('Hockey Archives','http://hockeystreams.com',1,'')
-    addDir('Live Streams','http://hockeystreams.com',8,'')
-
-def archiveIndex(url):
-    print 'Archive Index Started.'
-    print 'url: ' + str(url)
-    addDir('HQ Games',url,2,'')
-    addDir('HD Games',url,4,'')
-    addDir('HD-Plus Games',url,6,'')
+    addDir('Live Streams','http://hockeystreams.com',1,'')
+    addDir('Hockey Archives','http://hockeystreams.com',8,'')
 
 def liveIndex(url):
-    print 'Live Index Started.'
-    print 'url: ' + str(url)
-    addDir('HQ Games',url,9,'')
-    addDir('HD Games',url,11,'')
-    addDir('HD-Plus Games',url,13,'')
+    addDir('HQ Games',url,2,'')
+    addDir('HD Games',url,3,'')
+    addDir('HD-Plus Games',url,4,'')
 
-def aHQgames(url,date,usr,pwd):
-    print 'url: ' + str(url)
-    print 'date: ' + str(date)
-    print 'usr: ' + str(usr)
-    print 'pwd: ' + str(pwd)
-    req = ClientCookie.Request(url)
-    resp = ClientCookie.urlopen(req)
-
-    forms = ParseResponse(resp, backwards_compat=False)
-    form = forms[0]
-    form['username'] = usr
-    form['password'] = pwd
-
-    resp1 = ClientCookie.urlopen(form.click())
-    resp2 = resp1.read()
-
-    archUrl = url + '/hockey_archives' + date
-    print 'archUrl: ' + archUrl
-    resp3 = ClientCookie.urlopen(archUrl)
-    html = resp3.read()
-    soup = BeautifulSoup(''.join(html))
-    find = soup.findAll(attrs={ 'href' : re.compile('/hockey_archives/0/.*[0-9]$') } )
-    i = 0
-    for test in find:
-        ending = str(test['href'])
-        archLink = url + ending
-        print archLink
-        gameName = re.sub('_|/',' ',ending)
-        print i, gameName
-        addDir(gameName[19:-5],archLink,3,'')
-        i = i + 1
-
-def aHQlinks(url,date,usr,pwd):
-    print 'url: ' + url
-    print 'name: ' + name
-    req = ClientCookie.Request(url)
-    resp = ClientCookie.urlopen(req)
-
-    forms = ParseResponse(resp, backwards_compat=False)
-    form = forms[0]
-    form['username'] = usr
-    form['password'] = pwd
-
-    resp1 = ClientCookie.urlopen(form.click())
-    resp2 = resp1.read()
-
-    resp3 = ClientCookie.urlopen(url)
-    html = resp3.read()
-    soup = BeautifulSoup(''.join(html))
-    find = soup.findAll('input')
-    print find
-    for test in find:
-        if 'text' in test.get('type', ''):
-            directLink = str(test['value'])
-            print directLink
-            addLink(name,directLink,'')
-
-def aHDgames(url,date,usr,pwd):
-    print 'url: ' + str(url)
-    print 'date: ' + str(date)
-    print 'usr: ' + str(usr)
-    print 'pwd: ' + str(pwd)
-    req = ClientCookie.Request(url)
-    resp = ClientCookie.urlopen(req)
-
-    forms = ParseResponse(resp, backwards_compat=False)
-    form = forms[0]
-    form['username'] = usr
-    form['password'] = pwd
-
-    resp1 = ClientCookie.urlopen(form.click())
-    resp2 = resp1.read()
-
-    archUrl = url + '/hockey_archives' + date
-    print 'archUrl: ' + archUrl
-    resp3 = ClientCookie.urlopen(archUrl)
-    html = resp3.read()
-    soup = BeautifulSoup(''.join(html))
-    find = soup.findAll(attrs={ 'href' : re.compile('/hockey_archives/0/.*hi-qual$') } )
-    i = 0
-    for test in find:
-        ending = str(test['href'])
-        archLink = url + ending
-        print archLink
-        gameName = re.sub('_|/',' ',ending)
-        print i, gameName
-        addDir(gameName[19:-13],archLink,5,'')
-        i = i + 1
-
-def aHDlinks(url,date,usr,pwd):
-    print 'url: ' + url
-    print 'name: ' + name
-    req = ClientCookie.Request(url)
-    resp = ClientCookie.urlopen(req)
-
-    forms = ParseResponse(resp, backwards_compat=False)
-    form = forms[0]
-    form['username'] = usr
-    form['password'] = pwd
-
-    resp1 = ClientCookie.urlopen(form.click())
-    resp2 = resp1.read()
-
-    resp3 = ClientCookie.urlopen(url)
-    html = resp3.read()
-    soup = BeautifulSoup(''.join(html))
-    find = soup.findAll('input')
-    print find
-    for test in find:
-        if 'text' in test.get('type', ''):
-            directLink = str(test['value'])
-            print directLink
-            addLink(name,directLink,'')
-
-def aHDPgames(url,date,usr,pwd):
-    print 'url: ' + str(url)
-    print 'date: ' + str(date)
-    print 'usr: ' + str(usr)
-    print 'pwd: ' + str(pwd)
-    req = ClientCookie.Request(url)
-    resp = ClientCookie.urlopen(req)
-
-    forms = ParseResponse(resp, backwards_compat=False)
-    form = forms[0]
-    form['username'] = usr
-    form['password'] = pwd
-
-    resp1 = ClientCookie.urlopen(form.click())
-    resp2 = resp1.read()
-
-    archUrl = url + '/hockey_archives' + date
-    print 'archUrl: ' + archUrl
-    resp3 = ClientCookie.urlopen(archUrl)
-    html = resp3.read()
-    soup = BeautifulSoup(''.join(html))
-    find = soup.findAll(attrs={ 'href' : re.compile('/hockey_archives/0/.*-plus$') } )
-    i = 0
-    for test in find:
-        ending = str(test['href'])
-        archLink = url + ending
-        print archLink
-        gameName = re.sub('_|/',' ',ending)
-        print i, gameName
-        addDir(gameName[19:-18] + ' HD-Plus',archLink,7,'')
-        i = i + 1
-
-def aHDPlinks(url,date,usr,pwd):
-    print 'url: ' + url
-    print 'name: ' + name
-    req = ClientCookie.Request(url)
-    resp = ClientCookie.urlopen(req)
-
-    forms = ParseResponse(resp, backwards_compat=False)
-    form = forms[0]
-    form['username'] = usr
-    form['password'] = pwd
-
-    resp1 = ClientCookie.urlopen(form.click())
-    resp2 = resp1.read()
-
-    resp3 = ClientCookie.urlopen(url)
-    html = resp3.read()
-    soup = BeautifulSoup(''.join(html))
-    find = soup.findAll('input')
-    print find
-    for test in find:
-        if 'text' in test.get('type', ''):
-            directLink = str(test['value'])
-            print directLink
-            addLink(name,directLink,'')
-
-def lHQgames(url,usr,pwd):
-    print 'url: ' + url
-    print 'usr: ' + usr
-    print 'pwd: ' + pwd
-    req = ClientCookie.Request(url)
-    resp = ClientCookie.urlopen(req)
-    forms = ParseResponse(resp, backwards_compat=False)
-    form = forms[0]
-    form['username'] = usr
-    form['password'] = pwd
-    resp1 = ClientCookie.urlopen(form.click())
-    liveUrl = url
-    print 'liveUrl: ' + liveUrl
-    resp2 = ClientCookie.urlopen(liveUrl)
-    html = resp2.read()
+def liveHqGames(url,usr,pwd):
+    # find game page
+    br = Browser()
+    br.open(url)
+    br.select_form(nr=0)
+    br['username'] = usr
+    br['password'] = pwd
+    resp = br.submit()
+    html = resp.read()
     soup = BeautifulSoup(''.join(html))
     find = soup.findAll(attrs={ 'href' : re.compile('/live_streams/.*[0-9]$') } )
     i = 0
     for test in find:
         ending = str(test['href'])
-        gameUrl = url + ending
-        gameName = re.sub('_|/',' ',ending)
-		# gameName = os.path.dirname(gameName)
-        addDir(gameName,gameUrl,10,'')
+        gamePage = url + ending
+        gameName = os.path.dirname(gamePage)
+        gameName = re.sub('_|/',' ',gameName)
+        gameName = gameName[38:]
+        addDir(gameName,gamePage,5,'')
         i = i + 1
-        
-def lHQlinks(url,usr,pwd):
-    print 'url: ' + url
-    print 'usr: ' + usr
-    print 'pwd: ' + pwd
-    req = ClientCookie.Request(url)
-    resp = ClientCookie.urlopen(req)
-
-    forms = ParseResponse(resp, backwards_compat=False)
-    form = forms[0]
-    form['username'] = usr
-    form['password'] = pwd
-
-    resp1 = ClientCookie.urlopen(form.click())
-    resp2 = resp1.read()
-
-    resp3 = ClientCookie.urlopen(url)
-    html = resp3.read()
+    
+def liveHqLinks(url,usr,pwd):
+    # find direct link on game page
+    br = Browser()
+    br.open(url)
+    br.select_form(nr=0)
+    br['username'] = usr
+    br['password'] = pwd
+    br.submit()
+    resp = br.open(url)
+    html = resp.read()
     soup = BeautifulSoup(''.join(html))
     find = soup.findAll('input')
-    print find
     for test in find:
-        if 'direct_link' in test.get('id', ''):
-            directLink = str(test['value'])
-            print directLink
-            addLink(name,directLink,'')
+        if 'direct_link' in test.get('id',''):
+            direct = test['value']
+            addLink(name,direct,'')
 
-def lHDgames(url,usr,pwd):
-    print 'url: ' + url
-    print 'usr: ' + usr
-    print 'pwd: ' + pwd
-    req = ClientCookie.Request(url)
-    resp = ClientCookie.urlopen(req)
-    forms = ParseResponse(resp, backwards_compat=False)
-    form = forms[0]
-    form['username'] = usr
-    form['password'] = pwd
-    resp1 = ClientCookie.urlopen(form.click())
-    liveUrl = url
-    print 'liveUrl: ' + liveUrl
-    resp2 = ClientCookie.urlopen(liveUrl)
-    html = resp2.read()
+def liveHdGames(url,usr,pwd):
+    # find game page
+    br = Browser()
+    br.open(url)
+    br.select_form(nr=0)
+    br['username'] = usr
+    br['password'] = pwd
+    resp = br.submit()
+    html = resp.read()
     soup = BeautifulSoup(''.join(html))
     find = soup.findAll(attrs={ 'href' : re.compile('/live_streams/.*hi-qual$') } )
     i = 0
     for test in find:
         ending = str(test['href'])
-        gameUrl = url + ending
-        gameName = re.sub('_|/',' ',ending)
-        addDir(gameName[14:-13],gameUrl,12,'')
+        gamePage = url + ending
+        gameName = os.path.dirname(gamePage)
+        gameName = os.path.dirname(gameName)
+        gameName = re.sub('_|/',' ',gameName)
+        gameName = gameName[38:]
+        addDir(gameName,gamePage,6,'')
         i = i + 1
 
-def lHDlinks(url,usr,pwd):
-    print 'url: ' + url
-    print 'usr: ' + usr
-    print 'pwd: ' + pwd
-    req = ClientCookie.Request(url)
-    resp = ClientCookie.urlopen(req)
-
-    forms = ParseResponse(resp, backwards_compat=False)
-    form = forms[0]
-    form['username'] = usr
-    form['password'] = pwd
-
-    resp1 = ClientCookie.urlopen(form.click())
-    resp2 = resp1.read()
-
-    resp3 = ClientCookie.urlopen(url)
-    html = resp3.read()
+def liveHdLinks(url,usr,pwd):
+    # find direct link on game page
+    br = Browser()
+    br.open(url)
+    br.select_form(nr=0)
+    br['username'] = usr
+    br['password'] = pwd
+    br.submit()
+    resp = br.open(url)
+    html = resp.read()
     soup = BeautifulSoup(''.join(html))
     find = soup.findAll('input')
-    print find
     for test in find:
-        if 'direct_link' in test.get('id', ''):
-            directLink = str(test['value'])
-            print directLink
-            addLink(name,directLink,'')
-            
-def lHDPgames(url,usr,pwd):
-    print 'url: ' + url
-    print 'usr: ' + usr
-    print 'pwd: ' + pwd
-    req = ClientCookie.Request(url)
-    resp = ClientCookie.urlopen(req)
-    forms = ParseResponse(resp, backwards_compat=False)
-    form = forms[0]
-    form['username'] = usr
-    form['password'] = pwd
-    resp1 = ClientCookie.urlopen(form.click())
-    liveUrl = url
-    print 'liveUrl: ' + liveUrl
-    resp2 = ClientCookie.urlopen(liveUrl)
-    html = resp2.read()
+        if 'direct_link' in test.get('id',''):
+            direct = test['value']
+            addLink(name,direct,'')
+
+def liveHdpGames(url,usr,pwd):
+    # find game page
+    br = Browser()
+    br.open(url)
+    br.select_form(nr=0)
+    br['username'] = usr
+    br['password'] = pwd
+    resp = br.submit()
+    html = resp.read()
     soup = BeautifulSoup(''.join(html))
-    find = soup.findAll(attrs={ 'href' : re.compile('/live_streams/.*-plus$') } )
+    find = soup.findAll(attrs={ 'href' : re.compile('/live_streams/.*hi-qual-plus$') } )
     i = 0
     for test in find:
         ending = str(test['href'])
-        gameUrl = url + ending
-        gameName = re.sub('_|/',' ',ending)
-        addDir(gameName[14:-13],gameUrl,14,'')
+        gamePage = url + ending
+        gameName = os.path.dirname(gamePage)
+        gameName = os.path.dirname(gameName)
+        gameName = re.sub('_|/',' ',gameName)
+        gameName = gameName[38:]
+        addDir(gameName,gamePage,7,'')
         i = i + 1
 
-def lHDPlinks(url,usr,pwd):
-    print 'url: ' + url
-    print 'usr: ' + usr
-    print 'pwd: ' + pwd
-    req = ClientCookie.Request(url)
-    resp = ClientCookie.urlopen(req)
-
-    forms = ParseResponse(resp, backwards_compat=False)
-    form = forms[0]
-    form['username'] = usr
-    form['password'] = pwd
-
-    resp1 = ClientCookie.urlopen(form.click())
-    resp2 = resp1.read()
-
-    resp3 = ClientCookie.urlopen(url)
-    html = resp3.read()
+def liveHdpLinks(url,usr,pwd):
+    # find direct link on game page
+    br = Browser()
+    br.open(url)
+    br.select_form(nr=0)
+    br['username'] = usr
+    br['password'] = pwd
+    br.submit()
+    resp = br.open(url)
+    html = resp.read()
     soup = BeautifulSoup(''.join(html))
     find = soup.findAll('input')
-    print find
     for test in find:
-        if 'direct_link' in test.get('id', ''):
-            directLink = str(test['value'])
-            print directLink
-            addLink(name,directLink,'')
+        if 'direct_link' in test.get('id',''):
+            direct = test['value']
+            addLink(name,direct,'')
+
+def archiveIndex(url):
+    addDir('HQ Games','http://hockeystreams.com',9,'')
+    addDir('HD Games','http://hockeystreams.com',10,'')
+    addDir('HD-Plus Games','http://hockeystreams.com',11,'')
+
+def archiveHqGames(url,usr,pwd,archiveDate):
+    # find game page
+    br = Browser()
+    br.open(url)
+    br.select_form(nr=0)
+    br['username'] = usr
+    br['password'] = pwd
+    br.submit()
+    url0 = url + '/hockey_archives/' + archiveDate
+    resp = br.open(url0)
+    html = resp.read()
+    soup = BeautifulSoup(''.join(html))
+    find = soup.findAll(attrs={ 'href' : re.compile('/hockey_archives/0/.*[0-9]$') } )
+    i = 0
+    for test in find:
+        ending = str(test['href'])
+        gamePage = url + ending
+        gameName = os.path.dirname(gamePage)
+        gameName = re.sub('_|/',' ',gameName)
+        gameName = gameName[43:]
+        addDir(gameName,gamePage,12,'')
+        i = i + 1
+
+def archiveHqLinks(url,usr,pwd):
+    # find direct link on game page
+    br = Browser()
+    br.open(url)
+    br.select_form(nr=0)
+    br['username'] = usr
+    br['password'] = pwd
+    br.submit()
+    resp = br.open(url)
+    html = resp.read()
+    soup = BeautifulSoup(''.join(html))
+    find = soup.findAll('input')
+    for test in find:
+        if 'text' in test.get('type',''):
+            direct = str(test['value'])
+            addLink(name,direct,'')
+
+def archiveHdGames(url,usr,pwd,archiveDate):
+    # find game page
+    br = Browser()
+    br.open(url)
+    br.select_form(nr=0)
+    br['username'] = usr
+    br['password'] = pwd
+    br.submit()
+    url0 = url + '/hockey_archives/' + archiveDate
+    resp = br.open(url0)
+    html = resp.read()
+    soup = BeautifulSoup(''.join(html))
+    find = soup.findAll(attrs={ 'href' : re.compile('/hockey_archives/0/.*hi-qual$') } )
+    i = 0
+    for test in find:
+        ending = str(test['href'])
+        gamePage = url + ending
+        gameName = os.path.dirname(gamePage)
+        gameName = os.path.dirname(gameName)
+        gameName = re.sub('_|/',' ',gameName)
+        gameName = gameName[43:]
+        addDir(gameName,gamePage,13,'')
+        i = i + 1
+
+def archiveHdLinks(url,usr,pwd):
+    # find direct link on game page
+    br = Browser()
+    br.open(url)
+    br.select_form(nr=0)
+    br['username'] = usr
+    br['password'] = pwd
+    br.submit()
+    resp = br.open(url)
+    html = resp.read()
+    soup = BeautifulSoup(''.join(html))
+    find = soup.findAll('input')
+    for test in find:
+        if 'text' in test.get('type',''):
+            direct = str(test['value'])
+            addLink(name,direct,'')
+            
+def archiveHdpGames(url,usr,pwd,archiveDate):
+    # find game page
+    br = Browser()
+    br.open(url)
+    br.select_form(nr=0)
+    br['username'] = usr
+    br['password'] = pwd
+    br.submit()
+    url0 = url + '/hockey_archives/' + archiveDate
+    resp = br.open(url0)
+    html = resp.read()
+    soup = BeautifulSoup(''.join(html))
+    find = soup.findAll(attrs={ 'href' : re.compile('/hockey_archives/0/.*hi-qual-plus$') } )
+    i = 0
+    for test in find:
+        ending = str(test['href'])
+        gamePage = url + ending
+        gameName = os.path.dirname(gamePage)
+        gameName = os.path.dirname(gameName)
+        gameName = re.sub('_|/',' ',gameName)
+        gameName = gameName[43:]
+        addDir(gameName,gamePage,14,'')
+        i = i + 1
     
+def archiveHdpLinks(url,usr,pwd):
+    # find direct link on game page
+    br = Browser()
+    br.open(url)
+    br.select_form(nr=0)
+    br['username'] = usr
+    br['password'] = pwd
+    br.submit()
+    resp = br.open(url)
+    html = resp.read()
+    soup = BeautifulSoup(''.join(html))
+    find = soup.findAll('input')
+    for test in find:
+        if 'text' in test.get('type',''):
+            direct = str(test['value'])
+            addLink(name,direct,'')
+            
 def get_params():
     param=[]
     paramstring=sys.argv[2]
@@ -368,8 +299,15 @@ def get_params():
                     splitparams=pairsofparams[i].split('=')
                     if (len(splitparams))==2:
                             param[splitparams[0]]=splitparams[1]
-                                
+
     return param
+
+def addDir(name,url,mode,iconimage):
+    u = sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
+    ok = True
+    point = xbmcgui.ListItem(name,iconImage='',thumbnailImage='')
+    point.setInfo( type='Video',infoLabels={ 'Title' : name } )
+    ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=point,isFolder=True)
 
 def addLink(name,url,iconimage):
     ok = True
@@ -377,17 +315,14 @@ def addLink(name,url,iconimage):
     point.setInfo( type='Video', infoLabels={ 'Title': name } )
     ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=point)
 
-def addDir(name,url,mode,iconimage):
-    u = sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
-    ok = True
-    point = xbmcgui.ListItem(name, iconImage='', thumbnailImage='')
-    point.setInfo( type='Video', infoLabels={ 'Title': name } )
-    ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=point,isFolder=True)
-
 params = get_params()
 url = None
 name = None
 mode = None
+username = xbmcplugin.getSetting('username')
+password = xbmcplugin.getSetting('password')
+archiveDate = xbmcplugin.getSetting('archiveDate')
+hs = 'http://hockeystreams.com'
 
 try:
     url = urllib.unquote_plus(params['url'])
@@ -400,95 +335,38 @@ except:
 try:
     mode=int(params['mode'])
 except:
-    pass
-
-print 'url: ' + str(url)
-print 'name: ' + str(name)
-print 'mode: ' + str(mode)
+    pass   
 
 if mode == None or url == None or len(url)<1:
-    if xbmcplugin.getSetting('username') == 'enter user':
-        xbmcplugin.openSettings(sys.argv[0])
-    print 'Begin Categories.'
-    print 'sys.argv[0]: ' + sys.argv[0]
-    print 'sys.argv[1]: ' + sys.argv[1]
-    print 'sys.argv[2]: ' + sys.argv[2]
+    ipException(hs,username,password)
     categories()
 elif mode == 1:
-    print 'Begin Archived Index.'
-    print 'url: ' + url
-    print 'sys.argv[0]: ' + sys.argv[0]
-    print 'sys.argv[1]: ' + sys.argv[1]
-    print 'sys.argv[2]: ' + sys.argv[2]
-    archiveIndex(url)
-elif mode == 2:
-    print 'Begin Listing Archived HQ Games.'
-    date = xbmcplugin.getSetting('archiveDate')
-    username = xbmcplugin.getSetting('username')
-    password = xbmcplugin.getSetting('password')
-    aHQgames(url,date,username,password)
-elif mode == 3:
-    print 'Begin Listing Archived HQ Links.'
-    date = xbmcplugin.getSetting('archiveDate')
-    username = xbmcplugin.getSetting('username')
-    password = xbmcplugin.getSetting('password')
-    aHQlinks(url,date,username,password)
-elif mode == 4:
-    print 'Begin Listing Archived HD Games.'
-    date = xbmcplugin.getSetting('archiveDate')
-    username = xbmcplugin.getSetting('username')
-    password = xbmcplugin.getSetting('password')
-    aHDgames(url,date,username,password)
-elif mode == 5:
-    print 'Begin Listing Archived HD Links.'
-    date = xbmcplugin.getSetting('archiveDate')
-    username = xbmcplugin.getSetting('username')
-    password = xbmcplugin.getSetting('password')
-    aHDlinks(url,date,username,password)
-elif mode == 6:
-    print 'Begin Listing Archived HD-Plus Games.'
-    date = xbmcplugin.getSetting('archiveDate')
-    username = xbmcplugin.getSetting('username')
-    password = xbmcplugin.getSetting('password')
-    aHDPgames(url,date,username,password)
-elif mode == 7:
-    print 'Begin Listing Archived HD-Plus Links.'
-    date = xbmcplugin.getSetting('archiveDate')
-    username = xbmcplugin.getSetting('username')
-    password = xbmcplugin.getSetting('password')
-    aHDPlinks(url,date,username,password)
-elif mode == 8:
-    print 'Beging Listing Live Choices.'
     liveIndex(url)
+elif mode == 2:
+    liveHqGames(url,username,password)
+elif mode == 3:
+    liveHdGames(url,username,password)
+elif mode == 4:
+    liveHdpGames(url,username,password)
+elif mode == 5:
+    liveHqLinks(url,username,password)
+elif mode == 6:
+    liveHdLinks(url,username,password)
+elif mode == 7:
+    liveHdpLinks(url,username,password)
+elif mode == 8:
+    archiveIndex(url)
 elif mode == 9:
-    print 'Begin Listing Live HQ Games.'
-    username = xbmcplugin.getSetting('username')
-    password = xbmcplugin.getSetting('password')
-    lHQgames(url,username,password)
+    archiveHqGames(url,username,password,archiveDate)
 elif mode == 10:
-    print 'Begin Listing Live HQ Links.'
-    username = xbmcplugin.getSetting('username')
-    password = xbmcplugin.getSetting('password')
-    lHQlinks(url,username,password)
+    archiveHdGames(url,username,password,archiveDate)
 elif mode == 11:
-    print 'Begin Listing Live HD Games.'
-    username = xbmcplugin.getSetting('username')
-    password = xbmcplugin.getSetting('password')
-    lHDgames(url,username,password)
+    archiveHdpGames(url,username,password,archiveDate)
 elif mode == 12:
-    print 'Begin Listing Live HD Links.'
-    username = xbmcplugin.getSetting('username')
-    password = xbmcplugin.getSetting('password')
-    lHDlinks(url,username,password)
+    archiveHqLinks(url,username,password)
 elif mode == 13:
-    print 'Begin Listing Live HD-Plus Games.'
-    username = xbmcplugin.getSetting('username')
-    password = xbmcplugin.getSetting('password')
-    lHDPgames(url,username,password)
+    archiveHdLinks(url,username,password)
 elif mode == 14:
-    print 'Begin Listing Live HD-Plus Links.'
-    username = xbmcplugin.getSetting('username')
-    password = xbmcplugin.getSetting('password')
-    lHDPlinks(url,username,password)
+    archiveHdpLinks(url,username,password)
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
