@@ -177,6 +177,7 @@ def clean_file(name):
 def play_video(name,url):
 	title=name
 	name=clean_file(name)
+	name=name[:+32]
 	def Download(url,dest):
 		dp = xbmcgui.DialogProgress()
 		dp.create('Downloading',title,'Filename: '+name+'.flv')
