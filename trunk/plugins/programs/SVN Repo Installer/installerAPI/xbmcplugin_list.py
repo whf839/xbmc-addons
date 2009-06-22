@@ -227,6 +227,9 @@ class Main:
                     url = '%s?self_update=True&%s="%s/%s"&repo=%s&install="%s"&ioffset=%s&voffset=%s&title=%s' % ( sys.argv[ 0 ], heading, urllib.quote_plus( repo_url ), urllib.quote_plus( item ), repr( urllib.quote_plus( self.args.repo ) ), install, ioffset, voffset, repr( urllib.quote_plus( self.args.repo ) ), )
                 else:
                     url = '%s?%s="%s/%s"&repo=%s&install="%s"&ioffset=%s&voffset=%s&title=%s' % ( sys.argv[ 0 ], heading, urllib.quote_plus( repo_url ), urllib.quote_plus( item ), repr( urllib.quote_plus( self.args.repo ) ), install, ioffset, voffset, repr( urllib.quote_plus( self.args.repo ) ), )
+                # add uninstall item
+                if ( not isFolder and not "SVN%20Repo%20Installer" in item and os.path.isfile( path ) ):
+                    cm +=  [ ( xbmc.getLocalizedString( 30022 ), "XBMC.RunPlugin(%s?delete=%s&title=%s&delete_from_list=True)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( os.path.dirname( path ) ) ), repr( urllib.quote_plus( item[ : -1 ] ) ), ), ) ]
                 # set the default icon
                 icon = "DefaultFolder.png"
                 # create our listitem, fixing title
