@@ -39,10 +39,12 @@ class Main:
 
 		if xbmcgui.Dialog().yesno(__plugin__, self.args.title,"", "", xbmc.getLocalizedString( 30020 ), xbmc.getLocalizedString( 30022 )):	# Delete, Skip
 			items = loadFileObj(self.INSTALLED_ITEMS_FILENAME)
+			if items is None and self.args.has_key( "delete_from_list" ):
+				items = {'filepath': self.args.delete}
 			filepath = self.args.delete
 			# find addon from installed list
 			for i, item in enumerate(items):
-				if item['filepath'] == filepath or self.args.haskey( "delete_from_list" ):
+				if item['filepath'] == filepath or self.args.has_key( "delete_from_list" ):
 					log("addon details: %s" % item)
 					# make backup - if not deleting a backup copy
 					if ".backup" not in filepath:
@@ -64,7 +66,8 @@ class Main:
 							else:
 								# update filepath to indicated Deleted
 								items[i]['filepath'] = backupPath
-							saveFileObj(self.INSTALLED_ITEMS_FILENAME, items)
+							if not self.args.has_key( "delete_from_list" ):
+								saveFileObj(self.INSTALLED_ITEMS_FILENAME, items)
 							if not removeList:
 								xbmcgui.Dialog().ok(__plugin__, xbmc.getLocalizedString( 30018 ), xbmc.getLocalizedString( 30004 ), category)
 							else:
