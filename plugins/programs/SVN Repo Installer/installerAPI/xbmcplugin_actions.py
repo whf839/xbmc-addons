@@ -42,7 +42,7 @@ class Main:
 			filepath = self.args.delete
 			# find addon from installed list
 			for i, item in enumerate(items):
-				if item['filepath'] == filepath:
+				if item['filepath'] == filepath or self.args.haskey( "delete_from_list" ):
 					log("addon details: %s" % item)
 					# make backup - if not deleting a backup copy
 					if ".backup" not in filepath:
