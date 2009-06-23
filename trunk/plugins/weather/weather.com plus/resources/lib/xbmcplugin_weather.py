@@ -260,6 +260,7 @@ class Main:
             self.WEATHER_WINDOW.setProperty( "Hourly.%d.Humidity" % ( count + 1, ), forecast[ 6 ] )
             self.WEATHER_WINDOW.setProperty( "Hourly.%d.WindDirection" % ( count + 1, ), forecast[ 7 ] )
             self.WEATHER_WINDOW.setProperty( "Hourly.%d.WindSpeed" % ( count + 1, ), forecast[ 8 ] )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.ShortWindDirection" % ( count + 1, ), forecast[ 9 ] )
         # set our headings
         self.WEATHER_WINDOW.setProperty( "Hourly.Heading1", self._( 50 ) )
         self.WEATHER_WINDOW.setProperty( "Hourly.Heading2", self._( 52 ) )
@@ -327,6 +328,7 @@ class Main:
             self.WEATHER_WINDOW.setProperty( "Daily.%d.Precipitation" % ( count + 1, ), forecast[ 6 ] )
             self.WEATHER_WINDOW.setProperty( "Daily.%d.WindDirection" % ( count + 1, ), forecast[ 7 ] )
             self.WEATHER_WINDOW.setProperty( "Daily.%d.WindSpeed" % ( count + 1, ), forecast[ 8 ] )
+            self.WEATHER_WINDOW.setProperty( "Daily.%d.ShortWindDirection" % ( count + 1, ), forecast[ 9 ] )
         # set our heading properties
         self.WEATHER_WINDOW.setProperty( "Daily.Heading1", self._( 51 ) )
         self.WEATHER_WINDOW.setProperty( "Daily.Heading2", self._( 52 ) )
