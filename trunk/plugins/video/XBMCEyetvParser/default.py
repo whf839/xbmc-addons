@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # XBMCEyetvParser
-# version 1.38
+# version 1.40
 # by prophead
 # ThumbnailOverlayGenerator by Nic Wolfe (midgetspy)
 
@@ -532,12 +532,14 @@ for dirpath, dirnames, filenames in os.walk(path):
                     if not os.path.isdir(newpath):
                         os.mkdir(newpath)
                     newicon = newpath+shorticonname+'.tbn'
-                    print 'newicon='+newicon
+                    # print 'newicon='+newicon
                     # cp tbn newicon
-                    shutil.copyfile(tbn, newicon)
+                    if not os.path.isfile(newicon):
+                        shutil.copyfile(tbn, newicon)
                     icon=newicon
-                    
+
                     icon2 = icon
+
                     # title=shortdirpath
                     liz=xbmcgui.ListItem(shortdirpath, libname, iconImage=icon, thumbnailImage=icon2)
                     # liz.setInfo( type="Video", infoLabels={ "Title": libname, "Date":date, "Size":size, "Plot":plot, "Episode":episode} )
