@@ -20,9 +20,15 @@ __author__ = "nuka1195/blittan"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/music/Streamer%20Radio"
 __credits__ = "Team XBMC"
-__version__ = "1.1"
+__version__ = "1.2"
 
-xbmc.log( "[PLUGIN] '%s: version %s' initialized!" % ( __plugin__, __version__, ), xbmc.LOGNOTICE )
+try:
+    if xbmc.translatePath("special://home") == xbmc.translatePath("special://home"):
+        xbmc.log( "[PLUGIN] '%s: needs a never revision of XBMC to run!" % ( __plugin__), xbmc.LOGERROR )
+except:
+    xbmc.log( "[PLUGIN] '%s: needs a never revision of XBMC to run!" % ( __plugin__), xbmc.LOGERROR )
+
+xbmc.log( "[PLUGIN] '%s: version %s' initialized!" % ( __plugin__, __version__ ), xbmc.LOGNOTICE )
 
 
 class _Info:
@@ -117,10 +123,10 @@ class Main:
 
     # base paths
     BASE_PATH = os.getcwd().replace( ";", "" )
-    BASE_DATA_PATH = os.path.join( "T:\\plugin_data", __plugin__ )
+    BASE_DATA_PATH = os.path.join( xbmc.translatePath("special://profile/plugin_data/music"), __plugin__ )
     BASE_SOURCE_PATH = os.path.join( BASE_DATA_PATH, "screamer.xml" )
-    BASE_SKIN_THUMBNAIL_PATH = os.path.join( "Q:\\skin", xbmc.getSkinDir(), "media", __plugin__ )
-    BASE_PLUGIN_THUMBNAIL_PATH = os.path.join( BASE_PATH, "thumbnails" )
+    BASE_SKIN_THUMBNAIL_PATH = os.path.join( xbmc.translatePath("special://profile/skin"), xbmc.getSkinDir(), "media", __plugin__ )
+    BASE_PLUGIN_THUMBNAIL_PATH = os.path.join( BASE_PATH, "resources", "thumbnails" )
 
     def __init__( self ):
         self._parse_argv()
