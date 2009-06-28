@@ -47,6 +47,13 @@ data=data[url]=%s
 header=Referer|http://www.atrapavideo.com/en/
 quality=standard
 ########################################################
+title=clipsave.de
+target=<a href="([^"]+)"><span class="[^"]+"><strong>Download von
+url=http://www.nachrichtenmann.de/cgi-bin/video/video.cgi
+data=action=index&downloadurl=%s
+header=Referer|http://www.nachrichtenmann.de/cgi-bin/video/video.cgi
+quality=standard
+########################################################
 title=degrab.de
 target=Download Link.+?<a href="([^"]+)"
 url=http://www.degrab.de/?url=%s
@@ -89,9 +96,9 @@ url=%s
 quality=standard
 ########################################################
 title=xclips.ws
-target=var video_id = "(.+)"[;]
+target=<param name="movie" value="http://www.xclips.ws/media/player/player.swf[?]f=(http://www.xclips.ws/media/player/config.php[?]vkey=\d+)" />
 url=%s
-build=http://www.xclips.ws/media/videos/flv/%s.flv
+ext_target=<src>(http://www.xclips.ws[^"]+)</src>[^<]+<related>
 quality=standard
 ########################################################
 title=boysfood.com
