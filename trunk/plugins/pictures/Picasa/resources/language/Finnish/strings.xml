@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings> <!--  25.3.2009 Finnish   -->
+<strings> <!--  29.6.2009 Finnish   -->
     <!-- Plugin strings -->
     <string id="30900">Haun talletus</string>
     <string id="30901">Haluatko tallettaa tämän haun?</string>
@@ -19,6 +19,9 @@
     <string id="30953">Etsi ihmistä...</string>
     <string id="30954">Etsi kuvia...</string>
     <string id="30955">Omat kuvat</string>
+    <string id="30956">Omat yhteystiedot</string>
+    <string id="30957">Esitellyt kuvat</string>
+    <string id="30958">Aiemmat kuvat</string>
 
     <!-- Plugin settings strings -->
     <string id="30000">Käyttäjän sähköpostiosoite</string>
@@ -35,4 +38,10 @@
     <string id="30060">Talletettavien hakujen määrä</string>
     <string id="30130">Fanitaide kuva</string>
 
+    <!-- compatible messages -->
+
+    <string id="30700">versio</string>
+    <string id="30701">Tämä %s:n versio vaatii toimiakseen</string>
+    <string id="30702">XBMC revision %s tai uudemman.</string>
+    <string id="30703">Päivitä XBMC uudempaan versioon.</string>
 </strings>
