@@ -92,6 +92,13 @@ director=VideoDevil
 icon=video.devil.image|fucktube.png
 url=fucktube.com.cfg
 ########################################################
+title=KeezMovies
+type=rss
+genre=KeezMovies
+director=VideoDevil
+icon=video.devil.image|keezmovies.png
+url=keezmovies.com.cfg
+########################################################
 #title=Metacafe
 #type=rss
 #genre=Metacafe
