@@ -4,7 +4,7 @@ __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Trailer%20Addict"
 __date__ = '2009-06-30'
-__version__ = "1.2"
+__version__ = "1.3"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1) Gecko/20090624 Firefox/3.5'
@@ -222,18 +222,50 @@ def download_button(url,name):
 		title=name
 		name=clean_file(name)
 		name=name[:+32]
-		searchStr = name
-		keyboard = xbmc.Keyboard(searchStr, "Save as:")
-		keyboard.doModal()
-		if (keyboard.isConfirmed() == False):
-			return
-		searchstring = keyboard.getText()
-		name=searchstring
+		if (xbmcplugin.getSetting('ask_filename') == 'true'):
+			searchStr = name
+			keyboard = xbmc.Keyboard(searchStr, "Save as:")
+			keyboard.doModal()
+			if (keyboard.isConfirmed() == False):
+				return
+			searchstring = keyboard.getText()
+			name=searchstring
 		def Download(url,dest):
-			dp = xbmcgui.DialogProgress()
-			dp.create('Downloading',title,'Filename: '+name+'.flv')
-			urllib.urlretrieve(url,dest,lambda nb, bs, fs, url=url: _pbhook(nb,bs,fs,url,dp))
+				dp = xbmcgui.DialogProgress()
+				dp.create('Downloading',title,'Filename: '+name+ '.flv')
+				urllib.urlretrieve(url,dest,lambda nb, bs, fs, url=url: _pbhook(nb,bs,fs,url,dp))
 		def _pbhook(numblocks, blocksize, filesize, url=None,dp=None):
+				try:
+						percent = min((numblocks*blocksize*100)/filesize, 100)
+						dp.update(percent)
+				except:
+						percent = 100
+						dp.update(percent)
+				if dp.iscanceled():
+						dp.close()
+		flv_file = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), name + '.flv' ))
+		Download(url,flv_file)
+		if xbmcplugin.getSetting("dvdplayer") == "true":
+			player_type = xbmc.PLAYER_CORE_DVDPLAYER
+		else:
+			player_type = xbmc.PLAYER_CORE_MPLAYER
+		g_thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
+		listitem=xbmcgui.ListItem(title ,iconImage="DefaultVideo.png", thumbnailImage=g_thumbnail)
+		if (os.path.isfile(flv_file)):
+			dia = xbmcgui.Dialog()
+			if dia.yesno('Download Complete', 'Do you want to play this video?'):
+				xbmc.Player(player_type).play(flv_file, listitem)
+		
+		
+def play_video(name,url):
+	title=name
+	name=clean_file(name)
+	name=name[:+32]
+	def Download(url,dest):
+			dp = xbmcgui.DialogProgress()
+			dp.create('Downloading',title,'Filename: '+name+ '.flv')
+			urllib.urlretrieve(url,dest,lambda nb, bs, fs, url=url: _pbhook(nb,bs,fs,url,dp))
+	def _pbhook(numblocks, blocksize, filesize, url=None,dp=None):
 			try:
 					percent = min((numblocks*blocksize*100)/filesize, 100)
 					dp.update(percent)
@@ -242,41 +274,10 @@ def download_button(url,name):
 					dp.update(percent)
 			if dp.iscanceled():
 					dp.close()
-		dialog = xbmcgui.Dialog()
-		flv_file = dialog.browse(3, 'Choose Download Directory', 'video', '', False, False, '')
-		Download(url,flv_file+name+'.flv')
-		if xbmcplugin.getSetting("dvdplayer") == "true":
-			player_type = xbmc.PLAYER_CORE_DVDPLAYER
-		else:
-			player_type = xbmc.PLAYER_CORE_MPLAYER
-		g_thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
-		listitem=xbmcgui.ListItem(title ,iconImage="DefaultVideo.png", thumbnailImage=g_thumbnail)
-		if (os.path.isfile(flv_file+name+'.flv')):
-			xbmc.Player(player_type).play(flv_file+name+'.flv', listitem)
-		
-		
-def play_video(name,url):
-	title=name
-	name=clean_file(name)
-	name=name[:+32]
-	def Download(url,dest):
-		dp = xbmcgui.DialogProgress()
-		dp.create('Downloading',title,'Filename: '+name+'.flv')
-		urllib.urlretrieve(url,dest,lambda nb, bs, fs, url=url: _pbhook(nb,bs,fs,url,dp))
-	def _pbhook(numblocks, blocksize, filesize, url=None,dp=None):
-		try:
-				percent = min((numblocks*blocksize*100)/filesize, 100)
-				dp.update(percent)
-		except:
-				percent = 100
-				dp.update(percent)
-		if dp.iscanceled():
-				dp.close()
 	flv_file = None
 	stream = 'false'
 	if (xbmcplugin.getSetting('download') == 'true'):
-			dialog = xbmcgui.Dialog()
-			flv_file = dialog.browse(3, 'Choose Download Directory', 'video', '', False, False, '')
+		if (xbmcplugin.getSetting('ask_filename') == 'true'):
 			searchStr = name
 			keyboard = xbmc.Keyboard(searchStr, "Save as:")
 			keyboard.doModal()
@@ -284,21 +285,22 @@ def play_video(name,url):
 				return
 			searchstring = keyboard.getText()
 			name=searchstring
-			Download(url,flv_file+name+'.flv')
+		flv_file = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), name + '.flv' ))
+		Download(url,flv_file)
 	elif (xbmcplugin.getSetting('download') == 'false' and xbmcplugin.getSetting('download_ask') == 'true'):
 		dia = xbmcgui.Dialog()
-		ret = dia.select(xbmc.getLocalizedString( 30005 ), [xbmc.getLocalizedString( 30001 ), xbmc.getLocalizedString( 30007 ), xbmc.getLocalizedString( 30006 )])
+		ret = dia.select('What do you want to do?', ['Download & Play', 'Stream', 'Exit'])
 		if (ret == 0):
-			dialog = xbmcgui.Dialog()
-			flv_file = dialog.browse(3, 'Choose Download Directory', 'video', '', False, False, '')
-			searchStr = name
-			keyboard = xbmc.Keyboard(searchStr, "Save as:")
-			keyboard.doModal()
-			if (keyboard.isConfirmed() == False):
-				return
-			searchstring = keyboard.getText()
-			name=searchstring
-			Download(url,flv_file+name+'.flv')
+			if (xbmcplugin.getSetting('ask_filename') == 'true'):
+				searchStr = name
+				keyboard = xbmc.Keyboard(searchStr, "Save as:")
+				keyboard.doModal()
+				if (keyboard.isConfirmed() == False):
+					return
+				searchstring = keyboard.getText()
+				name=searchstring
+			flv_file = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), name + '.flv'))
+			Download(url,flv_file)
 		elif (ret == 1):
 			stream = 'true'
 		else:
@@ -309,12 +311,10 @@ def play_video(name,url):
 		player_type = xbmc.PLAYER_CORE_DVDPLAYER
 	else:
 		player_type = xbmc.PLAYER_CORE_MPLAYER
-	g_thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
-	listitem=xbmcgui.ListItem(title ,iconImage="DefaultVideo.png", thumbnailImage=g_thumbnail)
-	if (flv_file != None and os.path.isfile(flv_file+name+'.flv')):
-		xbmc.Player(player_type).play(flv_file+name+'.flv', listitem)
+	if (flv_file != None and os.path.isfile(flv_file)):
+		xbmc.Player(player_type).play(str(flv_file))
 	elif (stream == 'true'):
-		xbmc.Player(player_type).play(str(url), listitem)
+		xbmc.Player(player_type).play(str(url))
 	xbmc.sleep(200)
 	
 def clean(name):

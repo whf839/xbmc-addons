@@ -9,4 +9,5 @@
     <string id="30005">What do you want to do?</string>
     <string id="30006">Exit</string>
     <string id="30007">Stream</string>
+	<string id="30008">Ask for download filename</string>
 </strings>
