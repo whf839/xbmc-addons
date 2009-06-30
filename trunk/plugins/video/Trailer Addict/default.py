@@ -3,19 +3,19 @@ __scriptname__ = "Trailer Addict"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Trailer%20Addict"
-__date__ = '2009-06-29'
-__version__ = "1.0"
+__date__ = '2009-06-30'
+__version__ = "1.1"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
-HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.10) Gecko/2009042316 Firefox/3.0.10'
+HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1) Gecko/20090624 Firefox/3.5'
 THUMBNAIL_PATH = os.path.join(os.getcwd().replace( ";", "" ),'resources','media')
 
 def main():
 	li3=xbmcgui.ListItem("1. Search",iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'search_icon.png'))
-	u3=sys.argv[0]+"?mode=0"
+	u3=sys.argv[0]+"?mode=0&name="+urllib.quote_plus('Search')
 	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u3,li3,True)
 	li3=xbmcgui.ListItem("2. Film Database",iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'tv_icon.png'))
-	u3=sys.argv[0]+"?mode=4"
+	u3=sys.argv[0]+"?mode=4&name="+urllib.quote_plus('Film Database')
 	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u3,li3,True)
 	li3=xbmcgui.ListItem("3. Latest Trailers",iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'tv_icon.png'))
 	u3=sys.argv[0]+"?mode=2&name="+urllib.quote_plus('Latest Trailers')+"&url="+urllib.quote_plus('http://www.traileraddict.com/trailers')+"&page="+str(page)
@@ -24,7 +24,7 @@ def main():
 	u3=sys.argv[0]+"?mode=2&name="+urllib.quote_plus('Latest Clips')+"&url="+urllib.quote_plus('http://www.traileraddict.com/clips')+"&page="+str(page)
 	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u3,li3,True)
 	li3=xbmcgui.ListItem("5. Top 150 Films of the Week",iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'tv_icon.png'))
-	u3=sys.argv[0]+"?mode=5"
+	u3=sys.argv[0]+"?mode=5&name="+urllib.quote_plus('Top 150 Films of the Week')
 	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u3,li3,True)
 	
 def runKeyboard():
@@ -370,6 +370,7 @@ except:
         pass
 
 if mode==None:
+	name=''
 	main()
 elif mode==0:
 	runKeyboard()
@@ -385,6 +386,8 @@ elif mode==5:
 	get_top(url, name)
 elif mode==6:
 	download_button(url,name)
-	
+
+xbmcplugin.setPluginCategory(int(sys.argv[1]), name )
+xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )	
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
 	
