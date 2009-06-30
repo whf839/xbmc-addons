@@ -4,7 +4,7 @@ __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Trailer%20Addict"
 __date__ = '2009-06-30'
-__version__ = "1.1"
+__version__ = "1.2"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1) Gecko/20090624 Firefox/3.5'
@@ -83,7 +83,7 @@ def showList(url, name):
 	if len(info) >= 10:
 		item=xbmcgui.ListItem("(More Results)",iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'next.png'))
 		item.setInfo( type="Video", infoLabels={ "Title": clean(title) } )
-		u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(clean(title))+"&url="+urllib.quote_plus(nexturl)+"&page="+str(int(page)+1)
+		u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus('Search')+"&url="+urllib.quote_plus(nexturl)+"&page="+str(int(page)+1)
 		xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=item,isFolder=True)
 
 def get_tags(url, name):
@@ -109,7 +109,7 @@ def get_tags(url, name):
 			#print title[item_count][1]
 			name = str(int(item_count+1)+(10*(page)))+'. '+clean(title[item_count][1])
 			item=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
-			item.setInfo( type="Video", infoLabels={ "Title": clean(title[item_count][1]) } )
+			item.setInfo( type="Video", infoLabels={ "Title": name } )
 			action = "XBMC.RunPlugin(%s?mode=6&name=%s&url=%s" % ( sys.argv[ 0 ], urllib.quote_plus(savename+': '+clean(title[item_count][1])), urllib.quote_plus(url) )
 			cm = [ ( 'Download', "XBMC.RunPlugin(%s?mode=6&name=%s&url=%s)" % ( sys.argv[ 0 ], urllib.quote_plus(savename+': '+clean(title[item_count][1])), urllib.quote_plus(url) ), ) ]
 			item.addContextMenuItems( cm, replaceItems=True )
