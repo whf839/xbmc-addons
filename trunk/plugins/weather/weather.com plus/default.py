@@ -7,11 +7,12 @@ import sys
 import xbmc
 
 # Script constants
+__plugin__ = "weather.com plus"
 __pluginname__ = "weather.com+"
 __author__ = "nuka1195"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/weather/Weather.com"
-__version__ = "1.1.4"
+__version__ = "1.1.4a"
 
 __XBMC_Revision__ = "21010"
 
