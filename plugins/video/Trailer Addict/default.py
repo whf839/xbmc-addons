@@ -4,7 +4,7 @@ __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Trailer%20Addict"
 __date__ = '2009-06-30'
-__version__ = "1.3"
+__version__ = "1.4"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1) Gecko/20090624 Firefox/3.5'
@@ -125,7 +125,7 @@ def get_tags(url, name):
 
 def get_film(url, name):
 	searchStr = ''
-	keyboard = xbmc.Keyboard(searchStr, "Enter the movie's starting character or word:")
+	keyboard = xbmc.Keyboard(searchStr, "Enter the film's starting letter or word, or release year:")
 	keyboard.doModal()
 	if (keyboard.isConfirmed() == False):
 		return
@@ -146,8 +146,8 @@ def get_film(url, name):
 		url='http://www.traileraddict.com/'+url
 		name = clean(title)
 		item=xbmcgui.ListItem(name)
-		item.setInfo( type="Video", infoLabels={ "Title": clean(title) } )
-		u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(clean(title))+"&url="+urllib.quote_plus(url)
+		item.setInfo( type="Video", infoLabels={ "Title": name } )
+		u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
 		xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=item,isFolder=True)
 		item_count=item_count+1
 
@@ -311,10 +311,12 @@ def play_video(name,url):
 		player_type = xbmc.PLAYER_CORE_DVDPLAYER
 	else:
 		player_type = xbmc.PLAYER_CORE_MPLAYER
+	g_thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
+	listitem=xbmcgui.ListItem(title ,iconImage="DefaultVideo.png", thumbnailImage=g_thumbnail)
 	if (flv_file != None and os.path.isfile(flv_file)):
-		xbmc.Player(player_type).play(str(flv_file))
+		xbmc.Player(player_type).play(str(flv_file), listitem)
 	elif (stream == 'true'):
-		xbmc.Player(player_type).play(str(url))
+		xbmc.Player(player_type).play(str(url), listitem)
 	xbmc.sleep(200)
 	
 def clean(name):
