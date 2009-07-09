@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!--Language file translated with Team XBMC Translator-->
+<!--Translator: pajretX-->
+<!--Email: pajret@googlemail.com-->
+<!--Date of translation: 07/09/2009-->
+<!--$Revision$-->
+<strings>
+  <string id="30000">Użyj DVD Player'a zamiast domyślnego odtwarzacza</string>
+  <string id="30001">Pobierz i odtwórz</string>
+  <string id="30002">Pobierz do:</string>
+  <string id="30003">Pytaj czy pobrać plik przed odtworzeniem klipu</string>
+  <string id="30004">Następna strona</string>
+  <string id="30005">Co chcesz zrobić?</string>
+  <string id="30006">Wyjdź</string>
+  <string id="30007">Odtwarzaj w locie</string>
+  <string id="30008">Sprawdź dostępność aktualizacji</string>
+  <string id="30017">Proszę czekać...</string>
+  <string id="30018">Pobieranie aktualizacji...</string>
+  <string id="30019">'ESPN Video'</string>
+  <string id="30020">Dostępna aktualizacja poprzez SVN Repo Installer</string>
+  <string id="30021">Obecna wersja:</string>
+  <string id="30022">Wersja aktualizacji:</string>
+  <string id="30023">Aktualizacja zakończona!</string>
+  <string id="30024">Należy zrestartować plugin.</string>
+</strings>
