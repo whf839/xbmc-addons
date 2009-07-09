@@ -4,7 +4,7 @@ __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Trailer%20Addict"
 __date__ = '2009-06-30'
-__version__ = "1.4"
+__version__ = "1.5"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1) Gecko/20090624 Firefox/3.5'
@@ -37,7 +37,7 @@ def runKeyboard():
 	newStr = searchstring.replace(' ','+')
 	if len(newStr) == 0:
 		return
-	url='http://www.google.com/custom?domains=www.traileraddict.com&sitesearch=www.traileraddict.com/tags&q=' + newStr + '&client=pub-8929492375389186&forid=1&channel=4779144239&ie=ISO-8859-1&oe=ISO-8859-1&safe=active&cof=GALT%3A%235A5A5A%3BGL%3A1%3BDIV%3A%23336699%3BVLC%3ACD0A11%3BAH%3Acenter%3BBGC%3AFFFFFF%3BLBGC%3AFFFFFF%3BALC%3ACD0A11%3BLC%3ACD0A11%3BT%3A000000%3BGFNT%3ACD0A11%3BGIMP%3ACD0A11%3BLH%3A50%3BLW%3A227%3BL%3Ahttp%3A%2F%2Fwww.traileraddict.com%2Fimages%2Fgoogle.png%3BS%3Ahttp%3A%2F%2Fwww.traileraddict.com%3BFORID%3A11&hl=en'
+	url='http://www.traileraddict.com/search.php?domains=www.traileraddict.com&sitesearch=www.traileraddict.com/tags&q=' + newStr + '&client=pub-8929492375389186&forid=1&channel=4779144239&ie=ISO-8859-1&oe=ISO-8859-1&safe=active&cof=GALT%3A%235A5A5A%3BGL%3A1%3BDIV%3A%23336699%3BVLC%3ACD0A11%3BAH%3Acenter%3BBGC%3AFFFFFF%3BLBGC%3AFFFFFF%3BALC%3ACD0A11%3BLC%3ACD0A11%3BT%3A000000%3BGFNT%3ACD0A11%3BGIMP%3ACD0A11%3BLH%3A50%3BLW%3A227%3BL%3Ahttp%3A%2F%2Fwww.traileraddict.com%2Fimages%2Fgoogle.png%3BS%3Ahttp%3A%2F%2Fwww.traileraddict.com%3BFORID%3A11&hl=en'
 	#print url
 	showList(url,newStr)
 
@@ -48,43 +48,29 @@ def showList(url, name):
 	f=urllib2.urlopen(req)
 	a=f.read()
 	f.close()
-	p=re.compile('<li><div class=g><h2 class=r><a href="http://www.traileraddict.com/tags/(.+?)" target=_top class=l onmousedown="return clk\(this\.href,\'\',\'\',\'res\',\'(.+?)\',\'\'\)">(.+?) -')
-	info=p.findall(a)
-	#print info
-	if len(info) == 0:
+	image=re.compile('<center>\r\n<div style="background:url\((.*?)\);" class="searchthumb">',re.DOTALL).findall(a)
+	link_title=re.compile('</div><a href="/tags/(.+?)">(.+?)</a><br />').findall(a)
+	date=re.compile('<span style="font-size:7pt;">(.+?)</span><br /><br />').findall(a)
+	director=re.compile('<span style="color:#6D7D31;">Director:</span> (.+?)<br />').findall(a)
+	writer=re.compile('<span style="color:#6D7D31;">Writer:</span> (.+?)<br />').findall(a)
+	cast=re.compile('<span style="color:#6D7D31;">Condensed Cast:</span> (.+?)<br />').findall(a)
+	if len(link_title) == 0:
 		dialog = xbmcgui.Dialog()
 		ok = dialog.ok('Trailer Addict', 'Your search - '+name+' - did not match any documents.\nMake sure all words are spelled correctly\nor try different keywords.')
 		main()
 		return
 	item_count=0
-	find_count=0
-	go = 0
-	for url,trash,title in info:
-		test=re.compile('Trailers by Film: (.+?)').findall(title)
-		if len(test) > 0:
-			if url.find('/') == -1:
-				title=title.replace('Trailers by Film: ','')
-				asd=title.rsplit('<b>')
-				title=asd[0]
-				url='http://www.traileraddict.com/tags/'+url
-				#print url
-				name = clean(title)
-				item=xbmcgui.ListItem(name)
-				item.setInfo( type="Video", infoLabels={ "Title": clean(title) } )
-				u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(clean(title))+"&url="+urllib.quote_plus(url)
-				xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=item,isFolder=True)
-				find_count=find_count+1
-		item_count=item_count+1
-	if find_count == 0 and page == 0:
-		dialog = xbmcgui.Dialog()
-		ok = dialog.ok('Trailer Addict', 'Your search - '+name+' - did not match any documents.\nMake sure all words are spelled correctly\nor try different keywords.')
-		main()
-		return
-	if len(info) >= 10:
-		item=xbmcgui.ListItem("(More Results)",iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'next.png'))
-		item.setInfo( type="Video", infoLabels={ "Title": clean(title) } )
-		u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus('Search')+"&url="+urllib.quote_plus(nexturl)+"&page="+str(int(page)+1)
+	for url,title in link_title:
+		url='http://www.traileraddict.com/tags/'+url
+		imagex=image[item_count].replace('/pthumb.php?dir=','').replace('\r\n','')
+		thumb='http://www.traileraddict.com'+imagex
+		name = clean(title)
+		item=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
+		year=re.compile('[0-9][0-9][0-9][0-9]').findall(date[item_count])
+		item.setInfo( type="Video", infoLabels={ "Title": clean(title), "Year": int(year[0]), "Director": director[item_count], "Writer": writer[item_count], "Cast": cast[item_count].split( ",  " ) } )
+		u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(clean(title))+"&url="+urllib.quote_plus(url)
 		xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=item,isFolder=True)
+		item_count=item_count+1
 
 def get_tags(url, name):
 	#print url
