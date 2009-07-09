@@ -1,37 +1,55 @@
-import urllib,urllib2,re,xbmcplugin,xbmcgui
+import urllib,urllib2,re,xbmcplugin,xbmcgui,os
 
 #widelec.org - by pajretX 2009.
 
 #.nF0
 __plugin__  = "widelec.org"
 __author__  = "pajretX"
-__date__    = "06 July 2009"
-__version__ = "1.3"
+__date__    = "09 July 2009"
+__version__ = "1.35"
 
-
+HOME_DIR = os.getcwd()
 base = "http://widelec.org/"
+# STRINGS
+names = xbmc.Language( HOME_DIR ).getLocalizedString
+naj = (names (30000))
+kom = (names (30001))
+ogl = (names (30002))
+kat = (names (30003))
+
+gen = (names (30004))
+kob = (names (30005))
+lud = (names (30006))
+wid = (names (30007))
+mot = (names (30008))
+odj = (names (30009))
+spo = (names (30010))
+sta = (names (30011))
+wyn = (names (30012))
+zwi = (names (30013))
+res = (names (30014))
 
 #0
 def CATEGORIES():
-	addDir('Newest Photos','http://widelec.org/index.php?page=1&order_by=0&category=&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir('Most Commented','http://widelec.org/index.php?page=1&order_by=1&category=&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir('Most Viewed','http://widelec.org/index.php?page=1&order_by=2&category=&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir('Categories','cat2',1,'')
+	addDir(naj,'http://widelec.org/index.php?page=1&order_by=0&category=&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(kom,'http://widelec.org/index.php?page=1&order_by=1&category=&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(ogl,'http://widelec.org/index.php?page=1&order_by=2&category=&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(kat,'cat2',1,'')
 
 
 #1
 def CATEGORIES2():
-	addDir('General','http://widelec.org/index.php?page=1&order_by=0&category=fotografia&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir('Women','http://widelec.org/index.php?page=1&order_by=0&category=kobiety&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir('People','http://widelec.org/index.php?page=1&order_by=0&category=ludzie&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir('Landscape','http://widelec.org/index.php?page=1&order_by=0&category=miejscowki&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir('Moto','http://widelec.org/index.php?page=1&order_by=0&category=motoryzacja&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir('Crazy','http://widelec.org/index.php?page=1&order_by=0&category=odjechane&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir('Sport','http://widelec.org/index.php?page=1&order_by=0&category=sport&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir('Vintage','http://widelec.org/index.php?page=1&order_by=0&category=wiekowe&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir('Inventions','http://widelec.org/index.php?page=1&order_by=0&category=wynalazki&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir('Animals','http://widelec.org/index.php?page=1&order_by=0&category=zwierzeta&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir('Other','http://widelec.org/index.php?page=1&order_by=0&category=reszta&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(gen,'http://widelec.org/index.php?page=1&order_by=0&category=fotografia&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(kob,'http://widelec.org/index.php?page=1&order_by=0&category=kobiety&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(lud,'http://widelec.org/index.php?page=1&order_by=0&category=ludzie&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(wid,'http://widelec.org/index.php?page=1&order_by=0&category=miejscowki&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(mot,'http://widelec.org/index.php?page=1&order_by=0&category=motoryzacja&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(odj,'http://widelec.org/index.php?page=1&order_by=0&category=odjechane&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(spo,'http://widelec.org/index.php?page=1&order_by=0&category=sport&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(sta,'http://widelec.org/index.php?page=1&order_by=0&category=wiekowe&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(wyn,'http://widelec.org/index.php?page=1&order_by=0&category=wynalazki&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(zwi,'http://widelec.org/index.php?page=1&order_by=0&category=zwierzeta&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(res,'http://widelec.org/index.php?page=1&order_by=0&category=reszta&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
                                            
      
 # 2
@@ -114,7 +132,6 @@ def get_params():
 
 
 def addLink(name,url,iconimage):
-	import os.path
 	name = os.path.split(url)[1]
 	print "name = " + name
 	print "url  = " + url
