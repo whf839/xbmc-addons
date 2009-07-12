@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!--Language file translated with Team XBMC Translator-->
+<!--Translator: pajretX-->
+<!--Email: pajret@googlemail.com-->
+<!--Date of translation: 07/12/2009-->
+<!--$Revision$-->
+<strings>
+  <string id="30000">Do odtwarzania używaj DVD Player'a </string>
+  <string id="30005">Zapytaj</string>
+  <string id="30006">Odtwarzaj</string>
+  <string id="30007">Pobierz</string>
+  <string id="30008">Pobierz i odtwarzaj</string>
+  <string id="30009">Ustawienia pobierania (tylko http)</string>
+  <string id="30010">Pobieraj do:</string>
+  <string id="30011">Co chcesz zrobić?</string>
+  <string id="30012">Wyjdź</string>
+</strings>
