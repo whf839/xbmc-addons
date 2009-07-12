@@ -24,7 +24,7 @@ def CATEGORIES():
         items = re.sub('\r', ' ', items)
         items = re.sub('\n', ' ', items)
         items = re.sub('\t', ' ', items)
-        topmenu=re.compile('<h1>Full Episodes</h1>(.+?)<h2>Anime Chat</h2>').findall(items)
+        topmenu=re.compile('<h1>Anime List</h1>(.+?)</ul>').findall(items)
         del items
         match=re.compile('<a href="(.+?)">(.+?)</a></li>').findall(topmenu[0])
         del topmenu
@@ -72,7 +72,7 @@ def INDEX(url,name):
 
 def VIDEOLINKS(url,name):
         items = getHTML(url)
-        match=re.compile("so.addParam\('flashvars','&captions=(.+?)&image=(.+?)&file=(.+?)&logo=").findall(items) 
+        match=re.compile('&captions=(.+?)&image=(.+?)&file=(.+?)&logo=').findall(items) 
         for captions,image,url in match:
                 item=xbmcgui.ListItem(name, iconImage='', thumbnailImage='')
                 item.setInfo( type="Video",infoLabels={ "Title": name
