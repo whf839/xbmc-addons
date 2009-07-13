@@ -23,11 +23,11 @@ director=YouTube
 icon=youtube.png
 url=youtube.com.cfg
 ########################################################
-title=GoogleVideo
-type=rss
-director=GoogleVideo
-icon=googlevideo.png
-url=googlevideo.com.cfg
+#title=GoogleVideo
+#type=rss
+#director=GoogleVideo
+#icon=googlevideo.png
+#url=googlevideo.com.cfg
 ########################################################
 title=Metacafe
 type=rss
