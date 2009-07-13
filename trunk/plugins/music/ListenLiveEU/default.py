@@ -10,9 +10,9 @@ import traceback
 from pprint import pprint
 
 __plugin__ = "ListenLiveEU"
-__version__ = '0.1'
+__version__ = '0.2'
 __author__ = 'bootsy [bootsy82@gmail.com]'
-__date__ = '10-04-2009'
+__date__ = '13-07-2009'
 __svn__ = 'http://xbmc-addons.googlecode.com/svn/tags/plugins/music/' + __plugin__
 
 BASE_URL = 'http://www.listenlive.eu'
@@ -108,7 +108,8 @@ def getStreams(url):
 			#stationRE=re.compile('<td><a href=".*?"><b>(.*?)</b>.*?<td>(.*?)</td>.*?alt=".*?".*?<td>(<a href=.*?</td>).*?(?:<td>(.*?)</td>|</tr>)', re.IGNORECASE + re.MULTILINE + re.DOTALL)
 			stationRE=re.compile('<td.+?<a href=".*?"><b>(.*?)</b>.*?<td>(.*?)</td>.*?alt=".*?".*?<td>(<a href=.*?</td>).*?(?:<td>(.*?)</td>|</tr>)', re.IGNORECASE + re.MULTILINE + re.DOTALL)
 
-			streamsRE=re.compile('href="(.*?)">(.*?)<', re.IGNORECASE)
+			#streamsRE=re.compile('href="(.*?)">(.*?)<', re.IGNORECASE)
+			streamsRE=re.compile('href="([^"]+)">(\d+ +[^"]+|\d+[.]\d+ +[^"]+)</a>', re.IGNORECASE)
 
 			# get all stations
 			stations = stationsRE.findall(doc)
