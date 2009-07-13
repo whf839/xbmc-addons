@@ -26,3 +26,8 @@ type=rss
 icon=se.png
 url=dailymotion.se.cfg
 ########################################################
+title=Dailymotion (ES)
+type=rss
+icon=sp.png
+url=dailymotion.es.cfg
+########################################################
