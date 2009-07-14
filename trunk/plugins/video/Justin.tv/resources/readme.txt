@@ -1,10 +1,15 @@
-Date: 14 July 2009 ver: 1.2
+[Update 7/14/09 v1.3]
+- fixed plugin category title problem
+
+----------------------------
+
+[Update 7/14/09 v1.2] 
 - fixed saved search bug
 - changed saved search icon
 
 ----------------------------
 
-Date: 13 July 2009 ver: 1.1
+[Update 7/13/09 v1.1] 
 - fixed Library mode problem
 - added saved search results feature
 - added a few menu icons and updated Justin.tv icon
