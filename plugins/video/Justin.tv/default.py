@@ -2,8 +2,8 @@
 __scriptname__ = "Justin.tv"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Justin.tv"
-__date__ = '2009-07-13'
-__version__ = "1.1"
+__date__ = '2009-07-14'
+__version__ = "1.2"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 from urllib2 import Request, urlopen, URLError, HTTPError
@@ -186,12 +186,13 @@ def runKeyboard():
 		save = []
 	cm = []
 	for query in save:
+		url = 'http://www.justin.tv/search?q='+query+'&commit=Search'
 		cm = [ ( 'Remove', "XBMC.RunPlugin(%s?mode=7&name=%s&url=%s)" % ( sys.argv[ 0 ], urllib.quote_plus(query), urllib.quote_plus('search') ), ) ]
 		cm += [ ( 'Edit', "XBMC.RunPlugin(%s?mode=8&name=%s&url=%s)" % ( sys.argv[ 0 ], urllib.quote_plus(query), urllib.quote_plus('search') ), ) ]
-		li=xbmcgui.ListItem(query,iconImage=os.path.join(THUMBNAIL_PATH, 'search_users.png'),thumbnailImage=os.path.join(THUMBNAIL_PATH, 'search_users.png'))
+		li=xbmcgui.ListItem(query,iconImage=os.path.join(THUMBNAIL_PATH, 'search_categories.png'),thumbnailImage=os.path.join(THUMBNAIL_PATH, 'search_categories.png'))
 		li.addContextMenuItems( cm, replaceItems=True )
-		u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(query)+"&url="+urllib.quote_plus(query)
-		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,False)
+		u=sys.argv[0]+"?mode=4&url="+urllib.quote_plus(url)
+		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 	
 def runKeyboard4():
 	searchStr = ''
