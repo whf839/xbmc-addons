@@ -3,7 +3,7 @@ __scriptname__ = "Justin.tv"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Justin.tv"
 __date__ = '2009-07-14'
-__version__ = "1.2"
+__version__ = "1.3"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 from urllib2 import Request, urlopen, URLError, HTTPError
@@ -121,6 +121,7 @@ def showCategories():
 	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
 def showSubCategories(url, name):
+	cat_name=name
 	req = urllib2.Request(url)
 	req.add_header('User-Agent', HEADER)
 	f=urllib2.urlopen(req)
@@ -130,15 +131,16 @@ def showSubCategories(url, name):
 	cat=re.compile('<a href="(.+?)" class="category_link">(.+?)</a>').findall(match[0])
 	name = 'All '
 	li=xbmcgui.ListItem(name)
-	u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
+	u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(cat_name+' / '+name)+"&url="+urllib.quote_plus(url)
 	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 	for url,name in cat:
 		url='http://www.justin.tv' + url
 		li=xbmcgui.ListItem(name)
-		u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
+		u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(cat_name+' / '+name)+"&url="+urllib.quote_plus(url)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
 def showLinks(url, name):
+	cat_name=name
 	thisurl=url
 	req = urllib2.Request(url+'&page='+str(int(page)))
 	req.add_header('User-Agent', HEADER)
@@ -161,12 +163,12 @@ def showLinks(url, name):
 		name=str(int(x+1)+(36*(page-1)))+'. '+cat[x][2]+': '+cleanStat(stat3[x])+' - Viewers: '+stat1[x]+' - Views: '+stat2[x]
 		url=url.replace('/','')
 		li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
-		u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
+		u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(cat_name)+"&url="+urllib.quote_plus(url)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
 		x=x+1
 	if len(data) >= 36:	
 		li=xbmcgui.ListItem("Next Page",iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'next.png'))
-		u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(thisurl)+"&page="+str(int(page)+1)
+		u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(cat_name)+"&url="+urllib.quote_plus(thisurl)+"&page="+str(int(page)+1)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
 def cleanStat(name):
