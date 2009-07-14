@@ -2,8 +2,8 @@
 __scriptname__ = "Justin.tv"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Justin.tv"
-__date__ = '2009-06-10'
-__version__ = "r1065"
+__date__ = '2009-07-13'
+__version__ = "1.1"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 from urllib2 import Request, urlopen, URLError, HTTPError
@@ -103,21 +103,21 @@ def showCategories():
 	f.close()
 	match=re.compile('<div id="category_chooser">(.+?)<div class="section">', re.DOTALL).findall(a)
 	cat=re.compile('<a href="(.+?)" class="category_link">(.+?)</a>').findall(match[0])
-	#all=re.compile('<span class=\'not_linked\'>All</span> \n            (.+?)\n').findall(match[0])
-	name = 'All '#+all[0]
+	name = 'All '
 	li=xbmcgui.ListItem(name)
 	u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
 	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 	for url,name in cat:
-		url='http://www.justin.tv' + url
-		li=xbmcgui.ListItem(name)
-		u=sys.argv[0]+"?mode="+mode+"&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
-		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
-	li=xbmcgui.ListItem('(Search)')
-	u=sys.argv[0]+"?mode=3"
+		if name != 'Storm Chasers':
+			url='http://www.justin.tv' + url
+			li=xbmcgui.ListItem(name)
+			u=sys.argv[0]+"?mode="+mode+"&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
+			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+	li=xbmcgui.ListItem('(Search)',iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'search_icon.png'))
+	u=sys.argv[0]+"?mode=3&name="+urllib.quote_plus('(Search)')
 	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
-	li=xbmcgui.ListItem('(User Search)')
-	u=sys.argv[0]+"?mode=5"
+	li=xbmcgui.ListItem('(User Search)',iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'search_icon.png'))
+	u=sys.argv[0]+"?mode=5&name="+urllib.quote_plus('(User Search)')
 	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
 def showSubCategories(url, name):
@@ -174,8 +174,26 @@ def cleanStat(name):
     for trash, crap in remove:
         name=name.replace(trash,crap)
     return name
-		
+
 def runKeyboard():
+	li=xbmcgui.ListItem('(Enter Search)',iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'search_icon.png'))
+	u=sys.argv[0]+"?mode=9"
+	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+	presets = xbmcplugin.getSetting( "presets_search" )
+	if presets != '':
+		save = presets.split( " | " )
+	else:
+		save = []
+	cm = []
+	for query in save:
+		cm = [ ( 'Remove', "XBMC.RunPlugin(%s?mode=7&name=%s&url=%s)" % ( sys.argv[ 0 ], urllib.quote_plus(query), urllib.quote_plus('search') ), ) ]
+		cm += [ ( 'Edit', "XBMC.RunPlugin(%s?mode=8&name=%s&url=%s)" % ( sys.argv[ 0 ], urllib.quote_plus(query), urllib.quote_plus('search') ), ) ]
+		li=xbmcgui.ListItem(query,iconImage=os.path.join(THUMBNAIL_PATH, 'search_users.png'),thumbnailImage=os.path.join(THUMBNAIL_PATH, 'search_users.png'))
+		li.addContextMenuItems( cm, replaceItems=True )
+		u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(query)+"&url="+urllib.quote_plus(query)
+		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,False)
+	
+def runKeyboard4():
 	searchStr = ''
 	keyboard = xbmc.Keyboard(searchStr, "Search")
 	keyboard.doModal()
@@ -185,8 +203,15 @@ def runKeyboard():
 	newStr = searchstring.replace(' ','+')
 	if len(newStr) == 0:
 		return
-	url = 'http://www.justin.tv/search?q='+newStr+'&commit=Search'
-	runSearch(url)
+	presets = xbmcplugin.getSetting( "presets_search" )
+	if presets == '':
+		save_str = newStr
+	else:
+		save_str = presets + " | " + newStr
+	xbmcplugin.setSetting("presets_search", save_str)
+	if len(newStr) != 0:
+		url = 'http://www.justin.tv/search?q='+newStr+'&commit=Search'
+		runSearch(url)
 		
 def runSearch(url):
 	thisurl=url
@@ -213,19 +238,85 @@ def runSearch(url):
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
 def runKeyboard2():
+	li=xbmcgui.ListItem('(Enter User)',iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'search_icon.png'))
+	u=sys.argv[0]+"?mode=6"
+	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,False)
+	presets = xbmcplugin.getSetting( "presets_users" )
+	if presets != '':
+		save = presets.split( " | " )
+	else:
+		save = []
+	cm = []
+	for query in save:
+		cm = [ ( 'Remove', "XBMC.RunPlugin(%s?mode=7&name=%s&url=%s)" % ( sys.argv[ 0 ], urllib.quote_plus(query), urllib.quote_plus('users') ), ) ]
+		cm += [ ( 'Edit', "XBMC.RunPlugin(%s?mode=8&name=%s&url=%s)" % ( sys.argv[ 0 ], urllib.quote_plus(query), urllib.quote_plus('users') ), ) ]
+		li=xbmcgui.ListItem(query,iconImage=os.path.join(THUMBNAIL_PATH, 'search_users.png'),thumbnailImage=os.path.join(THUMBNAIL_PATH, 'search_users.png'))
+		li.addContextMenuItems( cm, replaceItems=True )
+		u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(query)+"&url="+urllib.quote_plus(query)
+		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,False)
+		
+def removeB(name,url):
+	type = 'presets_' + url
+	presets = xbmcplugin.getSetting( type )
+	save = presets.split( " | " )
+	del save[save.index(name)]
+	sets = ''
+	x=0
+	for item in save:
+		if x == 0:
+			sets = sets + item
+		else:
+			sets = sets + ' | ' + item
+		x=x+1
+	xbmcplugin.setSetting(type, sets)
+	xbmc.executebuiltin( "Container.Refresh" )
+
+def editB(name,url):
+	type = 'presets_' + url
+	presets = xbmcplugin.getSetting( type )
+	save = presets.split( " | " )
+	del save[save.index(name)]
+	sets = ''
+	x=0
+	for item in save:
+		if x == 0:
+			sets = sets + item
+		else:
+			sets = sets + ' | ' + item
+		x=x+1
+	searchStr = name
+	keyboard = xbmc.Keyboard(searchStr, "Edit user name")
+	keyboard.doModal()
+	if (keyboard.isConfirmed() == False):
+			return
+	searchstring = keyboard.getText()
+	newStr = searchstring
+	if len(newStr) == 0:
+			return
+	sets = sets + ' | ' + newStr
+	xbmcplugin.setSetting(type, sets)
+	xbmc.executebuiltin( "Container.Refresh" )
+	
+def runKeyboard3():
 	searchStr = ''
 	keyboard = xbmc.Keyboard(searchStr, "Enter the exact user name")
 	keyboard.doModal()
 	if (keyboard.isConfirmed() == False):
-		return
+			return
 	searchstring = keyboard.getText()
 	newStr = searchstring.replace(' ','+')
 	if len(newStr) == 0:
-		return
-	li=xbmcgui.ListItem(newStr)
-	u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(newStr)+"&url="+urllib.quote_plus(newStr)
-	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
-			
+			return
+	presets = xbmcplugin.getSetting( "presets_users" )
+	if presets == '':
+		save_str = newStr
+	else:
+		save_str = presets + " | " + newStr
+	xbmcplugin.setSetting("presets_users", save_str)
+	if len(newStr) != 0:
+		playVideo(newStr, newStr)
+
+
 def playVideo(url, name):
 	vid='http://usher.justin.tv/find/live_user_' + url + '.xml'
 	try:
@@ -235,10 +326,16 @@ def playVideo(url, name):
 	except HTTPError, e:
 		dialog = xbmcgui.Dialog()
 		ok = dialog.ok('Justin.tv', 'Error: Invalid user or not a live feed.')
+		xbmc.executebuiltin( "Container.Refresh" )
 		return
 	a=f.read()
 	f.close()
 	data=re.compile('<play>(.+?)</play><connect>(.+?)</connect>').findall(a)
+	if len(data) == 0:
+		dialog = xbmcgui.Dialog()
+		ok = dialog.ok('Justin.tv', 'Error: Invalid user or not a live feed.')
+		xbmc.executebuiltin( "Container.Refresh" )
+		return
 	playpath = data[0][0]
 	rtmp_url = data[0][1]
 	swf='http://www.justin.tv/meta/'+url+'.xml'
@@ -252,10 +349,11 @@ def playVideo(url, name):
 	data4=re.compile('<status>(.*?)</status>').findall(a)
 	referer = 'http://www.justin.tv/'
 	SWFPlayer = data2[0] + '?referer=' + referer + '&userAgent=' + HEADER
+	g_thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
 	if len(data4) == 0:
-		item = xbmcgui.ListItem(data3[0])
+		item = xbmcgui.ListItem(data3[0],iconImage="DefaultVideo.png", thumbnailImage=g_thumbnail)
 	else:
-		item = xbmcgui.ListItem(data3[0]+': '+data4[0])
+		item = xbmcgui.ListItem(data3[0]+': '+data4[0],iconImage="DefaultVideo.png", thumbnailImage=g_thumbnail)
 	item.setProperty("SWFPlayer", SWFPlayer)
 	item.setProperty("PlayPath", playpath)
 	item.setProperty("PageURL", referer)
@@ -302,6 +400,7 @@ except:
         pass
 
 if mode==None:
+	name=''
 	showCategories()
 elif mode==0:
 	showSubCategories(url, name)
@@ -312,8 +411,21 @@ elif mode==2:
 elif mode==3:
 	runKeyboard()
 elif mode==4:
+	name=''
 	runSearch(url)
 elif mode==5:
 	runKeyboard2()
-xbmcplugin.endOfDirectory(int(sys.argv[1]))
+elif mode==6:
+	name=''
+	runKeyboard3()
+elif mode==7:
+	removeB(name,url)
+elif mode==8:
+	editB(name,url)
+elif mode==9:
+	name=''
+	runKeyboard4()
 	
+xbmcplugin.setPluginCategory(int(sys.argv[1]), name )
+xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )
+xbmcplugin.endOfDirectory(int(sys.argv[1]))
