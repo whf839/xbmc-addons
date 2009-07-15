@@ -197,11 +197,12 @@ def runSearch(url):
 	info=re.compile('<p class="description bold_results">\n            (.*?)\n        </p>\n\n        <div class="stats">', re.DOTALL).findall(a)
 	x=0
 	for url, name in title:
+		title=name+' - '+info[x]
 		thumb=thumbs[x]
-		name=str(int(x+1)+(10*(page-1)))+'. '+name+' - '+info[x]
+		name=str(int(x+1)+(10*(page-1)))+'. '+title
 		url=url.replace('/','')
 		li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
-		u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
+		u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(title)+"&url="+urllib.quote_plus(url)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
 		x=x+1
 	if len(title) >= 10:	
