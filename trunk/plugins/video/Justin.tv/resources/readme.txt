@@ -1,3 +1,10 @@
+[Update 7/15/09 v1.4.1]
+- added "Director" (user) and "Genre" (category) to video info
+- added function to remove html tags from titles
+- fixed problem with other languages
+
+----------------------------
+
 [Update 7/15/09 v1.4]
 - updated plugin to work with justin.tv site changes
 

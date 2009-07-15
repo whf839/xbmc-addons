@@ -3,7 +3,7 @@ __scriptname__ = "Justin.tv"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Justin.tv"
 __date__ = '2009-07-15'
-__version__ = "1.4"
+__version__ = "1.4.1"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 from urllib2 import Request, urlopen, URLError, HTTPError
@@ -13,88 +13,60 @@ THUMBNAIL_PATH = os.path.join(os.getcwd().replace( ";", "" ),'resources','media'
 def showCategories():
 	if xbmcplugin.getSetting('language') == '0':
 		idd = 'en'
-		mode = '0'
 	elif xbmcplugin.getSetting('language') == '1':
 		idd = 'ar'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '2':
 		idd = 'bg'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '3':
 		idd = 'ca'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '4':
 		idd = 'de'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '5':
 		idd = 'el'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '6':
 		idd = 'es'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '7':
 		idd = 'fr'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '8':
 		idd = 'hi'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '9':
 		idd = 'hu'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '10':
 		idd = 'id'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '11':
 		idd = 'is'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '12':
 		idd = 'it'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '13':
 		idd = 'iw'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '14':
 		idd = 'ja'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '15':
 		idd = 'ko'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '16':
 		idd = 'lt'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '17':
 		idd = 'nl'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '18':
 		idd = 'no'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '19':
 		idd = 'pl'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '20':
 		idd = 'pt'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '21':
 		idd = 'ro'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '22':
 		idd = 'ru'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '23':
 		idd = 'sr'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '24':
 		idd = 'tl'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '25':
 		idd = 'tr'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '26':
 		idd = 'uk'
-		mode = '1'
 	elif xbmcplugin.getSetting('language') == '27':
 		idd = 'zh-TW'
-		mode = '1'
 	url='http://www.justin.tv/'
 	req = urllib2.Request(url)
 	req.add_header('User-Agent', HEADER)
@@ -112,7 +84,7 @@ def showCategories():
 		new=url.replace('/directory','/directory/dropmenu/subcategory')
 		url='http://www.justin.tv'+new+'?kind=live&order=hot&lang='+idd
 		li=xbmcgui.ListItem(name)
-		u=sys.argv[0]+"?mode="+mode+"&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
+		u=sys.argv[0]+"?mode=0&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 	li=xbmcgui.ListItem('(Search)',iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'search_icon.png'))
 	u=sys.argv[0]+"?mode=3&name="+urllib.quote_plus('(Search)')
@@ -157,7 +129,7 @@ def showLinks(url, name):
 	x=0
 	for url,title in cat:
 		url=url.replace('/','')
-		name=str(int(x+1)+(36*(page-1)))+'. '+title+' on '+stat2[x][1]+' - '+stat1[x]
+		name=str(int(x+1)+(36*(page-1)))+'. '+clean(title)+' on '+clean(stat2[x][1])+' - '+stat1[x]
 		thumb=data[x]
 		li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
 		u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(cat_name)+"&url="+urllib.quote_plus(url)
@@ -168,11 +140,11 @@ def showLinks(url, name):
 		u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(cat_name)+"&url="+urllib.quote_plus(thisurl)+"&page="+str(int(page)+1)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
-def cleanStat(name):
-    remove=[('\n',''),('                            ',''),('<p>',''),('</p>',''),('                    ','')]
-    for trash, crap in remove:
-        name=name.replace(trash,crap)
-    return name
+def clean(name):
+	remove=[('&amp;','&'),('&quot;','"'),('&lt;','<'),('&gt;','>')]
+	for trash, crap in remove:
+		name=name.replace(trash,crap)
+	return name
 
 def runKeyboard():
 	li=xbmcgui.ListItem('(Enter Search)',iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'search_icon.png'))
@@ -351,9 +323,11 @@ def playVideo(url, name):
 	SWFPlayer = data2[0] + '?referer=' + referer + '&userAgent=' + HEADER
 	g_thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
 	if len(data4) == 0:
-		item = xbmcgui.ListItem(data3[0],iconImage="DefaultVideo.png", thumbnailImage=g_thumbnail)
+		title = 'Justin.tv'
 	else:
-		item = xbmcgui.ListItem(data3[0]+': '+data4[0],iconImage="DefaultVideo.png", thumbnailImage=g_thumbnail)
+		title = clean(data3[0])+': '+clean(data4[0])
+	item = xbmcgui.ListItem(label=title,iconImage="DefaultVideo.png",thumbnailImage=g_thumbnail)
+	item.setInfo( type="Video", infoLabels={ "Title": title, "Director": url, "Genre": name } )
 	item.setProperty("SWFPlayer", SWFPlayer)
 	item.setProperty("PlayPath", playpath)
 	item.setProperty("PageURL", referer)
