@@ -2,8 +2,8 @@
 __scriptname__ = "Justin.tv"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Justin.tv"
-__date__ = '2009-07-14'
-__version__ = "1.3"
+__date__ = '2009-07-15'
+__version__ = "1.4"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 from urllib2 import Request, urlopen, URLError, HTTPError
@@ -95,24 +95,25 @@ def showCategories():
 	elif xbmcplugin.getSetting('language') == '27':
 		idd = 'zh-TW'
 		mode = '1'
-	url='http://www.justin.tv/directory?order=hot&lang='+idd
+	url='http://www.justin.tv/'
 	req = urllib2.Request(url)
 	req.add_header('User-Agent', HEADER)
 	f=urllib2.urlopen(req)
 	a=f.read()
 	f.close()
-	match=re.compile('<div id="category_chooser">(.+?)<div class="section">', re.DOTALL).findall(a)
-	cat=re.compile('<a href="(.+?)" class="category_link">(.+?)</a>').findall(match[0])
-	name = 'All '
+	match=re.compile('<ul class="fp_categories">(.+?)<div id="FPTakeoverSkinv2_holder">', re.DOTALL).findall(a)
+	cat=re.compile('<a href="(.+?)"><b>(.+?)</b></a>').findall(match[0])
+	name = 'All'
+	url='http://www.justin.tv/directory?order=hot&lang='+idd
 	li=xbmcgui.ListItem(name)
 	u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
 	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 	for url,name in cat:
-		if name != 'Storm Chasers':
-			url='http://www.justin.tv' + url
-			li=xbmcgui.ListItem(name)
-			u=sys.argv[0]+"?mode="+mode+"&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
-			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+		new=url.replace('/directory','/directory/dropmenu/subcategory')
+		url='http://www.justin.tv'+new+'?kind=live&order=hot&lang='+idd
+		li=xbmcgui.ListItem(name)
+		u=sys.argv[0]+"?mode="+mode+"&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
+		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 	li=xbmcgui.ListItem('(Search)',iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'search_icon.png'))
 	u=sys.argv[0]+"?mode=3&name="+urllib.quote_plus('(Search)')
 	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
@@ -127,12 +128,7 @@ def showSubCategories(url, name):
 	f=urllib2.urlopen(req)
 	a=f.read()
 	f.close()
-	match=re.compile('<div id="subcategory_chooser">(.+?)<div id="category_chooser">', re.DOTALL).findall(a)
-	cat=re.compile('<a href="(.+?)" class="category_link">(.+?)</a>').findall(match[0])
-	name = 'All '
-	li=xbmcgui.ListItem(name)
-	u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(cat_name+' / '+name)+"&url="+urllib.quote_plus(url)
-	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+	cat=re.compile('<li class="subcategory"><a href="(.+?)">(.+?)</a></li>').findall(a)
 	for url,name in cat:
 		url='http://www.justin.tv' + url
 		li=xbmcgui.ListItem(name)
@@ -140,6 +136,7 @@ def showSubCategories(url, name):
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
 def showLinks(url, name):
+	print url
 	cat_name=name
 	thisurl=url
 	req = urllib2.Request(url+'&page='+str(int(page)))
@@ -147,21 +144,21 @@ def showLinks(url, name):
 	f=urllib2.urlopen(req)
 	a=f.read()
 	f.close()
-	match=re.compile('<div class="grid_item_container"(.+?)<div id="pagelinks">', re.DOTALL).findall(a)
+	match=re.compile('<ul class="channel_list li_grid clearfix">(.+?)<div id="pagelinks" class="pagelinks clear">', re.DOTALL).findall(a)
 	if len(match) == 0:
 		dialog = xbmcgui.Dialog()
 		ok = dialog.ok('Justin.tv', 'Error: No live streams available.')
 		showCategories()
 		return
-	cat=re.compile('<h3 class="title"(.+?)<a href="(.+?)">(.*?)</a>', re.DOTALL).findall(match[0])
-	data=re.compile('<a href="(.+?)"><img alt="" class="li_pic_125o i125x94 lateload" src1="(.+?)"').findall(a)
-	stat1=re.compile('<em>Viewers</em>:&nbsp;<span>(.+?)</span><br />').findall(match[0])
-	stat2=re.compile('<em>Views</em>:&nbsp;<span>(.+?)</span><br />').findall(match[0])
-	stat3=re.compile('</a></h3>\n(.*?)</div>', re.DOTALL).findall(match[0])
+	cat=re.compile('<a href="(.+?)" class="title">(.+?)</a>').findall(match[0])
+	data=re.compile('<img alt="" class="cap lateload" src1="(.+?)" src').findall(match[0])
+	stat1=re.compile('<span class="overlay viewers_count">(.+?)</span>').findall(match[0])
+	stat2=re.compile('<span class="small">on <a href="(.+?)">(.+?)</a></span>').findall(match[0])
 	x=0
-	for url,thumb in data:
-		name=str(int(x+1)+(36*(page-1)))+'. '+cat[x][2]+': '+cleanStat(stat3[x])+' - Viewers: '+stat1[x]+' - Views: '+stat2[x]
+	for url,title in cat:
 		url=url.replace('/','')
+		name=str(int(x+1)+(36*(page-1)))+'. '+title+' on '+stat2[x][1]+' - '+stat1[x]
+		thumb=data[x]
 		li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
 		u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(cat_name)+"&url="+urllib.quote_plus(url)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
