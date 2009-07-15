@@ -1,3 +1,8 @@
+[Update 7/15/09 v1.4]
+- updated plugin to work with justin.tv site changes
+
+----------------------------
+
 [Update 7/14/09 v1.3]
 - fixed plugin category title problem
 
