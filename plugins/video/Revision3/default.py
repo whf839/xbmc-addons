@@ -2,8 +2,8 @@
 __scriptname__ = "Revision3"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Revision3"
-__date__ = '22-05-2009'
-__version__ = "r999"
+__date__ = '15-07-2009'
+__version__ = "1.0"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 
@@ -291,5 +291,6 @@ elif mode==1 and xbmcplugin.getSetting("episodes") == "true":
 	showList(url)
 elif mode==2 and xbmcplugin.getSetting("episodes") == "true":
 	showList2(url)
+
+xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
-	
