@@ -3,7 +3,7 @@ __scriptname__ = "Justin.tv"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Justin.tv"
 __date__ = '2009-07-15'
-__version__ = "1.4.2"
+__version__ = "1.4.3"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 from urllib2 import Request, urlopen, URLError, HTTPError
@@ -327,6 +327,9 @@ def playVideo(url, name):
 		title = 'Justin.tv'
 	else:
 		title = clean(data4[0])
+		match=re.compile('&#(.+?);').findall(title)
+		for trash in match:
+			title=title.replace('&#'+trash+';','')
 	item = xbmcgui.ListItem(label=title,iconImage="DefaultVideo.png",thumbnailImage=g_thumbnail)
 	item.setInfo( type="Video", infoLabels={ "Title": title, "Director": url, "Genre": name } )
 	item.setProperty("SWFPlayer", SWFPlayer)
