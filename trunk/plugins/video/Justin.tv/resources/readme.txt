@@ -1,3 +1,8 @@
+[Update 7/17/09 v1.4.4]
+- added XBMC compatibility check
+- added plugin update check
+
+
 [Update 7/15/09 v1.4.1]
 - added "Director" (user) and "Genre" (category) to video info
 - added function to remove html tags from titles

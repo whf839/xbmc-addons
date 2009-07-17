@@ -2,13 +2,36 @@
 __scriptname__ = "Justin.tv"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Justin.tv"
-__date__ = '2009-07-15'
-__version__ = "1.4.3"
+__date__ = '2009-07-17'
+__version__ = "1.4.4"
+__XBMC_Revision__ = "20937"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 from urllib2 import Request, urlopen, URLError, HTTPError
 HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.10) Gecko/2009042316 Firefox/3.0.10'
 THUMBNAIL_PATH = os.path.join(os.getcwd().replace( ";", "" ),'resources','media')
+
+def _check_compatible():
+	xbmc_version = xbmc.getInfoLabel( "System.BuildVersion" )
+	xbmc_rev = int( xbmc_version.split( " " )[ 1 ].replace( "r", "" ) )
+	ok = xbmc_rev >= int( __XBMC_Revision__ )
+	if ( not ok ):
+		xbmcgui.Dialog().ok( "%s - %s: %s" % ( __scriptname__, xbmc.getLocalizedString( 30700 ), __version__, ), xbmc.getLocalizedString( 30701 ) % ( __scriptname__, ), xbmc.getLocalizedString( 30702 ) % ( __XBMC_Revision__, ), xbmc.getLocalizedString( 30703 ) )
+	return ok
+	
+def _check_for_update():
+	url = 'http://code.google.com/p/xbmc-addons/source/browse/trunk/plugins/video/Justin.tv/default.py'
+	req = urllib2.Request(url)
+	req.add_header('User-Agent', HEADER)
+	f=urllib2.urlopen(req)
+	a=f.read()
+	f.close()
+	ALL = re.compile('<td class="source">__version__ = &quot;(.+?)&quot;<br></td>').findall(a)
+	for link in ALL :
+		if link.find(__version__) != 0:
+			newVersion=link
+			dia = xbmcgui.Dialog()
+			ok = dia.ok("Justin.tv", xbmc.getLocalizedString( 30720 )+'\n\n'+xbmc.getLocalizedString( 30721 )+' '+__version__+'\n'+xbmc.getLocalizedString( 30722 )+' '+newVersion)
 
 def showCategories():
 	if xbmcplugin.getSetting('language') == '0':
@@ -378,6 +401,8 @@ except:
         pass
 
 if mode==None:
+	_check_for_update()
+	_check_compatible()
 	name=''
 	showCategories()
 elif mode==0:
