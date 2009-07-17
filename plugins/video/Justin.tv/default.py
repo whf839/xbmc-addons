@@ -3,7 +3,7 @@ __scriptname__ = "Justin.tv"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Justin.tv"
 __date__ = '2009-07-17'
-__version__ = "1.4.4"
+__version__ = "1.4.5"
 __XBMC_Revision__ = "20937"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
@@ -131,7 +131,7 @@ def showSubCategories(url, name):
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
 def showLinks(url, name):
-	print url
+	url=url.replace('kind=live&','')
 	cat_name=name
 	thisurl=url
 	req = urllib2.Request(url+'&page='+str(int(page)))
