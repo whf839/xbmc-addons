@@ -1,3 +1,8 @@
+[Update 7/17/09 v1.4.5]
+- changed channel sorting to match Justin.tv
+
+----------------------------
+
 [Update 7/17/09 v1.4.4]
 - added XBMC compatibility check
 - added plugin update check
