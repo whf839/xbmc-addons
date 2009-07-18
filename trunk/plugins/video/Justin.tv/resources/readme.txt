@@ -1,3 +1,8 @@
+[Update 7/17/09 v1.4.6]
+- fixed thumbnail problem; cache thumbnails are deleted when plugin starts
+
+----------------------------
+
 [Update 7/17/09 v1.4.5]
 - changed channel sorting to match Justin.tv
 

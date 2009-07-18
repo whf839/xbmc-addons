@@ -3,14 +3,25 @@ __scriptname__ = "Justin.tv"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Justin.tv"
 __date__ = '2009-07-17'
-__version__ = "1.4.5"
+__version__ = "1.4.6"
 __XBMC_Revision__ = "20937"
 
-import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
+import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback, shutil
 from urllib2 import Request, urlopen, URLError, HTTPError
+from urllib import urlretrieve, urlcleanup
 HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.10) Gecko/2009042316 Firefox/3.0.10'
 THUMBNAIL_PATH = os.path.join(os.getcwd().replace( ";", "" ),'resources','media')
+BASE_CACHE_PATH = os.path.join( xbmc.translatePath( "special://temp/" ), "Justin.tv" )
 
+def temp_dir():
+	if os.path.isdir(BASE_CACHE_PATH):
+		shutil.rmtree(BASE_CACHE_PATH)
+	os.mkdir(BASE_CACHE_PATH)
+	dir = "0123456789abcdef"
+	for path in dir:
+		new = os.path.join( xbmc.translatePath( "special://temp/" ), "Justin.tv", path )
+		os.mkdir(new)
+			
 def _check_compatible():
 	xbmc_version = xbmc.getInfoLabel( "System.BuildVersion" )
 	xbmc_rev = int( xbmc_version.split( " " )[ 1 ].replace( "r", "" ) )
@@ -153,7 +164,7 @@ def showLinks(url, name):
 	for url,title in cat:
 		url=url.replace('/','')
 		name=str(int(x+1)+(36*(page-1)))+'. '+clean(title)+' on '+clean(stat2[x][1])+' - '+stat1[x]
-		thumb=data[x]
+		thumb = get_thumbnail(data[x])
 		li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
 		u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(cat_name)+"&url="+urllib.quote_plus(url)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
@@ -311,7 +322,18 @@ def runKeyboard3():
 	xbmcplugin.setSetting("presets_users", save_str)
 	if len(newStr) != 0:
 		playVideo(newStr, newStr)
-
+		
+def get_thumbnail(thumbnail_url):
+	try:
+		filename = xbmc.getCacheThumbName( thumbnail_url )
+		filepath =xbmc.translatePath( os.path.join( BASE_CACHE_PATH, filename[ 0 ], filename ) )
+		if not os.path.isfile( filepath ):
+			info = urlretrieve( thumbnail_url, filepath )
+			urlcleanup()
+		return filepath
+	except:
+		print "Error: get_thumbnail()"
+		return thumbnail_url
 
 def playVideo(url, name):
 	vid='http://usher.justin.tv/find/live_user_' + url + '.xml'
@@ -401,6 +423,7 @@ except:
         pass
 
 if mode==None:
+	temp_dir()
 	_check_for_update()
 	_check_compatible()
 	name=''
