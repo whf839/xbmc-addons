@@ -4,7 +4,7 @@
         http://ted.com
 """
 __script__ = "TED Talks"
-__version__ = "1.6"
+__version__ = "1.61"
 
 #for a clear log:
 print '\n'*5,'Start %s Plugin, version %s' %(__script__, __version__)
