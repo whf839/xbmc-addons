@@ -3,14 +3,31 @@ __scriptname__ = "PBS Video"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/PBS%20Video"
-__date__ = '2009-05-31'
-__version__ = "1.0"
+__date__ = '2009-07-22'
+__version__ = "1.1"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
-HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.10) Gecko/2009042316 Firefox/3.0.10'
+from urllib import urlretrieve, urlcleanup
+HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1.1) Gecko/20090715 Firefox/3.5.1'
+BASE_CACHE_PATH = os.path.join( xbmc.translatePath( "special://profile/" ), "Thumbnails", "Video" )
+
+def _check_for_update():
+	print "PBS Video v"+__version__
+	url = 'http://code.google.com/p/xbmc-addons/source/browse/trunk/plugins/video/PBS%20Video/default.py'
+	req = urllib2.Request(url)
+	req.add_header('User-Agent', HEADER)
+	f=urllib2.urlopen(req)
+	a=f.read()
+	f.close()
+	ALL = re.compile('<td class="source">__version__ = &quot;(.+?)&quot;<br></td>').findall(a)
+	for link in ALL :
+		if link.find(__version__) != 0:
+			newVersion=link
+			dia = xbmcgui.Dialog()
+			ok = dia.ok("PBS Video", 'Updates are available on SVN Repo Installer\n\n'+'Current Version: '+__version__+'\n'+'Update Version: '+newVersion)
 
 def showRoot():
-		url='http://www.pbs.org/video'
+		url='http://video.pbs.org/'
 		req = urllib2.Request(url)
 		req.add_header('User-Agent', HEADER)
 		f=urllib2.urlopen(req)
@@ -18,7 +35,7 @@ def showRoot():
 		f.close()
 		p=re.compile('<ul id="mainnav">(.+?)<li class="more">', re.DOTALL)
 		match=p.findall(a)
-		o=re.compile('<li><a href="http://www.pbs.org/video/program/(.+?)/" title="(.+?)">')
+		o=re.compile('<li><a href="http://video.pbs.org/program/(.+?)/" title="(.+?)">')
 		data=o.findall(match[0])
 		x=0
 		for url, name in data:
@@ -34,7 +51,7 @@ def showList(url, name):
 		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
-		p=re.compile('<p class="info">\n                \n                <a href="http://www.pbs.org/video/video/(.+?)" class="title" title="(.+?)">(.+?)</a>\n')
+		p=re.compile('<p class="info">\n                \n                <a href="http://video.pbs.org/video/(.+?)" class="title" title="(.+?)">(.+?)</a>\n')
 		q=re.compile('<span class="list">(.+?)</span>')
 		r=re.compile('<img src="(.+?)" alt="(.+?)" />')
 		info=p.findall(a)
@@ -42,12 +59,12 @@ def showList(url, name):
 		img=r.findall(a)
 		x=0
 		for url,trash,title in info:
-			thumb=img[x][0]
-			url='http://www.pbs.org/video/videoPlayerData/' +url
+			thumb = get_thumbnail( img[x][0] )
+			url='http://video.pbs.org/videoPlayerData/' +url
 			title=clean(title)
 			name = str(int(x+1))+'. '+title+' - '+clean(disc[x])
-			li=xbmcgui.ListItem(name, iconImage=img[x][0], thumbnailImage=img[x][0])
-			u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(title)+"&url="+urllib.quote_plus(url)+"&page="+str(int(page)+1)
+			li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
+			u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(title)+"&url="+urllib.quote_plus(url)+"&page="+str(int(page)+1)+"&thumb="+urllib.quote_plus(thumb)
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
 			x=x+1
 	
@@ -56,8 +73,20 @@ def clean(name):
 	for trash, crap in remove:
 		name=name.replace(trash,crap)
 	return name
+	
+def get_thumbnail(thumbnail_url):
+	try:
+		filename = xbmc.getCacheThumbName( thumbnail_url )
+		filepath =xbmc.translatePath( os.path.join( BASE_CACHE_PATH, filename[ 0 ], filename ) )
+		if not os.path.isfile( filepath ):
+			info = urlretrieve( thumbnail_url, filepath )
+			urlcleanup()
+		return filepath
+	except:
+		print "Error: get_thumbnail()"
+		return thumbnail_url
 			
-def playVideo(url, name):
+def playVideo(url, name, thumb):
 	req = urllib2.Request(url)
 	req.add_header('User-Agent', HEADER)
 	f=urllib2.urlopen(req)
@@ -80,7 +109,9 @@ def playVideo(url, name):
 	else:
 		rtmp_url = p[0]
 		playpath = "mp4:"+r[0][0]
-	item = xbmcgui.ListItem(name)
+	title = name.split(' | ')
+	item = xbmcgui.ListItem(label=name,iconImage="DefaultVideo.png",thumbnailImage=thumb)
+	item.setInfo( type="Video", infoLabels={ "Title": title[1] , "Director": "PBS", "Studio": "PBS", "Genre": title[0] } )
 	item.setProperty("PlayPath", playpath)
 	xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(rtmp_url, item)
 
@@ -123,13 +154,21 @@ try:
         page=int(params["page"])
 except:
         pass
+try:
+        thumb=urllib.unquote_plus(params["thumb"])
+except:
+        pass
 
 if mode==None:
+	name = ''
+	_check_for_update()
 	showRoot()
 elif mode==0:
 	showList(url, name)
 elif mode==1:
-	playVideo(url, name)
+	playVideo(url, name, thumb)
 
+xbmcplugin.setPluginCategory(int(sys.argv[1]), name )
+xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
 	
