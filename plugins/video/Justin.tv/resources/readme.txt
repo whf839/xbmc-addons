@@ -1,3 +1,11 @@
+[Update 7/23/09 v1.4.7]
+- fixed problem where wrong thumb was showing on video info menu
+- fixed Edit context menu
+- added correct genre/category for search results
+- made a few cosmetic changes
+
+----------------------------
+
 [Update 7/17/09 v1.4.6]
 - fixed thumbnail problem; cache thumbnails are deleted when plugin starts
 

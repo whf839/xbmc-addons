@@ -2,8 +2,8 @@
 __scriptname__ = "Justin.tv"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Justin.tv"
-__date__ = '2009-07-17'
-__version__ = "1.4.6"
+__date__ = '2009-07-20'
+__version__ = "1.4.7"
 __XBMC_Revision__ = "20937"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback, shutil
@@ -31,6 +31,7 @@ def _check_compatible():
 	return ok
 	
 def _check_for_update():
+	print "Justin.tv v"+__version__
 	url = 'http://code.google.com/p/xbmc-addons/source/browse/trunk/plugins/video/Justin.tv/default.py'
 	req = urllib2.Request(url)
 	req.add_header('User-Agent', HEADER)
@@ -166,7 +167,7 @@ def showLinks(url, name):
 		name=str(int(x+1)+(36*(page-1)))+'. '+clean(title)+' on '+clean(stat2[x][1])+' - '+stat1[x]
 		thumb = get_thumbnail(data[x])
 		li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
-		u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(cat_name)+"&url="+urllib.quote_plus(url)
+		u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(cat_name)+"&url="+urllib.quote_plus(url)+"&thumb="+urllib.quote_plus(thumb)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
 		x=x+1
 	if len(data) >= 36:	
@@ -232,11 +233,11 @@ def runSearch(url):
 	x=0
 	for url, name in title:
 		title=name+' - '+info[x]
-		thumb=thumbs[x]
+		thumb = get_thumbnail(thumbs[x])
 		name=str(int(x+1)+(10*(page-1)))+'. '+title
 		url=url.replace('/','')
 		li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
-		u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(title)+"&url="+urllib.quote_plus(url)
+		u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus('get_cat')+"&url="+urllib.quote_plus(url)+"&thumb="+urllib.quote_plus(thumb)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
 		x=x+1
 	if len(title) >= 10:	
@@ -259,7 +260,7 @@ def runKeyboard2():
 		cm += [ ( 'Edit', "XBMC.RunPlugin(%s?mode=8&name=%s&url=%s)" % ( sys.argv[ 0 ], urllib.quote_plus(query), urllib.quote_plus('users') ), ) ]
 		li=xbmcgui.ListItem(query,iconImage=os.path.join(THUMBNAIL_PATH, 'search_users.png'),thumbnailImage=os.path.join(THUMBNAIL_PATH, 'search_users.png'))
 		li.addContextMenuItems( cm, replaceItems=True )
-		u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(query)+"&url="+urllib.quote_plus(query)
+		u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus('get_cat')+"&url="+urllib.quote_plus(query)+"&thumb="+urllib.quote_plus(os.path.join(THUMBNAIL_PATH, 'search_users.png'))
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,False)
 		
 def removeB(name,url):
@@ -283,11 +284,10 @@ def editB(name,url):
 	presets = xbmcplugin.getSetting( type )
 	save = presets.split( " | " )
 	del save[save.index(name)]
-	sets = ''
 	x=0
 	for item in save:
 		if x == 0:
-			sets = sets + item
+			sets = item
 		else:
 			sets = sets + ' | ' + item
 		x=x+1
@@ -295,12 +295,15 @@ def editB(name,url):
 	keyboard = xbmc.Keyboard(searchStr, "Edit user name")
 	keyboard.doModal()
 	if (keyboard.isConfirmed() == False):
-			return
+		return
 	searchstring = keyboard.getText()
 	newStr = searchstring
 	if len(newStr) == 0:
-			return
-	sets = sets + ' | ' + newStr
+		return
+	if len(save) == 0:
+		sets = newStr
+	else:
+		sets = sets + ' | ' + newStr
 	xbmcplugin.setSetting(type, sets)
 	xbmc.executebuiltin( "Container.Refresh" )
 	
@@ -321,7 +324,8 @@ def runKeyboard3():
 		save_str = presets + " | " + newStr
 	xbmcplugin.setSetting("presets_users", save_str)
 	if len(newStr) != 0:
-		playVideo(newStr, newStr)
+		thumb = xbmc.getInfoImage( "ListItem.Thumb" )
+		playVideo(newStr, newStr, thumb)
 		
 def get_thumbnail(thumbnail_url):
 	try:
@@ -335,7 +339,7 @@ def get_thumbnail(thumbnail_url):
 		print "Error: get_thumbnail()"
 		return thumbnail_url
 
-def playVideo(url, name):
+def playVideo(url, name, thumb):
 	vid='http://usher.justin.tv/find/live_user_' + url + '.xml'
 	try:
 		req = urllib2.Request(vid)
@@ -357,26 +361,31 @@ def playVideo(url, name):
 	playpath = data[0][0]
 	rtmp_url = data[0][1]
 	swf='http://www.justin.tv/meta/'+url+'.xml'
+	print swf
 	req = urllib2.Request(swf)
 	req.add_header('User-Agent', HEADER)
 	f=urllib2.urlopen(req)
 	a=f.read()
 	f.close()
 	data2=re.compile('SWFObject\(\'(.+?)\',').findall(a)
-	data3=re.compile('<title>(.*?)</title>').findall(a)
-	data4=re.compile('<status>(.*?)</status>').findall(a)
-	referer = 'http://www.justin.tv/'
-	SWFPlayer = data2[0] + '?referer=' + referer + '&userAgent=' + HEADER
-	g_thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
-	if len(data4) == 0:
+	data4=re.compile('<status>(.+?)</status>').findall(a)
+	data5=re.compile('<translated_category>(.*?)</translated_category>').findall(a)
+	data6=re.compile('<translated_subcategory>(.*?)</translated_subcategory>').findall(a)
+	data7=re.compile('<screen_cap>(.*?)</screen_cap>').findall(a)
+	if name == 'get_cat':
+		name = data5[0] + ' / ' + data6[0]
+		thumb = get_thumbnail(data7[0])
+	referer = 'http://www.justin.tv/'+url
+	SWFPlayer = data2[0]
+	if (len(data4) == 0):
 		title = 'Justin.tv'
 	else:
 		title = clean(data4[0])
 		match=re.compile('&#(.+?);').findall(title)
 		for trash in match:
 			title=title.replace('&#'+trash+';','')
-	item = xbmcgui.ListItem(label=title,iconImage="DefaultVideo.png",thumbnailImage=g_thumbnail)
-	item.setInfo( type="Video", infoLabels={ "Title": title, "Director": url, "Genre": name } )
+	item = xbmcgui.ListItem(label=title,iconImage="DefaultVideo.png",thumbnailImage=thumb)
+	item.setInfo( type="Video", infoLabels={ "Title": title, "Director": url, "Studio": url, "Genre": name } )
 	item.setProperty("SWFPlayer", SWFPlayer)
 	item.setProperty("PlayPath", playpath)
 	item.setProperty("PageURL", referer)
@@ -421,7 +430,11 @@ try:
         page=int(params["page"])
 except:
         pass
-
+try:
+        thumb=urllib.unquote_plus(params["thumb"])
+except:
+        pass
+		
 if mode==None:
 	temp_dir()
 	_check_for_update()
@@ -433,7 +446,7 @@ elif mode==0:
 elif mode==1:
 	showLinks(url, name)
 elif mode==2:
-	playVideo(url, name)
+	playVideo(url, name, thumb)
 elif mode==3:
 	runKeyboard()
 elif mode==4:
