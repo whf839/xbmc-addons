@@ -9,4 +9,8 @@
     <string id="30005">What do you want to do?</string>
     <string id="30006">Exit</string>
     <string id="30007">Stream</string>
+	
+    <string id="30720">Updates are available on SVN Repo Installer</string>
+    <string id="30721">Current Version:</string>
+    <string id="30722">Update Version:</string>
 </strings>
