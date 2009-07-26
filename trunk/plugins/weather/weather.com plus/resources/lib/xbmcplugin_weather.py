@@ -209,7 +209,7 @@ class Main:
         self.WEATHER_WINDOW.setProperty( "Alerts", alerts )
         self.WEATHER_WINDOW.setProperty( "Alerts.Color", alertscolor )
         self.WEATHER_WINDOW.setProperty( "Alerts.Count", ( "", str( alertscount ), )[ alertscount > 1 ] )
-        self.WEATHER_WINDOW.setProperty( "Alerts.Label", ( self._( 206 ), self._( 205 ), )[ alertscount > 1 ] )
+        self.WEATHER_WINDOW.setProperty( "Alerts.Label", ( xbmc.getLocalizedString( 33049 ), xbmc.getLocalizedString( 33050 ), )[ alertscount > 1 ] )
 
     def _set_video( self, video_url ):
         self.WEATHER_WINDOW.setProperty( "Video", video_url )
@@ -234,9 +234,9 @@ class Main:
             self.WEATHER_WINDOW.setProperty( "36Hour.%d.Temperature" % ( day + 1, ), forecast[ 4 ] )
             self.WEATHER_WINDOW.setProperty( "36Hour.%d.Precipitation" % ( day + 1, ), forecast[ 6 ] )
             self.WEATHER_WINDOW.setProperty( "36Hour.%d.Forecast" % ( day + 1, ), forecast[ 7 ] )
-            self.WEATHER_WINDOW.setProperty( "36Hour.%d.DaylightTitle" % ( day + 1, ), forecast[ 8 ].replace( "Sunrise", self._( 65 ) ).replace( "Sunset", self._( 66 ) ) )
+            self.WEATHER_WINDOW.setProperty( "36Hour.%d.DaylightTitle" % ( day + 1, ), forecast[ 8 ].replace( "Sunrise", xbmc.getLocalizedString( 33027 ) ).replace( "Sunset", xbmc.getLocalizedString( 33028 ) ) )
             self.WEATHER_WINDOW.setProperty( "36Hour.%d.DaylightTime" % ( day + 1, ), forecast[ 9 ] )
-            self.WEATHER_WINDOW.setProperty( "36Hour.%d.Heading" % ( day + 1, ), { "Today": self._( 18 ), "Tonight": self._( 19 ), "Tomorrow": self._( 20 ), "Tomorrow Night": self._( 21 ) }[ forecast[ 0 ] ] )
+            self.WEATHER_WINDOW.setProperty( "36Hour.%d.Heading" % ( day + 1, ), { "Today": xbmc.getLocalizedString( 33006 ), "Tonight": xbmc.getLocalizedString( 33018 ), "Tomorrow": xbmc.getLocalizedString( 33007 ), "Tomorrow Night": xbmc.getLocalizedString( 33019 ) }[ forecast[ 0 ] ] )
 
     def _fetch_hourly_forecast( self ):
         # exit script if user changed locations
@@ -262,11 +262,11 @@ class Main:
             self.WEATHER_WINDOW.setProperty( "Hourly.%d.WindSpeed" % ( count + 1, ), forecast[ 8 ] )
             self.WEATHER_WINDOW.setProperty( "Hourly.%d.ShortWindDirection" % ( count + 1, ), forecast[ 9 ] )
         # set our headings
-        self.WEATHER_WINDOW.setProperty( "Hourly.Heading1", self._( 50 ) )
-        self.WEATHER_WINDOW.setProperty( "Hourly.Heading2", self._( 52 ) )
+        self.WEATHER_WINDOW.setProperty( "Hourly.Heading1",xbmc.getLocalizedString( 555 ) )
+        self.WEATHER_WINDOW.setProperty( "Hourly.Heading2", xbmc.getLocalizedString( 33020 ) )
         self.WEATHER_WINDOW.setProperty( "Hourly.Heading3", xbmc.getLocalizedString( 401 ) )
-        self.WEATHER_WINDOW.setProperty( "Hourly.Heading4", self._( 59 ) )
-        self.WEATHER_WINDOW.setProperty( "Hourly.Heading5", self._( 53 ) )
+        self.WEATHER_WINDOW.setProperty( "Hourly.Heading4", xbmc.getLocalizedString( 33024 ) )
+        self.WEATHER_WINDOW.setProperty( "Hourly.Heading5", xbmc.getLocalizedString( 33022 ) )
         self.WEATHER_WINDOW.setProperty( "Hourly.Heading6", xbmc.getLocalizedString( 406 ) )
         self.WEATHER_WINDOW.setProperty( "Hourly.Heading7", xbmc.getLocalizedString( 404 ) )
 
@@ -313,8 +313,8 @@ class Main:
         self.WEATHER_WINDOW.clearProperty( "Daily.10.ShortDay" )
         self.WEATHER_WINDOW.clearProperty( "Daily.10.LongDay" )
         # localized long and short day dictionary
-        shortdayDict = { "Mon": self._( 11 ), "Tue": self._( 12 ), "Wed": self._( 13 ), "Thu": self._( 14 ), "Fri": self._( 15 ), "Sat": self._( 16 ), "Sun": self._( 17 ), "Today": self._( 18 ),"Tonight": self._( 19 ) }
-        longdayDict = { "Mon": xbmc.getLocalizedString( 11 ), "Tue": xbmc.getLocalizedString( 12 ), "Wed": xbmc.getLocalizedString( 13 ), "Thu": xbmc.getLocalizedString( 14 ), "Fri": xbmc.getLocalizedString( 15 ), "Sat": xbmc.getLocalizedString( 16 ), "Sun": xbmc.getLocalizedString( 17 ), "Today": self._( 18 ),"Tonight": self._( 19 ) }
+        shortdayDict = { "Mon": xbmc.getLocalizedString( 41 ), "Tue": xbmc.getLocalizedString( 42 ), "Wed": xbmc.getLocalizedString( 43 ), "Thu": xbmc.getLocalizedString( 44 ), "Fri": xbmc.getLocalizedString( 45 ), "Sat": xbmc.getLocalizedString( 46 ), "Sun": xbmc.getLocalizedString( 47 ), "Today": xbmc.getLocalizedString( 33006 ),"Tonight": xbmc.getLocalizedString( 33018 ) }
+        longdayDict = { "Mon": xbmc.getLocalizedString( 11 ), "Tue": xbmc.getLocalizedString( 12 ), "Wed": xbmc.getLocalizedString( 13 ), "Thu": xbmc.getLocalizedString( 14 ), "Fri": xbmc.getLocalizedString( 15 ), "Sat": xbmc.getLocalizedString( 16 ), "Sun": xbmc.getLocalizedString( 17 ), "Today": xbmc.getLocalizedString( 33006 ),"Tonight": xbmc.getLocalizedString( 33018 ) }
         # enumerate thru and set the info
         for count, forecast in enumerate( forecasts ):
             self.WEATHER_WINDOW.setProperty( "Daily.%d.LongDay" % ( count + 1, ), longdayDict[ forecast[ 0 ] ] )
@@ -330,11 +330,11 @@ class Main:
             self.WEATHER_WINDOW.setProperty( "Daily.%d.WindSpeed" % ( count + 1, ), forecast[ 8 ] )
             self.WEATHER_WINDOW.setProperty( "Daily.%d.ShortWindDirection" % ( count + 1, ), forecast[ 9 ] )
         # set our heading properties
-        self.WEATHER_WINDOW.setProperty( "Daily.Heading1", self._( 51 ) )
-        self.WEATHER_WINDOW.setProperty( "Daily.Heading2", self._( 52 ) )
+        self.WEATHER_WINDOW.setProperty( "Daily.Heading1", xbmc.getLocalizedString( 552 ) )
+        self.WEATHER_WINDOW.setProperty( "Daily.Heading2", xbmc.getLocalizedString( 33020 ) )
         self.WEATHER_WINDOW.setProperty( "Daily.Heading3", xbmc.getLocalizedString( 393 ) )
         self.WEATHER_WINDOW.setProperty( "Daily.Heading4", xbmc.getLocalizedString( 391 ) )
-        self.WEATHER_WINDOW.setProperty( "Daily.Heading5", self._( 53 ) )
+        self.WEATHER_WINDOW.setProperty( "Daily.Heading5", xbmc.getLocalizedString( 33022 ) )
         self.WEATHER_WINDOW.setProperty( "Daily.Heading6", xbmc.getLocalizedString( 404 ) )
 
     def _exit_script( self ):

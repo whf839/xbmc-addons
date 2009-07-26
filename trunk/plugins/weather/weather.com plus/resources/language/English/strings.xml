@@ -3,53 +3,6 @@
     <!-- language strings credit -->
     <string id="2">nuka1195</string>
 
-    <string id="10">Loading weather info...</string>
-
-    <string id="11">Mon</string>
-    <string id="12">Tue</string>
-    <string id="13">Wed</string>
-    <string id="14">Thu</string>
-    <string id="15">Fri</string>
-    <string id="16">Sat</string>
-    <string id="17">Sun</string>
-    <string id="18">Today</string>
-    <string id="19">Tonight</string>
-    <string id="20">Tomorrow</string>
-    <string id="21">Tomorrow Night</string>
-
-    <string id="50">Time</string>
-    <string id="51">Date</string>
-    <string id="52">Condition</string>
-    <string id="53">Precip</string>
-    <string id="54">Humid</string>
-    <string id="55">Wind</string>
-    <!--string id="56">High</string>
-    <string id="57">Low</string>
-    <string id="58">Temp</string-->
-    <string id="59">Feels</string>
-    <string id="60">Observed</string>
-    <string id="61">Friday</string>
-    <string id="62">Saturday</string>
-    <string id="63">Sunday</string>
-    <string id="64">Departure from normal</string>
-    <string id="65">Sunrise</string>
-    <string id="66">Sunset</string>
-
-    <string id="200">36 Hour</string>
-    <string id="201">Maps</string>
-    <string id="202">Hourly</string>
-    <string id="203">Weekend</string>
-    <string id="204">10-Day</string>
-    <string id="205">Alerts</string>
-    <string id="206">Alert</string>
-
-    <string id="300">Details</string>
-    <string id="301">Outlook</string>
-    <string id="302">Video</string>
-    <string id="303">Current</string>
-
-    <string id="450">Choose map category</string>
-
     <!-- Settings strings -->
     <string id="32500">Translate text (Babelfish)</string>
     <string id="32510">Map List #1 category</string>
