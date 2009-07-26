@@ -12,7 +12,7 @@ __pluginname__ = "weather.com+"
 __author__ = "nuka1195"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/weather/Weather.com"
-__version__ = "1.1.6a"
+__version__ = "1.1.7"
 __svn_revision__ = "$Revision$"
 __XBMC_Revision__ = "21010"
 
