@@ -2,9 +2,9 @@
 __scriptname__ = "Justin.tv"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Justin.tv"
-__date__ = '2009-07-20'
-__version__ = "1.4.7"
-__XBMC_Revision__ = "20937"
+__date__ = '2009-07-26'
+__version__ = "1.4.8"
+__XBMC_Revision__ = "21803"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback, shutil
 from urllib2 import Request, urlopen, URLError, HTTPError
@@ -217,7 +217,7 @@ def runKeyboard4():
 		save_str = presets + " | " + newStr
 	xbmcplugin.setSetting("presets_search", save_str)
 	if len(newStr) != 0:
-		url = 'http://www.justin.tv/search?q='+newStr+'&commit=Search'
+		url = 'http://www.justin.tv/search?q='+newStr
 		runSearch(url)
 		
 def runSearch(url):
@@ -227,20 +227,24 @@ def runSearch(url):
 	f=urllib2.urlopen(req)
 	a=f.read()
 	f.close()
-	title=re.compile('<a href="(.+?)" class="bold_results">(.+?)</a>\n            \n        </h3>').findall(a)
-	thumbs=re.compile('class="li_pic_125o i125x94 lateload" src1="(.+?)" src').findall(a)
-	info=re.compile('<p class="description bold_results">\n            (.*?)\n        </p>\n\n        <div class="stats">', re.DOTALL).findall(a)
+	titles=re.compile('<a href="(.+?)" class="title bold_results">(.+?)</a>').findall(a)
+	thumbs=re.compile('class="(cap )?lateload" src1="(.+?)" src').findall(a)
+	#info=re.compile('<p class="description bold_results">\n            (.*?)\n        </p>', re.DOTALL).findall(a)
+	stat1=re.compile('<span class="overlay viewers_count">(.+?)</span>').findall(a)
+	stat2=re.compile('<span class="action">\n                on <a href="(.+?)" class="nick bold_results">(.+?)</a>\n            ', re.DOTALL).findall(a)
+	del[titles[0]]
+	del[stat2[0]]
+	#del[info[0]]
 	x=0
-	for url, name in title:
-		title=name+' - '+info[x]
-		thumb = get_thumbnail(thumbs[x])
-		name=str(int(x+1)+(10*(page-1)))+'. '+title
+	for url, name in titles:
+		thumb = get_thumbnail(thumbs[x][1])
+		title=str(int(x+1)+(36*(page-1)))+'. '+clean(name)+' on '+clean(stat2[x][1])+' ... '+stat1[x]
 		url=url.replace('/','')
-		li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
+		li=xbmcgui.ListItem(title, iconImage=thumb, thumbnailImage=thumb)
 		u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus('get_cat')+"&url="+urllib.quote_plus(url)+"&thumb="+urllib.quote_plus(thumb)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
 		x=x+1
-	if len(title) >= 10:	
+	if len(titles) >= 10:	
 		li=xbmcgui.ListItem("Next Page",iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'next.png'))
 		u=sys.argv[0]+"?mode=4&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(thisurl)+"&page="+str(int(page)+1)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
@@ -325,7 +329,7 @@ def runKeyboard3():
 	xbmcplugin.setSetting("presets_users", save_str)
 	if len(newStr) != 0:
 		thumb = xbmc.getInfoImage( "ListItem.Thumb" )
-		playVideo(newStr, newStr, thumb)
+		playVideo(newStr, 'get_cat', thumb)
 		
 def get_thumbnail(thumbnail_url):
 	try:
@@ -341,6 +345,7 @@ def get_thumbnail(thumbnail_url):
 
 def playVideo(url, name, thumb):
 	vid='http://usher.justin.tv/find/live_user_' + url + '.xml'
+	print vid
 	try:
 		req = urllib2.Request(vid)
 		req.add_header('User-Agent', HEADER)
@@ -373,7 +378,7 @@ def playVideo(url, name, thumb):
 	data6=re.compile('<translated_subcategory>(.*?)</translated_subcategory>').findall(a)
 	data7=re.compile('<screen_cap>(.*?)</screen_cap>').findall(a)
 	if name == 'get_cat':
-		name = data5[0] + ' / ' + data6[0]
+		name = clean(data5[0] + ' / ' + data6[0])
 		thumb = get_thumbnail(data7[0])
 	referer = 'http://www.justin.tv/'+url
 	SWFPlayer = data2[0]
