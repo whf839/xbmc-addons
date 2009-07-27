@@ -2,7 +2,7 @@
 <!--Language file translated with Team XBMC Translator-->
 <!--Translator: blittan-->
 <!--Email: blittan@xbmc.org-->
-<!--Date of translation: 01/01/2009-->
+<!--Date of translation: 07/27/2009-->
 <!--$Revision$-->
 <strings>
   <string id="30000">Trailer kvalitet</string>
@@ -35,6 +35,8 @@
   <string id="30120">- Fan-konst färg tre (AARRGGBB)</string>
   <string id="30130">- Spela alltid sparade trailers</string>
   <string id="30140">- Lägg till '-trailer' till sparade trailers</string>
+  <string id="30201">Sök...</string>
+  <string id="30202">Inställningar</string>
   <string id="30500">Laddar ner: %s</string>
   <string id="30501">Sparar: %s</string>
   <string id="30502">Till: %s</string>
