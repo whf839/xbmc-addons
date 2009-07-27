@@ -1,3 +1,9 @@
+[Update 7/26/09 v1.4.8]
+- fixed search problem
+- fixed genre/category for user search results
+
+----------------------------
+
 [Update 7/23/09 v1.4.7]
 - fixed problem where wrong thumb was showing on video info menu
 - fixed Edit context menu
