@@ -209,7 +209,7 @@ class Main:
         self.WEATHER_WINDOW.setProperty( "Alerts", alerts )
         self.WEATHER_WINDOW.setProperty( "Alerts.Color", alertscolor )
         self.WEATHER_WINDOW.setProperty( "Alerts.Count", ( "", str( alertscount ), )[ alertscount > 1 ] )
-        self.WEATHER_WINDOW.setProperty( "Alerts.Label", ( xbmc.getLocalizedString( 33049 ), xbmc.getLocalizedString( 33050 ), )[ alertscount > 1 ] )
+        self.WEATHER_WINDOW.setProperty( "Alerts.Label", xbmc.getLocalizedString( 33049 + ( alertscount > 1 ) ) )
 
     def _set_video( self, video_url ):
         self.WEATHER_WINDOW.setProperty( "Video", video_url )
