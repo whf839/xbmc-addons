@@ -1,3 +1,10 @@
+[Update 7/29/09 v1.4.9]
+- fixed search problem again
+- fixed blank title problem
+- other minor changes
+
+----------------------------
+
 [Update 7/26/09 v1.4.8]
 - fixed search problem
 - fixed genre/category for user search results
