@@ -2,8 +2,8 @@
 __scriptname__ = "Justin.tv"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Justin.tv"
-__date__ = '2009-07-26'
-__version__ = "1.4.8"
+__date__ = '2009-07-29'
+__version__ = "1.4.9"
 __XBMC_Revision__ = "21803"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback, shutil
@@ -164,7 +164,7 @@ def showLinks(url, name):
 	x=0
 	for url,title in cat:
 		url=url.replace('/','')
-		name=str(int(x+1)+(36*(page-1)))+'. '+clean(title)+' on '+clean(stat2[x][1])+' - '+stat1[x]
+		name=str(int(x+1)+(36*(page-1)))+')  '+clean(title)+' on '+clean(stat2[x][1])+' - '+stat1[x]
 		thumb = get_thumbnail(data[x])
 		li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
 		u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(cat_name)+"&url="+urllib.quote_plus(url)+"&thumb="+urllib.quote_plus(thumb)
@@ -227,18 +227,22 @@ def runSearch(url):
 	f=urllib2.urlopen(req)
 	a=f.read()
 	f.close()
-	titles=re.compile('<a href="(.+?)" class="title bold_results">(.+?)</a>').findall(a)
+	titles=re.compile('<a href="(.+?)" class="title bold_results" onclick="(.*?)">(.+?)</a>').findall(a)
 	thumbs=re.compile('class="(cap )?lateload" src1="(.+?)" src').findall(a)
 	#info=re.compile('<p class="description bold_results">\n            (.*?)\n        </p>', re.DOTALL).findall(a)
-	stat1=re.compile('<span class="overlay viewers_count">(.+?)</span>').findall(a)
+	#stat1=re.compile('<span class="overlay viewers_count">(.+?)</span>').findall(a)
 	stat2=re.compile('<span class="action">\n                on <a href="(.+?)" class="nick bold_results">(.+?)</a>\n            ', re.DOTALL).findall(a)
 	del[titles[0]]
 	del[stat2[0]]
 	#del[info[0]]
+	print len(titles)
+	print len(thumbs)
+	#print len(stat1)
+	print len(stat2)
 	x=0
-	for url, name in titles:
+	for url, crap, name in titles:
 		thumb = get_thumbnail(thumbs[x][1])
-		title=str(int(x+1)+(36*(page-1)))+'. '+clean(name)+' on '+clean(stat2[x][1])+' ... '+stat1[x]
+		title=str(int(x+1)+(36*(page-1)))+')  '+clean(name)+' on '+clean(stat2[x][1])#+' ... '+stat1[x]
 		url=url.replace('/','')
 		li=xbmcgui.ListItem(title, iconImage=thumb, thumbnailImage=thumb)
 		u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus('get_cat')+"&url="+urllib.quote_plus(url)+"&thumb="+urllib.quote_plus(thumb)
@@ -378,8 +382,8 @@ def playVideo(url, name, thumb):
 	data6=re.compile('<translated_subcategory>(.*?)</translated_subcategory>').findall(a)
 	data7=re.compile('<screen_cap>(.*?)</screen_cap>').findall(a)
 	if name == 'get_cat':
-		name = clean(data5[0] + ' / ' + data6[0])
 		thumb = get_thumbnail(data7[0])
+	name = clean(data5[0] + ' / ' + data6[0])
 	referer = 'http://www.justin.tv/'+url
 	SWFPlayer = data2[0]
 	if (len(data4) == 0):
