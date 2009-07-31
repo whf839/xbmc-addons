@@ -50,14 +50,12 @@ class Main:
         try:
             # handle AMT db special
             if ( self.settings[ "trailer_scraper" ] == "amt_database" ):
-                print "DAMN"
                 # get the correct scraper
                 exec "from resources.scrapers.%s import scraper as scraper" % ( self.settings[ "trailer_scraper" ], )
                 Scraper = scraper.Main( settings=self.settings )
                 # update trailers
                 ok = Scraper.clear_watched()
             else:
-                print self.settings[ "trailer_scraper" ]
                 # set base watxhed file path
                 base_path = os.path.join( self.BASE_CURRENT_SOURCE_PATH, self.settings[ "trailer_scraper" ] + "_watched.txt" )
                 # remove file

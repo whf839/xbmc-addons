@@ -95,7 +95,7 @@ class _Parser:
                 # trailer
                 trailer = re.findall( "<large[^>]*>(.*?)</large>", preview[ 0 ] )[ 0 ]
                 # replace with 1080p if quality == 1080p
-                if ( self.settings[ "trailer_quality" ] == 5 ):
+                if ( self.settings[ "trailer_quality" ] == 3 ):
                     trailer = trailer.replace( "a720p.m4v", "h1080p.mov" )
                 # size
                 #size = long( re.findall( "filesize=\"([0-9]*)", preview[ 0 ] )[ 0 ] )
@@ -126,8 +126,8 @@ class Main:
         # initialize trailers list
         trailers = []
         # fetch source
-        path = os.path.join( self.BASE_CURRENT_SOURCE_PATH, ( "current.xml", "current.xml", "current.xml", "current_480p.xml", "current_720p.xml", "current_720p.xml", )[ self.settings[ "trailer_quality" ] ] )
-        url = self.BASE_CURRENT_URL % ( ( "", "", "", "_480p", "_720p", "_720p", )[ self.settings[ "trailer_quality" ] ], )
+        path = os.path.join( self.BASE_CURRENT_SOURCE_PATH, ( "current.xml", "current_480p.xml", "current_720p.xml", "current_720p.xml", )[ self.settings[ "trailer_quality" ] ] )
+        url = self.BASE_CURRENT_URL % ( ( "", "_480p", "_720p", "_720p", )[ self.settings[ "trailer_quality" ] ], )
         xmlSource = self._get_xml_source( path, url )
         # parse source and add our items
         if ( xmlSource ):
