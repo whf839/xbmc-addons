@@ -7,7 +7,7 @@ import os
 
 import xbmc
 
-from random import randrange
+from random import shuffle
 from urllib import quote_plus
 import datetime
 
@@ -65,7 +65,7 @@ class Main:
             # rating query
             rating_sql = ( "", "AND (%s)" % " ".join( [ "rating='%s' OR" % rating for rating, index in mpaa_ratings.items() if index <= mpaa_ratings.get( self.mpaa, -1 ) ] )[ : -3 ], )[ mpaa_ratings.has_key( self.mpaa ) ]
             # HD only query, only for amt db source
-            hd_sql = ( "", "AND (movies.trailer_urls LIKE '%720p.mov%' OR movies.trailer_urls LIKE '%1080p.mov%')", )[ self.settings[ "amt_hd_only" ] and ( self.settings[ "trailer_quality" ] > 3 ) ]
+            hd_sql = ( "", "AND (movies.trailer_urls LIKE '%720p.mov%' OR movies.trailer_urls LIKE '%1080p.mov%')", )[ self.settings[ "amt_hd_only" ] and ( self.settings[ "trailer_quality" ] > 1 ) ]
             # Only unwatched query, only for amt db source
             watched_sql = ( "", "AND movies.times_watched=0", )[ self.settings[ "unwatched_only" ] ]
             # genre query, only for amt db source
@@ -81,7 +81,7 @@ class Main:
                 # append trailer
                 trailers += [ ( trailer[ 0 ], # id
                                     trailer[ 1 ], # title
-                                    self._get_trailer_url( trailer[ 3 ] ), # trailer
+                                    self._get_trailer_url( eval( trailer[ 3 ] ) ), # trailer
                                     os.path.join( self.BASE_DATA_PATH, ".cache", trailer[ 4 ][ 0 ], trailer[ 4 ] ), # thumb
                                     trailer[ 5 ], # plot
                                     trailer[ 6 ], # runtime
@@ -101,24 +101,35 @@ class Main:
         return trailers
 
     def _get_trailer_url( self, trailer_urls ):
-        # pick a random url (only applies to multiple urls)
-        r = randrange( len( trailer_urls ) )
+        # set quality we need to add to skip low and medium quality
+        trailer_quality = self.settings[ "trailer_quality" ] + 2
+        # shuffle trailer urls (only applies to multiple urls)
+        shuffle( trailer_urls )
+        # set initial counter
+        count = 0
+        # make sure trailer set has HD if user preference
+        while "720p.mov" not in repr( trailer_urls[ count ] ) and self.settings[ "amt_hd_only" ] and count < len( trailer_urls ) - 1:
+            count += 1
+        # set trailer choices
+        trailers = trailer_urls[ count ]
         # get intial choice
-        choice = ( self.settings[ "trailer_quality" ], len( trailer_urls[ r ] ) - 1, )[ self.settings[ "trailer_quality" ] >= len( trailer_urls[ r ] ) ]
+        choice = ( trailer_quality, len( trailers ) - 1, )[ trailer_quality >= len( trailers ) ]
         # if quality is non progressive
-        if ( self.settings[ "trailer_quality" ] <= 2 ):
+        if ( trailer_quality <= 2 ):
             # select the correct non progressive trailer
-            while ( trailer_urls[ r ][ choice ].endswith( "p.mov" ) and choice != -1 ): choice -= 1
+            while ( trailers[ choice ].endswith( "p.mov" ) and choice != -1 ):
+                choice -= 1
         # quality is progressive
         else:
             # select the proper progressive quality
-            quality = ( "480p", "720p", "1080p", )[ self.settings[ "trailer_quality" ] - 3 ]
+            quality = ( "480p", "720p", "1080p", )[ trailer_quality - 3 ]
             # select the correct progressive trailer
-            while ( quality not in trailer_urls[ r ][ choice ] and trailer_urls[ r ][ choice ].endswith( "p.mov" ) and choice != -1 ): choice -= 1
+            while ( quality not in trailers[ choice ] and trailers[ choice ].endswith( "p.mov" ) and choice != -1 ):
+                choice -= 1
         # if there was a valid trailer set it
         url = ""
         if ( choice >= 0 ):
-            url = trailer_urls[ r ][ choice ]
+            url = trailers[ choice ]
         # return choice
         return url
 

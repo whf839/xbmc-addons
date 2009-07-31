@@ -19,12 +19,10 @@
     <string id="32050">- MPAA rating limit for trailers</string>
     <string id="32060">- Select trailers from newest genre only</string>
     <string id="32070">- Preferred trailer quality</string>
-    <string id="32071">Low</string>
-    <string id="32072">Medium</string>
-    <string id="32073">High</string>
-    <string id="32074">480p</string>
-    <string id="32075">720p</string>
-    <string id="32076">1080p</string>
+    <string id="32071">Standard</string>
+    <string id="32072">480p</string>
+    <string id="32073">720p</string>
+    <string id="32074">1080p</string>
     <string id="32080">- Select only 720p/1080p trailers</string>
     <string id="32090">- Select only unwatched trailers</string>
     <string id="32091">- [I]Clear watch trailers[/I]</string>

@@ -100,7 +100,7 @@ class Trivia( xbmcgui.WindowXML ):
                     elif ( entry.endswith( answer_format ) ):
                         answers += [ entry ]
                 # add the file as a question TODO: maybe check for valid picture format?
-                elif ( os.path.splitext( entry )[ 1 ] in xbmc.getSupportedMedia( "picture" ) ):
+                elif ( entry and os.path.splitext( entry )[ 1 ] in xbmc.getSupportedMedia( "picture" ) ):
                     questions += [ entry ]
             # group the appropriate slides into their own list and order them question, clue, answer
             for count, question in enumerate( questions ):
