@@ -99,6 +99,7 @@ class Main:
         try:
             # get movie name
             movie_title = playlist[ 0 ].getdescription()
+            movie = os.path.splitext( os.path.basename( playlist[ 0 ].getfilename() ) )[ 0 ]
             # format our records start and end
             xbmc.executehttpapi( "SetResponseFormat()" )
             xbmc.executehttpapi( "SetResponseFormat(OpenField,)" )
@@ -111,6 +112,7 @@ class Main:
         except:
             mpaa = ""
             genre = ""
+            movie_path = ""
         # if user preference for rating video and a mpaa rating was found, add the video
         if ( self.settings[ "rating_videos_path" ] and mpaa ):
             rating_path = os.path.join( self.settings[ "rating_videos_path" ], mpaa + ".avi" )
@@ -136,7 +138,7 @@ class Main:
             pDialog.update( -1, _( 32500 ) )
             # get the correct scraper
             exec "from resources.scrapers.%s import scraper as scraper" % ( self.settings[ "trailer_scraper" ], )
-            Scraper = scraper.Main( mpaa, genre, self.settings )
+            Scraper = scraper.Main( mpaa, genre, self.settings, movie )
             # fetch trailers
             trailers = Scraper.fetch_trailers()
             # enumerate through our list of trailers and add them to our playlist

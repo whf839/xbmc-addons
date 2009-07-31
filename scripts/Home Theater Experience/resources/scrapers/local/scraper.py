@@ -12,10 +12,11 @@ class Main:
     # base paths
     BASE_CURRENT_SOURCE_PATH = os.path.join( xbmc.translatePath( "special://profile/" ), "script_data", os.path.basename( os.getcwd() ) )
 
-    def __init__( self, mpaa, genre, settings ):
+    def __init__( self, mpaa=None, genre=None, settings=None, movie=None ):
         self.mpaa = mpaa
         self.genre = genre
         self.settings = settings
+        self.movie = movie
         self.trailers = []
         self.tmp_trailers = []
 
@@ -32,10 +33,10 @@ class Main:
         return self.trailers
         
     def _fetch_trailers( self, paths ):
+        # reset folders list
+        folders = []
         # enumerate thru paths and fetch slides recursively
         for path in paths:
-            # initialize type variables
-            folders = []
             # get the directory listing
             entries = xbmc.executehttpapi( "GetDirectory(%s)" % ( path, ) ).split( "\n" )
             # enumerate through our entries list and separate question, clue, answer
@@ -44,9 +45,9 @@ class Main:
                 entry = entry.replace( "<li>", "" )
                 # if folder add to our folder list to recursively fetch slides
                 if ( entry.endswith( "/" ) ):
-                    folders += [ entry.replace( "<li>", "" ) ]
+                    folders += [ entry ]
                 # does this entry match our pattern "-trailer." and is a video file
-                elif ( "-trailer." in entry and os.path.splitext( entry )[ 1 ] in xbmc.getSupportedMedia( "video" ) ):
+                elif ( "-trailer." in entry and os.path.splitext( entry )[ 1 ] in xbmc.getSupportedMedia( "video" ) and ( self.movie != os.path.splitext( os.path.basename( entry ).replace( "-trailer", "" ) )[ 0 ] ) ):
                     # add our slide group
                     self.tmp_trailers += [ entry ]
         # if there are folders call again (we want recursive)
