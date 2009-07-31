@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+    <!-- Movie Trailers settings -->
+    <string id="32000">Play trailers before feature</string>
+    <string id="32001">Off</string>
+    <string id="32002">1 trailer</string>
+    <string id="32003">2 trailers</string>
+    <string id="32004">3 trailers</string>
+    <string id="32005">4 trailers</string>
+    <string id="32006">5 trailers</string>
+    <string id="32007">10 trailers</string>
+    <string id="32010">- Trailer scraper</string>
+    <string id="32011">Apple Movie Trailers (database)</string>
+    <string id="32012">Apple Movie Trailers (current)</string>
+    <string id="32013">Local folder</string>
+    <string id="32020">- Apple Movie Trailers database path</string>
+    <string id="32030">- Local trailer folder</string>
+    <string id="32040">- Limit trailer results by genre and mpaa rating of movie</string>
+    <string id="32050">- MPAA rating limit for trailers</string>
+    <string id="32060">- Select trailers from newest genre only</string>
+    <string id="32070">- Preferred trailer quality</string>
+    <string id="32071">Low</string>
+    <string id="32072">Medium</string>
+    <string id="32073">High</string>
+    <string id="32074">480p</string>
+    <string id="32075">720p</string>
+    <string id="32076">1080p</string>
+    <string id="32080">- Select only 720p/1080p trailers</string>
+    <string id="32090">- Select only unwatched trailers</string>
+    <string id="32091">- [I]Clear watch trailers[/I]</string>
+
+    <!-- Trivia quiz settings -->
+    <string id="32200">Play trivia quiz before feature</string>
+    <string id="32201">Off</string>
+    <string id="32202">10 min</string>
+    <string id="32203">15 min</string>
+    <string id="32204">20 min</string>
+    <string id="32205">30 min</string>
+    <string id="32206">45 min</string>
+    <string id="32207">60 min</string>
+    <string id="32210">- Trivia quiz images path</string>
+    <string id="32220">- Play each slide for</string>
+    <string id="32221">10 sec</string>
+    <string id="32222">15 sec</string>
+    <string id="32223">20 sec</string>
+    <string id="32224">25 sec</string>
+    <string id="32225">30 sec</string>
+    <string id="32226">45 sec</string>
+    <string id="32227">60 sec</string>
+    <string id="32230">- Trivia music playlist</string>
+    <string id="32240">- Trivia music volume (percent of master)</string>
+    <string id="32250">- End of trivia image</string>
+    <string id="32260">- End of trivia music</string>
+
+    <!-- Special videos settings -->
+    <string id="32300">Rating videos path</string>
+    <string id="32310">-Coming attractions video/playlist</string>
+    <string id="32320">Feature presentation video/playlist</string>
+    <string id="32330">End of feature presentation video/playlist</string>
+
+    <!-- Messages -->
+    <string id="32500">Choosing random trailers...</string>
+    <string id="32510">Randomizing trivia quiz slides...</string>
+    <string id="32520">Setting up playlist...</string>
+    <string id="32530">Clearing watched items...</string>
+
+    <!-- Genre/Studio labels -->
+    <string id="32600">Coming Attractions Intro</string>
+    <string id="32601">Feature Presentation Intro</string>
+    <string id="32602">End of Feature Presentation</string>
+    <string id="32603">MPAA Rating</string>
+    <string id="32604">Home Theater</string>
+    <string id="32605">Trailer</string>
+
+    <!-- Label separators -->
+    <string id="32800">Movie Trailers (optional)</string>
+    <string id="32801">Trivia Quiz (optional)</string>
+    <string id="32802">Special Videos (optional)</string>
+
+</strings>
