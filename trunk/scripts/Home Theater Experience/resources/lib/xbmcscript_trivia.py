@@ -61,13 +61,14 @@ class Trivia( xbmcgui.WindowXML ):
             xbmc.Player().play( self.settings[ "trivia_music" ] )
 
     def _get_slides( self, paths ):
+        # reset folders list
+        folders = []
         # enumerate thru paths and fetch slides recursively
         for path in paths:
             # initialize type variables
             questions = []
             clues = []
             answers = []
-            folders = []
             # get the directory listing
             entries = xbmc.executehttpapi( "GetDirectory(%s)" % ( path, ) ).split( "\n" )
             # sort in case

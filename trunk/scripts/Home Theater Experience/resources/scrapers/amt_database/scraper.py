@@ -20,7 +20,7 @@ from pysqlite2 import dbapi2 as sqlite
 class Main:
     BASE_DATA_PATH = os.path.join( xbmc.translatePath( "special://masterprofile/" ), "script_data", "Apple Movie Trailers" )
 
-    def __init__( self, mpaa=None, genre=None, settings=None ):
+    def __init__( self, mpaa=None, genre=None, settings=None, movie=None ):
         self.mpaa = mpaa
         self.genre = genre
         self.settings = settings

@@ -117,7 +117,7 @@ class Main:
     # base paths
     BASE_CURRENT_SOURCE_PATH = os.path.join( xbmc.translatePath( "special://profile/" ), "script_data", os.path.basename( os.getcwd() ) )
 
-    def __init__( self, mpaa, genre, settings ):
+    def __init__( self, mpaa=None, genre=None, settings=None, movie=None ):
         self.mpaa = mpaa
         self.genre = genre
         self.settings = settings
