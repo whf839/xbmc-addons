@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!--Language file translated with Team XBMC Translator-->
+<!--Translator: pajretX-->
+<!--Email: pajret@googlemail.com-->
+<!--Date of translation: 08/01/2009-->
+<!--$Revision$-->
+<strings>
+  <string id="30000">Język:</string>
+  <string id="30001">Angielski (en)</string>
+  <string id="30002">Arabski (ar)</string>
+  <string id="30003">Bułgarski (bg)</string>
+  <string id="30004">Kataloński (ca)</string>
+  <string id="30005">Niemiecki (de)</string>
+  <string id="30006">Grecki (el)</string>
+  <string id="30007">Hiszpański (es)</string>
+  <string id="30008">Francuski (fr)</string>
+  <string id="30009">Hinduski (hi)</string>
+  <string id="30010">Węgierski (hu)</string>
+  <string id="30011">Indonezyjski (id)</string>
+  <string id="30012">Islandzki (is)</string>
+  <string id="30013">Włoski (it)</string>
+  <string id="30014">Hebrajski (iw)</string>
+  <string id="30015">Japoński (ja)</string>
+  <string id="30016">Koreański (ko)</string>
+  <string id="30017">Litwiński (lt)</string>
+  <string id="30018">Holenderski (nl)</string>
+  <string id="30019">Norweski (no)</string>
+  <string id="30020">Polski (pl)</string>
+  <string id="30021">Portugalski (pt)</string>
+  <string id="30022">Rumuński (ro)</string>
+  <string id="30023">Rosyjski (ru)</string>
+  <string id="30024">Serbski (sr)</string>
+  <string id="30025">Tagalski (tl)</string>
+  <string id="30026">Turecki (tr)</string>
+  <string id="30027">Ukraiński (uk)</string>
+  <string id="30028">Chiński (zh-TW)</string>
+  <string id="30700">wersja</string>
+  <string id="30701">Ta wersja %s wymaga</string>
+  <string id="30702">XBMC w wersji %s lub wyższej.</string>
+  <string id="30703">Uaktualnij XBMC.</string>
+  <string id="30720">Aktualizacje dostępne poprzez SVN Repo Installer</string>
+  <string id="30721">Obecna wersja:</string>
+  <string id="30722">Wersja aktualizacji:</string>
+</strings>
