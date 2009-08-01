@@ -13,7 +13,7 @@ xbmc.log( "[SCRIPT] '%s: version %s' initialized!" % ( __scriptname__, __version
 
 if ( __name__ == "__main__" ):
     import resources.lib.gui as gui
-    ui = gui.GUI( "rssTicker.xml", os.getcwd(), "Default" )
+    ui = gui.GUI( "rssTicker.xml", os.getcwd(), "default" )
     ui.doModal()
     del ui
     sys.modules.clear()
