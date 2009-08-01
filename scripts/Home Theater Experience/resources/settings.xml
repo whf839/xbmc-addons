@@ -1,23 +1,32 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
     <setting type="lsep" label="32802" />
+    <setting id="fpv_number" type="enum" lvalues="32321|32322|32323|32324|32325" label="32320" default="0" />
+    <setting id="feature_presentation_video" type="video" visible="lt(-1,2)" enable="eq(-1,1)" label="32340" default="" />
+    <setting id="feature_presentation_videos" type="folder" visible="gt(-2,1)" source="files" label="32350" default="" />
+    <setting id="epv_number" type="enum" lvalues="32321|32322|32323|32324|32325" label="32330" default="0" />
+    <setting id="end_presentation_video" type="video" visible="lt(-1,2)" enable="eq(-1,1)" label="32340" default="" />
+    <setting id="end_presentation_videos" type="folder" visible="gt(-2,1)" source="files" label="32350" default="" />
     <setting id="rating_videos_path" type="folder" source="video" label="32300" default="" />
-    <setting id="feature_presentation_videos" type="video" label="32320" default="" />
-    <setting id="end_presentation_videos" type="video" label="32330" default="" />
+
     <setting type="lsep" label="" />
     <setting type="lsep" label="32800" />
-    <setting id="number_trailers" type="enum" lvalues="32001|32002|32003|32004|32005|32006|32007" label="32000" default="3" />
-    <setting id="coming_attraction_videos" type="video" visible="!eq(-1,0)" label="32310" default="" />
-    <setting id="trailer_scraper" type="enum" visible="!eq(-2,0)" lvalues="32011|32012|32013" label="32010" default="1" />
-    <setting id="amt_db_path" type="files" visible="!eq(-3,0) + eq(-1,0)" source="local" mask="AMT.db" label="32020" default="special://profile/script_data/Apple Movie Trailers/AMT.db" />
-    <setting id="trailer_path" type="folder" visible="!eq(-4,0) + eq(-2,2)" source="files" label="32030" default="" />
-    <setting id="trailer_quality" type="enum" visible="!eq(-5,0) + !eq(-3,2)" lvalues="32071|32072|32073|32074" label="32070" default="0" />
-    <setting id="amt_hd_only" type="bool" visible="!eq(-6,0) + eq(-4,0)" enable="gt(-1,1)" label="32080" default="false" />
-    <setting id="unwatched_only" type="bool" visible="!eq(-7,0)" label="32090" default="false" />
-    <setting type="action" label="32091" option="save" visible="!eq(-8,0)" enable="eq(-1,true)" default="RunScript($CWD/default.py,clearWatched)" />
-    <setting id="limit_query" type="bool" visible="!eq(-9,0) + !eq(-7,2)" label="32040" default="true" />
-    <setting id="trailer_rating" type="labelenum"  visible="!eq(-10,0) + !eq(-8,2)" enable="eq(-1,false)" values="G|PG|PG-13|R|NC-17|--" label="32050" default="--" />
-    <setting id="amt_newest_only" type="bool" visible="!eq(-11,0) + eq(-9,0)" enable="eq(-2,false)" label="32060" default="false" />
+    <setting id="number_trailers" type="enum" lvalues="32001|32002|32003|32004|32005|32006|32007" label="32000" default="0" />
+    
+    <setting id="cav_number" type="enum" visible="!eq(-1,0)" lvalues="32321|32322|32323|32324|32325" label="32310" default="0" />
+    <setting id="coming_attraction_video" type="video" visible="!eq(-2,0) + lt(-1,2)" enable="eq(-1,1)" label="32340" default="" />
+    <setting id="coming_attraction_videos" type="folder" visible="!eq(-3,0) + gt(-2,1)" source="files" label="32350" default="" />
+
+    <setting id="trailer_scraper" type="enum" visible="!eq(-4,0)" lvalues="32011|32012|32013" label="32010" default="1" />
+    <setting id="amt_db_path" type="files" visible="!eq(-5,0) + eq(-1,0)" source="local" mask="AMT.db" label="32020" default="special://profile/script_data/Apple Movie Trailers/AMT.db" />
+    <setting id="trailer_path" type="folder" visible="!eq(-6,0) + eq(-2,2)" source="files" label="32030" default="" />
+    <setting id="trailer_quality" type="enum" visible="!eq(-7,0) + !eq(-3,2)" lvalues="32071|32072|32073|32074" label="32070" default="0" />
+    <setting id="amt_hd_only" type="bool" visible="!eq(-8,0) + eq(-4,0)" enable="gt(-1,1)" label="32080" default="false" />
+    <setting id="unwatched_only" type="bool" visible="!eq(-9,0)" label="32090" default="false" />
+    <setting type="action" label="32091" option="save" visible="!eq(-10,0)" enable="eq(-1,true)" default="RunScript($CWD/default.py,clearWatched)" />
+    <setting id="limit_query" type="bool" visible="!eq(-11,0) + !eq(-7,2)" label="32040" default="true" />
+    <setting id="trailer_rating" type="labelenum"  visible="!eq(-12,0) + !eq(-8,2)" enable="eq(-1,false)" values="G|PG|PG-13|R|NC-17|--" label="32050" default="--" />
+    <setting id="amt_newest_only" type="bool" visible="!eq(-13,0) + eq(-9,0)" enable="eq(-2,false)" label="32060" default="false" />
     <setting type="lsep" label="" />
     <setting type="lsep" label="32801" />
     <setting id="trivia_total_time" type="enum" lvalues="32201|32202|32203|32204|32205|32206|32207" label="32200" default="0" />
