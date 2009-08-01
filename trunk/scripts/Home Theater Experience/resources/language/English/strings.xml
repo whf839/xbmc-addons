@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
     <!-- Movie Trailers settings -->
-    <string id="32000">Play trailers before feature</string>
+    <string id="32000">Play random trailers before feature</string>
     <string id="32001">Off</string>
     <string id="32002">1 trailer</string>
     <string id="32003">2 trailers</string>
@@ -52,9 +52,16 @@
 
     <!-- Special videos settings -->
     <string id="32300">Rating videos path</string>
-    <string id="32310">- Coming attractions video/playlist</string>
-    <string id="32320">Feature presentation video/playlist</string>
-    <string id="32330">End of feature presentation video/playlist</string>
+    <string id="32310">- Play coming attractions intro</string>
+    <string id="32320">Play feature presentation intro</string>
+    <string id="32321">Off</string>
+    <string id="32322">Single video/playlist</string>
+    <string id="32323">1 random video</string>
+    <string id="32324">2 random videos</string>
+    <string id="32325">3 random videos</string>
+    <string id="32330">Play feature presentation outro</string>
+    <string id="32340">- File</string>
+    <string id="32350">- Folder</string>
 
     <!-- Messages -->
     <string id="32500">Choosing random trailers...</string>
@@ -69,6 +76,12 @@
     <string id="32603">MPAA Rating</string>
     <string id="32604">Home Theater</string>
     <string id="32605">Trailer</string>
+
+    <!-- compatible messages -->
+    <string id="32700">Version</string>
+    <string id="32701">This version of %s requires an</string>
+    <string id="32702">XBMC revision of %s or greater to run.</string>
+    <string id="32703">Please update your XBMC.</string>
 
     <!-- Label separators -->
     <string id="32800">Movie Trailers (optional)</string>

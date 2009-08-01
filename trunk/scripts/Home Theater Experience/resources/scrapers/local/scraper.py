@@ -48,7 +48,7 @@ class Main:
                     folders += [ entry ]
                 # does this entry match our pattern "-trailer." and is a video file
                 elif ( "-trailer." in entry and os.path.splitext( entry )[ 1 ] in xbmc.getSupportedMedia( "video" ) and ( self.movie != os.path.splitext( os.path.basename( entry ).replace( "-trailer", "" ) )[ 0 ] ) ):
-                    # add our slide group
+                    # add our entry
                     self.tmp_trailers += [ entry ]
         # if there are folders call again (we want recursive)
         if ( folders ):
