@@ -92,13 +92,13 @@ class Trivia( xbmcgui.WindowXML ):
                 # sliders.xml was included, so check it
                 elif ( slidesxml_exists ):
                     # question
-                    if ( entry.endswith( question_format ) ):
+                    if ( re.search( question_format, entry, re.IGNORECASE ) ):
                         questions += [ entry ]
                     # clue
-                    elif ( entry.endswith( clue_format ) ):
+                    elif ( re.search( clue_format, entry, re.IGNORECASE ) ):
                         clues += [ entry ]
                     # answer
-                    elif ( entry.endswith( answer_format ) ):
+                    elif ( re.search( answer_format, entry, re.IGNORECASE ) ):
                         answers += [ entry ]
                 # add the file as a question TODO: maybe check for valid picture format?
                 elif ( entry and os.path.splitext( entry )[ 1 ] in xbmc.getSupportedMedia( "picture" ) ):
@@ -205,4 +205,3 @@ class Trivia( xbmcgui.WindowXML ):
             self._play_video_playlist()
         elif ( action in self.ACTION_NEXT_SLIDE and not self.exiting ):
             self._next_slide()
-
