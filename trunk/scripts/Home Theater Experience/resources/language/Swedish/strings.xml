@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!--Language file translated with Team XBMC Translator-->
+<!--Translator: blittan-->
+<!--Email: blittan@xbmc.org-->
+<!--Date of translation: 08/01/2009-->
+<!--$Revision$-->
+<strings>
+  <string id="32000">Spela trailer före filmen</string>
+  <string id="32001">Av</string>
+  <string id="32002">1 trailer</string>
+  <string id="32003">2 trailers</string>
+  <string id="32004">3 trailers</string>
+  <string id="32005">4 trailers</string>
+  <string id="32006">5 trailers</string>
+  <string id="32007">10 trailers</string>
+  <string id="32010">- Trailerskrapa</string>
+  <string id="32011">Apple Movie Trailers (databas)</string>
+  <string id="32012">Apple Movie Trailers (nuvarande)</string>
+  <string id="32013">Lokal mapp</string>
+  <string id="32020">- Apple Movie Trailers databassökväg</string>
+  <string id="32030">- Lokal trailermapp</string>
+  <string id="32040">- Begränsa trailerresultat genom genre och mpaa betyg för filmen</string>
+  <string id="32050">- MPAA betyggräns för trailers</string>
+  <string id="32060">- Välj trailer från nyaste kategorin endast</string>
+  <string id="32070">- Föredragen trailerkvalitet</string>
+  <string id="32071">Standard</string>
+  <string id="32072">480p</string>
+  <string id="32073">720p</string>
+  <string id="32074">1080p</string>
+  <string id="32080">- Välj endast 720p/1080p trailers</string>
+  <string id="32090">- Välj endast osedda trailers</string>
+  <string id="32091">- [I]Rensa sedda trailers[/I]</string>
+  <string id="32200">Spela trivia frågor innan föreställning</string>
+  <string id="32201">Av</string>
+  <string id="32202">10 min</string>
+  <string id="32203">15 min</string>
+  <string id="32204">20 min</string>
+  <string id="32205">30 min</string>
+  <string id="32206">45 min</string>
+  <string id="32207">60 min</string>
+  <string id="32210">- Trivia frågors bildsökväg</string>
+  <string id="32220">- Visa varje bildspel för</string>
+  <string id="32221">10 sek</string>
+  <string id="32222">15 sek</string>
+  <string id="32223">20 sek</string>
+  <string id="32224">25 sek</string>
+  <string id="32225">30 sek</string>
+  <string id="32226">45 sek</string>
+  <string id="32227">60 sek</string>
+  <string id="32230">- Trivia musikspellista</string>
+  <string id="32240">- Trivia musikvolym (procent av huvudvolym)</string>
+  <string id="32250">- Slut på trivia bild</string>
+  <string id="32260">- Slut på trivia musiken</string>
+  <string id="32300">Betyg videors sökväg</string>
+  <string id="32310">- Kommande attraktioner video/spellista</string>
+  <string id="32320">Föreställningspresentation video/spellista</string>
+  <string id="32330">Slut på föreställningspresentations video/spellista</string>
+  <string id="32500">Väljer slumpmässiga trailers...</string>
+  <string id="32510">Slumar trivia frågespel...</string>
+  <string id="32520">Sätter upp spellista...</string>
+  <string id="32530">Rensar sedda objekt...</string>
+  <string id="32600">Kommande attraktioner intro</string>
+  <string id="32601">Föreställningspresentationsintro</string>
+  <string id="32602">Slut på föreställningspresentationen</string>
+  <string id="32603">MPAA betyg</string>
+  <string id="32604">Hemmabio</string>
+  <string id="32605">Trailer</string>
+  <string id="32800">Fimtrailers (tillval)</string>
+  <string id="32801">Trivia frågor (tillval)</string>
+  <string id="32802">Speciella videor (tillval)</string>
+</strings>
