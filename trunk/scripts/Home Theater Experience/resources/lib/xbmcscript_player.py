@@ -112,7 +112,7 @@ class Main:
         except:
             mpaa = ""
             genre = ""
-            movie_path = ""
+            movie = ""
         # if user preference for rating video and a mpaa rating was found, add the video
         if ( self.settings[ "rating_videos_path" ] and mpaa ):
             rating_path = os.path.join( self.settings[ "rating_videos_path" ], mpaa + ".avi" )
