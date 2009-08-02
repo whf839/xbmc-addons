@@ -3,17 +3,16 @@ __script__ = "Home Theater Experience"
 __author__ = "nuka1195"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/scripts/Home%20Theater%20Experience"
-__version__ = "1.3c"
+__version__ = "1.4.0"
+__svn_revision__ = "$Revision$"
 __XBMC_Revision__ = "21010"
-
 
 def _check_compatible():
     try:
         # spam plugin statistics to log
-        xbmc.log( "[SCRIPT] '%s: Version - %s' initialized!" % ( __script__, __version__, ), xbmc.LOGNOTICE )
+        xbmc.log( "[SCRIPT] '%s: Version - %s-r%s' initialized!" % ( __script__, __version__, __svn_revision__.replace( "$", "" ).replace( "Revision", "" ).replace( ":", "" ).strip() ), xbmc.LOGNOTICE )
         # get xbmc revision
-        xbmc_version = xbmc.getInfoLabel( "System.BuildVersion" )
-        xbmc_rev = int( xbmc_version.split( " " )[ 1 ].replace( "r", "" ) )
+        xbmc_rev = int( xbmc.getInfoLabel( "System.BuildVersion" ).split( " r" )[ -1 ] )
         # compatible?
         ok = xbmc_rev >= int( __XBMC_Revision__ )
     except:
@@ -27,10 +26,13 @@ def _check_compatible():
     if ( not ok ):
         import xbmcgui
         import os
+        # get localized strings
         _ = xbmc.Language( os.getcwd() ).getLocalizedString
+        # inform user
         xbmcgui.Dialog().ok( "%s - %s: %s" % ( __script__, _( 32700 ), __version__, ), _( 32701 ) % ( __script__, ), _( 32702 ) % ( __XBMC_Revision__, ), _( 32703 ) )
     #return result
     return ok
+
 
 if ( __name__ == "__main__" ):
     # only run if compatible
