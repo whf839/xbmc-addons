@@ -22,6 +22,10 @@ class Trivia( xbmcgui.WindowXML ):
         kwargs[ "dialog" ].update( -1, _( 32510 ) )
         self.settings = kwargs[ "settings" ]
         self.playlist = kwargs[ "playlist" ]
+        # get current screensaver
+        self.screensaver = xbmc.executehttpapi( "GetGUISetting(3;screensaver.mode)" ).replace( "<li>", "" )
+        # turn screensaver off
+        xbmc.executehttpapi( "SetGUISetting(3,screensaver.mode,None)" )
         # initialize our class variable
         self._init_variables()
         # get the slides
@@ -29,7 +33,7 @@ class Trivia( xbmcgui.WindowXML ):
         # shuffle and format playlist
         self._shuffle_slides()
         # start our trvia quiz timer
-        self._get_global_timer( self.settings[ "trivia_total_time" ] * 60, self._exit_trivia)
+        self._get_global_timer( self.settings[ "trivia_total_time" ] * 60, self._exit_trivia )
         # close dialog
         kwargs[ "dialog" ].close()
 
@@ -180,6 +184,8 @@ class Trivia( xbmcgui.WindowXML ):
         self.exiting = -1
         # cancel timers
         self._cancel_timers()
+        # turn screensaver back on
+        xbmc.executehttpapi( "SetGUISetting(3,screensaver.mode,%s)" % self.screensaver )
         # we play the video playlist here so the screen does not flash
         xbmc.Player().play( self.playlist )
         # close trivia slide show
