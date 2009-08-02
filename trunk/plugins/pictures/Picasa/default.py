@@ -11,7 +11,7 @@ __plugin__ = "Picasa"
 __author__ = "nuka1195"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/Picasa"
-__version__ = "1.4"
+__version__ = "1.4.0a"
 __svn_revision__ = "$Revision$"
 __XBMC_Revision__ = "19001"
 
@@ -20,8 +20,7 @@ def _check_compatible():
         # spam plugin statistics to log
         xbmc.log( "[PLUGIN] '%s: Version - %s-r%s' initialized!" % ( __plugin__, __version__, __svn_revision__.replace( "$", "" ).replace( "Revision:", "" ).strip() ), xbmc.LOGNOTICE )
         # get xbmc revision
-        xbmc_version = xbmc.getInfoLabel( "System.BuildVersion" )
-        xbmc_rev = int( xbmc_version.split( " " )[ 1 ].replace( "r", "" ) )
+        xbmc_rev = int( xbmc.getInfoLabel( "System.BuildVersion" ).split( " r" )[ -1 ] )
         # compatible?
         ok = xbmc_rev >= int( __XBMC_Revision__ )
     except:
