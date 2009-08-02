@@ -30,4 +30,6 @@
   <string id="45">Cannot Delete Set 1</string>
   <string id="46">Set 1 is required.  You cannot delete this</string>
   <string id="47">Reset set 1 to default?</string>
+  <string id="48">Reset Required</string>
+  <string id="49">You need to restart XBMC for your changes to take effect</string>
 </strings>
