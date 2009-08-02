@@ -86,6 +86,7 @@ class GUI(xbmcgui.WindowXMLDialog):
             self.setFocus(self.getControl(10))
             self.getControl(13).setLabel(xbmc.getLocalizedString(15019)+getLS(5)) #Add Button
             self.getControl(14).setLabel(xbmc.getLocalizedString(1210)+getLS(5)) #Remove Button
+            xbmcgui.Dialog().ok(getLS(20), getLS(21), getLS(22), getLS(23))
         elif controlId == 13: #Add Button
             if self.getControl(10).getSelectedItem().getLabel().startswith('set'):
                 self.getNewSet()
@@ -114,7 +115,7 @@ class GUI(xbmcgui.WindowXMLDialog):
             
     def onFocus(self, controlId):
         pass
-            
+        
     def getNewSet(self):
         #find highest numbered set, then add 1
         setNumList = list()
@@ -124,29 +125,23 @@ class GUI(xbmcgui.WindowXMLDialog):
         self.parser.feedsList[newSetNum] = [{'url':'http://', 'updateinterval':'30'}]
     
     def removeSet(self):
-        setSelection = self.parser.feedsList.keys()
-        setSelection.sort()
-        position = xbmcgui.Dialog().select(getLS(24)+getLS(44), setSelection)
-        if position == 0:
+        setNum = self.getControl(10).getSelectedItem().getLabel()
+        if setNum == 'set1':
             if xbmcgui.Dialog().yesno(getLS(45), getLS(46), getLS(47)):
-                self.parser.feedsList['set1'] = [{'url':'http://feeds.feedburner.com/xbmc', 'updateinterval':'30'}]
-        elif position != -1:
-            del self.parser.feedsList['set'+str(position+1)]
+                self.parser.feedsList[setNum] = [{'url':'http://feeds.feedburner.com/xbmc', 'updateinterval':'30'}]
+        else:
+            del self.parser.feedsList[setNum]
     
     def updateSetsList(self):
-        xbmcgui.Dialog().ok(getLS(20), getLS(21), getLS(22), getLS(23))
         self.getControl(10).reset()
         for setNum in self.parser.feedsList.keys():
             self.getControl(10).addItem(setNum)
             self.getControl(3).setLabel(getLS(24))
     
     def removeFeed(self):
-        feedSelection = list()
-        for feed in self.parser.feedsList[self.setNum]:
-            feedSelection.append(feed['url'])
-        position = xbmcgui.Dialog().select(getLS(11), feedSelection)
-        if position != -1:
-            self.parser.feedsList[self.setNum].remove(self.parser.feedsList[self.setNum][position])
+        position = self.getControl(10).getSelectedPosition()
+        self.parser.feedsList[self.setNum].remove(self.parser.feedsList[self.setNum][position])
+        #add empty feed if last one is deleted
         if len(self.parser.feedsList[self.setNum]) < 1:
             self.parser.feedsList[self.setNum] = [{'url':'http://', 'updateinterval':'30'}]
         

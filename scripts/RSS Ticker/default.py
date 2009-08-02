@@ -7,7 +7,7 @@ __scriptname__ = "RSS Ticker Manager"
 __author__ = "rwparris2"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __credits__ = "Team XBMC"
-__version__ = "1.1.1"
+__version__ = "1.1.2"
 
 xbmc.log( "[SCRIPT] '%s: version %s' initialized!" % ( __scriptname__, __version__, ), xbmc.LOGNOTICE )
 
