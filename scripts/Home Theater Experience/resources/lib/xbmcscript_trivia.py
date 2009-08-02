@@ -13,7 +13,8 @@ _ = xbmc.Language( scriptPath=os.getcwd() ).getLocalizedString
 
 class Trivia( xbmcgui.WindowXML ):
     # special action codes
-    ACTION_NEXT_SLIDE = ( 7, )
+    ACTION_NEXT_SLIDE = ( 2, 3, 7, )
+    ACTION_PREV_SLIDE = ( 1, 4, )
     ACTION_EXIT_SCRIPT = ( 9, 10, )
 
     def __init__( self, *args, **kwargs ):
@@ -39,7 +40,7 @@ class Trivia( xbmcgui.WindowXML ):
 
     def onInit( self ):
         # start slideshow
-        self._next_slide()
+        self._next_slide( 0 )
         # start music
         self._start_music()
 
@@ -132,18 +133,21 @@ class Trivia( xbmcgui.WindowXML ):
         for slide in self.tmp_slides:
             self.slide_playlist += slide
 
-    def _next_slide( self ):
+    def _next_slide( self, slide=1 ):
+        # increment/decrement count
+        self.image_count += slide
         # if no more slides, exit
-        if ( self.image_count == len( self.slide_playlist ) ):
+        if ( self.image_count > len( self.slide_playlist ) ):
             self._exit_trivia()
+        # check for invalid count, TODO: make sure you don't want to rest timer
+        elif ( self.image_count < 0 ):
+            self.image_count = 0
         else:
             # cancel timer if it's running
             if ( self.slide_timer is not None ):
                 self.slide_timer.cancel()
             # set the property the image control uses
             xbmcgui.Window( xbmcgui.getCurrentWindowId() ).setProperty( "Slide", self.slide_playlist[ self.image_count ] )
-            # increment count
-            self.image_count += 1
             # start slide timer
             self._get_slide_timer()
 
@@ -211,3 +215,5 @@ class Trivia( xbmcgui.WindowXML ):
             self._play_video_playlist()
         elif ( action in self.ACTION_NEXT_SLIDE and not self.exiting ):
             self._next_slide()
+        elif ( action in self.ACTION_PREV_SLIDE and not self.exiting ):
+            self._next_slide( -1 )
