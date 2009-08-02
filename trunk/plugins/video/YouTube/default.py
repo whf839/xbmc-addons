@@ -11,26 +11,26 @@ __plugin__ = "YouTube"
 __author__ = "nuka1195"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/YouTube"
-__version__ = "1.6.8a"
+__version__ = "1.6.8b"
+__svn_revision__ = "$Revision$"
 __XBMC_Revision__ = "19457"
 
 
 def _check_compatible():
     try:
         # spam plugin statistics to log
-        xbmc.log( "[PLUGIN] '%s: version %s' initialized!" % ( __plugin__, __version__, ), xbmc.LOGNOTICE )
+        xbmc.log( "[PLUGIN] '%s: Version - %s-r%s' initialized!" % ( __plugin__, __version__, __svn_revision__.replace( "$", "" ).replace( "Revision", "" ).replace( ":", "" ).strip() ), xbmc.LOGNOTICE )
         # get xbmc revision
-        xbmc_version = xbmc.getInfoLabel( "System.BuildVersion" )
-        xbmc_rev = 0
-        xbmc_rev = int( xbmc_version.split( " " )[ 1 ].replace( "r", "" ) )
+        xbmc_rev = int( xbmc.getInfoLabel( "System.BuildVersion" ).split( " r" )[ -1 ] )
         # compatible?
         ok = xbmc_rev >= int( __XBMC_Revision__ )
     except:
-        # error, so make incompatible
-        ok = True
+        # error, so unknown, allow to run
+        xbmc_rev = 0
+        ok = 2
     # spam revision info
     xbmc.log( "     ** Required XBMC Revision: r%s **" % ( __XBMC_Revision__, ), xbmc.LOGNOTICE )
-    xbmc.log( "     ** Found XBMC Revision: r%d [%s] **" % ( xbmc_rev, ( "Not Compatible", "Compatible", )[ ok ], ), xbmc.LOGNOTICE )
+    xbmc.log( "     ** Found XBMC Revision: r%d [%s] **" % ( xbmc_rev, ( "Not Compatible", "Compatible", "Unknown", )[ ok ], ), xbmc.LOGNOTICE )
     # if not compatible, inform user
     if ( not ok ):
         import xbmcgui
