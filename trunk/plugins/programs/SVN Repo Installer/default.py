@@ -12,15 +12,15 @@ __author__ = "nuka1195/BigBellyBilly"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/programs/SVN%20Repo%20Installer"
 __credits__ = "Team XBMC"
-__version__ = "1.8.0a"
-__date__ = "06/07/2009"
+__version__ = "1.8.0b"
+__date__ = "$Date$"
 __svn_revision__ = "$Revision$"
 __XBMC_Revision__ = "19001"
 
 def _check_compatible():
     try:
         # spam plugin statistics to log
-        xbmc.log( "[PLUGIN] '%s: Version - %s-r%s' initialized!" % ( __plugin__, __version__, __svn_revision__.replace( "$", "" ).replace( "Revision:", "" ).strip() ), xbmc.LOGNOTICE )
+        xbmc.log( "[PLUGIN] '%s: Version - %s-r%s' initialized!" % ( __plugin__, __version__, __svn_revision__.replace( "$", "" ).replace( "Revision", "" ).replace( ":", "" ).strip() ), xbmc.LOGNOTICE )
         # get xbmc revision
         xbmc_rev = int( xbmc.getInfoLabel( "System.BuildVersion" ).split( " r" )[ -1 ] )
         # compatible?
