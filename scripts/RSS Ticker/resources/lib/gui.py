@@ -238,5 +238,6 @@ class XMLParser:
             RssFeedsFile.write(xml)
             RssFeedsFile.close()
             print '[SCRIPT] RSS Ticker --> write success'
+            xbmc.executebuiltin('refreshrss()')
         except IOError, error:
             print '[SCRIPT] RSS Ticker --> write failed', error
