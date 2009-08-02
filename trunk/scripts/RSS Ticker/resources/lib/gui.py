@@ -238,6 +238,16 @@ class XMLParser:
             RssFeedsFile.write(xml)
             RssFeedsFile.close()
             print '[SCRIPT] RSS Ticker --> write success'
-            xbmc.executebuiltin('refreshrss()')
+            self.refreshFeed()
         except IOError, error:
             print '[SCRIPT] RSS Ticker --> write failed', error
+    
+    def refreshFeed(self):
+        #This probably makes more sense in the GUI class, but fuck it
+        currentRev = int(xbmc.getInfoLabel('System.BuildVersion')[-5:])
+        minRev = 21930
+        if currentRev >= minRev:
+            xbmc.executebuiltin('refreshrss()')
+        else:
+            xbmcgui.Dialog().ok(getLS(48), getLS(49))
+
