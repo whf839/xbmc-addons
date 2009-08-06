@@ -4,14 +4,14 @@
 
 import sys, os, os.path
 import xbmc, xbmcgui, xbmcplugin
-import urllib, re, time
+import urllib, urllib2, re, time
 from shutil import rmtree, copy
 import traceback
 
 __plugin__ = "UlmenTV"
-__version__ = '1.36'
+__version__ = '1.37'
 __author__ = 'bootsy [bootsy82@gmail.com] with much help from BigBellyBilly'
-__date__ = '26-04-2009'
+__date__ = '06-08-2009'
 
 #DIR_USERDATA = "/".join( ["special://masterprofile","plugin_data","video", __plugin__] )      # T:// - new drive
 DIR_USERDATA = "/".join( ["T:"+os.sep,"plugin_data","video", __plugin__] )  # translatePath() will convert to new special://
@@ -211,12 +211,15 @@ def getUlmenNewEpisodes(name):
 	
 #fetch videolinks
 def fetchVideoLink(url):
-	url='http://www.degrab.de/?url='+url
-	f=urllib.urlopen(url)
+	header = {'User-agent' : 'XBMC UlmenTV'}
+	post_data='action=index&downloadurl='+url
+	url='http://www.nachrichtenmann.de/cgi-bin/video/video.cgi'
+	request=urllib2.Request(url, post_data, header)
+	f=urllib2.urlopen(request)
 	doc=f.read()
 	f.close()
 	if doc:
-		p=re.compile('<div style=.+? <a href="(.+?)" rel="nofollow".+?">.+?</a></div>', re.DOTALL + re.MULTILINE + re.IGNORECASE)
+		p=re.compile('<a href="([^"]+)"><span class="[^"]+"><strong>Download von', re.DOTALL + re.MULTILINE + re.IGNORECASE)
 		matches=p.findall(doc)
 		url=matches[0]
 	return url
@@ -254,6 +257,7 @@ def fetchBinary(url):
 		url = 'http://xbmc.svn.sourceforge.net/svnroot/xbmc/trunk/XBMC/skin/Project%20Mayhem%20III/media/defaultVideoBig.png'
 		fn = os.path.join(DIR_USERDATA, 'defaultVideoBig.png')
 		fn = xbmc.translatePath(fn)
+		log('fetchBinary() url=%s fn=%s' % (url,fn))
 		if not os.path.isfile(fn):
 			opener = urllib.FancyURLopener()
 			fn, resp = opener.retrieve(url, fn)
@@ -317,9 +321,8 @@ def showShows(url,name):
 		ep = "%s - %s" % (part, name)
 		dialogProgress.update(0, chname, ep, os.path.basename(thumbnail))
 		img = fetchBinary(thumbnail)
-		infolabels = {}
 		if not img:
-			img = "DefaultVideo.png"
+			img = "defaultVideoBig.png"
 		if chname=='Neueste Videos':
 			show = name
 		else:
