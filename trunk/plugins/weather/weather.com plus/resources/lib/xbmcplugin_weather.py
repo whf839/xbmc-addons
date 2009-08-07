@@ -207,7 +207,7 @@ class Main:
     def _set_alerts( self, alerts, alertscolor, alertscount ):
         # set any alerts
         self.WEATHER_WINDOW.setProperty( "Alerts", alerts )
-        self.WEATHER_WINDOW.setProperty( "Alerts.Color", alertscolor )
+        self.WEATHER_WINDOW.setProperty( "Alerts.Color", ( "default", alertscolor, )[ alerts != "" ] )
         self.WEATHER_WINDOW.setProperty( "Alerts.Count", ( "", str( alertscount ), )[ alertscount > 1 ] )
         self.WEATHER_WINDOW.setProperty( "Alerts.Label", xbmc.getLocalizedString( 33049 + ( alertscount > 1 ) ) )
 
