@@ -37,6 +37,7 @@ class Main:
             if ( self.new_location ):
                 self._clear_properties()
             # initialize our thread list
+            """
             thread_list = []
             # get our 36 hour forecast
             current = FetchInfo( self._fetch_36_forecast )
@@ -61,6 +62,12 @@ class Main:
             # join our threads with the main thread
             for thread in thread_list:
                thread.join()
+            """
+            self._fetch_36_forecast()
+            self._fetch_hourly_forecast()
+            self._fetch_weekend_forecast()
+            self._fetch_10day_forecast()
+            self._fetch_map_list()
         # we're finished, exit
         self._exit_script()
 
