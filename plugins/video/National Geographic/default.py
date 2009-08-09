@@ -4,7 +4,7 @@ __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __url__ = 'http://xbmc.org/forum/showthread.php?t=45132'
 __svn_url__ = 'https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/National%20Geographic/'
 __date__ = '2009-08-08'
-__version__ = "1.0"
+__version__ = "1.1"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2'
