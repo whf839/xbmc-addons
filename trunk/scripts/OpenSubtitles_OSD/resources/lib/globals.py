@@ -103,7 +103,7 @@ def CleanTagsFile(texto):
 
 def DeleteExtension(file):
     lastpointposition = file.rfind(".")
-    return os.path.basename(file[:lastpointposition])
+    return file[:lastpointposition]
 		
 def GetFpsAndTimeMs(path):
     fps = ""

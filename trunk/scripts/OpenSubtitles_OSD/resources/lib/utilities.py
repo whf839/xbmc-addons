@@ -8,7 +8,7 @@ import array
 import httplib
 import xml.dom.minidom
 import struct
-DEBUG_MODE = 5
+DEBUG_MODE = 10
 
 _ = sys.modules[ "__main__" ].__language__
 __scriptname__ = sys.modules[ "__main__" ].__scriptname__
@@ -34,10 +34,10 @@ LOG_INFO, LOG_ERROR, LOG_NOTICE, LOG_DEBUG = range( 1, 5 )
 
 def _create_base_paths():
     """ creates the base folders """
-    ##if ( not os.path.isdir( BASE_DATA_PATH ) ):
-       ## os.makedirs( BASE_DATA_PATH )
-    ##if ( not os.path.isdir( BASE_SETTINGS_PATH ) ):
-        ##os.makedirs( BASE_SETTINGS_PATH )
+    if ( not os.path.isdir( BASE_DATA_PATH ) ):
+        os.makedirs( BASE_DATA_PATH )
+    if ( not os.path.isdir( BASE_SETTINGS_PATH ) ):
+        os.makedirs( BASE_SETTINGS_PATH )
 _create_base_paths()
 
 def get_keyboard( default="", heading="", hidden=False ):
@@ -270,3 +270,63 @@ def getMovieTitleAndYear( filename ):
     name = name.replace('.', '+')
     ##return name, year
     return name
+
+
+def toOpenSubtitlesId( id ):
+        languages = { "None"  		: "none",
+                      "Albanian"  	: "alb",
+                      "Arabic"  	: "ara",
+                      "Armenian"  	: "arm",
+                      "Bosnian"  	: "bos",
+                      "Bulgarian"  	: "bul",
+                      "Catalan"  	: "cat",
+                      "Chinese"  	: "chi",
+                      "Croatian" 	: "hrv",
+                      "Czech"  		: "cze",
+                      "Danish" 		: "dan",
+                      "Dutch" 		: "dut",
+                      "English" 	: "eng",
+                      "Esperanto" : "epo",
+                      "Estonian" : "est",
+                      "Farsi" : "per",
+                      "Finnish" : "fin",
+                      "French" : "fre",
+                      "Galician" : "glg",
+                      "Georgian" : "geo",
+                      "German" : "ger",
+                      "Greek" : "ell",
+                      "Hebrew" : "heb",
+                      "Hindi" : "hin",
+                      "Hungarian" : "hun",
+                      "Icelandic" : "ice",
+                      "Indonesian" : "ind",
+                      "Italian" : "ita",
+                      "Japanese" : "jpn",
+                      "Kazakh" : "kaz",
+                      "Korean" : "kor",
+                      "Latvian" : "lav",
+                      "Lithuanian" : "lit",
+                      "Luxembourgish" : "ltz",
+                      "Macedonian" : "mac",
+                      "Malay" : "may",
+                      "Norwegian" : "nor",
+                      "Occitan" : "oci",
+                      "Polish" : "pol",
+                      "Portuguese" : "por",
+                      "Portuguese-BR" : "pob",
+                      "Romanian" : "rum",
+                      "Russian" : "rus",
+                      "Serbian" : "scc",
+                      "Slovak" : "slo",
+                      "Slovenian" : "slv",
+                      "Spanish" : "spa",
+                      "Swedish" : "swe",
+                      "Syriac" : "syr",
+                      "Thai" : "tha",
+                      "Turkish" : "tur",
+                      "Ukrainian" : "ukr",
+                      "Urdu" : "urd",
+                      "Vietnamese" : "vie",
+		      "English (US)" : "eng"	
+                    }
+        return languages[ id ]

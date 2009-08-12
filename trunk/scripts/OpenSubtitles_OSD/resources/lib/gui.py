@@ -38,8 +38,12 @@ class GUI( xbmcgui.WindowXMLDialog ):
     def set_filepath( self, path ):
         
         self.file_original_path = path
-        self.file_path = path[path.find(os.sep):len(path)]
-	LOG( LOG_INFO, "set_filepath [%s]" , ( self.file_path) )
+        if not (path.find("special://") > -1 ):
+		self.file_path = path[path.find(os.sep):len(path)]
+		LOG( LOG_INFO, "set_filepath [%s]" , ( os.getcwd()) )
+	else:
+		self.file_path = path
+
     def set_filehash( self, hash ):
         LOG( LOG_INFO, "set_filehash [%s]" , ( hash ) )
         self.file_hash = hash
@@ -98,11 +102,12 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 self.getControl( STATUS_LABEL ).setLabel( _( 642 ) % ( "......", ) )
                 ok2,msg2 = self.osdb_server.searchsubtitlesbyname( self.search_string )#, "en" )
 		LOG( LOG_INFO, msg2 )
-#		ok3,msg3 = self.osdb_server.searchsubtitlesbyname_alt( self.search_string )#, "en" )
-#               LOG( LOG_INFO, msg3 )
+#		if not (toOpenSubtitlesId (xbmc.getLanguage())) == "eng" :
+#		    ok3,msg3 = self.osdb_server.searchsubtitlesbyname_alt( self.search_string )#, "en" 
+#                   LOG( LOG_INFO, msg3 )
 
 	    self.osdb_server.mergesubtitles()
-            if not ok and not ok2:
+            if not ok and not ok2 and not ok3:
                 self.getControl( STATUS_LABEL ).setLabel( _( 634 ) % ( msg, ) )
             elif self.osdb_server.subtitles_list:
                 for item in self.osdb_server.subtitles_list:
@@ -171,14 +176,15 @@ class GUI( xbmcgui.WindowXMLDialog ):
             filename = self.osdb_server.subtitles_list[pos]["filename"]
             subtitle_format = self.osdb_server.subtitles_list[pos]["format"]
             url = self.osdb_server.subtitles_list[pos]["link"]
-	    local_path = os.path.dirname (self.file_original_path)
+	    local_path = os.path.dirname( self.file_original_path )
             zip_filename = filename[0:filename.rfind(".")] + ".zip"
             zip_filename = xbmc.translatePath( os.path.join( local_path, zip_filename ) )
             sub_filename = os.path.basename( self.file_path )
             form = self.osdb_server.subtitles_list[pos]["format"]
             lang = self.osdb_server.subtitles_list[pos]["language_id"]
             subName1 = sub_filename[0:sub_filename.rfind(".")] 
-            
+            if subName1 == "":
+		subName1 = self.search_string.replace("+", " ")
             self.file_download( url, zip_filename )
 	    self.extract_subtitles( filename, form, lang,subName1, subtitle_format, zip_filename, local_path )
 	
