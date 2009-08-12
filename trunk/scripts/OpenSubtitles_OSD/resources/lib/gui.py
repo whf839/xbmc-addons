@@ -35,14 +35,20 @@ class GUI( xbmcgui.WindowXMLDialog ):
         
 	pass
 
+    def set_temp( self, temp ):
+        
+        self.set_temp = temp
+
+
     def set_filepath( self, path ):
         
         self.file_original_path = path
         if not (path.find("special://") > -1 ):
 		self.file_path = path[path.find(os.sep):len(path)]
-		LOG( LOG_INFO, "set_filepath [%s]" , ( os.getcwd()) )
+		
 	else:
 		self.file_path = path
+	LOG( LOG_INFO, "set_filepath [%s]" ,  self.file_path )
 
     def set_filehash( self, hash ):
         LOG( LOG_INFO, "set_filehash [%s]" , ( hash ) )
@@ -88,8 +94,11 @@ class GUI( xbmcgui.WindowXMLDialog ):
         self.getControl( STATUS_LABEL ).setVisible( True )
         
     def search_subtitles( self ):
-        try:
-            if ( len( self.file_path ) > 0 ):
+        ok = False
+	ok2 = False
+	ok3 = False
+	try:
+            if ( len( self.file_path ) > 0 ) and not self.set_temp:
                 LOG( LOG_INFO, _( 642 ) % ( os.path.basename( self.file_original_path ), ) )
                 self.getControl( STATUS_LABEL ).setLabel( _( 642 ) % ( "...", ) )
                 #ok,msg = self.osdb_server.searchsubtitlesbyhash( self.file_path )#, "en" )
