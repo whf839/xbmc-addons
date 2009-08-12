@@ -5,11 +5,11 @@ import urllib,urllib2,re,xbmcplugin,xbmcgui,os
 #.nF0
 __plugin__  = "widelec.org"
 __author__  = "pajretX"
-__date__    = "09 July 2009"
-__version__ = "1.35"
+__date__    = "12 August 2009"
+__version__ = "1.36"
 
 HOME_DIR = os.getcwd()
-base = "http://widelec.org/"
+base = "http://www.widelec.org/"
 # STRINGS
 names = xbmc.Language( HOME_DIR ).getLocalizedString
 naj = (names (30000))
@@ -31,25 +31,25 @@ res = (names (30014))
 
 #0
 def CATEGORIES():
-	addDir(naj,'http://widelec.org/index.php?page=1&order_by=0&category=&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir(kom,'http://widelec.org/index.php?page=1&order_by=1&category=&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir(ogl,'http://widelec.org/index.php?page=1&order_by=2&category=&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(naj,'http://www.widelec.org/index.php?page=1&order_by=0&category=&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(kom,'http://www.widelec.org/index.php?page=1&order_by=1&category=&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(ogl,'http://www.widelec.org/index.php?page=1&order_by=2&category=&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
 	addDir(kat,'cat2',1,'')
 
 
 #1
 def CATEGORIES2():
-	addDir(gen,'http://widelec.org/index.php?page=1&order_by=0&category=fotografia&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir(kob,'http://widelec.org/index.php?page=1&order_by=0&category=kobiety&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir(lud,'http://widelec.org/index.php?page=1&order_by=0&category=ludzie&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir(wid,'http://widelec.org/index.php?page=1&order_by=0&category=miejscowki&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir(mot,'http://widelec.org/index.php?page=1&order_by=0&category=motoryzacja&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir(odj,'http://widelec.org/index.php?page=1&order_by=0&category=odjechane&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir(spo,'http://widelec.org/index.php?page=1&order_by=0&category=sport&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir(sta,'http://widelec.org/index.php?page=1&order_by=0&category=wiekowe&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir(wyn,'http://widelec.org/index.php?page=1&order_by=0&category=wynalazki&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir(zwi,'http://widelec.org/index.php?page=1&order_by=0&category=zwierzeta&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
-	addDir(res,'http://widelec.org/index.php?page=1&order_by=0&category=reszta&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(gen,'http://www.widelec.org/index.php?page=1&order_by=0&category=fotografia&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(kob,'http://www.widelec.org/index.php?page=1&order_by=0&category=kobiety&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(lud,'http://www.widelec.org/index.php?page=1&order_by=0&category=ludzie&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(wid,'http://www.widelec.org/index.php?page=1&order_by=0&category=miejscowki&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(mot,'http://www.widelec.org/index.php?page=1&order_by=0&category=motoryzacja&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(odj,'http://www.widelec.org/index.php?page=1&order_by=0&category=odjechane&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(spo,'http://www.widelec.org/index.php?page=1&order_by=0&category=sport&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(sta,'http://www.widelec.org/index.php?page=1&order_by=0&category=wiekowe&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(wyn,'http://www.widelec.org/index.php?page=1&order_by=0&category=wynalazki&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(zwi,'http://www.widelec.org/index.php?page=1&order_by=0&category=zwierzeta&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
+	addDir(res,'http://www.widelec.org/index.php?page=1&order_by=0&category=reszta&category_id=0&site=blog&section=1&text=&pokrewne=',2,'')
                                            
      
 # 2
@@ -62,9 +62,10 @@ def INDEX(url):
 	pagee=re.compile('.+?page=(\d+).+?').findall(url)[0]
 	wwww=re.compile('&order.+?pokrewne=').findall(url)[0]
 	page_n0 = str (int(pagee) + 1 )
-	asasa=('http://widelec.org/index.php?page=%s' %page_n0 +wwww)
-	addDir('--== [ N E X T     P A G E ] ==--', asasa, 2, 'http://widelec.org/images/pl/nav_end.gif')
-	matches=re.compile('<a href="(.+?)" class="link_foto_big"><strong>(.+?)</strong></a>').findall(link)
+	asasa=('http://www.widelec.org/index.php?page=%s' %page_n0 +wwww)
+	addDir('--== [ N E X T     P A G E ] ==--', asasa, 2, 'http://www.widelec.org/images/pl/nav_end.gif')
+	matches=re.compile('<a href="(.+?)" class="bigTitle" title=".+?"><strong>(.+?)</strong></a>').findall(link)
+	del link
 	for match in matches :
 	#
 		link = base + match[0]
@@ -77,7 +78,8 @@ def FOTKI(url):
 	response=urllib2.urlopen(req)
 	llink = response.read()
 	response.close()
-        foto_count=re.compile('alt.+?HREF.+nav_end').findall(llink)
+        foto_count=re.compile('class="next">Nast\xc4\x99pna</a><a HREF="(.+?)">Koniec</a>').findall(llink)
+	del llink
 	if len(foto_count)>1:        
 		dzzz=str(foto_count[0])
 		foto_c_no=re.compile('.+?page2=(\d+).+?').findall(dzzz)[0]
@@ -89,29 +91,33 @@ def FOTKI(url):
 			response=urllib2.urlopen(req)
 			html = response.read()
 			response.close()
-			matches=re.compile('<td align="center"><img src="(.+?)"></td>').findall(html)
+			matches=re.compile('<img src="stuff(.+?)">').findall(html)
+			del html
 			for foto in matches:
-				addLink("fotka",base +foto,'')
-        else:
-                req = urllib2.Request(url)
-                req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-                response=urllib2.urlopen(req)
-                link = response.read()
-                response.close()
-                foto_count=re.compile('class.+?HREF.+?nav_next.gif.+?alt').findall(link)[0]
-                dzzz2=re.compile('>(\d)<').findall(foto_count)[-1]
-                for photos2 in range(1,int(dzzz2) + 1):
-                        page_id_no = re.compile('(\d+).html').findall(url)[0]
-                        srerl = ('http://www.widelec.org/index.php?page2=%s' %photos2)
-                        req = urllib2.Request(srerl +'site=blog&action=detail&blog_id=' + page_id_no +'&site=blog&section=1&text=&pages=10')
-                        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-                        response=urllib2.urlopen(req)
-                        html = response.read()
-                        response.close()
-                        matches=re.compile('<td align="center"><img src="(.+?)"></td>').findall(html)
-                        for foto in matches:
-                                addLink("fotka",base +foto,'')
-		
+				addLink("fotka",base +'stuff/' +foto,'')
+        elif len(foto_count)<1:
+		req = urllib2.Request(url)
+		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+		response=urllib2.urlopen(req)
+		link = response.read()
+		response.close()
+		foto_count=re.compile('<a HREF="(.+?)" class="next">Nast\xc4\x99pna</a>').findall(link)[0]
+		dzzz2=re.compile('>(\d)<').findall(foto_count)[-1]
+		for photos2 in range(1,int(dzzz2) + 1):
+			page_id_no = re.compile('(\d+).html').findall(url)[0]
+			srerl = ('http://www.widelec.org/index.php?page2=%s' %photos2)
+			req = urllib2.Request(srerl +'site=blog&action=detail&blog_id=' + page_id_no +'&site=blog&section=1&text=&pages=10')
+			req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+			response=urllib2.urlopen(req)
+			html = response.read()
+			response.close()
+			matches=re.compile('<img src="stuff(.+?)">').findall(html)
+			del html
+			for foto in matches:
+				addLink("fotka",base +'stuff/' +foto,'')
+
+	
+			
 def get_params():
 	param=[]
 	paramstring=sys.argv[2]
