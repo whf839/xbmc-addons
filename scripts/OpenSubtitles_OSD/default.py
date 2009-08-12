@@ -9,7 +9,7 @@ __author__ = "Amet"
 __url__ = ""
 __svn_url__ = "http://xbmc-scripting.googlecode.com/svn/trunk/scripts/OpenSubtitles_OSD"
 __credits__ = ""
-__version__ = "1.08"
+__version__ = "1.09"
 
 
 BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib' ) )
