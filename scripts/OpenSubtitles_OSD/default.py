@@ -9,7 +9,7 @@ __author__ = "Amet"
 __url__ = ""
 __svn_url__ = "http://xbmc-scripting.googlecode.com/svn/trunk/scripts/OpenSubtitles_OSD"
 __credits__ = ""
-__version__ = "1.09"
+__version__ = "1.1"
 
 
 BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib' ) )
@@ -40,7 +40,11 @@ else:
 	skin = "PM3.HD"
    if ( skin.find( "roject" ) > -1 ):
 	skin = "PM3.HD"
-   fallback = os.path.join("special://home/scripts/", __scriptname__ ,"resources","skins" ,  "PM3.HD" )
+   if ( skin.find( "Mod" ) > -1 ):
+	skin = "MediaStream_Redux"
+   if ( skin.find( "Aeon" ) > -1 ):
+	skin = "Aeon"
+
    mediafolder = os.path.join("special://home/scripts/", __scriptname__ ,"resources","skins" , skin , "media" )
    zip_file = os.path.join("special://home/scripts/", __scriptname__ ,"resources","lib" , "media.zip" )
    if not os.path.exists(mediafolder):
@@ -49,7 +53,7 @@ else:
 
 	import gui
 	window = "main"
-
+	temp = False
 	search_string = ""
 	path_string = ""
 	if len( sys.argv ) > 1:
@@ -76,12 +80,13 @@ else:
 			search_string = string.join( tmp_list, '+' ) + "+" + search_string 
 	search_string = os.path.splitext(search_string)[0]
 	
-	if (movieFullPath.find("http://") > -1 ):
+	if (movieFullPath.find("http://") > -1 ) or (movieFullPath.find("smb://") > -1 ):
 		movieFullPath = "special://temp/"
-
+		temp = True
 	ui = gui.GUI( "script-OpenSubtitles_OSD-main.xml", os.getcwd(), (skin))
 	ui.set_filepath( movieFullPath )
 	ui.set_searchstring( search_string )
+	ui.set_temp( temp )
 	ui.doModal()
 	xbmc.Player().pause()
 	del ui
