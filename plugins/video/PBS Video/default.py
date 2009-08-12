@@ -3,8 +3,8 @@ __scriptname__ = "PBS Video"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/PBS%20Video"
-__date__ = '2009-07-22'
-__version__ = "1.1"
+__date__ = '2009-08-12'
+__version__ = "1.2"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 from urllib import urlretrieve, urlcleanup
@@ -35,7 +35,7 @@ def showRoot():
 		f.close()
 		p=re.compile('<ul id="mainnav">(.+?)<li class="more">', re.DOTALL)
 		match=p.findall(a)
-		o=re.compile('<li><a href="http://video.pbs.org/program/(.+?)/" title="(.+?)">')
+		o=re.compile('<li><a href="http://video.pbs.org/video/program/(.+?)/" title="(.+?)">')
 		data=o.findall(match[0])
 		x=0
 		for url, name in data:
@@ -51,7 +51,7 @@ def showList(url, name):
 		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
-		p=re.compile('<p class="info">\n                \n                <a href="http://video.pbs.org/video/(.+?)" class="title" title="(.+?)">(.+?)</a>\n')
+		p=re.compile('<p class="info">\n                \n                <a href="http://video.pbs.org/video/video/(.+?)" class="title" title="(.+?)">(.+?)</a>\n')
 		q=re.compile('<span class="list">(.+?)</span>')
 		r=re.compile('<img src="(.+?)" alt="(.+?)" />')
 		info=p.findall(a)
@@ -92,7 +92,7 @@ def playVideo(url, name, thumb):
 	f=urllib2.urlopen(req)
 	a=f.read()
 	f.close()
-	p=re.compile('<playerURL>http%3A//release.theplatform.com/content.select%3Fpid%3D(.+?)%26UserName')
+	p=re.compile('&releaseURL=http%3A//release.theplatform.com/content.select%3Fpid%3D(.+?)%26UserName')
 	info=p.findall(a)
 	url='http://release.theplatform.com/content.select?pid='+info[0]+'&format=SMIL'
 	req = urllib2.Request(url)
