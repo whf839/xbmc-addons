@@ -14,9 +14,10 @@ _ = sys.modules[ "__main__" ].__language__
 BASE_URL_XMLRPC_DEV = u"http://dev.opensubtitles.org/xml-rpc"
 BASE_URL_XMLRPC = u"http://www.opensubtitles.org/xml-rpc"
 BASE_URL_SEARCH = u"http://www.opensubtitles.com/%s/search/moviename-%s/simplexml"
-BASE_URL_SEARCH_ALL = u"http://www.opensubtitles.com/en/search/sublanguageid-all/moviename-%s/simplexml"
+BASE_URL_SEARCH_ALL = u"http://www.opensubtitles.com/en/search/sublanguageid-%s/moviename-%s/simplexml"
+BASE_URL_SEARCH_OFFSET = u"http://www.opensubtitles.com/en/search/sublanguageid-all/moviename-%s/offset-40/simplexml"
 BASE_URL_DOWNLOAD = u"http://dev.opensubtitles.org/%s"
-BASE_URL_OSTOK = "http://app.boxee.tv/api/ostok"
+BASE_URL_OSTOK = "http://app.boxee.tv/api/ostok" 
 
 def compare_columns(a, b):
         # sort on ascending index 0, descending index 2
@@ -179,14 +180,14 @@ class OSDBServer:
 			        self.subtitles_list.append( item )
 			    if item["format"].find( "sub" ) == 0:
 			        self.subtitles_list.append( item )
-
-#       if( len ( self.subtitles_alt_list ) > 0 ):
-            for item in self.subtitles_alt_list:
-			    if item["format"].find( "srt" ) == 0:
-			        self.subtitles_list.append( item )
-			    if item["format"].find( "sub" ) == 0:
-			        self.subtitles_list.append( item )
-
+	
+#        if not (toOpenSubtitlesId (xbmc.getLanguage()) == "eng") and ( len ( self.subtitles_alt_list ) > 0 ):
+#            for item in self.subtitles_alt_list:
+#			    if item["format"].find( "srt" ) == 0:
+#			        self.subtitles_list.append( item )
+#			    if item["format"].find( "sub" ) == 0:
+#			        self.subtitles_list.append( item )
+#
 
         if( len ( self.subtitles_list ) > 0 ):
             self.subtitles_list = sorted(self.subtitles_list, compare_columns)
@@ -350,18 +351,18 @@ class OSDBServer:
 		LOG( LOG_ERROR, error )
 		return False, error
 
-    def searchsubtitlesbyname_alt( self, name, language="all" ):
+    def searchsubtitlesbyname_alt( self, name ):
 	self.subtitles_alt_list = []
         self.allow_exception = False
 	search_url = ""
-	
+	language= toOpenSubtitlesId (xbmc.getLanguage())
 	try:
 		LOG( LOG_INFO, "Searching subtitles by name for " + name )
 		
 		if language == "all":
 			search_url = BASE_URL_SEARCH % ( language, os.path.basename( name ) )
 		else:
-			search_url = BASE_URL_SEARCH % ( language, os.path.basename( name ) )
+			search_url = BASE_URL_SEARCH_ALL % ( language, os.path.basename( name ) )
 		
 		search_url.replace( " ", "+" )
 		LOG( LOG_INFO, search_url )
@@ -429,7 +430,7 @@ class OSDBServer:
 		LOG( LOG_INFO, "Searching subtitles by name for " + name )
 		
 		if language == "all":
-			search_url = BASE_URL_SEARCH_ALL % ( os.path.basename( name ), )
+			search_url = BASE_URL_SEARCH_ALL % ( language, os.path.basename( name ), )
 		else:
 			search_url = BASE_URL_SEARCH % ( language, os.path.basename( name ) )
 		

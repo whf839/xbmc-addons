@@ -1,28 +1,31 @@
 import sys
 import os
 import xbmcgui
-import xbmc
+##import xbmc
 import string
-
+##import xbmcplugin
 __scriptname__ = "OpenSubtitles_OSD"
 __author__ = "Amet"
 __url__ = ""
 __svn_url__ = "http://xbmc-scripting.googlecode.com/svn/trunk/scripts/OpenSubtitles_OSD"
 __credits__ = ""
-__version__ = "1.07"
+__version__ = "1.08"
 
 
 BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib' ) )
 sys.path.append (BASE_RESOURCE_PATH)
-import unzip
-un = unzip.unzip()
+
 
 import language
+import unzip
+import globals
 __language__ = language.Language().localized
+un = unzip.unzip()
+
+
 if (xbmc.Player().isPlaying() == False) :
-   
    errorDialog = xbmcgui.Dialog()
-   errorDialog.ok("OpenSubtitles_OSD", "www.xbmc.org/forum/showthread.php?t=56083 for Instructions")
+   errorDialog.ok("OpenSubtitles_OSD", "Nice try, try it again... :)")
    del errorDialog
 
 
@@ -37,6 +40,7 @@ else:
 	skin = "PM3.HD"
    if ( skin.find( "roject" ) > -1 ):
 	skin = "PM3.HD"
+   fallback = os.path.join("special://home/scripts/", __scriptname__ ,"resources","skins" ,  "PM3.HD" )
    mediafolder = os.path.join("special://home/scripts/", __scriptname__ ,"resources","skins" , skin , "media" )
    zip_file = os.path.join("special://home/scripts/", __scriptname__ ,"resources","lib" , "media.zip" )
    if not os.path.exists(mediafolder):
@@ -70,9 +74,12 @@ else:
 			else:
 				search_string = search_string + "E" + tmp_string
 			search_string = string.join( tmp_list, '+' ) + "+" + search_string 
+	search_string = os.path.splitext(search_string)[0]
 	
-	
-	ui = gui.GUI( "script-%s-%s.xml" % ( __scriptname__.replace( " ", "_" ), window, ), os.getcwd(), (skin))
+	if (movieFullPath.find("http://") > -1 ):
+		movieFullPath = "special://temp/"
+
+	ui = gui.GUI( "script-OpenSubtitles_OSD-main.xml", os.getcwd(), (skin))
 	ui.set_filepath( movieFullPath )
 	ui.set_searchstring( search_string )
 	ui.doModal()
