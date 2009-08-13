@@ -34,10 +34,10 @@ LOG_INFO, LOG_ERROR, LOG_NOTICE, LOG_DEBUG = range( 1, 5 )
 
 def _create_base_paths():
     """ creates the base folders """
-    if ( not os.path.isdir( BASE_DATA_PATH ) ):
-        os.makedirs( BASE_DATA_PATH )
-    if ( not os.path.isdir( BASE_SETTINGS_PATH ) ):
-        os.makedirs( BASE_SETTINGS_PATH )
+    ##if ( not os.path.isdir( BASE_DATA_PATH ) ):
+    ##    os.makedirs( BASE_DATA_PATH )
+    ##if ( not os.path.isdir( BASE_SETTINGS_PATH ) ):
+    ##    os.makedirs( BASE_SETTINGS_PATH )
 _create_base_paths()
 
 def get_keyboard( default="", heading="", hidden=False ):
