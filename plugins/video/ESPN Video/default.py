@@ -2,12 +2,12 @@
 __scriptname__ = "XBMC Video Plugin"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/ESPN%20Video"
-__date__ = '13-07-2009'
-__version__ = "1.1"
+__date__ = '08-08-2009'
+__version__ = "1.2"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 THUMBNAIL_PATH = os.path.join(os.getcwd().replace( ";", "" ),'resources','media')
-
+HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2'
 
 def showRoot():
 		li=xbmcgui.ListItem("Categories")
@@ -54,6 +54,7 @@ def showCategoriesC():
 
 
 def RSS(url):
+		print url
 		req = urllib2.Request(url)
 		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.6) Gecko/2009011913 Firefox/3.0.6')
 		f=urllib2.urlopen(req)
@@ -72,7 +73,7 @@ def RSS(url):
 			url=URLS[x][2]
 			li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
 			li.setInfo( type="Video", infoLabels={ "Title": name } )
-			u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(name1)+"&url="+urllib.quote_plus(url)
+			u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(name1)+"&url="+urllib.quote_plus(url)+"&plot="+urllib.quote_plus('')+"&cat="+urllib.quote_plus('RSS')
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
 			x=x+1
 		
@@ -182,7 +183,7 @@ def showListB(url,name):
 		x=0
 		for url2 in thumbs:
 			name=title[x]
-			url='http://sports.espn.go.com/broadband/mpf/config/player/playlist.xml?id=' + thumbs[x][1] + '&player=videoHub09'
+			url='http://sports.espn.go.com/videohub/mpf/config/player/playlist.xml?id=' + thumbs[x][1] + '&player=videoHub09'
 			thumb=thumbs[x][3]
 			name1 = str(int(x+1+12*int(page)))+'. '+name
 			li=xbmcgui.ListItem(name1, iconImage=thumb, thumbnailImage=thumb)
@@ -205,6 +206,7 @@ def showList(url,name):
 		o=re.compile('<caption><!\[CDATA\[(.+?)\]\]></caption>')
 		#q=re.compile('<!\[CDATA\[(.+?)\]\]></asseturl>')
 		q=re.compile('<mediaid >(.+?)</mediaid>')
+		tags=re.compile('<contentcat><!\[CDATA\[(.*?)\]\]></contentcat>').findall(a)
 		r=re.compile('<thumbnailurl  onError="/broadband/video/images/thumb_default.gif"><!\[CDATA\[(.+?)\]\]></thumbnailurl>')
 		title=p.findall(a)
 		info=o.findall(a)
@@ -212,19 +214,25 @@ def showList(url,name):
 		thumbs=r.findall(a)
 		url='http://seavideo-ak.espn.go.com/motion/' + flv[0] + '.flv'
 		name=title[0]
-		playVideo(url, name)
+		plot=info[0]
+		cat=tags[0]
+		cat=cat.replace('|',' / ')
+		playVideo(url, name, plot, cat)
 		
 def Update(__version__):
-	req = urllib2.Request('http://code.google.com/p/plugin/downloads/list?q=label:Featured')
-	response = urllib2.urlopen(req)
-	page = response.read()
-	response.close()
-	ALL = re.compile('http://plugin.googlecode.com/files/ESPN_Video_(.+?).zip').findall(page)
+	print "ESPN Video v"+__version__
+	url = 'http://code.google.com/p/xbmc-addons/source/browse/trunk/plugins/video/ESPN%20Video/default.py'
+	req = urllib2.Request(url)
+	req.add_header('User-Agent', HEADER)
+	f=urllib2.urlopen(req)
+	a=f.read()
+	f.close()
+	ALL = re.compile('<td class="source">__version__ = &quot;(.+?)&quot;<br></td>').findall(a)
 	for link in ALL :
 		if link.find(__version__) != 0:
 			newVersion=link
 			dia = xbmcgui.Dialog()
-			ok = dia.ok(xbmc.getLocalizedString( 30019 ), xbmc.getLocalizedString( 30020 )+'\n\n'+xbmc.getLocalizedString( 30021 )+' '+__version__+'\n'+xbmc.getLocalizedString( 30022 )+' '+newVersion)
+			ok = dia.ok("ESPN Video", 'Updates are available on SVN Repo Installer\n\n'+'Current Version: '+__version__+'\n'+'Update Version: '+newVersion)
 
 def clean(name):
     remove=[('&amp;','&'),('&quot;','\"')]
@@ -232,7 +240,7 @@ def clean(name):
         name=name.replace(old,new)
     return name
 	
-def playVideo(url,name):
+def playVideo(url,name,plot,cat):
 	title=name
 	name=clean_file(name)
 	name=name[:+32]
@@ -288,6 +296,7 @@ def playVideo(url,name):
 		player_type = xbmc.PLAYER_CORE_MPLAYER
 	g_thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
 	listitem=xbmcgui.ListItem(title ,iconImage="DefaultVideo.png", thumbnailImage=g_thumbnail)
+	listitem.setInfo( type="Video", infoLabels={ "Title": title, "Director": 'ESPN', "Studio": 'ESPN', "Genre": cat, "Plot": plot } )
 	if (flv_file != None and os.path.isfile(flv_file)):
 		xbmc.Player(player_type).play(str(flv_file), listitem)
 	elif (stream == 'true'):
@@ -339,6 +348,14 @@ try:
         page=int(params["page"])
 except:
         pass
+try:
+        plot=urllib.unquote_plus(params["plot"])
+except:
+        pass
+try:
+		cat=urllib.unquote_plus(params["cat"])
+except:
+        pass
 
 if mode==None:
 	name=''
@@ -348,7 +365,7 @@ if mode==None:
 elif mode==1:
 	showList(url, name)
 elif mode==2:
-	playVideo(url, name)
+	playVideo(url, name, plot, cat)
 elif mode==3:
 	showCategories()
 elif mode==4:
