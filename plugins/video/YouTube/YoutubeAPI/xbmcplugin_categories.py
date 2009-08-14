@@ -53,9 +53,8 @@ class Main:
                 client = YoutubeClient()
                 # make the authentication call
                 self.authkey, userid = client.authenticate( self.username, password )
-                # if authentication succeeded, save it for later
-                if ( self.authkey ):
-                    xbmcplugin.setSetting( "authkey", self.authkey )
+            # save authkey even if failed, so no token expired error
+            xbmcplugin.setSetting( "authkey", self.authkey )
 
     def openSettings( self ):
         # is this the first time plugin was run and user has not set email
