@@ -2,8 +2,8 @@
 __scriptname__ = "Justin.tv"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Justin.tv"
-__date__ = '2009-07-29'
-__version__ = "1.4.9"
+__date__ = '2009-08-13'
+__version__ = "1.4.10"
 __XBMC_Revision__ = "21803"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback, shutil
@@ -361,14 +361,14 @@ def playVideo(url, name, thumb):
 		return
 	a=f.read()
 	f.close()
-	data=re.compile('<play>(.+?)</play><connect>(.+?)</connect>').findall(a)
+	data=re.compile('<play>(.+?)</play>(.*?)<connect>(.+?)</connect>').findall(a)
 	if len(data) == 0:
 		dialog = xbmcgui.Dialog()
 		ok = dialog.ok('Justin.tv', 'Error: Invalid user or not a live feed.')
 		xbmc.executebuiltin( "Container.Refresh" )
 		return
 	playpath = data[0][0]
-	rtmp_url = data[0][1]
+	rtmp_url = data[0][2]
 	swf='http://www.justin.tv/meta/'+url+'.xml'
 	print swf
 	req = urllib2.Request(swf)

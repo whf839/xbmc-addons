@@ -1,3 +1,7 @@
+[Update 8/13/09 v1.4.10]
+- fixed live stream error
+
+----------------------------
 [Update 7/29/09 v1.4.9]
 - fixed search problem again
 - fixed blank title problem
