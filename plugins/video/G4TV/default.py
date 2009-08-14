@@ -2,12 +2,13 @@
 __scriptname__ = "G4TV"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/G4TV"
-__date__ = '2009-07-23'
-__version__ = "2.1"
+__date__ = '2009-08-13'
+__version__ = "2.2"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 from urllib2 import Request, urlopen, URLError, HTTPError
 HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.10) Gecko/2009042316 Firefox/3.0.10'
+HEADER2 = 'NonWapUserAgent=1; __utma=1; __utmb=1; __utmc=1; __utmz=1; s_cc=1; s_lv=1; s_lv_s=; s_nr=1; photo=1; s_photo_viewer=no-photo; contribution=1; s_contributor=no-contributions; s_sq=1; _csoot=1; s_vi=1; _csuid=1; p=1'
 THUMBNAIL_PATH = os.path.join(os.getcwd().replace( ";", "" ),'resources','media')
 
 def _check_for_update():
@@ -57,6 +58,7 @@ def get_shows_list(name,type):
 	try:
 		req=urllib2.Request(url)
 		req.add_header('User-Agent', HEADER)
+		req.add_header('Cookie', HEADER2)
 		response=urllib2.urlopen(req)
 	except URLError, e:
 		dialog = xbmcgui.Dialog()
@@ -99,6 +101,7 @@ def get_shows_data(name,url,cat):
 	try:
 		req=urllib2.Request(url+'&page='+str(page))
 		req.add_header('User-Agent', HEADER)
+		req.add_header('Cookie', HEADER2)
 		response=urllib2.urlopen(req)
 	except URLError, e:
 		dialog = xbmcgui.Dialog()
@@ -134,6 +137,7 @@ def get_video(name,url,cat):
 	try:
 		req=urllib2.Request(url)
 		req.add_header('User-Agent', HEADER)
+		req.add_header('Cookie', HEADER2)
 		response=urllib2.urlopen(req)
 	except URLError, e:
 		dialog = xbmcgui.Dialog()
