@@ -9,9 +9,9 @@ from shutil import rmtree, copy
 import traceback
 
 __plugin__ = "UlmenTV"
-__version__ = '1.37'
+__version__ = '1.38'
 __author__ = 'bootsy [bootsy82@gmail.com] with much help from BigBellyBilly'
-__date__ = '06-08-2009'
+__date__ = '16-08-2009'
 
 #DIR_USERDATA = "/".join( ["special://masterprofile","plugin_data","video", __plugin__] )      # T:// - new drive
 DIR_USERDATA = "/".join( ["T:"+os.sep,"plugin_data","video", __plugin__] )  # translatePath() will convert to new special://
@@ -212,14 +212,14 @@ def getUlmenNewEpisodes(name):
 #fetch videolinks
 def fetchVideoLink(url):
 	header = {'User-agent' : 'XBMC UlmenTV'}
-	post_data='action=index&downloadurl='+url
-	url='http://www.nachrichtenmann.de/cgi-bin/video/video.cgi'
+	post_data='downloadurl='+url
+	url='http://getvids.de/video.cgi'
 	request=urllib2.Request(url, post_data, header)
 	f=urllib2.urlopen(request)
 	doc=f.read()
 	f.close()
 	if doc:
-		p=re.compile('<a href="([^"]+)"><span class="[^"]+"><strong>Download von', re.DOTALL + re.MULTILINE + re.IGNORECASE)
+		p=re.compile('href="([^"]+)" title="Download">', re.DOTALL + re.MULTILINE + re.IGNORECASE)
 		matches=p.findall(doc)
 		url=matches[0]
 	return url
@@ -289,7 +289,6 @@ def addLink(name, url, img, mode):
 	log("addLink() url=%s" % url)
 	liz=xbmcgui.ListItem(name, '', img, img)
 	liz.setInfo( type="Video", infoLabels={ "Title": name } )
-	url = fetchVideoLink(url)
 	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
 	log("addLink() videourl=%s" % url)
 	return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
@@ -331,6 +330,7 @@ def showShows(url,name):
 	dialogProgress.close()
 	
 def playVideo(url,name):
+	url = fetchVideoLink(url)
 	xbmc.Player(xbmc.PLAYER_CORE_AUTO).play(str(url))
 
 #######################################################################################################################    
