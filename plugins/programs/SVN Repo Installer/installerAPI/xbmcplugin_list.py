@@ -13,6 +13,7 @@ import xbmcplugin
 import urllib
 import re
 from xml.sax.saxutils import unescape
+#from pprint import pprint
 
 from xbmcplugin_lib import *
 
@@ -61,6 +62,7 @@ class Parser:
 class Main:
 	# base path
 	BASE_CACHE_PATH = os.path.join( xbmc.translatePath( "special://profile/" ), "Thumbnails", "Pictures" )
+	INSTALLED_ITEMS_FILENAME = os.path.join( os.getcwd(), "installed_items.dat" )
 
 	def __init__( self ):
 		log( "%s init!" % self.__class__ )
@@ -168,10 +170,13 @@ class Main:
 		return ok
 
 	def _fill_list( self, repo_url, revision, assets ):
+		log("_fill_list()")
 		try:
 			ok = False
 			# enumerate through the list of categories and add the item to the media list
+			all_addons = []
 			for item in assets:
+				info={}
 				cm = []
 				isFolder = True
 				for name, noffset, install, ioffset, voffset in self.REPO_STRUCTURES:
@@ -181,27 +186,55 @@ class Main:
 							break
 					except:
 						pass
+
 				if ( isFolder ):
 					heading = "category"
 					thumbnail = ""
 					label2 = ""
 					version = ""
+					path = ""
 				else:
 					heading = "download_url"
 					thumbnail = "%s%s/%sdefault.tbn" % ( self.REPO_URL, repo_url.replace( " ", "%20" ), item.replace( " ", "%20" ), )
-					version, label2, path = self._check_compatible( "%s%s/%sdefault.py" % ( self.REPO_URL, repo_url.replace( " ", "%20" ), item.replace( " ", "%20" ), ), self.REPO_URL, install, int( ioffset ), int( voffset ) )
+					info['thumb'] = thumbnail
+					svn_url = "%s%s/%sdefault.py" % ( self.REPO_URL, repo_url.replace( " ", "%20" ), item.replace( " ", "%20" ), )
+					svn_tagInfo, installed_version, label2, path = self._check_compatible( svn_url, self.REPO_URL, install, int( ioffset ), int( voffset ) )
+					info.update(svn_tagInfo)
+					info['svn_url'] = svn_url.replace('/default.py','')
+					info['svn_ver'] = svn_tagInfo['version']
+					info['version'] = installed_version
+					info['filepath'] = path.replace(os.sep + 'default.py','')
+					if not info.get('title',''):
+						info['title'] = urllib.unquote_plus( item[ : -1 ] )
+					info['install'] = install
+					info['ioffset'] = ioffset
+					info['voffset'] = voffset
+					info['repo'] = self.args.repo
+					info['category'] = parseCategory(urllib.unquote_plus(info['svn_url']))
+					version = info['svn_ver']
+					if not version:
+						version = "?"
 					version = " (v%s)" % version
-#					readme = check_readme( "%s%s/%sresources/readme.txt" % ( self.REPO_URL, repo_url, item, ) )
+
+					# discover if a readme exists, save url
 					readme_url_base = "%s%s/%s" % ( self.REPO_URL, repo_url, item, )
 					readme = check_readme( readme_url_base )
+					info['readme'] = readme
+
+				if heading == "category":
+					url = '%s?%s="%s/%s"&repo=%s&install="%s"&ioffset=%s&voffset=%s&title=%s' % \
+						( sys.argv[ 0 ], heading, urllib.quote_plus( repo_url ), urllib.quote_plus( item ), repr( urllib.quote_plus( self.args.repo ) ), \
+						install, ioffset, voffset, repr( urllib.quote_plus( self.args.repo ) ), )
+				elif heading == "download_url":
+					# dont add install url to info dict if incompatible
+					if xbmc.getLocalizedString( 30015 ) not in label2:
+						dl = "%s/%s" % ( urllib.quote_plus( repo_url ), urllib.quote_plus( item ) )
+						info['download_url'] = "download_url=%s&repo=%s&install=%s&ioffset=%s&voffset=%s" % \
+							( repr( dl ), repr( urllib.quote_plus( self.args.repo ) ), repr(install), ioffset, voffset )
+
+					url_args = "show_info=%s" % urllib.quote_plus( repr(info['filepath']) )
+					url = '%s?%s' % ( sys.argv[ 0 ], url_args, )
 					
-				if ( label2.startswith( "[COLOR=FF00FF00]" ) or label2.startswith( "[COLOR=FFFF0000]" ) ):
-					url = path
-				elif "SVN%20Repo%20Installer" in item:
-					# set special case if self updating
-					url = '%s?self_update=True&%s="%s/%s"&repo=%s&install="%s"&ioffset=%s&voffset=%s&title=%s' % ( sys.argv[ 0 ], heading, urllib.quote_plus( repo_url ), urllib.quote_plus( item ), repr( urllib.quote_plus( self.args.repo ) ), install, ioffset, voffset, repr( urllib.quote_plus( self.args.repo ) ), )
-				else:
-					url = '%s?%s="%s/%s"&repo=%s&install="%s"&ioffset=%s&voffset=%s&title=%s' % ( sys.argv[ 0 ], heading, urllib.quote_plus( repo_url ), urllib.quote_plus( item ), repr( urllib.quote_plus( self.args.repo ) ), install, ioffset, voffset, repr( urllib.quote_plus( self.args.repo ) ), )
 				# add uninstall item
 				if ( not isFolder and not "SVN%20Repo%20Installer" in item and os.path.isfile( path ) ):
 					cm +=  [ ( xbmc.getLocalizedString( 30022 ), "XBMC.RunPlugin(%s?delete=%s&title=%s&delete_from_list=True)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( os.path.dirname( path ) ) ), repr( urllib.quote_plus( item[ : -1 ] ) ), ), ) ]
@@ -212,19 +245,27 @@ class Main:
 				else:
 					icon = "DefaultFile.png"
 				# create our listitem, fixing title
-				listitem = xbmcgui.ListItem( "%s%s" % ( urllib.unquote_plus( item[ : -1 ] ), version, ), label2=label2, iconImage=icon, thumbnailImage=thumbnail )
+				label1 = "%s%s" % ( urllib.unquote_plus( item[ : -1 ] ), version, )
+				listitem = xbmcgui.ListItem( label1, label2=label2, iconImage=icon, thumbnailImage=thumbnail )
 				# set the title
-				listitem.setInfo( type="Video", infoLabels={ "Title": "%s%s" % ( urllib.unquote_plus( item[ : -1 ] ), version, ), "Genre": label2 } )
+				listitem.setInfo( type="Video", infoLabels={ "Title": label1, "Genre": label2 } )
 				if ( not isFolder ):
 					cm += [ ( xbmc.getLocalizedString( 30600 ), "XBMC.RunPlugin(%s?showlog=True&repo=%s&category=%s&revision=None&parse=True)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( self.args.repo ) ), urllib.quote_plus( repr( item[ : -1 ].replace( "%20", " " )  )  ), ), ) ]
 					# add context menu items
 					if ( readme ):
 						cm += [ ( xbmc.getLocalizedString( 30610 ), "XBMC.RunPlugin(%s?showreadme=True&repo=None&readme=%s)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( readme ) ), ), ) ]
 				listitem.addContextMenuItems( cm, replaceItems=True )
+
+				all_addons.append(info)
+
 				# add the item to the media list
 				ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=url, listitem=listitem, isFolder=isFolder, totalItems=len( assets ) )
 				# if user cancels, call raise to exit loop
 				if ( not ok ): raise
+
+			# save info to file
+#			pprint (all_addons)
+			saveFileObj(self.INSTALLED_ITEMS_FILENAME, all_addons)
 		except:
 			# user cancelled dialog or an error occurred
 			logError()
@@ -234,23 +275,22 @@ class Main:
 			xbmcplugin.setPluginCategory( handle=int( sys.argv[ 1 ] ), category=self.args.title )
 			# sort by genre so all update status' are grouped
 			xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_GENRE )
+
 		return ok
 
 	def _check_compatible( self, url, repo_url, install, ioffset, voffset ):
-		log("_check_compatible() url=%s" % url)
-		try:
-			# get items svn info
-			ok = True
-			version = xbmc.getLocalizedString( 30013 )
-			htmlSource = readURL( url )
+		log("> _check_compatible() url=%s" % (url, ) )
 
-			# parse source for revision and version
-			version = parseDocTag( htmlSource, "version")
-			revision = int(parseDocTag( htmlSource, "XBMC_Revision"))
-			# compatible - 0 == unknown, so allow it
-			ok = bool((not self.XBMC_REVISION) or (self.XBMC_REVISION >= revision))
-		except:
-			pass
+		# get items svn info
+		htmlSource = readURL( url )
+
+		# parse source for revision and version
+		svn_tagInfo = parseAllDocTags( htmlSource )
+		svn_version = svn_tagInfo.get('version','')
+		svn_xbmc_rev = svn_tagInfo.get('XBMC_Revision',0)
+		# compatible - 0 == unknown, so allow it
+		ok = bool((not self.XBMC_REVISION) or (not svn_xbmc_rev) or
+				  (self.XBMC_REVISION >= svn_xbmc_rev))
 
 		# create path
 		items = url.replace( repo_url, "" ).split( "/" )
@@ -261,24 +301,28 @@ class Main:
 			del items[ voffset ]
 		path = os.path.join( drive, os.path.sep.join( items[ ioffset : ] ).replace( "%20", " " ) )
 
-		# make label2 according to state
-		if ( not ok ):
-			verState = "v%s (%s)" % ( version, xbmc.getLocalizedString( 30015 ), )		# eg. Incompatible
-		elif not ( os.path.isfile( path ) ):
-			verState = xbmc.getLocalizedString( 30021 )									# install
-		else:
-			# read installed path
+		# discover installed version
+		version = ""
+		isInstalled = os.path.isfile(path)
+		if isInstalled:
 			htmlSource = open( path, "r" ).read()
-			# parse source for version
-			ver = parseDocTag( htmlSource, "version" )
-			if not ver or version > ver:
-				verState = "v%s (%s)" % ( version, xbmc.getLocalizedString( 30014 ) )   # New
-			else:
-				verState = xbmc.getLocalizedString( 30011 )								# OK
-			version = ver		# so it shows current installed version
+			version = parseDocTag( htmlSource, "version" )
 
+		if ( not ok ): 
+			verState = xbmc.getLocalizedString( 30015 )							# Incompatible
+		elif not isInstalled:
+			verState = xbmc.getLocalizedString( 30021 )							# install
+		else:
+			# determine if svn update; always NEW if installed ver unknown
+			if (not version and svn_version) or (svn_version and svn_version > version):
+				verState = xbmc.getLocalizedString( 30014 )    					# New
+			else:
+				verState = xbmc.getLocalizedString( 30011 )						# OK
+
+		# make label2 according to state
 		label2 = makeLabel2( verState )
-		return version, label2, path
+		log("< _check_compatible() installed ver=%s label2=%s path=%s" % (version, label2, path))
+		return svn_tagInfo, version, label2, path
 
 	def _get_items( self ):
 		try:

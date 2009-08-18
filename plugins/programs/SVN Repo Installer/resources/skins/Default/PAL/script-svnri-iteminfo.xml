@@ -1,6 +1,7 @@
 <window>
-	<defaultcontrol>20</defaultcontrol>
-	<include>dialogeffect</include>
+	<defaultcontrol>23</defaultcontrol>
+	<animation effect="fade" time="200">WindowOpen</animation>
+	<animation effect="fade" time="200">WindowClose</animation>
 	<coordinates>
 		<system>1</system>
 		<posx>50</posx>
@@ -32,14 +33,14 @@
 			<height>30</height>
 			<align>center</align>
 			<aligny>center</aligny>
-			<textcolor>white</textcolor>
+			<textcolor>0xFFFFFFFF</textcolor>
 			<label></label>
-			<font>special13</font>
+			<font>font13</font>
 		</control>
 		<control type="image">
-			<posx>50</posx>
+			<posx>40</posx>
 			<posy>80</posy>
-			<width>530</width>
+			<width>550</width>
 			<height>2</height>
 			<texture>separator.png</texture>
 		</control>
@@ -73,7 +74,7 @@
 				<aligny>center</aligny>
 				<label></label>
 				<font>font12</font>
-				<textcolor>grey</textcolor>
+				<textcolor>0x66FFFFFF</textcolor>
 				<scroll>true</scroll>
 			</control>
 
@@ -99,7 +100,7 @@
 				<aligny>center</aligny>
 				<label></label>
 				<font>font12</font>
-				<textcolor>grey</textcolor>
+				<textcolor>0x66FFFFFF</textcolor>
 			</control>
 
 			<control type="label" id="9">
@@ -118,13 +119,13 @@
 				<description>Date value</description>
 				<posx>10</posx>
 				<posy>50</posy>
-				<width>200</width>
+				<width>250</width>
 				<height>25</height>
 				<align>left</align>
 				<aligny>center</aligny>
 				<label></label>
 				<font>font12</font>
-				<textcolor>grey</textcolor>
+				<textcolor>0x66FFFFFF</textcolor>
 			</control>
 
 			<control type="label" id="11">
@@ -149,7 +150,7 @@
 				<aligny>center</aligny>
 				<label></label>
 				<font>font12</font>
-				<textcolor>grey</textcolor>
+				<textcolor>0x66FFFFFF</textcolor>
 			</control>
 		</control>
 
@@ -184,12 +185,12 @@
 			<posx>40</posx>
 			<posy>240</posy>
 			<height>220</height>
-			<width>535</width>
+			<width>540</width>
 			<visible>true</visible>
 			<control type="image">
 				<posx>0</posx>
 				<posy>0</posy>
-				<width>535</width>
+				<width>550</width>
 				<height>2</height>
 				<texture>separator.png</texture>
 			</control>
@@ -207,24 +208,24 @@
 			</control>
 			<control type="button">
 				<posx>0r</posx>
-				<posy>0</posy>
-				<width>15</width>
+				<posy>5</posy>
+				<width>10</width>
 				<height>15</height>
-				<texturefocus border="2">scrollbar_arrow_up_focus.png</texturefocus>
-				<texturenofocus border="2">scrollbar_arrow_up.png</texturenofocus>
+				<texturefocus border="2">scrollbar-up-arrow-focus.png</texturefocus>
+				<texturenofocus border="2">scrollbar-up-arrow-nofocus.png</texturenofocus>
 				<onclick>PageUp(30)</onclick>
 				<visible>Control.IsVisible(61)</visible>
 			</control>
 			<control type="scrollbar" id="61">
 				<posx>0r</posx>
-				<posy>15</posy>
-				<width>15</width>
-				<height>200</height>
-				<texturesliderbackground border="4">scrollbar_background.png</texturesliderbackground>
-				<texturesliderbar border="4">scrollbar_bar.png</texturesliderbar>
-				<texturesliderbarfocus border="4">scrollbar_bar_focus.png</texturesliderbarfocus>
-				<textureslidernib>scrollbar_nib.png</textureslidernib>
-				<textureslidernibfocus>scrollbar_nib.png</textureslidernibfocus>
+				<posy>20</posy>
+				<width>10</width>
+				<height>195</height>
+				<texturesliderbackground border="4">scrollbar-background.png</texturesliderbackground>
+				<texturesliderbar border="4">scrollbar-bar-nofocus.png</texturesliderbar>
+				<texturesliderbarfocus border="4">scrollbar-bar-focus.png</texturesliderbarfocus>
+				<textureslidernib>scrollbar-nib-nofocus.png</textureslidernib>
+				<textureslidernibfocus>scrollbar-nib-focus.png</textureslidernibfocus>
 				<onleft>20</onleft>
 				<onright>20</onright>
 				<ondown>20</ondown>
@@ -236,10 +237,10 @@
 			<control type="button">
 				<posx>0r</posx>
 				<posy>215</posy>
-				<width>15</width>
+				<width>10</width>
 				<height>15</height>
-				<texturefocus border="2">scrollbar_arrow_down_focus.png</texturefocus>
-				<texturenofocus border="2">scrollbar_arrow_down.png</texturenofocus>
+				<texturefocus border="2">scrollbar-down-arrow-focus.png</texturefocus>
+				<texturenofocus border="2">scrollbar-down-arrow-nofocus.png</texturenofocus>
 				<visible>Control.IsVisible(61)</visible>
 				<onclick>PageDown(30)</onclick>
 			</control>
@@ -273,16 +274,9 @@
 
 		<control type="group">
 			<posx>10</posx>
-			<posy>480</posy>
+			<posy>469</posy>
 			<height>40</height>
 			<visible>true</visible>
-			<control type="image">
-				<posx>30</posx>
-				<posy>-2</posy>
-				<width>525</width>
-				<height>2</height>
-				<texture>separator.png</texture>
-			</control>
 			<control type="button" id="20">
 				<description>Install</description>
 				<posx>35</posx>
@@ -292,6 +286,7 @@
 				<label>$LOCALIZE[30021]</label>
 				<font>font12</font>
 				<align>center</align>
+				<aligny>center</aligny>
 				<texturenofocus border="3">button-nofocus.png</texturenofocus>
 				<texturefocus border="3">button-focus.png</texturefocus>
 				<onleft>24</onleft>
@@ -308,6 +303,7 @@
 				<label>$LOCALIZE[30022]</label>
 				<font>font12</font>
 				<align>center</align>
+				<aligny>center</aligny>
 				<texturenofocus border="3">button-nofocus.png</texturenofocus>
 				<texturefocus border="3">button-focus.png</texturefocus>
 				<onleft>20</onleft>
@@ -324,6 +320,7 @@
 				<label>$LOCALIZE[30530]</label>
 				<font>font12</font>
 				<align>center</align>
+				<aligny>center</aligny>
 				<texturenofocus border="3">button-nofocus.png</texturenofocus>
 				<texturefocus border="3">button-focus.png</texturefocus>
 				<onleft>21</onleft>
@@ -340,6 +337,7 @@
 				<label>$LOCALIZE[30540]</label>
 				<font>font12</font>
 				<align>center</align>
+				<aligny>center</aligny>
 				<texturenofocus border="3">button-nofocus.png</texturenofocus>
 				<texturefocus border="3">button-focus.png</texturefocus>
 				<onleft>22</onleft>
@@ -356,6 +354,7 @@
 				<label>$LOCALIZE[30027]</label>
 				<font>font12</font>
 				<align>center</align>
+				<aligny>center</aligny>
 				<texturenofocus border="3">button-nofocus.png</texturenofocus>
 				<texturefocus border="3">button-focus.png</texturefocus>
 				<onleft>23</onleft>

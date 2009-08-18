@@ -55,11 +55,6 @@ class Parser:
 		except:
 			pass
 
-#class _Info:
-#    def __init__( self, *args, **kwargs ):
-#        self.__dict__.update( kwargs )
-#        log("_Info() %s" % self.__dict__)
-
 class Main:
 	def __init__( self ):
 		log( "%s started!" % self.__class__ )
@@ -134,11 +129,14 @@ class Main:
 					self._download_item( forceInstall=True )
 
 				self.dialog.close()
+				# force list refresh
+#				xbmc.executebuiltin('Container.Refresh')
 		else:
 			xbmcgui.Dialog().ok("update_all()", "'Update All' file missing/empty!", os.path.split(fn)[0], os.path.basename(fn))
 		log("< _update_all()")
 
 	def _download_item( self, forceInstall=False ):
+		log("> _download_item() forceInstall=%s" % forceInstall)
 		try:
 			if ( forceInstall or xbmcgui.Dialog().yesno( self.title, xbmc.getLocalizedString( 30000 ), "", "", xbmc.getLocalizedString( 30020 ), xbmc.getLocalizedString( 30021 ) ) ):
 				self.dialog.create( self.title, xbmc.getLocalizedString( 30002 ), xbmc.getLocalizedString( 30003 ) )
@@ -163,11 +161,14 @@ class Main:
 				self.dialog.close()
 				if finished_path and not forceInstall:
 					xbmcgui.Dialog().ok( self.title, xbmc.getLocalizedString( 30008 ), finished_path )
+					# force list refresh
+#					xbmc.executebuiltin('Container.Refresh')
 		except:
 			# oops print error message
 			print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
 			self.dialog.close()
 			xbmcgui.Dialog().ok( self.title, xbmc.getLocalizedString( 30030 ) )
+		log("< _download_item()")
 		
 	def _get_files( self, asset_files ):
 		""" fetch the files """

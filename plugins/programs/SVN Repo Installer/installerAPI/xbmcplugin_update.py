@@ -59,8 +59,6 @@ class Main:
 		self.dialogProgress = xbmcgui.DialogProgress()
 		self.dialogProgress.create(__plugin__)
 		self.findInstalled()
-#		self.INSTALLED = [ {"filepath": "C:\\Documents and Settings\\itnmh\\Application Data\\XBMC\\plugins\\Programs\\TestPlugin\\", "ver": "0.0", "thumb": "", "xbmc_rev": "19001", "svn_ver": "0.1", "svn_url": "xbmc-addons/trunk/Programs/TestFolder", 'svn_xbmc_rev':'19010', 'repo': 'xbmc-addons', 'install': 0, 'ioffset': 0, 'voffset': 0 }, \
-#						   {"filepath": "C:\\Documents and Settings\\itnmh\\Application Data\\XBMC\\plugins\\Programs\\TestPlugin2\\", "ver": "0.1", "thumb": "", "xbmc_rev": "19001", "svn_ver": "0.3", "svn_url": "xbmc-addons/trunk/Programs/TestFolder2", 'svn_xbmc_rev':'19010', 'repo': 'xbmc-addons', 'install': 0, 'ioffset': 0, 'voffset': 0 }]
 		if self.INSTALLED:
 			self.checkUpdates()
 		self.dialogProgress.close()
@@ -101,25 +99,21 @@ class Main:
 					log("filepath=" + filepath)
 					doc = open( os.path.join(filepath, "default.py"), "r" ).read()
 					docTags = parseAllDocTags( doc )
-					ver = docTags["version"]
 
-					if docTags and (ver or self.showNoVer):
+					if docTags and (docTags["version"] or self.showNoVer):
 						thumb = os.path.join(filepath, "default.tbn")
 						if not os.path.isfile( thumb ):
 							thumb = "DefaultFile.png"
-						cat = self.parseCategory(filepath)
+						cat = parseCategory(filepath)
 						# if no title, parse category for it
 						if not docTags["title"]:
 							docTags["title"] = cat.split("/")[-1]
-						self.INSTALLED.append({"filepath": filepath,
-											   "ver": ver,
-											   "thumb": thumb,
-											   "xbmc_rev": docTags["XBMC_Revision"],
-											   'category': cat,
-											   'title': docTags["title"],
-											   'author': docTags["author"],
-											   'date': docTags["date"]
-											   })
+						tags = {"filepath": filepath,
+								"thumb": thumb,
+								"category": cat
+								}
+						tags.update(docTags)
+						self.INSTALLED.append( tags )
 				except:
 					logError()
 
@@ -138,8 +132,9 @@ class Main:
 		for count, info in enumerate(self.INSTALLED):
 			log("%d) checking installed=%s" % (count, info))
 
-			if not info.get('ver',None):
-				log("ignored, no version tag")
+			# unknown installed ver is OK, missing doc tag isn't
+			if info.get('version',None) == None:
+				log("ignored, missing a version tag")
 				continue
 
 			# find installed category from filepath
@@ -159,7 +154,7 @@ class Main:
 				url = "/".join( [base_url, installedCategory, "default.py"] )
 
 				percent = int( count * 100.0 / TOTAL_PATHS )
-				self.dialogProgress.update(percent, actionMsg,"%s   %s" % (repo, installedCategory))
+				self.dialogProgress.update(percent, actionMsg,"%s: %s" % (repo, installedCategory))
 				if self.dialogProgress.iscanceled():
 					quit = True
 					break
@@ -178,13 +173,14 @@ class Main:
 						except:
 							svn_xbmc_rev = 0
 						self.INSTALLED[count]['svn_ver'] = svn_ver
-						self.INSTALLED[count]['svn_xbmc_rev'] = svn_xbmc_rev
-						self.INSTALLED[count]['readme'] = check_readme( "/".join( [base_url, installedCategory] ) )
 						self.INSTALLED[count]['svn_url'] = url.replace('/default.py','')
+						self.INSTALLED[count]['XBMC_Revision'] = svn_xbmc_rev
+						self.INSTALLED[count]['readme'] = check_readme( "/".join( [base_url, installedCategory] ) )
 						self.INSTALLED[count]['repo'] = repo
 						self.INSTALLED[count]['install'] = repo_install
 						self.INSTALLED[count]['ioffset'] = repo_ioffset
 						self.INSTALLED[count]['voffset'] = repo_voffset
+						self.INSTALLED[count]['date'] = parseDocTag( doc, "date" )
 						
 						break # found in svn, move to next installed
 
@@ -192,16 +188,6 @@ class Main:
 
 		log("< checkUpdates() updated count=%d" % len(self.INSTALLED))
 
-
-	#####################################################################################################
-	def parseCategory(self, filepath):
-		try:
-			cat = re.search("(plugins.*|scripts.*)$",  filepath, re.IGNORECASE).group(1)
-			cat = cat.replace("\\", "/")
-		except:
-			cat = ""
-		log("parseCategory() cat=%s" % cat)
-		return cat
 
 	#####################################################################################################
 	def showUpdates(self):
@@ -215,8 +201,8 @@ class Main:
 
 			# create display list
 			sz = len(self.INSTALLED)
+			print("totalItems=%s" % sz)
 			for info in self.INSTALLED:
-#				print "info=", info
 				svn_url = info.get('svn_url','')
 				svn_ver = info.get('svn_ver','')
 
@@ -227,34 +213,35 @@ class Main:
 				# get addon details
 				path = ""
 				filepath = info.get('filepath', '')
-				ver = info.get('ver', '')
-				rev = info.get('xbmc_rev', '')
-				svn_xbmc_rev = info.get('svn_xbmc_rev','')
-				readme = info.get('readme',None)
+				ver = info.get('version', '')
+				xbmc_rev = info.get('XBMC_Revision', 0)
+				svn_xbmc_rev = info.get('XBMC_Revision',0)
+				readme = info.get('readme','')
 				category = info.get('category','')
 				repo = info.get('repo','SVN ?')
+				labelColour = "FFFFFFFF"
 
 				# add ContextMenu: Delete (unless already deleted status)
-				cm =  self._contextMenuItem( 30022, { "delete": filepath, "title": category } )	# 'Delete'
-				if ".backups" not in filepath:
-					labelColour = "FFFFFFFF"
+				if "SVN Repo Installer" not in category:
+					cm =  self._contextMenuItem( 30022, { "delete": filepath, "title": category } )	# 'Delete'
 				else:
-					labelColour = "66FFFFFF"
+					cm = []
 
 				# make update state according to found information
 				if ".backups" in filepath:
 					verState = xbmc.getLocalizedString( 30018 )				# Deleted
-				elif not ver:
-					verState = xbmc.getLocalizedString( 30013 )				# unknown version
-					ver = '?'
-				elif not svn_url or not svn_ver:
+					labelColour = "66FFFFFF"
+				elif not svn_url:
 					verState = xbmc.getLocalizedString( 30012 )             # not in SVN
+				elif not svn_ver:
+					verState = xbmc.getLocalizedString( 30013 )				# unknown version
 				elif ver >= svn_ver:
 					verState = xbmc.getLocalizedString( 30011 )				# OK
 					url_args = "show_info=%s" % urllib.quote_plus( repr(filepath) )
 					path = '%s?%s' % ( sys.argv[ 0 ], url_args, )
-				elif (svn_xbmc_rev and self.XBMC_REVISION and self.XBMC_REVISION >= svn_xbmc_rev) or (not svn_xbmc_rev or not self.XBMC_REVISION):
-					# NEW AVAILABLE - setup callback url for plugin SVN Repo Installer
+				elif (svn_xbmc_rev and self.XBMC_REVISION and self.XBMC_REVISION >= svn_xbmc_rev) or \
+					(not svn_xbmc_rev or not self.XBMC_REVISION):
+					# Compatible, NEW AVAILABLE - setup callback url for plugin SVN Repo Installer
 					verState = "v%s (%s)" % ( svn_ver, xbmc.getLocalizedString( 30014 ) )        # eg. !New! v1.1
 					trunk_url = re.search('(/trunk.*?)$', svn_url, re.IGNORECASE).group(1)
 					#['plugin://programs/SVN Repo Installer/', '-1', '?download_url="%2Ftrunk%2Fplugins%2Fmusic/iTunes%2F"&repo=\'xbmc-addons\'&install=""&ioffset=2&voffset=0']
@@ -267,20 +254,19 @@ class Main:
 
 					url_args = "show_info=%s" % urllib.quote_plus( repr(filepath) )
 
-					# for self update alter url
-					if "SVN Repo Installer" in category:
-						url_args = "self_update=True&" + url_args
-					else:
-						# add details to update_all
+					# exclude self update from "update all"
+					if "SVN Repo Installer" not in category:
 						updateAllItems.append("?" + url_args)
 					path = '%s?%s' % ( sys.argv[ 0 ], url_args, )
-
 				else:
 					verState = "v%s (%s)" % ( svn_ver, xbmc.getLocalizedString( 30015 ), )	# eg. Incompatible
 
 				if not path:
 					path = os.path.join(filepath, 'default.tbn')
-				log("path=" + path)
+				if not svn_ver:
+					svn_ver = '?'
+				if not ver:
+					ver = '?'
 
 				# Addon status text as label2
 				text = "[COLOR=%s][%s] %s (v%s)[/COLOR]" % (labelColour, repo, category, ver)
@@ -317,7 +303,9 @@ class Main:
 					cm +=  self._contextMenuItem( 30610, { "showreadme": True, "repo": None, "readme": readme } )
 
 				li.addContextMenuItems( cm, replaceItems=True )
-				xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=path, listitem=li, isFolder=False, totalItems=sz )
+				ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=path, listitem=li, isFolder=False, totalItems=sz )
+				# if user cancels, call raise to exit loop
+				if ( not ok ): raise
 
 			# if New Updates; add Update All item
 			log("Updated Count=%d" % len(updateAllItems))
@@ -336,7 +324,9 @@ class Main:
 #            xbmcplugin.setContent( handle=int( sys.argv[ 1 ] ), content="files")
 			ok = True
 		except:
-			handleException("showUpdates()")
+			# user cancelled dialog or an error occurred
+			logError()
+			ok = False
 
 		log("< showUpdates() ok=%s" % ok)
 		return ok
