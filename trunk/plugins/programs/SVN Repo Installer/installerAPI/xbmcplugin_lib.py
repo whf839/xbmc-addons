@@ -139,6 +139,7 @@ def get_xbmc_revision():
 def parseDocTag(doc, tag):
 	try:
 		match = re.search("__%s__.*?[\"'](.*?)[\"']" % tag,  doc, re.IGNORECASE).group(1)
+		match = match.replace( "$", "" ).replace( "Revision", "" ).replace( "Date", "" ).replace( ":", "" ).strip()
 	except:
 		match = ""
 	log("parseDocTag() %s=%s" % (tag, match))
@@ -187,3 +188,14 @@ def makeLabel2( verState ):
 	else:
 		label2 = "[COLOR=FFFFFF00]%s[/COLOR]" % verState
 	return label2
+
+#####################################################################################################
+def parseCategory(filepath):
+    try:
+        cat = re.search("(plugins.*|scripts.*)$",  filepath, re.IGNORECASE).group(1)
+        cat = cat.replace("\\", "/")
+    except:
+        cat = ""
+    log("parseCategory() cat=%s" % cat)
+    return cat
+

@@ -1,7 +1,7 @@
 import os, sys
 import xbmc, xbmcgui
 import urllib
-#from pprint import pprint
+from pprint import pprint
 from xbmcplugin_lib import *
 from shutil import rmtree, copytree
 
@@ -28,13 +28,21 @@ class InfoDialog( xbmcgui.WindowXMLDialog ):
 		if thumb:
 			self.getControl( 31 ).setImage( thumb )
 
-		self.getControl( 4 ).setLabel(self.info.get('title','?'))
+		self.getControl( 4 ).setLabel("[B]"+self.info.get('title','?')+"[/B]")
 		self.getControl( 6 ).setLabel(self.info.get('author','?'))
-		self.getControl( 8 ).setLabel("v" + self.info.get('svn_ver','?'))
+		version = self.info.get('version','?')
+		if not version: version = '?'
+		svn_ver = self.info.get('svn_ver','?')
+		if not svn_ver: svn_ver = '?'
+		verText = "v%s -> v%s" % (version,svn_ver)
+		self.getControl( 8 ).setLabel(verText)
 		self.getControl( 10 ).setLabel(self.info.get('date','?'))
 		self.getControl( 12 ).setLabel(self.info.get('category','?'))
 		self.getControl( 19 ).setLabel(self.info.get('compatibility',''))
-		self.getControl( 30 ).setText(self.info.get('text',''))
+		if self.info.get('changelog',''):
+			self.showChangelog()
+		elif self.info.get('readme',''):
+			self.showReadme()
 
 		# set btns enabled state
 		btnIDs = {'install': 20,'uninstall': 21,'readme': 22,'changelog': 23 }
@@ -44,19 +52,26 @@ class InfoDialog( xbmcgui.WindowXMLDialog ):
 
 		xbmcgui.unlock()
 
+	def showChangelog(self):
+		self.getControl( 30 ).setText(self.info.get('changelog',''))
+	def showReadme(self):
+		self.getControl( 30 ).setText(self.info.get('readme',''))
+
 	def onClick( self, controlId ):
 		if controlId in (20,21,22,23,24):
 			if controlId == 22:
-				self.action = "readme"
+				self.showReadme()
 			elif controlId == 23:
-				self.action = "log"
+				self.showChangelog()
 			elif controlId == 20:
 				self.action = "install"
 			elif controlId == 21:
 				self.action = "uninstall"
 			else:
 				self.action = None
-			self.close()
+
+			if controlId not in (22,23):
+				self.close()
 
 	def onFocus( self, controlId ):
 		pass
@@ -103,11 +118,11 @@ class Main:
 	def _load_item( self ):
 		info = {}
 		items = loadFileObj(self.INSTALLED_ITEMS_FILENAME)
-#		pprint (items)
 		filepath = self.args.show_info
+		log("looking for filepath=%s" % filepath)
 		# find addon from installed list
 		for i, item in enumerate(items):
-			if item['filepath'] == filepath:
+			if item.get('filepath','') == filepath:
 				info = item
 				break
 		log("_load_item() info=%s" % info)
@@ -116,7 +131,7 @@ class Main:
 	########################################################################################################################
 	def show_info( self, info ):
 		log("> show_info() ")
-#		pprint (info)
+		pprint (info)
 		quit = False
 		buttons = {'install': True,'uninstall': True, 'readme': True, 'changelog': True }
 
@@ -125,45 +140,43 @@ class Main:
 		dialog.create( __plugin__, xbmc.getLocalizedString( 30001 ),  xbmc.getLocalizedString( 30017 ))
 		from xbmcplugin_logviewer import ChangelogParser
 		parser = ChangelogParser( info['repo'] , info['title']  )
-		info['text'] = parser.fetch_changelog()
-		dialog.close()
+		info['changelog'] = parser.fetch_changelog()
 
-		# set btn state if readme url exists
+		# fetch readme
 		readme_url = info.get('readme','')
-		if not readme_url:
+		if readme_url.startswith('http'):
+			dialog.update( 50, xbmc.getLocalizedString( 30001 ),  os.path.basename(readme_url))
+			info['readme'] = readURL(readme_url)
+		dialog.close()
+		if not readme_url or not info.get('readme',''):
 			buttons['readme'] = False
 
 		# setup compatibility text
-		svn_xbmc_rev = info.get('svn_xbmc_rev',0)
+		svn_xbmc_rev = info.get('XBMC_Revision',0)
 		info['compatibility'] = "XBMC: %s - " % xbmc.getInfoLabel( "System.BuildVersion" )
 		if svn_xbmc_rev and svn_xbmc_rev > get_xbmc_revision():
 			info['compatibility'] += "[COLOR=FFFF0000]%s[/COLOR] - Requires XBMC: r%s" % (xbmc.getLocalizedString( 30015 ), svn_xbmc_rev) # incomp
 		else:
 			info['compatibility'] += "[COLOR=FF00FF00]%s[/COLOR]" % (xbmc.getLocalizedString( 30704 ))		# ok, comp
 
+		# set INSTALL button
 		if not info.get('download_url',''):
 			buttons['install'] = False
+
+		# set UNINSTALL button
+		if not os.path.exists(info.get('filepath','')) or "SVN Repo Installer" in info['title']:
+			buttons['uninstall'] = False
 
 		while info:
 			action = InfoDialog( InfoDialog.XML_FILENAME, os.getcwd(), "Default" ).ask( info, buttons )
 			if not action:
 				break
-			elif action == "readme":
-				# show readme
-				if info['readme'].startswith('http'):
-					dialog.create( __plugin__, xbmc.getLocalizedString( 30001 ),  os.path.basename(readme_url))
-					info['readme'] = readURL(readme_url)
-					dialog.close()
-				if not info['readme']:
-					buttons['readme'] = False
-				else:
-					info['text'] = info['readme']
-			elif action == "log":
-				# show changelog
-				info['text'] = parser.log
 			elif action == "install":
 				# install
-				path = '%s?%s' % ( sys.argv[ 0 ], info['download_url'], )
+				url_args = info['download_url']
+				if "SVN Repo Installer" in info['title']:
+					url_args = "self_update=True&" + url_args
+				path = '%s?%s' % ( sys.argv[ 0 ], url_args, )
 				command = 'XBMC.RunPlugin(%s)' % path
 				xbmc.executebuiltin(command)
 				break
