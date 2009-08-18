@@ -227,16 +227,16 @@ def getMovieTitleAndYear( filename ):
                'xvid', 'h264', 'x264', 'h.264', 'x.264',
                'dvd', 'screener', 'unrated', 'repack', 'rerip', 
                'proper', '720p', '1080p', '1080i', 'bluray']
-    cutofstv = ['s0', 's1']
+
     # Clean file name from all kinds of crap...
     for char in ['[', ']', '_', '(', ')']:
         name = name.replace(char, ' ')
     
     # if there are no spaces, start making beginning from dots...
-    ##if name.find(' ') == -1:
-    name = name.replace('.', ' ')
-    ##if name.find(' ') == -1:
-    name = name.replace('-', ' ')
+    if name.find(' ') == -1:
+        name = name.replace('.', ' ')
+    if name.find(' ') == -1:
+        name = name.replace('-', ' ')
     
     # remove extra and duplicate spaces!
     name = name.strip()
@@ -244,16 +244,17 @@ def getMovieTitleAndYear( filename ):
         name = name.replace('  ', ' ')
         
     # split to parts
-    parts = name.split()
+    parts = name.split(' ')
     year = ""
     cut_pos = 256
     for part in parts:
         # check for year
-	part1 = str(part)
-        if (part1.find("s0") > -1) or (part1.find("S0") > -1 ) or (part1.find("s1") > -1) or (part1.find("S1") > -1 ) or (part1.find("x0") > -1 ) or (part1.find("x1") > -1 ) or (part1.find("x3") > -1 ) :
-            if parts.index(part) < cut_pos:
-                cut_pos = parts.index(part)
-		cut_pos = cut_pos + 1
+        if part.isdigit():
+            n = int(part)
+            if n>1930 and n<2050:
+                year = part
+                if parts.index(part) < cut_pos:
+                    cut_pos = parts.index(part)
                 
         # if length > 3 and whole word in uppers, consider as cutword (most likelly a group name)
         if len(part) > 3 and part.isupper() and part.isalpha():
@@ -266,17 +267,76 @@ def getMovieTitleAndYear( filename ):
                 cut_pos = parts.index(part)
         
     # make cut
-    name = '+'.join(parts[:cut_pos])
-    name = name.replace('.', '+')
-    ##return name, year
+    name = ' '.join(parts[:cut_pos])
     return name
 
+
+
+def toOpenSubtitles_two( id ):
+        languages = { "None"  		: "none",
+                      "Albanian"  	: "sq",
+                      "Arabic"  	: "ar",
+                      "Belarusian"  	: "hy",
+                      "Bosnian"  	: "bs",
+                      "Bulgarian"  	: "bg",
+                      "Catalan"  	: "ca",
+                      "Chinese"  	: "zh",
+                      "Croatian" 	: "hr",
+                      "Czech"  		: "cs",
+                      "Danish" 		: "da",
+                      "Dutch" 		: "nl",
+                      "English" 	: "en",
+                      "Esperanto" 	: "eo",
+                      "Estonian" 	: "et",
+                      "Farsi" 		: "fo",
+                      "Finnish" 	: "fi",
+                      "French" 		: "fr",
+                      "Galician" 	: "gl",
+                      "Georgian" 	: "ka",
+                      "German" 		: "de",
+                      "Greek" 		: "el",
+                      "Hebrew" 		: "he",
+                      "Hindi" 		: "hi",
+                      "Hungarian" 	: "hu",
+                      "Icelandic" 	: "is",
+                      "Indonesian" 	: "id",
+                      "Italian" 	: "it",
+                      "Japanese" 	: "ja",
+                      "Kazakh" 		: "kk",
+                      "Korean" 		: "ko",
+                      "Latvian" 	: "lv",
+                      "Lithuanian" 	: "lt",
+                      "Luxembourgish" 	: "lb",
+                      "Macedonian" 	: "mk",
+                      "Malay" 		: "ms",
+                      "Norwegian" 	: "no",
+                      "Occitan" 	: "oc",
+                      "Polish" 		: "pl",
+                      "Portuguese" 	: "pt",
+                      "PortugueseBrazil" 	: "pb",
+                      "Romanian" 	: "ro",
+                      "Russian" 	: "ru",
+                      "SerbianLatin" 	: "sr",
+                      "Slovak" 		: "sk",
+                      "Slovenian" 	: "sl",
+                      "Spanish" 	: "es",
+                      "Swedish" 	: "sv",
+                      "Syriac" 		: "syr",
+                      "Thai" 		: "th",
+                      "Turkish" 	: "tr.",
+                      "Ukrainian" 	: "uk",
+                      "Urdu" 		: "ur",
+                      "Vietnamese" 	: "vi",
+		      "English (US)" 	: "en",
+		      "All" 		: "all"
+                    }
+        return languages[ id ]
 
 def toOpenSubtitlesId( id ):
         languages = { "None"  		: "none",
                       "Albanian"  	: "alb",
                       "Arabic"  	: "ara",
-                      "Armenian"  	: "arm",
+                      "Belarusian"  	: "arm",
                       "Bosnian"  	: "bos",
                       "Bulgarian"  	: "bul",
                       "Catalan"  	: "cat",
@@ -286,47 +346,48 @@ def toOpenSubtitlesId( id ):
                       "Danish" 		: "dan",
                       "Dutch" 		: "dut",
                       "English" 	: "eng",
-                      "Esperanto" : "epo",
-                      "Estonian" : "est",
-                      "Farsi" : "per",
-                      "Finnish" : "fin",
-                      "French" : "fre",
-                      "Galician" : "glg",
-                      "Georgian" : "geo",
-                      "German" : "ger",
-                      "Greek" : "ell",
-                      "Hebrew" : "heb",
-                      "Hindi" : "hin",
-                      "Hungarian" : "hun",
-                      "Icelandic" : "ice",
-                      "Indonesian" : "ind",
-                      "Italian" : "ita",
-                      "Japanese" : "jpn",
-                      "Kazakh" : "kaz",
-                      "Korean" : "kor",
-                      "Latvian" : "lav",
-                      "Lithuanian" : "lit",
-                      "Luxembourgish" : "ltz",
-                      "Macedonian" : "mac",
-                      "Malay" : "may",
-                      "Norwegian" : "nor",
-                      "Occitan" : "oci",
-                      "Polish" : "pol",
-                      "Portuguese" : "por",
-                      "Portuguese-BR" : "pob",
-                      "Romanian" : "rum",
-                      "Russian" : "rus",
-                      "Serbian" : "scc",
-                      "Slovak" : "slo",
-                      "Slovenian" : "slv",
-                      "Spanish" : "spa",
-                      "Swedish" : "swe",
-                      "Syriac" : "syr",
-                      "Thai" : "tha",
-                      "Turkish" : "tur",
-                      "Ukrainian" : "ukr",
-                      "Urdu" : "urd",
-                      "Vietnamese" : "vie",
-		      "English (US)" : "eng"	
+                      "Esperanto" 	: "epo",
+                      "Estonian" 	: "est",
+                      "Farsi" 		: "per",
+                      "Finnish" 	: "fin",
+                      "French" 		: "fre",
+                      "Galician" 	: "glg",
+                      "Georgian" 	: "geo",
+                      "German" 		: "ger",
+                      "Greek" 		: "ell",
+                      "Hebrew" 		: "heb",
+                      "Hindi" 		: "hin",
+                      "Hungarian" 	: "hun",
+                      "Icelandic" 	: "ice",
+                      "Indonesian" 	: "ind",
+                      "Italian" 	: "ita",
+                      "Japanese" 	: "jpn",
+                      "Kazakh" 		: "kaz",
+                      "Korean" 		: "kor",
+                      "Latvian" 	: "lav",
+                      "Lithuanian" 	: "lit",
+                      "Luxembourgish" 	: "ltz",
+                      "Macedonian" 	: "mac",
+                      "Malay" 		: "may",
+                      "Norwegian" 	: "nor",
+                      "Occitan" 	: "oci",
+                      "Polish" 		: "pol",
+                      "Portuguese" 	: "por",
+                      "PortugueseBrazil" 	: "pob",
+                      "Romanian" 	: "rum",
+                      "Russian" 	: "rus",
+                      "SerbianLatin" 	: "scc",
+                      "Slovak" 		: "slo",
+                      "Slovenian" 	: "slv",
+                      "Spanish" 	: "spa",
+                      "Swedish" 	: "swe",
+                      "Syriac" 		: "syr",
+                      "Thai" 		: "tha",
+                      "Turkish" 	: "tur",
+                      "Ukrainian" 	: "ukr",
+                      "Urdu" 		: "urd",
+                      "Vietnamese" 	: "vie",
+		      "English (US)" 	: "eng",
+		      "All" 		: "all"
                     }
         return languages[ id ]

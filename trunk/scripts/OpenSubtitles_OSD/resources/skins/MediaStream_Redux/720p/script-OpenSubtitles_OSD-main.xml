@@ -10,17 +10,8 @@
 
   <controls>
 
-    <control type="image">
-      <description>Background Overlay</description>
-      <posx>0</posx>
-      <posy>0</posy>
-      <width>1280</width>
-      <height>720</height>
-      <aspectratio>stretch</aspectratio>
-      <texture>BlackTransparent.png</texture>
-      <colordiffuse>66999999</colordiffuse>
-    </control>
 
+      
     <control type="group">
       <posx>420</posx>
       <posy>30</posy>
@@ -33,16 +24,32 @@
         <height>700</height>
         <texture border="23">DialogBG.png</texture>
       </control>
+      
+      
 
       <!-- ** Required ** Do not change <id> or <type> -->
-  <control type="image">
-					<description>page header tab icon</description>
-					<posx>20</posx>
-					<posy>2</posy>
-					<width>250</width>
-					<height>50</height>
-					<texture>logo_opensubtitles.png</texture>
-				</control>
+      <control type="group" id="110">
+        <control type="image" >
+            <description>page header tab icon</description>
+            <posx>20</posx>
+            <posy>2</posy>
+            <width>250</width>
+            <height>50</height>
+            <texture>logo_opensubtitles.png</texture>
+            
+        </control>
+      </control>
+      <control type="group" id="111">
+      <control type="image" >
+            <description>page header tab icon</description>
+            <posx>20</posx>
+            <posy>2</posy>
+            <width>250</width>
+            <height>50</height>
+            <texture>Sublight_logo.png</texture>
+            
+      </control>
+    </control>
       <control type="label">
         <description>textarea</description>
         <posx>290</posx>
@@ -73,7 +80,7 @@
         <description>textarea</description>
         <posx>30</posx>
         <posy>60</posy>
-        <width>630</width>
+        <width>500</width>
         <height>40</height>
         <font>DefaultFont</font>
         <textcolor>white</textcolor>
@@ -93,8 +100,8 @@
         <posy>126</posy>
         <width>640</width>
         <height>528</height>
-        <onleft>120</onleft>
-        <onright>120</onright>
+        <onleft>1600</onleft>
+        <onright>1600</onright>
         <onup>110</onup>
         <ondown>110</ondown>
         <viewtype label="535">list</viewtype>
@@ -237,9 +244,8 @@
           <visible>Control.IsVisible(120)</visible>
         </control>
       </control>
-      <control type="group" id="110">
-        
-      </control>
+ 
+    
     </control>
   </controls>
 </window>

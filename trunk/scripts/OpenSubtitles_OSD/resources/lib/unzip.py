@@ -28,8 +28,39 @@ class unzip:
     def __init__(self, verbose = False, percent = 10):
         self.verbose = verbose
         self.percent = percent
+
         
     def extract(self, file, dir):
+        if not dir.endswith(':') and not os.path.exists(dir):
+            os.mkdir(dir)
+
+        zf = zipfile.ZipFile(file, "r")
+
+        # create directory structure to house files
+        self._createstructure(file, dir)
+
+        num_files = len(zf.namelist())
+        percent = self.percent
+        divisions = 100 / percent
+        perc = int(num_files / divisions)
+
+        # extract files to directory structure
+        for i, name in enumerate(zf.namelist()):
+
+            if self.verbose == True:
+                print "Extracting %s" % name
+            elif perc > 0 and (i % perc) == 0 and i > 0:
+                complete = int (i / perc) * percent
+                print "%s%% complete" % complete
+
+            if not name.endswith('/'):
+                outfile = open(os.path.join(dir, name), 'wb')
+                outfile.write(zf.read(name))
+                outfile.flush()
+                outfile.close()
+
+
+    def extract_med(self, file, dir):
         if not dir.endswith(':') and not os.path.exists(dir):
             os.mkdir(dir)
 
@@ -105,7 +136,8 @@ def usage():
     --percent=10
     --zipfile=<zipfile>
     --outdir=<targetdir>"""
-    
+
+   
 
 def main():
     shortargs = 'vhp:z:o:'
