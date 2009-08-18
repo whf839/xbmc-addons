@@ -15,16 +15,16 @@ BASE_URL_XMLRPC_DEV = u"http://dev.opensubtitles.org/xml-rpc"
 BASE_URL_XMLRPC = u"http://www.opensubtitles.org/xml-rpc"
 BASE_URL_SEARCH = u"http://www.opensubtitles.com/%s/search/moviename-%s/simplexml"
 BASE_URL_SEARCH_ALL = u"http://www.opensubtitles.com/en/search/sublanguageid-%s/moviename-%s/simplexml"
-BASE_URL_SEARCH_OFFSET = u"http://www.opensubtitles.com/en/search/sublanguageid-all/moviename-%s/offset-40/simplexml"
+BASE_URL_SEARCH_OFFSET = u"http://www.opensubtitles.com/en/search/sublanguageid-%s/moviename-%s/offset-40/simplexml"
 BASE_URL_DOWNLOAD = u"http://dev.opensubtitles.org/%s"
 BASE_URL_OSTOK = "http://app.boxee.tv/api/ostok" 
 
 def compare_columns(a, b):
-        # sort on ascending index 0, descending index 2
         return cmp( a["language_name"], b["language_name"] )  or cmp( b["sync"], a["sync"] ) 
 
 class OSDBServer:
     def Create(self):
+	self.subtitles_alt_list = []
 	self.subtitles_list = []
 	self.subtitles_hash_list = []
 	self.subtitles_name_list = []
@@ -47,17 +47,17 @@ class OSDBServer:
 #			else:
 #				LOG( LOG_INFO, "Logging in anonymously..." )
 #				login = self.server.LogIn("", "", "en", "XBMC")
-			LOG( LOG_INFO, "Logging in anonymously..." )
-			login = self.server.LogIn("", "", "en", "XBMC/9.04.1 OpenSubtitles/1.2")
-			token  = login[ "token" ]
+#			LOG( LOG_INFO, "Logging in anonymously..." )
+#			login = self.server.LogIn("", "", "en", "XBMC/9.04.1 OpenSubtitles/1.2")
+#			token  = login[ "token" ]
 
-#			socket = urllib.urlopen( BASE_URL_OSTOK )
-#			result = socket.read()
-#			socket.close()
-#			xmldoc = minidom.parseString(result)
-#			token = xmldoc.getElementsByTagName("token")[0].firstChild.data
-#			if token:
-			if (login["status"].find("200") > -1):
+			socket = urllib.urlopen( BASE_URL_OSTOK )
+			result = socket.read()
+			socket.close()
+			xmldoc = minidom.parseString(result)
+			token = xmldoc.getElementsByTagName("token")[0].firstChild.data
+			if token:
+#			if (login["status"].find("200") > -1):
 				self.connected = True
 				self.osdb_token = token
 #				self.osdb_token = login["token"]
@@ -174,25 +174,24 @@ class OSDBServer:
 			    if item["format"].find( "sub" ) == 0:
 			        self.subtitles_list.append( item )
 
-        if( len ( self.subtitles_imdbid_list ) > 0 ):
-            for item in self.subtitles_imdbid_list:
+##        if( len ( self.subtitles_imdbid_list ) > 0 ):
+##            for item in self.subtitles_imdbid_list:
+##			    if item["format"].find( "srt" ) == 0:
+##			        self.subtitles_list.append( item )
+##			    if item["format"].find( "sub" ) == 0:
+##			        self.subtitles_list.append( item )
+	
+        if ( len ( self.subtitles_alt_list ) > 0 ):
+             for item in self.subtitles_alt_list:
 			    if item["format"].find( "srt" ) == 0:
 			        self.subtitles_list.append( item )
 			    if item["format"].find( "sub" ) == 0:
 			        self.subtitles_list.append( item )
-	
-#        if not (toOpenSubtitlesId (xbmc.getLanguage()) == "eng") and ( len ( self.subtitles_alt_list ) > 0 ):
-#            for item in self.subtitles_alt_list:
-#			    if item["format"].find( "srt" ) == 0:
-#			        self.subtitles_list.append( item )
-#			    if item["format"].find( "sub" ) == 0:
-#			        self.subtitles_list.append( item )
-#
 
         if( len ( self.subtitles_list ) > 0 ):
             self.subtitles_list = sorted(self.subtitles_list, compare_columns)
         
-    def searchsubtitles( self, file, hash, size, language="all" ):
+    def searchsubtitles( self, file, hash, size, lang1,lang2 ):
 	self.subtitles_hash_list = []
         self.allow_exception = False
 	
@@ -201,6 +200,14 @@ class OSDBServer:
 			LOG( LOG_INFO, "Searching subtitles by hash for " + file )
 			filename = globals.EncodeLocale( os.path.basename( file ) )
 			
+			if lang1 == "all" or lang2 == "all":	
+				language = "all"
+			else:
+				if lang1 == lang2:
+					language = lang1
+				else:
+					language = lang1 + "," + lang2
+
 			videofilesize = size
 			linkhtml_index =  "search/moviebytesize-"+str( videofilesize )+"/moviehash-"+hash
 			videofilename = filename
@@ -232,65 +239,7 @@ class OSDBServer:
 		LOG( LOG_ERROR, error )
 		return False, error
 
-    def searchsubtitlesbyhash( self, file, language="all" ):
-	self.subtitles_hash_list = []
-        self.allow_exception = False
-	
-	try:
-		if ( self.osdb_token ) and ( self.connected ):
-			LOG( LOG_INFO, "Searching subtitles by hash for " + file )
-			
-			#We try and check if the file is from an smb share
-			if file.find( "//" ) == 0:
-				error = _( 740 )
-				LOG( LOG_ERROR, error )
-				return False, error
 
-			filename = globals.EncodeLocale( os.path.basename( file ) )
-			filenameurl = ( filename ) #Corrects the accent characters.
-			
-			if not os.path.exists( file ):
-				error = _( 738 ) % ( file, )
-				LOG( LOG_ERROR, error )
-				return False, error
-			else:
-				hash = globals.hashFile( file )
-				if hash == "IOError" or hash== "SizeError":
-					error = _( 739 ) % ( file, hash, )
-					LOG( LOG_ERROR, error )
-					return False, error		
-				#We keep going if there was no error.
-				videofilesize = os.path.getsize( file )
-				linkhtml_index =  "search/moviebytesize-"+str( videofilesize )+"/moviehash-"+hash
-				videofilename = filename
-				pathvideofilename = file
-				videohash = hash
-				hashresult = {"hash":hash, "filename":filename, "pathvideofilename":file, "filesize":str( videofilesize )
-						, "linkhtml_index":linkhtml_index}
-				searchlist = []
-				searchlist.append({'sublanguageid':language,'moviehash':hashresult["hash"],'moviebytesize':str( hashresult["filesize"] ) })
-				search = self.server.SearchSubtitles( self.osdb_token, searchlist )
-
-				if search["data"]:
-					for item in search["data"]:
-						if item["ISO639"]:
-							flag_image = "flags/" + item["ISO639"] + ".gif"
-						else:	
-							flag_image = "-.gif"
-						self.subtitles_hash_list.append({'filename':item["SubFileName"],'link':item["ZipDownloadLink"],"language_name":item["LanguageName"],"language_flag":flag_image,"language_id":item["SubLanguageID"],"ID":item["IDSubtitle"],"rating":str( int( item["SubRating"][0] ) ),"format":item["SubFormat"],"sync":True})
-					self.subtitles_list.append ( self.subtitles_hash_list )
-
-					message = _( 742 ) % ( str( len ( self.subtitles_hash_list ) ), )
-					LOG( LOG_INFO, message )
-					return True, message
-				else: 
-					message = _( 741 )
-					LOG( LOG_INFO, message )
-					return True, message
-	except Exception, e:
-		error = _( 731 ) % ( _( 736 ), str ( e ) ) 
-		LOG( LOG_ERROR, error )
-		return False, error
 
     def searchsubtitlesbyimdbid( self, imdbid, language="all" ):
 	self.subtitles_imdbid_list = []
@@ -351,19 +300,17 @@ class OSDBServer:
 		LOG( LOG_ERROR, error )
 		return False, error
 
-    def searchsubtitlesbyname_alt( self, name ):
+    def searchsubtitlesbyname_alt( self, name, lang2, lang1 ):
 	self.subtitles_alt_list = []
         self.allow_exception = False
-	search_url = ""
-	language= toOpenSubtitlesId (xbmc.getLanguage())
+        search_url = ""
 	try:
 		LOG( LOG_INFO, "Searching subtitles by name for " + name )
-		
-		if language == "all":
-			search_url = BASE_URL_SEARCH % ( language, os.path.basename( name ) )
+		if lang1 == lang2 :
+			search_url = BASE_URL_SEARCH_OFFSET % ( lang2, name )
+			##search_url = BASE_URL_SEARCH_ALL % ( lang2, os.path.basename( name ) )
 		else:
-			search_url = BASE_URL_SEARCH_ALL % ( language, os.path.basename( name ) )
-		
+			search_url = BASE_URL_SEARCH_ALL % ( lang2,  name )
 		search_url.replace( " ", "+" )
 		LOG( LOG_INFO, search_url )
 
@@ -421,19 +368,15 @@ class OSDBServer:
 		LOG( LOG_ERROR, error )
 		return False, error
 
-    def searchsubtitlesbyname( self, name, language="all" ):
+    def searchsubtitlesbyname( self, name, lang1 ):
 	self.subtitles_name_list = []
         self.allow_exception = False
 	search_url = ""
 	
 	try:
 		LOG( LOG_INFO, "Searching subtitles by name for " + name )
-		
-		if language == "all":
-			search_url = BASE_URL_SEARCH_ALL % ( language, os.path.basename( name ), )
-		else:
-			search_url = BASE_URL_SEARCH % ( language, os.path.basename( name ) )
-		
+		search_url = BASE_URL_SEARCH_ALL % ( lang1, os.path.basename( name ), )
+
 		search_url.replace( " ", "+" )
 		LOG( LOG_INFO, search_url )
 
@@ -491,46 +434,5 @@ class OSDBServer:
 		LOG( LOG_ERROR, error )
 		return False, error
 
-
-
-    def searchsubtitlesbyalt( self, file, search_string ):
-	sublightWebService = SublightUtils.SublightWebService()
-	session_id = sublightWebService.LogInAnonymous()
-	video_hash  = globals.hashFile( file )
-	self.subtitles_alt_list = []
-        self.allow_exception = False
-	movie_year = SublightUtils.getMovieTitleAndYear( os.path.basename( file ) )
-	movie_title = search_string.replace("+", " ")
-	subtitles = []
-	language1 = SublightUtils.toSublightLanguage( "12" )
-	language2 = SublightUtils.toSublightLanguage( "37" )
-	language3 = SublightUtils.toSublightLanguage( "8" )
-        subtitles = sublightWebService.SearchSubtitles(session_id, video_hash, movie_title, movie_year, language1, language2, language3 )
-
-	try:
-		LOG( LOG_INFO, "Searching subtitles by alt for " + movie_title )
-	
-		if subtitles["data"]:
-			for item in search["data"]:
-				if item["ISO639"]:
-					flag_image = "flags/" + item["ISO639"] + ".gif"
-				else:								
-					flag_image = "-.gif"
-				self.subtitles_alt_list.append({'filename':item["SubFileName"],'link':item["ZipDownloadLink"],"language_name":item["LanguageName"],"language_flag":flag_image,"language_id":item["SubLanguageID"],"ID":item["IDSubtitle"],"rating":str( int( item["SubRating"][0] ) ),"format":item["SubFormat"],"sync":True})
-			self.subtitles_list.append( self.subtitles_alt_list )
-
-				##message = _( 742 ) % ( str( len ( self.subtitles_alt_list ) ), )
-				##LOG( LOG_INFO, message )
-				##return True, message
-		else: 
-				message = _( 741 )
-				##LOG( LOG_INFO, message )
-				return True, message
-
-
-	except Exception, e:
-		error = _( 743 ) % ( search_string, str ( e ) ) 
-		LOG( LOG_ERROR, error )
-		return False, error
 
 
