@@ -12,7 +12,7 @@ __author__ = "Amet"
 __url__ = ""
 __svn_url__ = "http://xbmc-scripting.googlecode.com/svn/trunk/scripts/OpenSubtitles_OSD"
 __credits__ = ""
-__version__ = "1.21"
+__version__ = "1.25"
 EXIT_SCRIPT = ( 6, 10, 247, 275, 61467, 216, 257, 61448, )
 CANCEL_DIALOG = EXIT_SCRIPT + ( 216, 257, 61448, )
 
@@ -210,7 +210,7 @@ else:
 	if (movieFullPath.find("http://") > -1 ) or (movieFullPath.find("smb://") > -1 ):
 		temp = True
 
-#### ------------------------------ Get User Languages ---------------------------#####
+#### ------------------------------ Get User Languages,Path and Service ---------------------------#####
 
 	lang1,lang2,lang_set,path,service = get_languages ()
 	
@@ -224,7 +224,7 @@ else:
 		if temp:
 			dialog = xbmcgui.Dialog()
 			sub_folder = dialog.browse( 0, "Choose Subtitle folder", "files")
-			temp = True
+			##temp = True
 		else:
 			sub_folder = os.path.dirname( movieFullPath )
 
