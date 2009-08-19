@@ -150,7 +150,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	self.getControl( STATUS_LABEL ).setLabel( _( 646 ) )	
 
 	try:
-            if ( len( self.file_path ) > 0 ) and not self.set_temp:
+            if ( len( self.file_path ) > 0 ) and not self.file_original_path.find("http") > -1 :
                 LOG( LOG_INFO, _( 642 ) % ( os.path.basename( self.file_original_path ), ) )
                 self.getControl( STATUS_LABEL ).setLabel( _( 642 ) % ( "...", ) )
                 self.set_filehash( hashFile( self.file_original_path ) )
@@ -217,9 +217,9 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	movie_title = self.search_string.replace ("+"," ")
 	
 	video_hash = "0000000000000000000000000000000000000000000000000000"
-	if not self.set_temp:
-	  	md5_video_hash = SublightUtils.calculateMD5VideoHash( self.file_original_path )
-        	video_hash     = sublightWebService.GetFullVideoHash( session_id, md5_video_hash )
+	#if not self.set_temp:
+	md5_video_hash = SublightUtils.calculateMD5VideoHash( self.file_original_path )
+	video_hash     = sublightWebService.GetFullVideoHash( session_id, md5_video_hash )
 
 	if video_hash == "":
 		video_hash = "0000000000000000000000000000000000000000000000000000"
@@ -232,6 +232,9 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	season = xbmc.getInfoLabel("VideoPlayer.Season")
 	episode = xbmc.getInfoLabel("VideoPlayer.Episode")
 	title = xbmc.getInfoLabel("VideoPlayer.TVshowtitle")
+	if (len(episode) > -1):
+		movie_year = ""
+	
 	if not (len(title) > 0) :	
 		movie_title = self.search_string.replace ("+"," ")
 	else:
@@ -326,6 +329,8 @@ class GUI( xbmcgui.WindowXMLDialog ):
             lang = self.osdb_server.subtitles_list[pos]["language_id"]
             subName1 = sub_filename[0:sub_filename.rfind(".")] 
             if subName1 == "":
+				subName1 = self.search_string.replace("+", " ")
+            if self.set_temp:
 				subName1 = self.search_string.replace("+", " ")
             LOG( LOG_INFO, url+"   " + zip_filename)  
             self.file_download( url, zip_filename )
