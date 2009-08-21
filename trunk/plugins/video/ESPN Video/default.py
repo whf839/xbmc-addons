@@ -2,8 +2,8 @@
 __scriptname__ = "XBMC Video Plugin"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/ESPN%20Video"
-__date__ = '08-08-2009'
-__version__ = "1.2"
+__date__ = '08-21-2009'
+__version__ = "1.3"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 THUMBNAIL_PATH = os.path.join(os.getcwd().replace( ";", "" ),'resources','media')
@@ -202,7 +202,7 @@ def showList(url,name):
 		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
-		p=re.compile('<headline><!\[CDATA\[(.+?)\]\]></headline>')
+		p=re.compile('<headline ascii="(.+?)" ><!\[CDATA\[(.+?)\]\]></headline>')
 		o=re.compile('<caption><!\[CDATA\[(.+?)\]\]></caption>')
 		#q=re.compile('<!\[CDATA\[(.+?)\]\]></asseturl>')
 		q=re.compile('<mediaid >(.+?)</mediaid>')
@@ -213,7 +213,7 @@ def showList(url,name):
 		flv=q.findall(a)
 		thumbs=r.findall(a)
 		url='http://seavideo-ak.espn.go.com/motion/' + flv[0] + '.flv'
-		name=title[0]
+		name=title[0][1]
 		plot=info[0]
 		cat=tags[0]
 		cat=cat.replace('|',' / ')
