@@ -3,8 +3,8 @@ __scriptname__ = "PBS Video"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/PBS%20Video"
-__date__ = '2009-08-12'
-__version__ = "1.2"
+__date__ = '2009-08-23'
+__version__ = "1.3"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 from urllib import urlretrieve, urlcleanup
@@ -35,7 +35,7 @@ def showRoot():
 		f.close()
 		p=re.compile('<ul id="mainnav">(.+?)<li class="more">', re.DOTALL)
 		match=p.findall(a)
-		o=re.compile('<li><a href="http://video.pbs.org/video/program/(.+?)/" title="(.+?)">')
+		o=re.compile('<li><a href="http://video.pbs.org/program/(.+?)/" title="(.+?)">')
 		data=o.findall(match[0])
 		x=0
 		for url, name in data:
@@ -46,12 +46,13 @@ def showRoot():
 			x=x+1
 
 def showList(url, name):
+		cat=name
 		req = urllib2.Request(url)
 		req.add_header('User-Agent', HEADER)
 		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
-		p=re.compile('<p class="info">\n                \n                <a href="http://video.pbs.org/video/video/(.+?)" class="title" title="(.+?)">(.+?)</a>\n')
+		p=re.compile('<p class="info">\n                \n                <a href="http://video.pbs.org/video/(.+?)" class="title" title="(.+?)">(.+?)</a>\n')
 		q=re.compile('<span class="list">(.+?)</span>')
 		r=re.compile('<img src="(.+?)" alt="(.+?)" />')
 		info=p.findall(a)
@@ -64,7 +65,8 @@ def showList(url, name):
 			title=clean(title)
 			name = str(int(x+1))+'. '+title+' - '+clean(disc[x])
 			li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
-			u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(title)+"&url="+urllib.quote_plus(url)+"&page="+str(int(page)+1)+"&thumb="+urllib.quote_plus(thumb)
+			li.setInfo( type="Video", infoLabels={ "Title": name , "Director": "PBS", "Studio": "PBS", "Genre": cat, "Plot": clean(disc[x]) } )
+			u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(title)+"&url="+urllib.quote_plus(url)+"&page="+str(int(page)+1)+"&thumb="+urllib.quote_plus(thumb)+"&plot="+urllib.quote_plus(clean(disc[x]))
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
 			x=x+1
 	
@@ -86,7 +88,7 @@ def get_thumbnail(thumbnail_url):
 		print "Error: get_thumbnail()"
 		return thumbnail_url
 			
-def playVideo(url, name, thumb):
+def playVideo(url, name, thumb, plot):
 	req = urllib2.Request(url)
 	req.add_header('User-Agent', HEADER)
 	f=urllib2.urlopen(req)
@@ -111,7 +113,7 @@ def playVideo(url, name, thumb):
 		playpath = "mp4:"+r[0][0]
 	title = name.split(' | ')
 	item = xbmcgui.ListItem(label=name,iconImage="DefaultVideo.png",thumbnailImage=thumb)
-	item.setInfo( type="Video", infoLabels={ "Title": title[1] , "Director": "PBS", "Studio": "PBS", "Genre": title[0] } )
+	item.setInfo( type="Video", infoLabels={ "Title": title[1] , "Director": "PBS", "Studio": "PBS", "Genre": title[0], "Plot": plot } )
 	item.setProperty("PlayPath", playpath)
 	xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(rtmp_url, item)
 
@@ -158,6 +160,10 @@ try:
         thumb=urllib.unquote_plus(params["thumb"])
 except:
         pass
+try:
+        plot=urllib.unquote_plus(params["plot"])
+except:
+        pass
 
 if mode==None:
 	name = ''
@@ -166,7 +172,7 @@ if mode==None:
 elif mode==0:
 	showList(url, name)
 elif mode==1:
-	playVideo(url, name, thumb)
+	playVideo(url, name, thumb, plot)
 
 xbmcplugin.setPluginCategory(int(sys.argv[1]), name )
 xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )
