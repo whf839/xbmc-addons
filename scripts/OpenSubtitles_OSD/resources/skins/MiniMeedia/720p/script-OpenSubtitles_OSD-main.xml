@@ -49,16 +49,33 @@
       </control>
     </control>
                 
-      <control type="label">
+      <control type="label" id="300">
         <description>textarea</description>
-        <posx>300</posx>
+        <posx>405</posx>
         <posy>10</posy>
-        <width>400</width>
+        <width>190</width>
+        <height>22</height>
+        <font>DefaultFont</font>
+        
+        <textcolor>Focused</textcolor>
+        <align>right</align>
+        
+ 
+
+       
+        
+      </control>              
+            <control type="label" id="301">
+        <description>textarea</description>
+        <posx>480</posx>
+        <posy>10</posy>
+        <width>140</width>
         <height>22</height>
         <font>DefaultFont</font>
         <textcolor>Focused</textcolor>
-        <label>Items marked                       work better</label>
-      </control>              
+        
+        
+      </control>               
       <control type="image">
             <posx>415</posx>
             <posy>14</posy>

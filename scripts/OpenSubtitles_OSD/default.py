@@ -6,13 +6,13 @@ import string
 import xbmcplugin
 from xml.dom import minidom
 from xml.dom.minidom import Document
-
+import platform
 __scriptname__ = "OpenSubtitles_OSD"
 __author__ = "Amet"
 __url__ = ""
 __svn_url__ = "http://xbmc-scripting.googlecode.com/svn/trunk/scripts/OpenSubtitles_OSD"
 __credits__ = ""
-__version__ = "1.25"
+__version__ = "1.27"
 EXIT_SCRIPT = ( 6, 10, 247, 275, 61467, 216, 257, 61448, )
 CANCEL_DIALOG = EXIT_SCRIPT + ( 216, 257, 61448, )
 
@@ -22,6 +22,7 @@ sys.path.append (BASE_RESOURCE_PATH)
 
 import language
 __language__ = language.Language().localized
+_ = sys.modules[ "__main__" ].__language__
 
 import unzip
 import globals
@@ -42,27 +43,29 @@ def setings_menu (langugestrings):
 	
 	dialog = xbmcgui.Dialog()
 	langugestrings.append('last item')
-	selected1 = dialog.select('Select Default Language 1', langugestrings)
-	selected2 = dialog.select('Select Default Language 2', langugestrings)
+	selected1 = dialog.select((_( 503 ) + " 1"), langugestrings)
+	selected2 = dialog.select((_( 503 ) + " 2"), langugestrings)
 	if not (langugestrings[selected1] == "last item") and not (langugestrings[selected2] == "last item") :
 		##dialog.ok("Language Selection", "You Have Selected" + " " + langugestrings[selected1] + " and " + langugestrings[selected2])
 		lang1 = langugestrings[selected1]
 		lang2 = langugestrings[selected2]
 	else:
-		dialog.ok("Language Selection", "You Have Not Selected a Valid Language")
+		dialog.ok( _( 502 ) , _( 500 ))
 		lang1 = "English"
 		lang2 = "English"
 	
-	selected = dialog.yesno("OpenSubtitles_OSD",'Would you like to set a custom path?')
+	selected = dialog.yesno("OpenSubtitles_OSD",_( 501 ))
 
 	if selected == 1:
 		path = dialog.browse( 0, "OpenSubtitles_OSD", "files")
+		if path == "":
+			path = "Default_folder"
 	else:
 		path = "Default_folder"
 	
 	dialog = xbmcgui.Dialog()
 	possibleChoices = ["Sublight", "OpenSubtitles"]  
-	choice = dialog.select("Please choose the prefered service", possibleChoices)
+	choice = dialog.select( _( 505 ) , possibleChoices)
 	if choice == 0:
 		service = "Sublight"
 	if choice == 1:
@@ -141,10 +144,11 @@ def save_languages (lang1,lang2,set_lang,path,service):
 
 try: check = sys.argv
 except:check = ""
-if  check == "":
-   
+if  check == "" or (xbmc.Player().isPlaying() == False):
+	try: xbmc.Player().stop()
+	except : Check = ""
 	dialog = xbmcgui.Dialog()
-	selected = dialog.yesno("OpenSubtitles_OSD",'Do you want to restore to Defaults')
+	selected = dialog.yesno("OpenSubtitles_OSD", _( 506 ))
 
 	if selected == 1:
 		setings_menu( langugestrings )
@@ -207,11 +211,13 @@ else:
 			search_string = string.join( tmp_list, '+' ) + "+" + search_string 
 	search_string = os.path.splitext(search_string)[0]
 	movieFullPath = xbmc.Player().getPlayingFile()
-	if (movieFullPath.find("http://") > -1 ) or (movieFullPath.find("smb://") > -1 ):
+	if (movieFullPath.find("http://") > -1 ) or (movieFullPath.find("smb://") > -1 ) or (movieFullPath.find("rar://") > -1 ):
 		temp = True
 
 #### ------------------------------ Get User Languages,Path and Service ---------------------------#####
+	##system = xbmc.getInfoLabel( "System.BuildVersion" )
 
+	
 	lang1,lang2,lang_set,path,service = get_languages ()
 	
 	if lang_set == 0:

@@ -57,18 +57,39 @@
             <visible>$INFO[Window.Property("service")]</visible>
       </control>
                 
-      <control type="label">
+      <control type="label" id="300">
         <description>textarea</description>
-        <posx>310</posx>
+        <posx>455</posx>
         <posy>10</posy>
-        <width>400</width>
+        <width>190</width>
+        <height>22</height>
+        <font>DefaultFont</font>
+        
+        <textcolor>Focused</textcolor>
+        <align>right</align>
+        
+ 
+
+       
+        
+      </control>              
+            <control type="label" id="301">
+        <description>textarea</description>
+        <posx>530</posx>
+        <posy>10</posy>
+        <width>140</width>
         <height>22</height>
         <font>DefaultFont</font>
         <textcolor>Focused</textcolor>
-        <label>Items marked                 work better</label>
-      </control>              
+        
+        
+      </control>   
+      
+      
+      
+      
       <control type="image">
-            <posx>435</posx>
+            <posx>465</posx>
             <posy>17</posy>
             <width>54</width>
             <height>14</height>
