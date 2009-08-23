@@ -104,11 +104,13 @@ class OSDBServer:
 		if self.connected:
 			LOG( LOG_INFO, "Retrieve subtitle languages..." )
 			languages = self.server.GetSubLanguages()
+			##LOG( LOG_INFO, str(languages) )
 			LOG( LOG_INFO, "Retrieved subtitle languages" )      
 			self.languages_list = []
 			if languages["data"]:
 				for item in languages["data"]:
 					self.languages_list.append( {"language_name":item["LanguageName"], "language":item["SubLanguageID"], "flag_image":"flags/" + item["ISO639"] + ".gif"} )
+			##LOG( LOG_INFO, str(self.languages_list) )
 			return True, ""
 		else:
 			error = _( 737 )
@@ -199,7 +201,8 @@ class OSDBServer:
 		if ( self.osdb_token ) and ( self.connected ):
 			LOG( LOG_INFO, "Searching subtitles by hash for " + file )
 			filename = globals.EncodeLocale( os.path.basename( file ) )
-			
+			##filename = filename.encode('iso-8859-1', 'replace')
+			##filename = os.path.basename( file )
 			if lang1 == "all" or lang2 == "all":	
 				language = "all"
 			else:

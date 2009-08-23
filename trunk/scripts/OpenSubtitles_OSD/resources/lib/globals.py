@@ -24,7 +24,7 @@ videos_ext = ["avi","mpg","mpeg","wmv","divx","mkv","ogm","asf", "mov", "rm", "v
 subs_ext = ["srt","sub","txt","ssa","tmp"]
 videos_wildcards = "All videos|*.avi;*.mpg;*.mpeg;*.wmv;*.asf;*.divx;*.mov;*.m2p;*.moov;*.omf;*.qt;*.rm;*.vob;*.dat;*.dv;*.3ivx;*.mkv;*.ogm|ALL files (*.*)|*.*"
     
-##LOCAL_ENCODING = locale.getpreferredencoding();
+##LOCAL_ENCODING = locale.getpreferredencoding(do_setlocale=False);
 ##if not LOCAL_ENCODING or LOCAL_ENCODING == "ANSI_X3.4-1968":
 LOCAL_ENCODING = 'latin1'
 

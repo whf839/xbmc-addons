@@ -31,8 +31,8 @@ class unzip:
 
         
     def extract(self, file, dir):
-        if not dir.endswith(':') and not os.path.exists(dir):
-            os.mkdir(dir)
+        ##if not dir.endswith(':') and not os.path.exists(dir):
+        ##    os.mkdir(dir)
 
         zf = zipfile.ZipFile(file, "r")
 
