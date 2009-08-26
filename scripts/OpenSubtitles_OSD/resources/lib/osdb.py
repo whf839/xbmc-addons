@@ -40,22 +40,22 @@ class OSDBServer:
 	try:
 		if osdb_server:
 			self.server = xmlrpclib.Server( "http://www.opensubtitles.org/xml-rpc", verbose=0 )
-			info = self.server.ServerInfo()
+#			info = self.server.ServerInfo()
 #			if username:
 #				LOG( LOG_INFO, "Logging in " + username + "..." )
 #				login = self.server.LogIn(username, password, "en", "XBMC")
 #			else:
 #				LOG( LOG_INFO, "Logging in anonymously..." )
 #				login = self.server.LogIn("", "", "en", "XBMC")
-#			LOG( LOG_INFO, "Logging in anonymously..." )
-#			login = self.server.LogIn("", "", "en", "XBMC/9.04.1 OpenSubtitles/1.2")
-#			token  = login[ "token" ]
+			LOG( LOG_INFO, "Logging in anonymously..." )
+			login = self.server.LogIn("", "", "en", "XBMC/9.04.1 OpenSubtitles/1.2")
+			token  = login[ "token" ]
 
-			socket = urllib.urlopen( BASE_URL_OSTOK )
-			result = socket.read()
-			socket.close()
-			xmldoc = minidom.parseString(result)
-			token = xmldoc.getElementsByTagName("token")[0].firstChild.data
+#			socket = urllib.urlopen( BASE_URL_OSTOK )
+#			result = socket.read()
+#			socket.close()
+#			xmldoc = minidom.parseString(result)
+#			token = xmldoc.getElementsByTagName("token")[0].firstChild.data
 			if token:
 #			if (login["status"].find("200") > -1):
 				self.connected = True
@@ -199,10 +199,12 @@ class OSDBServer:
 	
 	try:
 		if ( self.osdb_token ) and ( self.connected ):
-			LOG( LOG_INFO, "Searching subtitles by hash for " + file )
-			filename = globals.EncodeLocale( os.path.basename( file ) )
+			
+			##filename = globals.EncodeLocale( os.path.basename( file ) )
 			##filename = filename.encode('iso-8859-1', 'replace')
-			##filename = os.path.basename( file )
+			##LOG( LOG_INFO, "Searching subtitles by hash for " + file )
+			filename = os.path.basename( file )
+			
 			if lang1 == "all" or lang2 == "all":	
 				language = "all"
 			else:
@@ -219,7 +221,9 @@ class OSDBServer:
 			hashresult = {"hash":hash, "filename":filename, "pathvideofilename":file, "filesize":str( videofilesize ), "linkhtml_index":linkhtml_index}
 			searchlist = []
 			searchlist.append({'sublanguageid':language,'moviehash':hashresult["hash"],'moviebytesize':str( hashresult["filesize"] ) })
+			##LOG( LOG_INFO, "Searchlist " + searchlist )
 			search = self.server.SearchSubtitles( self.osdb_token, searchlist )
+			##LOG( LOG_INFO, "Searching subtitles by hash for " + searchlist )
 
 			if search["data"]:
 				for item in search["data"]:
@@ -230,17 +234,17 @@ class OSDBServer:
 					self.subtitles_hash_list.append({'filename':item["SubFileName"],'link':item["ZipDownloadLink"],"language_name":item["LanguageName"],"language_flag":flag_image,"language_id":item["SubLanguageID"],"ID":item["IDSubtitle"],"rating":str( int( item["SubRating"][0] ) ),"format":item["SubFormat"],"sync":True})
 				self.subtitles_list.append( self.subtitles_hash_list )
 
-				message = _( 742 ) % ( str( len ( self.subtitles_hash_list ) ), )
+				message =  str( len ( self.subtitles_hash_list )  ) + " subtitles found"
 				LOG( LOG_INFO, message )
 				return True, message
 			else: 
-				message = _( 741 )
+				message = "No subtitles found"
 				LOG( LOG_INFO, message )
 				return True, message
 	except Exception, e:
 		error = _( 731 ) % ( _( 736 ), str ( e ) ) 
 		LOG( LOG_ERROR, error )
-		return False, error
+		return False, "Greska"
 
 
 
@@ -291,11 +295,11 @@ class OSDBServer:
 						self.subtitles_imdbid_list.append({'filename':item["SubFileName"],'link':item["ZipDownloadLink"],"language_name":item["LanguageName"],"language_flag":flag_image,"language_id":item["SubLanguageID"],"ID":item["IDSubtitle"],"rating":str( int( item["SubRating"][0] ) ),"format":item["SubFormat"],"sync":True})
 					self.subtitles_list.append ( self.subtitles_imdbid_list )
 
-					message = _( 742 ) % ( str( len ( self.subtitles_imdbid_list ) ), )
+					message =  str( len ( self.subtitles_hash_list )  ) + " subtitles found"
 					LOG( LOG_INFO, message )
 					return True, message
 				else: 
-					message = _( 741 )
+					message = "No subtitles found"
 					LOG( LOG_INFO, message )
 					return True, message
 	except Exception, e:
@@ -358,11 +362,11 @@ class OSDBServer:
 				self.subtitles_alt_list.append({'filename':filename,'link':link,'language_name':lang_name,'language_id':lang_id,'language_flag':flag_image,'movie':movie,"ID":subtitle_id,"rating":str( int( rating[0] ) ),"format":format,"sync":False})
 			self.subtitles_list.append ( self.subtitles_alt_list )
 
-			message = _( 742 ) % ( str( len ( self.subtitles_alt_list ) ), )
+			message =  str( len ( self.subtitles_hash_list )  ) + " subtitles found"
 			LOG( LOG_INFO, message )
 			return True, message
 		else: 
-			message = _( 741 )
+			message = "No subtitles found"
 			LOG( LOG_INFO, message )
 			return True, message
 
@@ -424,11 +428,11 @@ class OSDBServer:
 				self.subtitles_name_list.append({'filename':filename,'link':link,'language_name':lang_name,'language_id':lang_id,'language_flag':flag_image,'movie':movie,"ID":subtitle_id,"rating":str( int( rating[0] ) ),"format":format,"sync":False})
 			self.subtitles_list.append ( self.subtitles_name_list )
 
-			message = _( 742 ) % ( str( len ( self.subtitles_name_list ) ), )
+			message =  str( len ( self.subtitles_hash_list )  ) + " subtitles found"
 			LOG( LOG_INFO, message )
 			return True, message
 		else: 
-			message = _( 741 )
+			message = "No subtitles found"
 			LOG( LOG_INFO, message )
 			return True, message
 
