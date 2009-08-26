@@ -1,3 +1,6 @@
 <settings>
-   <setting id="dvdplayer" type="bool" label="30000" default="false"/>
+   <setting id="dvdplayer" type="bool" label="30000" default="true"/>
+   <setting id="pobierz" type="enum" lvalues="30005|30006|30007|30008" label="30009" default="0"/>
+   <setting id="pobierz_do" type="folder" source="files" label="30010"  option="writeable" default=""/>
+
 </settings>

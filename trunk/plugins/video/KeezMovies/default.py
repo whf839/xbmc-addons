@@ -1,141 +1,105 @@
-import urllib,urllib2,re,xbmcplugin,xbmcgui,urlparse
+import urllib,urllib2,re,xbmcplugin,xbmcgui,urlparse,os
+from BeautifulSoup import BeautifulSoup, SoupStrainer
 
 #KeezMovies - by pajretX 2009.
 
 #.nF0
 __plugin__  = "KeezMovies"
 __author__  = "pajretX"
-__date__    = "06 July 2009"
-__version__ = "1.5"
+__date__    = "26 August 2009"
+__version__ = "1.62"
 
+
+base='http://www.keezmovies.com'
+pics='http://www.keezmovies.com/images/cat-thumbs/big/'
+player='http://www.keezmovies.com/watch_player.php?id='
 
 #0
-def CATEGORIES():
-	addDir('Latest/Show All','http://www.keezmovies.com/videos?page=1',2,'')
-	addDir('Categories','cat2',1,'')
-	addDir('Pornstars','http://www.keezmovies.com/pornstar-list?&page=1',3,'')
+def Main():
+	addDir('Most Recent','http://www.keezmovies.com/videos?o=mr&offset=0',2,'')
+	addDir('Most Viewed','http://www.keezmovies.com/videos?o=mv&offset=0',2,'')
+	addDir('Top Rated','http://www.keezmovies.com/videos?o=tr&offset=0',2 ,'')
+	addDir('Longest videos','http://www.keezmovies.com/videos?o=lg&offset=0',6,'')
+	addDir('Categories','http://www.keezmovies.com/video-categories',1,'')
+#	addDir('Pornstars','http://www.keezmovies.com/pornstar-list?page=1',3,'')
 	addDir('Search','sss',7,'')
 #1
-def CATEGORIES2():
-	addDir('Amateur','http://www.keezmovies.com/videos?c=3',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/amateur.jpg')
-	addDir('Anal','http://www.keezmovies.com/videos?c=35',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/anal.jpg')
-	addDir('Ass','http://www.keezmovies.com/videos?c=4',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/ass.jpg')
-	addDir('Asian','http://www.keezmovies.com/videos?c=1',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/asian.jpg')
-	addDir('Babe','http://www.keezmovies.com/videos?c=5',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/babe.jpg')
-	addDir('Big Dicks','http://www.keezmovies.com/videos?c=7',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/big-dick.jpg')
-	addDir('Big Tits','http://www.keezmovies.com/videos?c=8',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/big-tits.jpg')
-	addDir('Blonde','http://www.keezmovies.com/videos?c=9',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/blonde.jpg')
-	addDir('Blowjob','http://www.keezmovies.com/videos?c=13',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/blowjob.jpg')
-	addDir('Bondage','http://www.keezmovies.com/videos?c=10',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/bondage.jpg')
-	addDir('Brunette','http://www.keezmovies.com/videos?c=11',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/brunette.jpg')
-	addDir('Bukkake','http://www.keezmovies.com/videos?c=14',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/bukkake.jpg')
-	addDir('Celebrity','http://www.keezmovies.com/videos?c=12',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/celebrity.jpg')
-	addDir('Creampie','http://www.keezmovies.com/videos?c=15',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/creampie.jpg')
-	addDir('Cumshot','http://www.keezmovies.com/videos?c=16',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/cumshot.jpg')
-	addDir('Dancing','http://www.keezmovies.com/videos?c=34',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/dancing.jpg')
-	addDir('Ebony','http://www.keezmovies.com/videos?c=17',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/ebony.jpg')
-	addDir('Fetish','http://www.keezmovies.com/videos?c=18',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/fetish.jpg')
-	addDir('Fisting','http://www.keezmovies.com/videos?c=19',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/fisting.jpg')
-	addDir('Funny','http://www.keezmovies.com/videos?c=32',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/funny.jpg')
-	addDir('Group','http://www.keezmovies.com/videos?c=2',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/group.jpg')
-	addDir('Handjob','http://www.keezmovies.com/videos?c=20',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/handjob.jpg')
-	addDir('Hardcore','http://www.keezmovies.com/videos?c=21',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/hardcore.jpg')
-	addDir('Hentai','http://www.keezmovies.com/videos?c=36',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/hentai.jpg')
-	addDir('Interracial','http://www.keezmovies.com/videos?c=25',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/interracial.jpg')
-	addDir('Large Ladies','http://www.keezmovies.com/videos?c=6',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/large-ladies.jpg')
-	addDir('Latina','http://www.keezmovies.com/videos?c=26',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/latina.jpg')
-	addDir('Lesbian','http://www.keezmovies.com/videos?c=27',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/lesbian.jpg')
-	addDir('Masturbation','http://www.keezmovies.com/videos?c=22',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/masturbation.jpg')
-	addDir('Mature','http://www.keezmovies.com/videos?c=28',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/mature.jpg')
-	addDir('MILF','http://www.keezmovies.com/videos?c=29',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/milf.jpg')
-	addDir('Pornstar','http://www.keezmovies.com/videos?c=30',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/pornstar.jpg')
-	addDir('POV','http://www.keezmovies.com/videos?c=41',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/pov.jpg')
-	addDir('Public','http://www.keezmovies.com/videos?c=24',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/public.jpg')
-	addDir('Reality','http://www.keezmovies.com/videos?c=31',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/reality.jpg')
-	addDir('RedHead','http://www.keezmovies.com/videos?c=40',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/redhead.jpg')
-	addDir('Striptease','http://www.keezmovies.com/videos?c=33',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/striptease.jpg')
-	addDir('Teen','http://www.keezmovies.com/videos?c=37',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/teen.jpg')
-	addDir('Toys','http://www.keezmovies.com/videos?c=23',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/toys.jpg')
-	addDir('Vintage','http://www.keezmovies.com/videos?c=42',2,'http://cdn-www.keezmovies.com/images/cat-thumbs/big/vintage.jpg')
+def CATEGORIES(url):
+	getData = urllib2.Request(url)
+	response = urllib2.urlopen(getData)
+	link=response.read()
+	response.close
+	soupStrainer  = SoupStrainer ( "div", { "id" : "outer" } )
+	beautifulSoup = BeautifulSoup( link, soupStrainer )
+#video_names_1
+	v1 = beautifulSoup.findAll( "ul", { "class" : "topcatslist" } )
+	cats=re.compile('href="(.+?)".+?">(.+?)</a>').findall(str(v1))
+	for WURL,NAME in cats:
+		addDir(NAME,base + WURL + '&offset=0',2,'')	
 
-                                           
-     
+
 # 2
-def INDEX(url): 
-	url_split=urlparse.urlsplit(url)
-	query_params=dict(part.split('=') for part in url_split[3].split('&'))
-	curr_page=int ( query_params.get("page", 1) )
-	next_page=curr_page + 1
-	query_params[ "page" ] = next_page
-	url_unsplit = tuple( [ url_split[0], url_split[1], url_split[2], urllib.urlencode(query_params), url_split[4] ] )
-	url_next_page = urlparse.urlunsplit(url_unsplit)
-	print url_next_page
-	addDir('-= [ N E X T     P A G E ] =-', url_next_page, 2, 'http://www.viewista.com/right_arrow.jpg')
-	req = urllib2.Request(url)
-	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-	response = urllib2.urlopen(req)
-	link=response.read()
-	response.close()
-	match=re.compile('<div class="video-box">\r\n\t\t\t\t\r\n\t\t\t\t\t<a href="/(.+?)" class="small">\r\n\t\t\t\t\t<img src="(.+?)?cache_control=.+?" width="160" height="120" alt=".+?" title="(.+?)"').findall(link)
-	for url2,thumbnail,name in match:
-                thumbnail = thumbnail.replace("?","")
-                addDir(name,'http://www.keezmovies.com/watch_player.php?id='+url2,5,thumbnail)
-
-#5
-def COSTAM(name,url):
-	req = urllib2.Request(url)
-	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-	response = urllib2.urlopen(req)
-	link=response.read()
-	response.close()
-	match=re.compile('<flv_url>(.+?)</flv_url>').findall(link)
-	for video in match:
-		addLink(name,video,'')
-	if xbmcplugin.getSetting("dvdplayer") == "true":
-		xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(video)
+def LISTA(url):
+	adres=re.compile('(.+?)offset').findall(url)[0]
+	numerek=re.compile('offset=(\d+)').findall(url)[0]
+	nastepna=str(int(numerek[0]) + 36)
+	warunek=re.compile('c=').findall(url)
+	if warunek != []:
+		adress=adres + '&offset=' + str(nastepna)
 	else:
-		xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).play(video)		
-
-# 3
-def PS(url):
-	req = urllib2.Request(url)
-	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-	response = urllib2.urlopen(req)
+		adress=adres + '?offset=' + str(nastepna)		
+	addDir('Next Page',adress,2,'')
+	getData = urllib2.Request(url)
+	response = urllib2.urlopen(getData)
 	link=response.read()
-	response.close()	
-	npb=re.compile('.+?page=(\d)').findall(url)[0]
-	np=str (int (npb) + 1)
-	addDir('-= [ N E X T     P A G E ] =-','http://www.keezmovies.com/pornstar-list?&page=%s' %np,3,'http://www.viewista.com/right_arrow.jpg')
-	match=re.compile('<li><a href="http://www.keezmovies.com/(.+?)">(.+?)</a></li>').findall(link)
-	for url_s,name_s in match:
-		url_s = url_s.replace(" ", "%20")	
-		addDir(name_s,'http://www.keezmovies.com/'+url_s,4,'')
-# 4
-def PSURL(url): 
-	req = urllib2.Request(url)
-	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-	response = urllib2.urlopen(req)
-	link=response.read()
-	response.close()
-	match=re.compile('<div class="video-box">\r\n\t\t\t\t\r\n\t\t\t\t\t<a href="/(.+?)" class="small">\r\n\t\t\t\t\t<img src="(.+?)?cache_control=.+?" width="160" height="120" alt=".+?" title="(.+?)"').findall(link)
-	for psurl,PSthumbnail,psname in match:
-		PSthumbnail = PSthumbnail.replace("?","")
-		addDir(psname,'http://www.keezmovies.com/embed_player.php?id=' +psurl,6,PSthumbnail)
-
+	response.close
+	soupStrainer  = SoupStrainer ( "div", { "class" : "block" } )
+	b = BeautifulSoup( link, soupStrainer )
+	b=str(b).replace('\t','').replace('\n','')
+	blah=re.compile('<img src="http://(.+?).jpg.+?".+?alt="(.+?)".+?<h5 class="title"><a href="(.+?)"').findall(b,re.DOTALL)[:36]
+	for SCURL,WNAME,WURL in blah:
+		WNAME=WNAME.replace('&amp;','&').replace('!','')
+		addDir1(WNAME,base + WURL,3,'http://'+SCURL+'.jpg')
 # 6
-def COSTAM2(name,url):
-        req = urllib2.Request(url)
-	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-	response = urllib2.urlopen(req)
+def LISTA1(url): 
+	getData = urllib2.Request(url)
+	response = urllib2.urlopen(getData)
 	link=response.read()
-	response.close()
-	match=re.compile('<flv_url>(.+?)</flv_url>').findall(link)
-	for video in match:
-		addLink(name,video,'')
+	response.close
+	numerek=re.compile('offset=(\d+)').findall(url)[0]
+	nastepna=str(int(numerek) + 24)
+	adres=re.compile('(.+?)offset=\d+').findall(url)[0]
+	addDir('Next Page',url +'&offset=' +nastepna,2,'')
+	soupStrainer  = SoupStrainer ( "div", { "class" : "block" } )
+#nastepna_strona
+	b = BeautifulSoup( link, soupStrainer )
+	b=str(b).replace('\t','').replace('\n','')
+	blah=re.compile('<img src="http://(.+?).jpg.+?".+?alt="(.+?)".+?<h5 class="title"><a href="(.+?)"').findall(b,re.DOTALL)[:36]
+	for SCURL,WNAME,WURL in blah:
+		WNAME=WNAME.replace('&amp;','&').replace('!','')
+		addDir1(WNAME,base + WURL,3,'http://'+SCURL+'.jpg')
+
+def cedzak(url,name):
+	ID=re.compile('(\d+)').findall(url)[0]
+	url=player +ID
+	getData = urllib2.Request(url)
+	response = urllib2.urlopen(getData)
+	link=response.read()
+	response.close
+	url=re.compile('<flv_url>(.+?)</flv_url>').findall(link)[0]
+	pliki(url,name)	
+	
+	
+# 3
+def pliki(url,name):
+	stream = httppobierz(url,name)
+	if stream == 'false':
+		return
 	if xbmcplugin.getSetting("dvdplayer") == "true":
-		xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(video)
+		player_type = xbmc.PLAYER_CORE_DVDPLAYER
 	else:
-		xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).play(video)		
+		player_type = xbmc.PLAYER_CORE_MPLAYER
+	ok=xbmc.Player(player_type).play(url)
 
 # 7
 def search():
@@ -144,9 +108,57 @@ def search():
 	kb.doModal()
 	if (kb.isConfirmed()):
 		searchstring = kb.getText()
-	searched = searchstring.replace(' ','+')
-	url = 'http://www.keezmovies.com/videos?search='+searched+'&x=0&y=0'
-	INDEX(url)
+	searched = searchstring.replace(' ','%20')
+	url = 'http://www.keezmovies.com/videos?search='+searched+'&offset=0'
+	LISTA(url)
+
+def httppobierz(koncowy,name):
+	name = name + '.flv'
+	def pobierz(url,dest):
+                    dp = xbmcgui.DialogProgress()
+                    dp.create('Pobieranie','',name)
+                    urllib.urlretrieve(url,dest,lambda nb, bs, fs, url=url: _pbhook(nb,bs,fs,url,dp))
+        def _pbhook(numblocks, blocksize, filesize, url=None,dp=None):
+                    try:
+                                    percent = min((numblocks*blocksize*100)/filesize, 100)
+                                    dp.update(percent)
+                    except:
+                                    percent = 100
+                                    dp.update(percent)
+                    if dp.iscanceled():
+                                    dp.close()
+        plik = None
+        stream = 'false'
+        if (xbmcplugin.getSetting('pobierz') == '0'):
+                dia = xbmcgui.Dialog()
+                ret = dia.select(xbmc.getLocalizedString( 30011 ),[xbmc.getLocalizedString( 30006 ),xbmc.getLocalizedString( 30007 ),xbmc.getLocalizedString( 30008 ),xbmc.getLocalizedString( 30012 )])
+                if (ret == 0):
+                        stream = 'true'
+                elif (ret == 1):
+                        plik = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('pobierz_do'), name))
+                        pobierz(koncowy,plik)
+                elif (ret == 2):
+                        plik = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('pobierz_do'), name))
+                        pobierz(koncowy,plik)
+                        stream = 'true'
+                else:
+                        return stream
+        #odtwarzaj
+        elif (xbmcplugin.getSetting('pobierz') == '1'):
+                stream = 'true'
+        #pobierz
+        elif (xbmcplugin.getSetting('pobierz') == '2'):
+                plik = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('pobierz_do'), name))
+                pobierz(koncowy,plik)
+        #pobierz i odtwarzaj
+        elif (xbmcplugin.getSetting('pobierz') == '3'):
+                plik = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('pobierz_do'), name))
+                pobierz(koncowy,plik)
+                stream = 'true'            
+        if (plik != None and os.path.isfile(plik)):
+                koncowy =str(plik)
+        return stream
+
 
 def get_params():
 	param=[]
@@ -167,12 +179,6 @@ def get_params():
 	return param
 
 
-def addLink(name,url,iconimage):
-	ok=True
-	liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
-	liz.setInfo( type="Video", infoLabels={ "Title": name } )
-	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
-	return ok
 
 def addDir(name,url,mode,iconimage):
 	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
@@ -182,6 +188,13 @@ def addDir(name,url,mode,iconimage):
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
 	return ok
 
+def addDir1(name,url,mode,iconimage):
+        u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
+        ok=True
+        liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
+        liz.setInfo( type="Video", infoLabels={ "Title": name } )
+        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
+        return ok
 
 params=get_params()
 url=None
@@ -207,31 +220,23 @@ print "Name: "+str(name)
 
 if mode==None or url==None or len(url)<1:
 	print ""
-	CATEGORIES()
+	Main()
      
-elif mode==1 or url=='cat2':
+elif mode==1:
 	print ""
-	CATEGORIES2()
+	CATEGORIES(url)
 
 elif mode==2:
 	print ""+url
-	INDEX(url)
+	LISTA(url)
 
 elif mode==3:
-	print ""+url
-	PS(url)
-
-elif mode==4:
-	print ""+url
-	PSURL(url)
-
-elif mode==5:
-        print ""+url
-        COSTAM(name,url)
+	print ""
+	cedzak(url,name)
 
 elif mode==6:
-        print ""+url
-        COSTAM2(name,url)
+	print ""+url
+	LISTA1(url)
 
 elif mode==7:
 	print ""+url
