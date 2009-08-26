@@ -39,7 +39,7 @@
     
     <!-- tarnslate below this line -->
     <string id="500">You have not selected a valid language.</string>
-    <string id="501">Would you like to set a specific folder in which to store downloaded subtitles?</string>
+    <string id="501">Would you like to set a custom subtitles folder?</string>
     <string id="502">Language selection</string>
     <string id="503">Select default language</string>
     <string id="504">Please choose subtitle folder</string>

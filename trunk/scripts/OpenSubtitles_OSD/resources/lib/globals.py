@@ -174,8 +174,8 @@ def hashFile(name):
 
 
 def EncodeLocale(phrase):
-    if not isinstance(phrase, UnicodeType):
-            phrase = unicode(phrase.decode("latin1","ignore"))
+    #if not isinstance(phrase, UnicodeType):
+    phrase = unicode(phrase.encode("iso-8859-1","replace"))
     return phrase
 
 def ConvertLang_xxx2xx(str):
