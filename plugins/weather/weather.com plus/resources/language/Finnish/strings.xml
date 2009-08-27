@@ -1,54 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings><!--  1.6.2009 Finnish   -->
     <!-- language strings credit -->
-    <string id="2">mikko70</string>
-
-    <string id="10">Ladataan säätietoja...</string>
-
-    <string id="11">ma</string>
-    <string id="12">ti</string>
-    <string id="13">ke</string>
-    <string id="14">to</string>
-    <string id="15">pe</string>
-    <string id="16">la</string>
-    <string id="17">su</string>
-    <string id="18">Tänään</string>
-    <string id="19">Tänä iltana</string>
-    <string id="20">Huomenna</string>
-    <string id="21">Huomenillalla</string>
-
-    <string id="50">Aika</string>
-    <string id="51">Päiväys</string>
-    <string id="52">Säätila</string>
-    <string id="53">Sade</string>
-    <string id="54">Kosteus</string>
-    <string id="55">Tuuli</string>
-    <!--string id="56">High</string>
-    <string id="57">Low</string>
-    <string id="58">Temp</string-->
-    <string id="59">Tuntuu kuin</string>
-    <string id="60">Tarkkailtu</string>
-    <string id="61">perjantai</string>
-    <string id="62">lauantai</string>
-    <string id="63">sunnuntai</string>
-    <string id="64">Normaalista lähtien</string>
-    <string id="65">Aurinko nousee</string>
-    <string id="66">Aurinko laskee</string>
-
-    <string id="200">36-tuntia</string>
-    <string id="201">Kartat</string>
-    <string id="202">Tunneittain</string>
-    <string id="203">Vikonloppu</string>
-    <string id="204">10-päivää</string>
-    <string id="205">Hälytykset</string>
-    <string id="206">Hälytys</string>
-
-    <string id="300">Yksityiskohdat</string>
-    <string id="301">Ulkoasu</string>
-    <string id="302">Video</string>
-    <string id="303">Nykyinen</string>
-
-    <string id="450">Valitse kartta</string>
+    <string id="32002">mikko70</string>
 
     <!-- Settings strings -->
     <string id="32500">Käännä teksti (Babelfish)</string>
