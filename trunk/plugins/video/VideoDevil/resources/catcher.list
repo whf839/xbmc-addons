@@ -47,6 +47,13 @@ data=data[url]=%s
 header=Referer|http://www.atrapavideo.com/en/
 quality=standard
 ########################################################
+title=getvids.de
+target=href="([^"]+)" title="Download">
+url=http://getvids.de/video.cgi
+data=downloadurl=%s
+header=Referer|http://getvids.de/video.cgi
+quality=standard
+########################################################
 title=clipsave.de
 target=<a href="([^"]+)"><span class="[^"]+"><strong>Download von
 url=http://www.nachrichtenmann.de/cgi-bin/video/video.cgi
@@ -105,6 +112,18 @@ title=boysfood.com
 target=href="([^"]+wmv)">GET</a></td>
 url=%s
 extension=wmv
+quality=standard
+target=href="([^"]+\d+.flv)">GET</a></td>
+extension=flv
+quality=standard
+target=href="([^"]+hd.flv)">GET</a></td>
+extension=flv
+quality=high
+########################################################
+title=keezmovies.com
+target=to.addVariable[(]"options","(http://www.keezmovies.com/watch_player.php\?id=[^"]+)"[)];
+url=%s
+ext_target=<flv_url>(http://media[^"]+flv)</flv_url>
 quality=standard
 ########################################################
 title=clipa.tv
