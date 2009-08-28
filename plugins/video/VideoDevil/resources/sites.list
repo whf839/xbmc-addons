@@ -99,6 +99,13 @@ director=VideoDevil
 icon=video.devil.image|keezmovies.png
 url=keezmovies.com.cfg
 ########################################################
+title=XVideos
+type=rss
+genre=XVideos
+director=VideoDevil
+icon=video.devil.image|xvideos.png
+url=xvideos.com.cfg
+########################################################
 #title=Metacafe
 #type=rss
 #genre=Metacafe
