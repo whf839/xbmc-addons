@@ -2,8 +2,8 @@
 __scriptname__ = "Justin.tv"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Justin.tv"
-__date__ = '2009-08-13'
-__version__ = "1.4.10"
+__date__ = '2009-08-29'
+__version__ = "1.4.11"
 __XBMC_Revision__ = "21803"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback, shutil
@@ -24,11 +24,12 @@ def temp_dir():
 			
 def _check_compatible():
 	xbmc_version = xbmc.getInfoLabel( "System.BuildVersion" )
-	xbmc_rev = int( xbmc_version.split( " " )[ 1 ].replace( "r", "" ) )
-	ok = xbmc_rev >= int( __XBMC_Revision__ )
-	if ( not ok ):
-		xbmcgui.Dialog().ok( "%s - %s: %s" % ( __scriptname__, xbmc.getLocalizedString( 30700 ), __version__, ), xbmc.getLocalizedString( 30701 ) % ( __scriptname__, ), xbmc.getLocalizedString( 30702 ) % ( __XBMC_Revision__, ), xbmc.getLocalizedString( 30703 ) )
-	return ok
+	print 'XBMC Rev: '+xbmc_version
+	# xbmc_rev = int( xbmc_version.split( " " )[ 1 ].replace( "r", "" ) )
+	# ok = xbmc_rev >= int( __XBMC_Revision__ )
+	# if ( not ok ):
+		# xbmcgui.Dialog().ok( "%s - %s: %s" % ( __scriptname__, xbmc.getLocalizedString( 30700 ), __version__, ), xbmc.getLocalizedString( 30701 ) % ( __scriptname__, ), xbmc.getLocalizedString( 30702 ) % ( __XBMC_Revision__, ), xbmc.getLocalizedString( 30703 ) )
+	# return ok
 	
 def _check_for_update():
 	print "Justin.tv v"+__version__
