@@ -1,3 +1,8 @@
+[Update 8/29/09 v1.4.11]
+- fixed problem for new xbox builds
+
+----------------------------
+
 [Update 8/13/09 v1.4.10]
 - fixed live stream error
 
