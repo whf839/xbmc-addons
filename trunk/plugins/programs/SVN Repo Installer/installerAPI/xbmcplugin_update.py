@@ -194,15 +194,15 @@ class Main:
 		log("> showUpdates()")
 		ok = False
 
-		try:
-			# create update_all file that contains all listitem details
-			deleteFile(self.UPDATE_ALL_FILENAME)
-			updateAllItems = []
+		# create update_all file that contains all listitem details
+		deleteFile(self.UPDATE_ALL_FILENAME)
+		updateAllItems = []
 
-			# create display list
-			sz = len(self.INSTALLED)
-			print("totalItems=%s" % sz)
-			for info in self.INSTALLED:
+		# create display list
+		sz = len(self.INSTALLED)
+		log("showing INSTALLED count=%s" % sz)
+		for info in self.INSTALLED:
+			try:
 				svn_url = info.get('svn_url','')
 				svn_ver = info.get('svn_ver','')
 
@@ -243,8 +243,8 @@ class Main:
 					(not svn_xbmc_rev or not self.XBMC_REVISION):
 					# Compatible, NEW AVAILABLE - setup callback url for plugin SVN Repo Installer
 					verState = "v%s (%s)" % ( svn_ver, xbmc.getLocalizedString( 30014 ) )        # eg. !New! v1.1
-					trunk_url = re.search('(/trunk.*?)$', svn_url, re.IGNORECASE).group(1)
-					#['plugin://programs/SVN Repo Installer/', '-1', '?download_url="%2Ftrunk%2Fplugins%2Fmusic/iTunes%2F"&repo=\'xbmc-addons\'&install=""&ioffset=2&voffset=0']
+					trunk_url = re.search('(/(?:trunk|branch|tag).*?)$', svn_url, re.IGNORECASE).group(1)
+#['plugin://programs/SVN Repo Installer/', '-1', '?download_url="%2Ftrunk%2Fplugins%2Fmusic/iTunes%2F"&repo=\'xbmc-addons\'&install=""&ioffset=2&voffset=0']
 					info['download_url'] = "download_url=%s&repo=%s&install=%s&ioffset=%s&voffset=%s" % \
 								(repr(urllib.quote_plus(trunk_url + "/")),
 								repr(urllib.quote_plus(repo)),
@@ -304,29 +304,28 @@ class Main:
 
 				li.addContextMenuItems( cm, replaceItems=True )
 				ok = xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=path, listitem=li, isFolder=False, totalItems=sz )
-				# if user cancels, call raise to exit loop
-				if ( not ok ): raise
+				if ( not ok ): break
+			except:
+				# user cancelled dialog or an error occurred
+				logError()
+				print info
 
-			# if New Updates; add Update All item
-			log("Updated Count=%d" % len(updateAllItems))
-			if updateAllItems:
-				icon = "DefaultFile.png"
-				text = xbmc.getLocalizedString( 30019 )
-				li=xbmcgui.ListItem( text, "", icon, icon)
-				li.setInfo( type="Video", infoLabels={ "Title": text, "Genre": "" } )
-				path = '%s?download_url=update_all' % ( sys.argv[ 0 ], )
-				xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=path, listitem=li, isFolder=False, totalItems=sz )
-				# save update_all dict to file
-				saveFileObj(self.UPDATE_ALL_FILENAME, updateAllItems)
+		# if New Updates; add Update All item
+		log("Updated Count=%d" % len(updateAllItems))
+		if updateAllItems:
+			icon = "DefaultFile.png"
+			text = xbmc.getLocalizedString( 30019 )
+			li=xbmcgui.ListItem( text, "", icon, icon)
+			li.setInfo( type="Video", infoLabels={ "Title": text, "Genre": "" } )
+			path = '%s?download_url=update_all' % ( sys.argv[ 0 ], )
+			xbmcplugin.addDirectoryItem( handle=int( sys.argv[ 1 ] ), url=path, listitem=li, isFolder=False, totalItems=sz )
+			# save update_all dict to file
+			saveFileObj(self.UPDATE_ALL_FILENAME, updateAllItems)
 
-			# add list sort methods
-			xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_GENRE )
+		# add list sort methods
+		xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_GENRE )
 #            xbmcplugin.setContent( handle=int( sys.argv[ 1 ] ), content="files")
-			ok = True
-		except:
-			# user cancelled dialog or an error occurred
-			logError()
-			ok = False
+		ok = True
 
 		log("< showUpdates() ok=%s" % ok)
 		return ok
