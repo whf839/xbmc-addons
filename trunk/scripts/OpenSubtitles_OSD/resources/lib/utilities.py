@@ -1,12 +1,12 @@
 import sys
 import os
 import xbmc
-import xbmcgui
-import md5
-import time
-import array
-import httplib
-import xml.dom.minidom
+#import xbmcgui
+#import md5
+#import time
+#import array
+#import httplib
+#import xml.dom.minidom
 import struct
 DEBUG_MODE = 10
 
@@ -40,35 +40,7 @@ def _create_base_paths():
     ##    os.makedirs( BASE_SETTINGS_PATH )
 _create_base_paths()
 
-def get_keyboard( default="", heading="", hidden=False ):
-    """ shows a keyboard and returns a value """
-    keyboard = xbmc.Keyboard( default, heading, hidden )
-    keyboard.doModal()
-    if ( keyboard.isConfirmed() ):
-        return keyboard.getText()
-    return default
 
-def get_numeric_dialog( default="", heading="", type=3 ):
-    """ shows a numeric dialog and returns a value
-        - 0 : ShowAndGetNumber		(default format: #)
-        - 1 : ShowAndGetDate		(default format: DD/MM/YYYY)
-        - 2 : ShowAndGetTime		(default format: HH:MM)
-        - 3 : ShowAndGetIPAddress	(default format: #.#.#.#)
-    """
-    dialog = xbmcgui.Dialog()
-    value = dialog.numeric( type, heading, default )
-    return value
-
-def get_browse_dialog( default="", heading="", type=1, shares="files", mask="", use_thumbs=False, treat_as_folder=False ):
-    """ shows a browse dialog and returns a value
-        - 0 : ShowAndGetDirectory
-        - 1 : ShowAndGetFile
-        - 2 : ShowAndGetImage
-        - 3 : ShowAndGetWriteableDirectory
-    """
-    dialog = xbmcgui.Dialog()
-    value = dialog.browse( type, heading, shares, mask, use_thumbs, treat_as_folder, default )
-    return value
 
 def LOG( status, format, *args ):
     if ( DEBUG_MODE >= status ):
@@ -112,87 +84,7 @@ def hashFile(name):
 
 
 
-def calculateVideoHash(filename, isPlaying = True):
-    #
-    # Check file...
-    #
-    if not os.path.isfile(filename) :
-        return ""
-    
-    if os.path.getsize(filename) < 5 * 1024 * 1024 :
-        return ""
 
-    #
-    # Init
-    #
-    sum = 0
-    hash = ""
-    
-    #
-    # Byte 1 = 00 (reserved)
-    #
-    number = 0
-    sum = sum + number
-    hash = hash + dec2hex(number, 2) 
-    
-    #
-    # Bytes 2-3 (video duration in seconds)
-    #
-    
-    # Playing video...
-    if isPlaying == True :
-        seconds = int( xbmc.Player().getTotalTime() )
-    # Selected video...
-    else :
-        player = xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER)
-        player.play(filename)
-        counter = 0
-        while not player.isPlaying() and counter < 3 :
-            time.sleep(1)
-            counter = counter + 1
-        seconds = int(player.getTotalTime())
-        player.stop()
-    
-    # 
-    sum = sum + (seconds & 0xff) + ((seconds & 0xff00) >> 8)
-    hash = hash + dec2hex(seconds, 4)
-    
-    #
-    # Bytes 4-9 (video length in bytes)
-    #
-    filesize = os.path.getsize(filename)
-    
-    sum = sum + (filesize & 0xff) + ((filesize & 0xff00) >> 8) + ((filesize & 0xff0000) >> 16) + ((filesize & 0xff000000) >> 24)
-    hash = hash + dec2hex(filesize, 12) 
-    
-    #
-    # Bytes 10-25 (md5 hash of the first 5 MB video data)
-    #
-    f = open(filename, mode="rb")
-    buffer = f.read( 5 * 1024 * 1024 )
-    f.close()
-    
-    md5hash = md5.new()
-    md5hash.update(buffer)
-    
-    array_md5 = array.array('B')
-    array_md5.fromstring(md5hash.digest())
-    for b in array_md5 :
-        sum = sum + b
-
-    hash = hash + md5hash.hexdigest()
-    
-    #
-    # Byte 26 (control byte)
-    # 
-    hash = hash + dec2hex(sum % 256, 2)
-    hash = hash.upper()
-    
-    return hash
-
-#
-# Integer => Hexadecimal
-#
 def dec2hex(n, l=0):
     # return the hexadecimal string representation of integer n
     s = "%X" % n
@@ -245,7 +137,7 @@ def getMovieTitleAndYear( filename ):
         
     # split to parts
     parts = name.split(' ')
-    year = ""
+    year = 0
     cut_pos = 256
     for part in parts:
         # check for year
@@ -268,7 +160,7 @@ def getMovieTitleAndYear( filename ):
         
     # make cut
     name = ' '.join(parts[:cut_pos])
-    return name
+    return name, year
 
 
 
@@ -317,13 +209,14 @@ def toOpenSubtitles_two( id ):
                       "Romanian" 	: "ro",
                       "Russian" 	: "ru",
                       "SerbianLatin" 	: "sr",
+                      "Serbian" 	: "sr",
                       "Slovak" 		: "sk",
                       "Slovenian" 	: "sl",
                       "Spanish" 	: "es",
                       "Swedish" 	: "sv",
                       "Syriac" 		: "syr",
                       "Thai" 		: "th",
-                      "Turkish" 	: "tr.",
+                      "Turkish" 	: "tr",
                       "Ukrainian" 	: "uk",
                       "Urdu" 		: "ur",
                       "Vietnamese" 	: "vi",
@@ -332,11 +225,123 @@ def toOpenSubtitles_two( id ):
                     }
         return languages[ id ]
 
+def toOpenSubtitles_fromtwo( id ):
+        languages = {   		 "none" :"None",
+                      "Albanian"  	: "sq",
+                      "Arabic"  	: "ar",
+                      "Belarusian"  	: "hy",
+                      "Bosnian"  	: "bs",
+                      "Bulgarian"  	: "bg",
+                      "Catalan"  	: "ca",
+                      "Chinese"  	: "zh",
+                      "Croatian" 	: "hr",
+                      "Czech"  		: "cs",
+                      "Danish" 		: "da",
+                      "Dutch" 		: "nl",
+                       	 "en":"English",
+                      "Esperanto" 	: "eo",
+                      "Estonian" 	: "et",
+                      "Farsi" 		: "fo",
+                      "Finnish" 	: "fi",
+                      "French" 		: "fr",
+                      "Galician" 	: "gl",
+                      "Georgian" 	: "ka",
+                      "German" 		: "de",
+                      "Greek" 		: "el",
+                      "Hebrew" 		: "he",
+                      "Hindi" 		: "hi",
+                      "Hungarian" 	: "hu",
+                      "Icelandic" 	: "is",
+                      "Indonesian" 	: "id",
+                      "Italian" 	: "it",
+                      "Japanese" 	: "ja",
+                      "Kazakh" 		: "kk",
+                      "Korean" 		: "ko",
+                      "Latvian" 	: "lv",
+                      "Lithuanian" 	: "lt",
+                      "Luxembourgish" 	: "lb",
+                      "Macedonian" 	: "mk",
+                      "Malay" 		: "ms",
+                      "Norwegian" 	: "no",
+                      "Occitan" 	: "oc",
+                      "Polish" 		: "pl",
+                      "Portuguese" 	: "pt",
+                      "PortugueseBrazil" 	: "pb",
+                      "Romanian" 	: "ro",
+                      "Russian" 	: "ru",
+                       	 "sr":"SerbianLatin",
+                       	 "sr":"Serbian",
+                      "Slovak" 		: "sk",
+                         "sl":"Slovenian",
+                      "Spanish" 	: "es",
+                      "Swedish" 	: "sv",
+                      "Syriac" 		: "syr",
+                      "Thai" 		: "th",
+                      "Turkish" 	: "tr",
+                      "Ukrainian" 	: "uk",
+                      "Urdu" 		: "ur",
+                      "Vietnamese" 	: "vi",
+		      "English (US)" 	: "en",
+		      "All" 		: "all"
+                    }
+        return languages[ id ]
+
+        
+
+def twotoone(id):
+  languages = {
+    "sq"  :  "29",
+    "hy"  :  "0",
+    "ar"  :  "12",
+    "ay"  :  "0",
+    "bs"  :  "10",
+    "pb"  :  "48",
+    "bg"  :  "33",
+    "ca"  :  "53",
+    "zh"  :  "17",
+    "hr"  :  "38",
+    "cs"  :  "7",
+    "da"  :  "24",
+    "nl"  :  "23",
+    "en"  :  "2",
+    "et"  :  "20",
+    "fi"  :  "31",
+    "fr"  :  "8",
+    "de"  :  "5",
+    "gr"  :  "16",
+    "he"  :  "22",
+    "hi"  :  "42",
+    "hu"  :  "15",
+    "is"  :  "6",
+    "it"  :  "9",
+    "ja"  :  "11",
+    "kk"  :  "0",
+    "ko"  :  "4",
+    "lv"  :  "21",
+    "mk"  :  "35",
+    "nn"  :  "3",
+    "pl"  :  "26",
+    "pt"  :  "32",
+    "ro"  :  "13",
+    "ru"  :  "27",
+    "sr"  :  "36",
+    "sk"  :  "37",
+    "sl"  :  "1",
+    "es"  :  "28",
+    "sv"  :  "25",
+    "th"  :  "44",
+    "tr"  :  "30",
+    "uk"  :  "46",
+    "vi"  :  "51"
+  }
+  return languages[ id ]
+        
+
 def toOpenSubtitlesId( id ):
         languages = { "None"  		: "none",
                       "Albanian"  	: "alb",
                       "Arabic"  	: "ara",
-                      "Belarusian"  	: "arm",
+                      "Belarusian"  : "arm",
                       "Bosnian"  	: "bos",
                       "Bulgarian"  	: "bul",
                       "Catalan"  	: "cat",
@@ -377,6 +382,7 @@ def toOpenSubtitlesId( id ):
                       "Romanian" 	: "rum",
                       "Russian" 	: "rus",
                       "SerbianLatin" 	: "scc",
+                      "Serbian" 	: "scc",
                       "Slovak" 		: "slo",
                       "Slovenian" 	: "slv",
                       "Spanish" 	: "spa",
@@ -391,3 +397,93 @@ def toOpenSubtitlesId( id ):
 		      "All" 		: "all"
                     }
         return languages[ id ]
+
+
+def toScriptLang(id):
+    languages = { 
+                  "0" : "Albanian",
+                  "1" : "Arabic",
+                  "2" : "Belarusian",
+                  "3" : "BosnianLatin",
+                  "4" : "Bulgarian",
+                  "5" : "Catalan",
+                  "6" : "Chinese",
+                  "7" : "Croatian",
+                  "8" : "Czech",
+                  "9" : "Danish",
+                  "10" : "Dutch",
+                  "11" : "English",
+                  "12" : "Estonian",
+                  "13" : "Finnish",
+                  "14" : "French",
+                  "15" : "German",
+                  "16" : "Greek",
+                  "17" : "Hebrew",
+                  "18" : "Hindi",
+                  "19" : "Hungarian",
+                  "20" : "Icelandic",
+                  "21" : "Indonesian",
+                  "22" : "Italian",
+                  "23" : "Japanese",
+                  "24" : "Korean",
+                  "25" : "Latvian",
+                  "26" : "Lithuanian",
+                  "27" : "Macedonian",
+                  "28" : "Norwegian",
+                  "29" : "Polish",
+                  "30" : "Portuguese",
+                  "31" : "PortugueseBrazil",
+                  "32" : "Romanian",
+                  "33" : "Russian",
+                  "34" : "SerbianLatin",
+                  "35" : "Slovak",
+                  "36" : "Slovenian",
+                  "37" : "Spanish",
+                  "38" : "Swedish",
+                  "39" : "Thai",
+                  "40" : "Turkish",
+                  "41" : "Ukrainian",
+                  "42" : "Vietnamese",
+                }
+    return languages[ id ]       
+        
+        
+        
+def latin1_to_ascii (unicrap):
+
+	xlate={0xc0:'A', 0xc1:'A', 0xc2:'A', 0xc3:'A', 0xc4:'A', 0xc5:'A',
+    	0xc6:'Ae', 0xc7:'C',
+    	0xc8:'E', 0xc9:'E', 0xca:'E', 0xcb:'E',
+    	0xcc:'I', 0xcd:'I', 0xce:'I', 0xcf:'I',
+    	0xd0:'Th', 0xd1:'N',
+    	0xd2:'O', 0xd3:'O', 0xd4:'O', 0xd5:'O', 0xd6:'O', 0xd8:'O',
+    	0xd9:'U', 0xda:'U', 0xdb:'U', 0xdc:'U',
+    	0xdd:'Y', 0xde:'th', 0xdf:'ss',
+    	0xe0:'a', 0xe1:'a', 0xe2:'a', 0xe3:'a', 0xe4:'a', 0xe5:'a',
+    	0xe6:'ae', 0xe7:'c',
+    	0xe8:'e', 0xe9:'e', 0xea:'e', 0xeb:'e',
+    	0xec:'i', 0xed:'i', 0xee:'i', 0xef:'i',
+    	0xf0:'th', 0xf1:'n',
+    	0xf2:'o', 0xf3:'o', 0xf4:'o', 0xf5:'o', 0xf6:'o', 0xf8:'o',
+    	0xf9:'u', 0xfa:'u', 0xfb:'u', 0xfc:'u',
+    	0xfd:'y', 0xfe:'th', 0xff:'y',
+    	0xa1:'!', 0xa2:'{cent}', 0xa3:'{pound}', 0xa4:'{currency}',
+    	0xa5:'{yen}', 0xa6:'|', 0xa7:'{section}', 0xa8:'{umlaut}',
+    	0xa9:'{C}', 0xaa:'{^a}', 0xab:'<<', 0xac:'{not}',
+    	0xad:'-', 0xae:'{R}', 0xaf:'_', 0xb0:'{degrees}',
+    	0xb1:'{+/-}', 0xb2:'{^2}', 0xb3:'{^3}', 0xb4:"'",
+    	0xb5:'{micro}', 0xb6:'{paragraph}', 0xb7:'*', 0xb8:'{cedilla}',
+    	0xb9:'{^1}', 0xba:'{^o}', 0xbb:'>>',
+    	0xbc:'{1/4}', 0xbd:'{1/2}', 0xbe:'{3/4}', 0xbf:'?',
+    	0xd7:'*', 0xf7:'/'
+    	}
+
+	r = ''
+	for i in unicrap:
+		if xlate.has_key(ord(i)):
+			r += xlate[ord(i)]
+		elif ord(i) >= 0x80:
+			pass
+		else:
+			r += i
+	return r        

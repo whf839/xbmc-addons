@@ -1,15 +1,15 @@
-from xmlrpclib import Server,Transport
-from httplib import HTTP
+#from xmlrpclib import Server,Transport
+#from httplib import HTTP
 import locale
 import os
-from urlparse import urlparse
+#from urlparse import urlparse
 from types import UnicodeType
-import re
-import struct
-import base64
-import pickle
+#import re
+#import struct
+#import base64
+#import pickle
 ##import imdb
-import urllib
+#import urllib
 
 #TESTS
 defaultavi = "" 
@@ -59,37 +59,7 @@ text_log = False
 
 subdownloader_pointer = None
 
-class GtkTransport (Transport):
-    user_agent = "Subdownloader " + version 
-    
-class ProxiedTransport(Transport):
-    user_agent = "Subdownloader " + version 
-    def set_proxy(self, proxy):
-        self.proxy = proxy
-    def make_connection(self, host):
-        self.realhost = host
-	h = HTTP(self.proxy)
-	return h
-    def send_request(self, connection, handler, request_body):
-        connection.putrequest("POST", 'http://%s%s' % (self.realhost, handler))
-    def send_host(self, connection, host):
-        connection.putheader('Host', self.realhost)
-	
-def MakeOSLink(pagelink,sid=True):
-    if preferences_list["server_osdb"].endswith("/"):
-	serverosdb = preferences_list["server_osdb"][:-1]
-    else:
-	serverosdb = preferences_list["server_osdb"]
-	
-    parsed = urlparse(serverosdb)
-    internallink = ""
-    sidlink = ""
-    if pagelink:
-	internallink = "/" + pagelink
-    if sid and logged_as:
-	sidlink = "/sid-" + osdb_token
-    link = parsed[0] + "://" + parsed[1] + internallink + sidlink
-    return link 
+
 
 def CleanString(s):
     garbage = ['_',' ','.',',','(',')']
@@ -136,102 +106,14 @@ def Log(message):
 	subdownloader_pointer.log_memory = []
     
     
-def hashFile(name):
-      try: 
-                 
-                longlongformat = 'q'  # long long 
-                bytesize = struct.calcsize(longlongformat) 
-                    
-                f = open(name, "rb") 
-                    
-                filesize = os.path.getsize(name) 
-                hash = filesize 
-                    
-                if filesize < 65536 * 2: 
-                       return "SizeError" 
-                 
-                for x in range(65536/bytesize): 
-                        buffer = f.read(bytesize) 
-                        (l_value,)= struct.unpack(longlongformat, buffer)  
-                        hash += l_value 
-                        hash = hash & 0xFFFFFFFFFFFFFFFF #to remain as 64bit number  
-                         
-    
-                f.seek(max(0,filesize-65536),0) 
-                for x in range(65536/bytesize): 
-                        buffer = f.read(bytesize) 
-                        (l_value,)= struct.unpack(longlongformat, buffer)  
-                        hash += l_value 
-                        hash = hash & 0xFFFFFFFFFFFFFFFF 
-                 
-                f.close() 
-                returnedhash =  "%016x" % hash 
-                return returnedhash 
-    
-      except(IOError): 
-                return "IOError"
+
 
 
 
 def EncodeLocale(phrase):
     #if not isinstance(phrase, UnicodeType):
-    phrase = unicode(phrase.encode("iso-8859-1","replace"))
+    phrase = unicode(phrase.encode("iso-8859-1"),errors='ignore')
     return phrase
 
-def ConvertLang_xxx2xx(str):
-    return sublanguages["languages_id_xxx"][str][0]
-def ConvertLang_xxx2name(str):
-    return sublanguages["languages_id_xxx"][str][1]
-def ConvertLang_xx2name(str):
-    return sublanguages["languages_id_xxx"][sublanguages["languages_xx2xxx"][str]][1]
-def ConvertLang_xx2xxx(str):
-    return sublanguages["languages_xx2xxx"][str]
-def ConvertLang_name2xxx(str):
-    return sublanguages["languages_name2xxx"][str]
-def ConvertLang_name2xx(str):
-    return sublanguages["languages_id_xxx"][sublanguages["languages_name2xxx"][str]][0]
-    
-def DownloadNewTranslations(lang_app_xx):
-	try:
-	    mo_translation_coded = xmlrpc_server.GetTranslation(osdb_token, lang_app_xx, "mo" )["data"]
-	    po_translation_coded = xmlrpc_server.GetTranslation(osdb_token, lang_app_xx, "po" )["data"]
-	    po_translation = base64.decodestring(po_translation_coded)
-	    mo_translation = base64.decodestring(mo_translation_coded)
-	    if not os.path.exists(os.path.join(sourcefolder,"locale",lang_app_xx)):
-		os.mkdir(os.path.join(sourcefolder,"locale",lang_app_xx))
-		os.mkdir(os.path.join(sourcefolder,"locale",lang_app_xx,"LC_MESSAGES"))
-			      
-	    mofile = file(os.path.join(sourcefolder,"locale",lang_app_xx,"LC_MESSAGES","subdownloader.mo"),'wb')
-	    mofile.write(mo_translation)
-	    mofile.close()
-	    pofile = file(os.path.join(sourcefolder,"locale",lang_app_xx,"LC_MESSAGES","subdownloader.po"),'wb')
-	    pofile.write(po_translation)
-	    pofile.close()
-	    #current_translations_dates[lang_app_xx] = new_translations_dates[lang_app_xx]
-	    #pickle.dump(current_translations_dates,file(os.path.join(sourcefolder,"conf/.translations"),"wb"))
-	    return True
-	except:
-	    return False
-    
-def getAddress(file):
-	filename = EncodeLocale(os.path.basename(file))
-	filenameurl = (filename) #Corrects the accent characters.
-	
-	if not os.path.exists(file):
-		return "NotFoundError"
-	else:
-		hash = hashFile(file)
-		if hash == "IOError" or hash== "SizeError":
-			return hash
-		
-		#We keep going if there was no error.
-		
-		videofilesize = os.path.getsize(file)
-		linkhtml_index =  "search/moviebytesize-"+str(videofilesize)+"/moviehash-"+hash
-		videofilename = filename
-		pathvideofilename = file
-		videohash = hash
-		return {"hash":hash, "filename":filename, "pathvideofilename":file, "filesize":str(videofilesize)
-			, "linkhtml_index":linkhtml_index}
 
-
+    

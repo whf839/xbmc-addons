@@ -36,34 +36,33 @@
     <string id="743">HTTP %s: %s</string>
     
     
-    <!-- translate below this line -->
-    <!-- Slovenski -->
-    <string id="500">Niste izbrali pravega jezika</string>
-    <string id="501">Želite nastaviti privzeto pot?</string>
-    <string id="502">Izbira jezika</string>
-    <string id="503">Izberi privzeti jezik</string>
-    <string id="504">Prosim izberite željeno pot</string>
-    <string id="505">Prosim izberite prednostni servis</string>
-    <string id="506">Želite ponastaviti nastavitve na privzete vrednosti?</string>
-    <string id="601">Označene postavke</string>
-    <string id="602">delovati bolje</string>
-    <string id="610">Iskanje z </string>
-    <string id="611">Iskanje s Sublight.si</string>
-    <string id="612">Ročno vnesi iskalni niz</string>
-    <string id="633">Prenašam datoteko</string>
-    <string id="635">Povezan</string>
-    <string id="642">Iskanje podnapisov %s</string>
-    <string id="646">Povezujem...</string>
-    <string id="649">Prenašam podnapise...</string>
-    <string id="650">Dekompresiram podnapise...</string>
-    <string id="651">Podnapisi so dekompresirani</string>
-    <string id="652">Podnapisi so prenešeni in dekompresirani</string>
-    <string id="653">Povezava ni uspela.</string>
-    <string id="654">Napaka pri dekompresiranju podnapisov</string>
-    <string id="741">Podnapisi niso bili najdeni</string>
-    <string id="742"> podnapisov najdenih</string>
-    <string id="744"> podnapisov najdenih za </string>
-    
+    <!-- tarnslate below this line -->
+	<!-- Spanish -->
+	<string id="500">No has seleccionado un idioma válido.</string>
+	<string id="501">¿Te gustaría establecer una carpeta personalizada para los subtítulos?</string>
+	<string id="502">Selección de idioma</string>
+	<string id="503">Selecciona el idioma por defecto</string>
+	<string id="504">Por favor, elije una carpeta para los subtítulos</string>
+	<string id="505">Por favor, elije el servicio preferido</string>
+	<string id="506">¿Quieres especificar unos ajustes nuevos?</string>
+	<string id="601">Los elementos</string>
+	<string id="602">son mejor</string>
+	<string id="610">Buscar en </string>
+	<string id="611">Buscar en Sublight.si</string>
+	<string id="612">Búsqueda manual...</string>
+	<string id="633">Descargando archivo</string>
+    <string id="635">Conectado</string>
+	<string id="642">Buscando subtítulos %s</string>
+    <string id="646">Conectando...</string>
+	<string id="649">Descargando subtítulos...</string>
+	<string id="650">Extrayendo subtítulos...</string>
+	<string id="651">Subtítulos extraidos</string>
+	<string id="652">Archivo de subtitulos descargado y extraido</string>
+	<string id="653">Error de conexión</string>
+	<string id="654">Error extrayendo los subtítulos</string>
+	<string id="741">No se han encontrado subtítulos</string>
+	<string id="742"> subtítulos encontrados</string>
+	<string id="744"> subtítulos encontrados para </string>
     
       <!-- 
    * Languages

@@ -464,12 +464,10 @@ class SublightWebService :
         
         # Call SOAP service...
         resultXML = self.SOAP_POST (self.SOAP_SUBTITLES_API_URL, self.SEARCH_SUBTITLES_ACTION, requestXML)
-        ##return resultXML 
         # Parse result
         resultDoc = xml.dom.minidom.parseString(resultXML)
         xmlUtils  = XmlUtils() 
         result    = xmlUtils.getText(resultDoc, "SearchSubtitles3Result")
-        ##LOG( LOG_INFO, result )
         subtitles = []      
         if (result == "true") :
             # Releases...
@@ -495,12 +493,13 @@ class SublightWebService :
                 mediaType     = xmlUtils.getText( subtitleNode, "MediaType" )
                 numberOfDiscs = xmlUtils.getText( subtitleNode, "NumberOfDiscs" ) 
                 downloads     = xmlUtils.getText( subtitleNode, "Downloads" )
-                isLinked      = xmlUtils.getText( subtitleNode, "IsLinked" )              
-                
-                subtitles.append( { "title" : title, "year" : year, "release" : release, "language" : language, "subtitleID" : subtitleID, "mediaType" : mediaType, "numberOfDiscs" : numberOfDiscs, "downloads" : downloads, "isLinked" : isLinked } )            
+                isLinked      = xmlUtils.getText( subtitleNode, "IsLinked" )
+                rate          = float(xmlUtils.getText( subtitleNode, "Rate" ))              
+
+                subtitles.append( { "title" : title, "year" : year, "release" : release, "language" : language, "subtitleID" : subtitleID, "mediaType" : mediaType, "numberOfDiscs" : numberOfDiscs, "downloads" : downloads, "isLinked" : isLinked, "rate" : rate } )            
             
         # Return value
-        return subtitles, requestXML        
+        return subtitles       
     
     #
     # GetDownloadTicket

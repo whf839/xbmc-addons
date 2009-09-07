@@ -10,9 +10,11 @@
 
   <controls>
 
+
+
     <control type="group">
       <posx>300</posx>
-      <posy>30</posy>
+      <posy>100</posy>
 
       <control type="image">
         <description>Background Image</description>
@@ -20,11 +22,10 @@
         <posy>-20</posy>
         <width>690</width>
         <height>520</height>
-        <texture border="23">DialogBG.png</texture>
+        <texture border="23">default-panel.png</texture>
       </control>
 
       <!-- ** Required ** Do not change <id> or <type> -->
-
       <control type="group" id="110">
         <control type="image" >
             <description>page header tab icon</description>
@@ -47,19 +48,21 @@
             
       </control>
     </control>
-      <control type="image">
+        <control type="group" id="112">
+      <control type="image" >
             <description>page header tab icon</description>
             <posx>20</posx>
             <posy>2</posy>
             <width>250</width>
-            <height>50</height>
-            <texture>Sublight_logo.png</texture>
-            <visible>$INFO[Window.Property("service")]</visible>
+            <height>40</height>
+            <texture>podnapisi.png</texture>
+            <visible>!Control.IsVisible(111) + !Control.IsVisible(110)</visible>
       </control>
+    </control>
                 
       <control type="label" id="300">
         <description>textarea</description>
-        <posx>455</posx>
+        <posx>445</posx>
         <posy>10</posy>
         <width>190</width>
         <height>22</height>
@@ -75,7 +78,7 @@
       </control>              
             <control type="label" id="301">
         <description>textarea</description>
-        <posx>530</posx>
+        <posx>520</posx>
         <posy>10</posy>
         <width>140</width>
         <height>22</height>
@@ -83,14 +86,10 @@
         <textcolor>Focused</textcolor>
         
         
-      </control>   
-      
-      
-      
-      
+      </control>               
       <control type="image">
-            <posx>465</posx>
-            <posy>17</posy>
+            <posx>455</posx>
+            <posy>14</posy>
             <width>54</width>
             <height>14</height>
             <texture>icon_sync.png</texture>
@@ -130,10 +129,10 @@
         <posy>126</posy>
         <width>640</width>
         <height>348</height>
-        <onleft>1600</onleft>
-        <onright>1600</onright>
-        <onup>120</onup>
-        <ondown>120</ondown>
+        <onleft>120</onleft>
+        <onright>120</onright>
+        <onup>110</onup>
+        <ondown>110</ondown>
         <viewtype label="535">list</viewtype>
         <pagecontrol>121</pagecontrol>
         <scrolltime>200</scrolltime>
@@ -273,7 +272,9 @@
           <visible>Control.IsVisible(120)</visible>
         </control>
       </control>
-
+      <control type="group" id="110">
+        
+      </control>
     </control>
   </controls>
 </window>
