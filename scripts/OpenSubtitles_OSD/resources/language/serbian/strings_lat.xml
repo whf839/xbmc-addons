@@ -19,7 +19,7 @@
     
     <string id="601">Prevodi obeleženi</string>
     <string id="602">rade bolje</string>
-    <string id="610">Pretraži OpenSubtitles.org</string>
+    <string id="610">Pretraži </string>
     <string id="611">Pretraži Sublight.si</string>
     <string id="612">Ručno uneti ime filma</string>
     <string id="630">Subtitle file downloaded and extracted as %s</string>
@@ -59,8 +59,8 @@
     <string id="739">Hashing %s %s</string>
     <string id="740">File found on share, remote files not supported</string>
     <string id="741">Prevod nije pronađen</string>
-    <string id="742">%s prevoda</string>
+    <string id="742"> prevoda</string>
     <string id="743">HTTP %s: %s</string>
-    <string id="744">%s prevoda za "%s"</string>
+    <string id="744"> prevoda za </string>
 
 </strings>

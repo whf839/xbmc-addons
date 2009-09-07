@@ -1,20 +1,16 @@
-<window>
-  <defaultcontrol>101</defaultcontrol>
+<window id="1009">
+  <defaultcontrol>120</defaultcontrol>
   <coordinates>
     <system>1</system>
     <posx>0</posx>
     <posy>0</posy>
   </coordinates>
-  <animation effect="fade" end="100" time="500">WindowOpen</animation>
-  <animation effect="fade" end="0" time="500">WindowClose</animation>
 
   <controls>
 
-
-
     <control type="group">
       <posx>300</posx>
-      <posy>100</posy>
+      <posy>30</posy>
 
       <control type="image">
         <description>Background Image</description>
@@ -22,10 +18,11 @@
         <posy>-20</posy>
         <width>690</width>
         <height>520</height>
-        <texture border="23">DialogBG.png</texture>
+        <texture border="23">default-panel.png</texture>
       </control>
 
       <!-- ** Required ** Do not change <id> or <type> -->
+
       <control type="group" id="110">
         <control type="image" >
             <description>page header tab icon</description>
@@ -34,6 +31,8 @@
             <width>250</width>
             <height>50</height>
             <texture>logo_opensubtitles.png</texture>
+            
+            
             
         </control>
       </control>
@@ -48,15 +47,28 @@
             
       </control>
     </control>
+    
+    <control type="group" id="112">
+      <control type="image" >
+            <description>page header tab icon</description>
+            <posx>20</posx>
+            <posy>2</posy>
+            <width>250</width>
+            <height>40</height>
+            <texture>podnapisi.png</texture>
+            <visible>!Control.IsVisible(111) + !Control.IsVisible(110)</visible>
+      </control>
+    </control>
+
                 
       <control type="label" id="300">
         <description>textarea</description>
-        <posx>405</posx>
+        <posx>455</posx>
         <posy>10</posy>
         <width>190</width>
         <height>22</height>
         <font>DefaultFont</font>
-        
+        <label>$LOCALIZE[77601]</label>
         <textcolor>Focused</textcolor>
         <align>right</align>
         
@@ -67,7 +79,7 @@
       </control>              
             <control type="label" id="301">
         <description>textarea</description>
-        <posx>480</posx>
+        <posx>530</posx>
         <posy>10</posy>
         <width>140</width>
         <height>22</height>
@@ -75,10 +87,14 @@
         <textcolor>Focused</textcolor>
         
         
-      </control>               
+      </control>   
+      
+      
+      
+      
       <control type="image">
-            <posx>415</posx>
-            <posy>14</posy>
+            <posx>465</posx>
+            <posy>17</posy>
             <width>54</width>
             <height>14</height>
             <texture>icon_sync.png</texture>
@@ -118,10 +134,10 @@
         <posy>126</posy>
         <width>640</width>
         <height>348</height>
-        <onleft>120</onleft>
-        <onright>120</onright>
-        <onup>110</onup>
-        <ondown>110</ondown>
+        <onleft>1600</onleft>
+        <onright>1600</onright>
+        <onup>120</onup>
+        <ondown>120</ondown>
         <viewtype label="535">list</viewtype>
         <pagecontrol>121</pagecontrol>
         <scrolltime>200</scrolltime>
@@ -261,9 +277,7 @@
           <visible>Control.IsVisible(120)</visible>
         </control>
       </control>
-      <control type="group" id="110">
-        
-      </control>
+
     </control>
   </controls>
 </window>

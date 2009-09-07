@@ -11,9 +11,9 @@
   <controls>
 
 
-
+      
     <control type="group">
-      <posx>300</posx>
+      <posx>420</posx>
       <posy>30</posy>
 
       <control type="image">
@@ -21,9 +21,13 @@
         <posx>0</posx>
         <posy>-20</posy>
         <width>690</width>
-        <height>520</height>
-        <texture border="23">DialogBG.png</texture>
+        <height>710</height>
+        <texture border="23">default-panel.png</texture>
+        
+        
       </control>
+      
+      
 
       <!-- ** Required ** Do not change <id> or <type> -->
       <control type="group" id="110">
@@ -48,16 +52,27 @@
             
       </control>
     </control>
-      
-            <control type="label" id="300">
+    
+    <control type="group" id="112">
+      <control type="image" >
+            <description>page header tab icon</description>
+            <posx>20</posx>
+            <posy>2</posy>
+            <width>250</width>
+            <height>40</height>
+            <texture>podnapisi.png</texture>
+            <visible>!Control.IsVisible(111) + !Control.IsVisible(110)</visible>
+      </control>
+    </control>
+      <control type="label" id="300">
         <description>textarea</description>
-        <posx>450</posx>
+        <posx>475</posx>
         <posy>10</posy>
-        <width>170</width>
+        <width>190</width>
         <height>22</height>
+        <font>DefaultFont</font>
         
-        
-        <textcolor>d0FFFFFF</textcolor>
+        <textcolor>white</textcolor>
         <align>right</align>
         
  
@@ -67,29 +82,24 @@
       </control>              
             <control type="label" id="301">
         <description>textarea</description>
-        <posx>523</posx>
+        <posx>550</posx>
         <posy>10</posy>
         <width>140</width>
         <height>22</height>
-       
-        <textcolor>d0FFFFFF</textcolor>
+        <font>DefaultFont</font>
+        <textcolor>white</textcolor>
         
         
-      </control>   
-                    
-                                 
-                                                               
+      </control>                 
       <control type="image">
-            <posx>462</posx>
-            <posy>14</posy>
+            <posx>485</posx>
+            <posy>17</posy>
             <width>54</width>
             <height>14</height>
             <texture>icon_sync.png</texture>
             <visible>True</visible>
                     
         </control>  
-                
-
       <control type="image">
         <posx>15</posx>
         <posy>50</posy>
@@ -103,8 +113,8 @@
         <posy>60</posy>
         <width>630</width>
         <height>40</height>
-        
-        <textcolor>d0FFFFFF</textcolor>
+        <font>DefaultFont</font>
+        <textcolor>white</textcolor>
         <aligny>center</aligny>
         <wrapmultiline>true</wrapmultiline>
       </control>
@@ -120,9 +130,9 @@
         <posx>20</posx>
         <posy>126</posy>
         <width>640</width>
-        <height>348</height>
-        <onleft>120</onleft>
-        <onright>120</onright>
+        <height>528</height>
+        <onleft>1600</onleft>
+        <onright>1600</onright>
         <onup>110</onup>
         <ondown>110</ondown>
         <viewtype label="535">list</viewtype>
@@ -148,13 +158,15 @@
             <posy>-6</posy>
             <width>80</width>
             <height>48</height>
+            <font>DefaultFont</font>
             <aligny>center</aligny>
-            <textcolor>d0FFFFFF</textcolor>
+            <textcolor>white</textcolor>
             <selectedcolor>Selected</selectedcolor>
             <align>left</align>
             <info>ListItem.Label</info>
           </control>
-            <control type="image">
+          
+                      <control type="image">
             <posx>125</posx>
             <posy>16</posy>
             <width>27</width>
@@ -168,13 +180,14 @@
             <posy>-6</posy>
             <width>350</width>
             <height>48</height>
+            <font>DefaultFont</font>
             <aligny>center</aligny>
-            <textcolor>d0FFFFFF</textcolor>
+            <textcolor>white</textcolor>
             <selectedcolor>Selected</selectedcolor>
             <align>left</align>
             <info>ListItem.Label2</info>
           </control>
-          <control type="image">
+                    <control type="image">
             <posx>530</posx>
             <posy>11</posy>
             <width>90</width>
@@ -204,13 +217,15 @@
             <posy>-6</posy>
             <width>80</width>
             <height>48</height>
+            <font>DefaultFont</font>
             <aligny>center</aligny>
-            <textcolor>d0FFFFFF</textcolor>
+            <textcolor>white</textcolor>
             <selectedcolor>Selected</selectedcolor>
             <align>left</align>
             <info>ListItem.Label</info>
           </control>
-            <control type="image">
+          
+                      <control type="image">
             <posx>125</posx>
             <posy>16</posy>
             <width>27</width>
@@ -224,13 +239,13 @@
             <posy>-6</posy>
             <width>350</width>
             <height>48</height>
+            <font>DefaultFont</font>
             <aligny>center</aligny>
-            <textcolor>d0FFFFFF</textcolor>
+            <textcolor>white</textcolor>
             <selectedcolor>Selected</selectedcolor>
             <align>left</align>
             <info>ListItem.Label2</info>
           </control>
-          
                     <control type="image">
             <posx>530</posx>
             <posy>11</posy>
@@ -249,7 +264,7 @@
           <posx>0</posx>
           <posy>0</posy>
           <width>12</width>
-          <height>348</height>
+          <height>528</height>
           <texturesliderbackground border="6">default-scroll_back.png</texturesliderbackground>
           <texturesliderbar border="6">default-scroll_mid.png</texturesliderbar>
           <texturesliderbarfocus border="6">default-scroll_mid.png</texturesliderbarfocus>
@@ -260,9 +275,8 @@
           <visible>Control.IsVisible(120)</visible>
         </control>
       </control>
-      <control type="group" id="110">
-        
-      </control>
+ 
+    
     </control>
   </controls>
 </window>
