@@ -1,142 +1,24 @@
 import sys
 import os
-import xbmcgui
 import xbmc
 import string
-import xbmcplugin
-from xml.dom import minidom
-from xml.dom.minidom import Document
-import platform
+
 __scriptname__ = "OpenSubtitles_OSD"
 __author__ = "Amet"
-__url__ = ""
+__url__ = "http://code.google.com/p/opensubtitles-osd/"
 __svn_url__ = "http://xbmc-scripting.googlecode.com/svn/trunk/scripts/OpenSubtitles_OSD"
 __credits__ = ""
-__version__ = "1.28"
-EXIT_SCRIPT = ( 6, 10, 247, 275, 61467, 216, 257, 61448, )
-CANCEL_DIALOG = EXIT_SCRIPT + ( 216, 257, 61448, )
+__version__ = "1.3"
 
 BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib' ) )
 sys.path.append (BASE_RESOURCE_PATH)
 
 
-import language
-__language__ = language.Language().localized
+
+
+__language__ = xbmc.Language( os.getcwd() ).getLocalizedString
 _ = sys.modules[ "__main__" ].__language__
-
-import unzip
-import globals
-import gui
-from utilities import *
-
-
-
-langugestrings = [ "Albanian","Arabic","Belarusian","Bosnian","Bulgarian","Catalan","Chinese","Croatian","Czech","Danish","Dutch","English","Estonian","Finnish","French","German","Greek","Hebrew","Hindi","Hungarian","Icelandic","Indonesian","Italian","Japanese","Korean","Latvian","Lithuanian","Macedonian","Norwegian","Polish","Portuguese","PortugueseBrazil","Romanian","Russian","SerbianLatin","Slovak","Slovenian","Spanish","Swedish","Thai","Turkish","Ukrainian","Vietnamese"]
-
-
-
-
-#############-----------------Start Def -------------------------###############
-
-
-def setings_menu (langugestrings):
-	
-	dialog = xbmcgui.Dialog()
-	langugestrings.append('last item')
-	selected1 = dialog.select((_( 503 ) + " 1"), langugestrings)
-	selected2 = dialog.select((_( 503 ) + " 2"), langugestrings)
-	if not (langugestrings[selected1] == "last item") and not (langugestrings[selected2] == "last item") :
-		##dialog.ok("Language Selection", "You Have Selected" + " " + langugestrings[selected1] + " and " + langugestrings[selected2])
-		lang1 = langugestrings[selected1]
-		lang2 = langugestrings[selected2]
-	else:
-		dialog.ok( _( 502 ) , _( 500 ))
-		lang1 = "English"
-		lang2 = "English"
-	
-	selected = dialog.yesno("OpenSubtitles_OSD",_( 501 ))
-
-	if selected == 1:
-		path = dialog.browse( 0, "OpenSubtitles_OSD", "files")
-		if path == "":
-			path = "Default_folder"
-	else:
-		path = "Default_folder"
-	
-	dialog = xbmcgui.Dialog()
-	possibleChoices = ["Sublight", "OpenSubtitles"]  
-	choice = dialog.select( _( 505 ) , possibleChoices)
-	if choice == 0:
-		service = "Sublight"
-	if choice == 1:
-		service = "OpenSubtitles"
-		
-	set_lang = "1"
-	save_languages (lang1,lang2, set_lang, path,service)
-	return lang1,lang2, path ,service
-
-
-
-def get_languages ():
-	lang1 = ""
-	lang2 = ""
-	lang =  os.path.join( os.getcwd(), 'resources' , "languages.xml")
-	xmldoc = minidom.parse(lang)
-	lang_set = int(xmldoc.getElementsByTagName("lang_set")[0].firstChild.data)
-	path = xmldoc.getElementsByTagName("folder")[0].firstChild.data
-	if lang_set == 1:
-		lang1 = xmldoc.getElementsByTagName("language1")[0].firstChild.data
-		lang2 = xmldoc.getElementsByTagName("language2")[0].firstChild.data
-		
-	service = xmldoc.getElementsByTagName("service")[0].firstChild.data
-	return lang1,lang2,lang_set,path,service
-
-
-
-
-def save_languages (lang1,lang2,set_lang,path,service):
-
-	doc = Document()
-
-	wml = doc.createElement("language")
-	doc.appendChild(wml)
-
-	maincard = doc.createElement("card")
-	maincard.setAttribute("id", "main")
-	wml.appendChild(maincard)
-
-	paragraph1 = doc.createElement("language1")
-	maincard.appendChild(paragraph1)
-	ptext = doc.createTextNode(lang1)
-	paragraph1.appendChild(ptext)
-
-	paragraph1 = doc.createElement("language2")
-	maincard.appendChild(paragraph1)
-	ptext = doc.createTextNode(lang2)
-	paragraph1.appendChild(ptext)
-
-	paragraph1 = doc.createElement("lang_set")
-	maincard.appendChild(paragraph1)
-	ptext = doc.createTextNode(set_lang)
-	paragraph1.appendChild(ptext)
-
-	paragraph1 = doc.createElement("folder")
-	maincard.appendChild(paragraph1)
-	ptext = doc.createTextNode(path)
-	paragraph1.appendChild(ptext)
-	
-	paragraph1 = doc.createElement("service")
-	maincard.appendChild(paragraph1)
-	ptext = doc.createTextNode(service)
-	paragraph1.appendChild(ptext)
-	
-	wdoc = doc.toxml()
-
-	lang =  os.path.join( os.getcwd(), 'resources' , "languages.xml")
-	os.remove( lang )
-	file = open(lang,"w") 
-	file.write(wdoc)
-	file.close()
+__settings__ = xbmc.Settings( path=os.getcwd() )
 
 
 
@@ -145,57 +27,61 @@ def save_languages (lang1,lang2,set_lang,path,service):
 try: check = sys.argv
 except:check = ""
 if  check == "" or (xbmc.Player().isPlaying() == False):
-	try: xbmc.Player().stop()
-	except : Check = ""
-	dialog = xbmcgui.Dialog()
-	selected = dialog.yesno("OpenSubtitles_OSD", _( 506 ))
 
-	if selected == 1:
-		setings_menu( langugestrings )
+	import xbmcgui
+	dialog = xbmcgui.Dialog()
+	selected = dialog.ok("OpenSubtitles_OSD", "This script needs to run from OSD" ,"For More Info Visit ", "http://code.google.com/p/opensubtitles-osd/" )
+
 
 
 
 else:
    xbmc.Player().pause()
-   skin = (str(xbmc.getSkinDir()))
-   if ( skin.find( "ransparency" ) > -1 ):
-	skin = "PM3.HD"
-   if ( skin.find( "roject" ) > -1 ):
-	skin = "PM3.HD"
-   if ( skin.find( "Mod" ) > -1 ):
+   skin = "main"
+   skin1 = (str(xbmc.getSkinDir()))
+   if ( skin1.find( "eedia" ) > -1 ):
+	skin = "MiniMeedia"
+   if ( skin1.find( "tream" ) > -1 ):
+	skin = "MediaStream"
+   if ( skin1.find( "edux" ) > -1 ):
 	skin = "MediaStream_Redux"
-   if ( skin.find( "Aeon" ) > -1 ):
+   if ( skin1.find( "Aeon" ) > -1 ):
 	skin = "Aeon"
 
 
 
 ###-------------------Extract Media files -----------------------------------################
-   un = unzip.unzip()
-   mediafolder = os.path.join("special://home/scripts/", __scriptname__ ,"resources","skins" , skin , "media" )
-   mediaflags = os.path.join("special://home/scripts/", __scriptname__ ,"resources","skins" , skin , "media","flags")
    
-   zip_file = os.path.join("special://home/scripts/", __scriptname__ ,"resources","lib" , "media.zip" )
-
-   if not os.path.exists(mediafolder):	
+   mediafolder = os.path.join("special://home/scripts/", __scriptname__ ,"resources","skins" , "Default" , "media" )
+   
+   if not os.path.exists(mediafolder):
+   
+		import unzip
+		zip_file = os.path.join("special://home/scripts/", __scriptname__ ,"resources","lib" , "media.zip" )
+		un = unzip.unzip()	
 		un.extract_med( zip_file, mediafolder )
+
+###-------------------------- Set Search String and Path string -------------################
 
    if ( __name__ == "__main__" ):
 
 
-###-------------------------- Set Search String and Path string -------------################
 	temp = False
 	search_string = ""
 	path_string = ""
+	from utilities import getMovieTitleAndYear
 	if len( sys.argv ) > 1:
 		tmp_string = sys.argv[1]
 		tmp_string.strip()
 		path_string = tmp_string[tmp_string.find( "[PATH]" ) + len( "[PATH]" ):tmp_string.find( "[/PATH]" )]
 		if ( tmp_string.find( "[MOVIE]" ) > 0 ):
 			search_string1 = tmp_string[tmp_string.find( "[MOVIE]" ) + len( "[MOVIE]" ):tmp_string.find( "[/MOVIE]" )]
-			search_string = getMovieTitleAndYear( search_string1 )
+			search_string, year = getMovieTitleAndYear( search_string1 )
 			tmp_list = search_string.split()
 			search_string = string.join( tmp_list, '+' )
+			
 		elif ( tmp_string.find( "[TV]" ) > 0 ):
+			year = 0
 			search_string = tmp_string[tmp_string.find( "[TV]" ) + len( "[TV]" ):tmp_string.find( "[/TV]" )]			
 			tmp_list = search_string.split()
 			tmp_string = tmp_list.pop( 0 )
@@ -210,39 +96,37 @@ else:
 				search_string = search_string + "E" + tmp_string
 			search_string = string.join( tmp_list, '+' ) + "+" + search_string 
 	search_string = os.path.splitext(search_string)[0]
+	search_string = search_string.replace(".","+")
 	movieFullPath = xbmc.Player().getPlayingFile()
 	if (movieFullPath.find("http://") > -1 ) or (movieFullPath.find("smb://") > -1 ) or (movieFullPath.find("rar://") > -1 ):
 		temp = True
 
 #### ------------------------------ Get User Languages,Path and Service ---------------------------#####
-	##system = xbmc.getInfoLabel( "System.BuildVersion" )
 
 	
-	lang1,lang2,lang_set,path,service = get_languages ()
+	path = __settings__.getSetting( "subfolder" ) == "true"
 	
-	if lang_set == 0:
-		lang1,lang2,path,service = setings_menu( langugestrings )
+	if not path :
+		sub_folder = xbmc.translatePath(__settings__.getSetting( "subfolderpath" ))
+		if len(sub_folder) < 1 :
+			sub_folder = os.path.dirname( movieFullPath )
+			
 	
-	if not path == "Default_folder":
-		
-		sub_folder = xbmc.translatePath(path)
 	else:
 		if temp:
+			import xbmcgui
 			dialog = xbmcgui.Dialog()
 			sub_folder = dialog.browse( 0, "Choose Subtitle folder", "files")
-			##temp = True
 		else:
 			sub_folder = os.path.dirname( movieFullPath )
 
 #### ------------------------------ Get the main window going ---------------------------#####
-	ui = gui.GUI( "script-OpenSubtitles_OSD-main.xml", os.getcwd(), skin)
-	ui.set_service ( service )
-	ui.set_filepath( movieFullPath )
-	ui.set_searchstring( search_string )
-	ui.set_temp( temp )
-	ui.set_sub_folder( sub_folder )
-	ui.set_lang(lang1,lang2)
-	ui.doModal()
-	xbmc.Player().pause()
-	del ui
+	import gui
 
+	ui = gui.GUI( "script-OpenSubtitles_OSD-"+ skin +".xml" , os.getcwd(), "Default")
+	service_present = ui.set_allparam ( movieFullPath,search_string,temp,sub_folder, year )
+	if service_present > -1 : ui.doModal()
+	if xbmc.getCondVisibility('Player.Paused '):
+		xbmc.Player().pause()
+	del ui
+	sys.modules.clear()
