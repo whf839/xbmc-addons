@@ -370,7 +370,7 @@ class OSDBServer:
 			from hashlib import sha256 as sha256
 		except ImportError:
 			from md5 import md5
-			from sha import sha
+			import sha256
 
 
 		username = __settings__.getSetting( "PNuser" )
@@ -380,12 +380,7 @@ class OSDBServer:
 		hash.update(password)
 		password = hash.hexdigest()
      
-		socket = urllib.urlopen( "http://www.exhibit-a.co.za/XBMC/sha/sha.php?" + str(password) + str(init['nonce']) )
-		result = socket.read()
-		socket.close()
-		xmldoc = minidom.parseString(result)
-		password256 = xmldoc.getElementsByTagName("sha256")[0].firstChild.data
-
+		password256 = sha256.sha256(str(password) + str(init['nonce'])).hexdigest()
 		if str(init['status']) == "200":
 			self.pod_session = init['session']
 
