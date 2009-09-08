@@ -72,24 +72,37 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	  self.search_string = latin1_to_ascii(search)
 	  LOG( LOG_INFO, "Search String: [%s]" , self.search_string )
 	  
+	  self.service = ""
 	  self.OS =  __settings__.getSetting( "OS" ) == "true"
-	  if self.OS : self.service = "OpenSubtitles"
+	  if self.OS and ( __settings__.getSetting( "defservice") == "2") : self.service = "OpenSubtitles"
 	  LOG( LOG_INFO, "OS Service : [%s]" , self.OS )
 
 	  self.PN =  __settings__.getSetting( "PN" ) == "true"
 	  self.username = __settings__.getSetting( "PNuser" )
 	  self.password = __settings__.getSetting( "PNpass" )
 	  if self.PN and len(self.username) > 1 and len(self.password) >1 :
-	  	self.service = "Podnapisi"
+	  	if ( __settings__.getSetting( "defservice") == "1"):
+	  		self.service = "Podnapisi"
 	  else:	
 	  	self.PN = False
 	  	
 	  LOG( LOG_INFO, "PN Service : [%s]" , self.PN )
 
 	  self.SL =  __settings__.getSetting( "SL" ) == "true"
-	  if self.SL : self.service = "Sublight"
+	  if self.SL and ( __settings__.getSetting( "defservice") == "0"): self.service = "Sublight"
 	  LOG( LOG_INFO, "SL Service : [%s]" , self.SL )
-	  
+	  if self.service == "" :
+	  	if self.PN and len(self.username) > 1 and len(self.password) >1 :
+	  		
+	  		self.service = "Podnapisi"
+	  	else:	
+	  		self.PN = False
+	  	
+	  	if self.SL:
+	  		self.service = "Sublight"
+	  	if self.OS:
+	  		self.service = "OpenSubtitles"
+	  		
 	  if not self.SL and not self.OS and not self.PN:
 		import xbmcgui
 		dialog = xbmcgui.Dialog()
