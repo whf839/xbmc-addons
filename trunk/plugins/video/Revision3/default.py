@@ -2,8 +2,8 @@
 __scriptname__ = "Revision3"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Revision3"
-__date__ = '15-07-2009'
-__version__ = "1.1"
+__date__ = '11-09-2009'
+__version__ = "1.2"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1.1) Gecko/20090715 Firefox/3.5.1'
@@ -92,7 +92,10 @@ def playVideoA(url,name,plot,cat):
 	date=url
 	date=date.replace('/tzdaily','')
 	date=date.rsplit('/')
-	name=date[10]
+	clip=date[10]
+	clip2=clip.split('.')[0]
+	#name=clip2[:27]+'.'+clip.split('.')[1]+'.'+clip.split('.')[2]
+	name=cat+' '+name.split(' - ')[0]+'.'+clip.split('.')[2]
 	def Download(url,dest):
 			dp = xbmcgui.DialogProgress()
 			dp.create('Downloading',title,'Filename: '+name)
