@@ -10,9 +10,9 @@ import traceback
 from pprint import pprint
 
 __plugin__ = "ListenLiveEU"
-__version__ = '0.2'
+__version__ = '0.3'
 __author__ = 'bootsy [bootsy82@gmail.com]'
-__date__ = '13-07-2009'
+__date__ = '12-09-2009'
 __svn__ = 'http://xbmc-addons.googlecode.com/svn/tags/plugins/music/' + __plugin__
 
 BASE_URL = 'http://www.listenlive.eu'
@@ -242,7 +242,8 @@ def addDirectoryItem(name, url, mode, label2='', infoType="Music", infoLabels = 
 		infoLabels = {"Title": name }
 	
 	liz.setInfo( infoType, infoLabels )
-	u = "%s?url=%s&mode=%s&name=%s" % (sys.argv[0], urllib.quote_plus(url), mode, urllib.quote_plus(name), )
+	#u = "%s?url=%s&mode=%s&name=%s" % (sys.argv[0], urllib.quote_plus(url), mode, urllib.quote_plus(name), )
+	u = "%s?url=%s&mode=%s&name=%s" % (sys.argv[0], urllib.quote_plus(url), mode, urllib.quote_plus(name.encode('utf-8')), )
 	log("%s" % u)
 	return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=isFolder)
 
