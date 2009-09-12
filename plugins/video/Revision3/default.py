@@ -3,16 +3,32 @@ __scriptname__ = "Revision3"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Revision3"
 __date__ = '15-07-2009'
-__version__ = "1.0"
+__version__ = "1.1"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
+HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1.1) Gecko/20090715 Firefox/3.5.1'
+
+def _check_for_update():
+	print "Revision3 v"+__version__
+	url = 'http://code.google.com/p/xbmc-addons/source/browse/trunk/plugins/video/Revision3/default.py'
+	req = urllib2.Request(url)
+	req.add_header('User-Agent', HEADER)
+	f=urllib2.urlopen(req)
+	a=f.read()
+	f.close()
+	ALL = re.compile('<td class="source">__version__ = &quot;(.+?)&quot;<br></td>').findall(a)
+	for link in ALL :
+		if link.find(__version__) != 0:
+			newVersion=link
+			dia = xbmcgui.Dialog()
+			ok = dia.ok("Revision3", 'Updates are available on SVN Repo Installer\n\n'+'Current Version: '+__version__+'\n'+'Update Version: '+newVersion)
 
 def showCategoriesA():
 		quality=xbmcplugin.getSetting('quality')
 		quality=xbmc.getLocalizedString(30000+5+int(quality))
 		url='http://revision3.com/shows/'
 		req = urllib2.Request(url)
-		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5')
+		req.add_header('User-Agent', HEADER)
 		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
@@ -30,46 +46,56 @@ def showCategoriesA():
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 			x=x+1
 
-def showListA(url):
+def showListA(url,name):
+		cat=name
+		print url
 		req = urllib2.Request(url)
-		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5')
+		req.add_header('User-Agent', HEADER)
 		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
-		p=re.compile('<item>(.+?)<title>(.+?)</title>', re.DOTALL)
+		p=re.compile('<item>(.+?)<title>(.+?) - ', re.DOTALL)
 		o=re.compile('<enclosure url="(.+?)"')
 		q=re.compile('<media:thumbnail url="(.+?)"')
 		r=re.compile('<guid isPermaLink="false">(.+?)</guid>')
+		info=re.compile('<content:encoded>\n(.+?)\n      </content:encoded>', re.DOTALL).findall(a)
+		print info
 		time=r.findall(a)
 		match=p.findall(a)
 		URLS=o.findall(a)
 		thumbs=q.findall(a)
 		x=0
 		for title in match:
-			name = match[x][1]
+			name = clean(match[x][1])
 			date=time[x]
 			date=date.rsplit('/', 2)
 			date=date[1]
 			date=date.lstrip('0')
-			name='Episode '+date+' - '+name
-			name = str(int(x+1))+'. '+name
+			title='Episode '+date+' - '+name
+			name = str(int(x+1))+'. '+title
 			url=URLS[x]
-			print url
 			thumb=thumbs[x]
-			li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
-			li.setInfo( type="Video", infoLabels={ "Title": name } )
-			u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
+			li=xbmcgui.ListItem(clean(name), iconImage=thumb, thumbnailImage=thumb)
+			li.setInfo( type="Video", infoLabels={ "Title": clean(name), "Director": 'Revision3', "Studio": 'Revision3', "Genre": cat, "Plot": clean(info[x]) } )
+			u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(title)+"&url="+urllib.quote_plus(url)+"&plot="+urllib.quote_plus(clean(info[x]))+"&cat="+urllib.quote_plus(cat)
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
 			x=x+1
+
+def clean(name):
+	remove=[('&amp;','&'),('&quot;','"'),('&#039;','\''),('\r\n','')]
+	for trash, crap in remove:
+		name=name.replace(trash,crap)
+	return name
 			
-def playVideoA(url, name):
+def playVideoA(url,name,plot,cat):
+	title=name
 	date=url
 	date=date.replace('/tzdaily','')
 	date=date.rsplit('/')
 	name=date[10]
 	def Download(url,dest):
 			dp = xbmcgui.DialogProgress()
-			dp.create('Downloading','',name)
+			dp.create('Downloading',title,'Filename: '+name)
 			urllib.urlretrieve(url,dest,lambda nb, bs, fs, url=url: _pbhook(nb,bs,fs,url,dp))
 	def _pbhook(numblocks, blocksize, filesize, url=None,dp=None):
 			try:
@@ -101,16 +127,19 @@ def playVideoA(url, name):
 		player_type = xbmc.PLAYER_CORE_DVDPLAYER
 	else:
 		player_type = xbmc.PLAYER_CORE_MPLAYER
+	g_thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
+	listitem=xbmcgui.ListItem(title ,iconImage="DefaultVideo.png", thumbnailImage=g_thumbnail)
+	listitem.setInfo( type="Video", infoLabels={ "Title": title, "Director": 'Revision3', "Studio": 'Revision3', "Genre": cat, "Plot": plot } )
 	if (flv_file != None and os.path.isfile(flv_file)):
-		xbmc.Player(player_type).play(str(flv_file))
+		xbmc.Player(player_type).play(str(flv_file),listitem)
 	elif (stream == 'true'):
-		xbmc.Player(player_type).play(str(url))
+		xbmc.Player(player_type).play(str(url),listitem)
 	xbmc.sleep(200)
 
 def showCategories():
 		url='http://revision3.com/shows/'
 		req = urllib2.Request(url)
-		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5')
+		req.add_header('User-Agent', HEADER)
 		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
@@ -130,7 +159,7 @@ def showCategories():
 
 def newShow(url):
 		req = urllib2.Request(url)
-		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5')
+		req.add_header('User-Agent', HEADER)
 		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
@@ -148,11 +177,11 @@ def newShow(url):
 			u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
 			
-def showList(url):
+def showList(url,name):
 		newShow(url)
 		url=url+'/episodes'
 		req = urllib2.Request(url)
-		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5')
+		req.add_header('User-Agent', HEADER)
 		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
@@ -179,10 +208,11 @@ def showList(url):
 			x=x+1
 			y=y+1
 
-def showList2(url):
+def showList2(url,name,plot,cat):
+	title=name
 	quality=xbmcplugin.getSetting('quality')
 	req = urllib2.Request(url)
-	req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5')
+	req.add_header('User-Agent', HEADER)
 	f=urllib2.urlopen(req)
 	a=f.read()
 	f.close()
@@ -201,7 +231,7 @@ def showList2(url):
 	name=date[10]
 	def Download(url,dest):
 			dp = xbmcgui.DialogProgress()
-			dp.create('Downloading','',name)
+			dp.create('Downloading',title,'Filename: '+name)
 			urllib.urlretrieve(url,dest,lambda nb, bs, fs, url=url: _pbhook(nb,bs,fs,url,dp))
 	def _pbhook(numblocks, blocksize, filesize, url=None,dp=None):
 			try:
@@ -233,10 +263,13 @@ def showList2(url):
 		player_type = xbmc.PLAYER_CORE_DVDPLAYER
 	else:
 		player_type = xbmc.PLAYER_CORE_MPLAYER
+	g_thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
+	listitem=xbmcgui.ListItem(title ,iconImage="DefaultVideo.png", thumbnailImage=g_thumbnail)
+	listitem.setInfo( type="Video", infoLabels={ "Title": title, "Director": 'Revision3', "Studio": 'Revision3', "Genre": cat, "Plot": plot } )
 	if (flv_file != None and os.path.isfile(flv_file)):
-		xbmc.Player(player_type).play(str(flv_file))
+		xbmc.Player(player_type).play(str(flv_file),listitem)
 	elif (stream == 'true'):
-		xbmc.Player(player_type).play(str(url))
+		xbmc.Player(player_type).play(str(url),listitem)
 	xbmc.sleep(200)
 
 def get_params():
@@ -278,19 +311,39 @@ try:
         page=int(params["page"])
 except:
         pass
-		
-if mode==None and xbmcplugin.getSetting("episodes") == "false":
-	showCategoriesA()
-elif mode==1 and xbmcplugin.getSetting("episodes") == "false":
-	showListA(url)
-elif mode==2 and xbmcplugin.getSetting("episodes") == "false":
-	playVideoA(url, name)
-if mode==None and xbmcplugin.getSetting("episodes") == "true":
-	showCategories()
-elif mode==1 and xbmcplugin.getSetting("episodes") == "true":
-	showList(url)
-elif mode==2 and xbmcplugin.getSetting("episodes") == "true":
-	showList2(url)
+try:
+        plot=urllib.unquote_plus(params["plot"])
+except:
+        pass
+try:
+		cat=urllib.unquote_plus(params["cat"])
+except:
+        pass
 
+if mode==None:
+	_check_for_update()
+	showCategoriesA()
+	name=''
+elif mode==1:
+	showListA(url,name)
+elif mode==2:
+	playVideoA(url,name,plot,cat)		
+# if mode==None and xbmcplugin.getSetting("episodes") == "false":
+	# _check_for_update()
+	# showCategoriesA()
+	# name=''
+# elif mode==1 and xbmcplugin.getSetting("episodes") == "false":
+	# showListA(url,name)
+# elif mode==2 and xbmcplugin.getSetting("episodes") == "false":
+	# playVideoA(url,name,plot,cat)
+# if mode==None and xbmcplugin.getSetting("episodes") == "true":
+	# showCategories()
+	# name=''
+# elif mode==1 and xbmcplugin.getSetting("episodes") == "true":
+	# showList(url,name)
+# elif mode==2 and xbmcplugin.getSetting("episodes") == "true":
+	showList2(url,name,plot,cat)
+
+xbmcplugin.setPluginCategory(int(sys.argv[1]), name )
 xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
