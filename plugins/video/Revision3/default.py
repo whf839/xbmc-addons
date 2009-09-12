@@ -342,7 +342,7 @@ elif mode==2:
 # elif mode==1 and xbmcplugin.getSetting("episodes") == "true":
 	# showList(url,name)
 # elif mode==2 and xbmcplugin.getSetting("episodes") == "true":
-	showList2(url,name,plot,cat)
+#	showList2(url,name,plot,cat)
 
 xbmcplugin.setPluginCategory(int(sys.argv[1]), name )
 xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )
