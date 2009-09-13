@@ -38,6 +38,7 @@
     
     
     <!-- tarnslate below this line -->
+    <!-- English -->
     <string id="500">You have not selected a valid language.</string>
     <string id="501">Would you like to set a custom subtitles folder?</string>
     <string id="502">Language selection</string>
@@ -79,6 +80,8 @@
   <string id="30109">Search String</string>
   <string id="30110">Manually Enter Search String</string>
     
+    
+    <!-- Optional  -->
   <string id="30201">Albanian</string>
   <string id="30202">Arabic</string>
   <string id="30203">Belarusian</string>
@@ -122,6 +125,9 @@
   <string id="30244">Turkish</string>
   <string id="30245">Ukrainian</string>
   <string id="30246">Vietnamese</string>
+  <string id="30301">Sublight</string>
+  <string id="30302">Podnapisi</string>
+  <string id="30303">OpenSubtitles</string>
   
     
 </strings>

@@ -8,9 +8,10 @@ __author__ = "Amet"
 __url__ = "http://code.google.com/p/opensubtitles-osd/"
 __svn_url__ = "http://xbmc-scripting.googlecode.com/svn/trunk/scripts/OpenSubtitles_OSD"
 __credits__ = ""
-__version__ = "1.32"
+__version__ = "1.33"
 
 BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib' ) )
+
 sys.path.append (BASE_RESOURCE_PATH)
 
 
@@ -20,7 +21,7 @@ __language__ = xbmc.Language( os.getcwd() ).getLocalizedString
 _ = sys.modules[ "__main__" ].__language__
 __settings__ = xbmc.Settings( path=os.getcwd() )
 
-
+print "OpenSubtitles_OSD version[ " +  __version__ +" ]"
 
 #############-----------------Is script runing from OSD?---Reset to Defaults----------------------------###############
 
@@ -36,18 +37,22 @@ if  check == "" or (xbmc.Player().isPlaying() == False):
 
 
 else:
-   xbmc.Player().pause()
+   
    skin = "main"
-   skin1 = (str(xbmc.getSkinDir()))
+   skin1 = str(xbmc.getSkinDir().lower())
+   skin1 = skin1.replace("-"," ")
+   skin1 = skin1.replace("."," ")
+   skin1 = skin1.replace("_"," ")
    if ( skin1.find( "eedia" ) > -1 ):
 	skin = "MiniMeedia"
    if ( skin1.find( "tream" ) > -1 ):
 	skin = "MediaStream"
    if ( skin1.find( "edux" ) > -1 ):
 	skin = "MediaStream_Redux"
-   if ( skin1.find( "Aeon" ) > -1 ):
+   if ( skin1.find( "aeon" ) > -1 ):
 	skin = "Aeon"
-
+   print "Skin Folder: [" + skin1 +"]"
+   print "OpenSubtitles_OSD skin XML: [" + skin +"]"
 
 
 ###-------------------Extract Media files -----------------------------------################
@@ -69,19 +74,21 @@ else:
 	temp = False
 	search_string = ""
 	path_string = ""
-	from utilities import getMovieTitleAndYear
+	year = 0
 	if len( sys.argv ) > 1:
+		#year = 0
 		tmp_string = sys.argv[1]
 		tmp_string.strip()
 		path_string = tmp_string[tmp_string.find( "[PATH]" ) + len( "[PATH]" ):tmp_string.find( "[/PATH]" )]
 		if ( tmp_string.find( "[MOVIE]" ) > 0 ):
+			from utilities import getMovieTitleAndYear
 			search_string1 = tmp_string[tmp_string.find( "[MOVIE]" ) + len( "[MOVIE]" ):tmp_string.find( "[/MOVIE]" )]
 			search_string, year = getMovieTitleAndYear( search_string1 )
 			tmp_list = search_string.split()
 			search_string = string.join( tmp_list, '+' )
 			
 		elif ( tmp_string.find( "[TV]" ) > 0 ):
-			year = 0
+			#year = 0
 			search_string = tmp_string[tmp_string.find( "[TV]" ) + len( "[TV]" ):tmp_string.find( "[/TV]" )]			
 			tmp_list = search_string.split()
 			tmp_string = tmp_list.pop( 0 )
@@ -122,11 +129,10 @@ else:
 
 #### ------------------------------ Get the main window going ---------------------------#####
 	import gui
-
+	if not xbmc.getCondVisibility('Player.Paused') : xbmc.Player().pause()
 	ui = gui.GUI( "script-OpenSubtitles_OSD-"+ skin +".xml" , os.getcwd(), "Default")
 	service_present = ui.set_allparam ( movieFullPath,search_string,temp,sub_folder, year )
 	if service_present > -1 : ui.doModal()
-	if xbmc.getCondVisibility('Player.Paused '):
-		xbmc.Player().pause()
+	if xbmc.getCondVisibility('Player.Paused'): xbmc.Player().pause()
 	del ui
 	sys.modules.clear()

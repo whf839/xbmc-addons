@@ -13,7 +13,7 @@ import time
 import base64
 import zipfile
 import re
-import globals
+#import globals
 from urllib2 import Request, urlopen, URLError, HTTPError
 
 
@@ -43,7 +43,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
     def set_allparam(self, path,search,temp,sub_folder, year):
 	  self.year = year
-	  LOG( LOG_INFO, "Year: [%s]" ,  self.year )
+	  LOG( LOG_INFO, "Year: [%s]" ,  str(self.year) )
 	  	  
 	  lang1 = toScriptLang(__settings__.getSetting( "Language1" ))
 	  lang2 = toScriptLang(__settings__.getSetting( "Language2" ))	  
@@ -120,9 +120,19 @@ class GUI( xbmcgui.WindowXMLDialog ):
 				self.service = "Podnapisi"
 				self.PN = True
 			else:	
-				#import xbmcgui
+				
 				dialog = xbmcgui.Dialog()
-				selected = dialog.ok("OpenSubtitles_OSD", "Podnapisi service requires username and password", "Register at www.podnapisi.net and enter it", "in script settings menu" )
+				selected = dialog.ok("OpenSubtitles_OSD", "Podnapisi service requires username and password", "Register at www.podnapisi.net and enter it", "in script settings menu" )				
+				__settings__.openSettings()
+				self.username = __settings__.getSetting( "PNuser" )
+				self.password = __settings__.getSetting( "PNpass" )
+				if len(self.username) > 1 and len(self.password) >1 :
+					self.PN = True
+					self.service = "Podnapisi"
+					
+				else:
+				
+					return -1	
 				#self.exit_script()
 		LOG( LOG_INFO, "Service : [%s]" , self.service )
 	  
@@ -136,7 +146,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	  if self.PN : self.pos = self.pos +1
 	  service_num = self.pos
 	  if self.mansearch : self.pos = self.pos +1
-	  LOG( LOG_INFO, "Self Pos : [%s]" , self.pos )
+	  #LOG( LOG_INFO, "Self Pos : [%s]" , self.pos )
 	  
 	  self.pause = True
 	  return service_num
@@ -166,7 +176,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
         zf = zipfile.ZipFile(file, "r")
 
         for i, name in enumerate(zf.namelist()):
-            LOG( LOG_INFO, "Zip test: [%s]", name )	
+            #LOG( LOG_INFO, "Zip test: [%s]", name )	
             if not name.endswith('/'):
                 outfile = open(os.path.join(dir, name), 'wb')
                 outfile.write(zf.read(name))
@@ -224,7 +234,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 			self.search_subtitles_pod()
 		
 
-
+###-------------------------- OS search -------------################
 
     def search_subtitles( self ):
         ok = False
@@ -298,6 +308,8 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
 
             movie_title1 = self.search_string.replace("+"," ")
+            
+            if self.year != 0 : movie_title1 = movie_title1 + " (" + self.year + ")"
             self.getControl( STATUS_LABEL ).setLabel(( str( len ( self.osdb_server.subtitles_list ) )) + _( 744 ) + '"' + movie_title1 + '"' )
 	    
             self.setFocus( self.getControl( SUBTITLES_LIST ) )
@@ -307,6 +319,11 @@ class GUI( xbmcgui.WindowXMLDialog ):
             error = _( 634 ) % ( "search_subtitles:" + str ( e ) ) 
             LOG( LOG_ERROR, error )
             return False, error
+
+
+###-------------------------- Podnapisi search   -------------################
+
+
         
     def search_subtitles_pod( self ):
         ok = False
@@ -377,6 +394,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
 
             movie_title1 = self.search_string.replace("+"," ")
+            if self.year != 0 : movie_title1 = movie_title1 + " (" + self.year + ")"
             self.getControl( STATUS_LABEL ).setLabel(   str( len ( self.osdb_server.subtitles_list ) ) + _( 744 ) + '"' + movie_title1 + '"' )
 	    
             self.setFocus( self.getControl( SUBTITLES_LIST ) )
@@ -388,6 +406,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
             return False, error    
     
     
+###-------------------------- Sublight search  -------------################
     
     
     
@@ -488,12 +507,14 @@ class GUI( xbmcgui.WindowXMLDialog ):
 		
 		
 		movie_title1 = self.search_string.replace("+"," ")
+		if self.year != 0 : movie_title1 = movie_title1 + " (" + self.year + ")"
 		self.getControl( STATUS_LABEL ).setLabel( str( len ( self.subtitles ) ) +  _( 744 ) + '"' + movie_title1 + '"' )
 		self.setFocus( self.getControl( SUBTITLES_LIST ) )
 		self.getControl( SUBTITLES_LIST ).selectItem( 0 )
 		LOG( LOG_INFO,"Service "+self.service)
     
     
+###-------------------------- Show control  -------------################
     
     
     def show_control( self, controlId ):
@@ -503,9 +524,12 @@ class GUI( xbmcgui.WindowXMLDialog ):
         try: self.setFocus( self.getControl( controlId + page_control ) )
         except: self.setFocus( self.getControl( controlId ) )
 
+###-------------------------- Sub download OS and Podnapisi  -------------################
+
+
 
     def file_download(self, url, dest):
-		LOG( LOG_INFO, "Link down" + url )
+		LOG( LOG_INFO, "Link download" + url )
 		req = Request(url)
 		f = urlopen(req)
 		local_file = open(dest, "w" + "b")
@@ -541,6 +565,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	    
     
 	    
+###-------------------------- sub download Sublight  -------------################
 
 
 
@@ -668,6 +693,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
             self.exit_script()            
             
 
+###-------------------------- Sub extract OS and Podnapisi  -------------################
 
 	     
     def extract_subtitles(self, filename, form, lang, subName1, subtitle_format, zip_filename, local_path ):
@@ -751,9 +777,9 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 zip = zipfile.ZipFile (zip_filename, "r")
                 i   = 0
                 for zip_entry in zip.namelist():
-                    LOG( LOG_INFO, "Zip [%s]" , self.sub_folder )
+                    #LOG( LOG_INFO, "Zip [%s]" , self.sub_folder )
                     if (zip_entry.find( "srt" ) < 0)  and (zip_entry.find( "sub" ) < 0)  and (zip_entry.find( "txt" )< 0) :
-                		LOG( LOG_INFO, "Brisi " + os.path.join( self.sub_folder, zip_entry ) )
+                		#LOG( LOG_INFO, "Brisi " + os.path.join( self.sub_folder, zip_entry ) )
                 		os.remove ( os.path.join( self.sub_folder, zip_entry ) )
 
                     
@@ -789,6 +815,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
             error = _( 634 ) % ( str ( e ) )
             LOG( LOG_ERROR, error )
             
+###-------------------------- Manual search Keyboard  -------------################
 
 
     def keyboard(self):
@@ -800,7 +827,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 			dir = default.pop()
 		kb = xbmc.Keyboard(dir, 'Enter The Search String', False)
 		
-		LOG( LOG_INFO, "Directory: [%s] " , dir + str(default) )
+		#LOG( LOG_INFO, "Directory: [%s] " , dir + str(default) )
 		text = self.search_string
 		kb.doModal()
 		if (kb.isConfirmed()):
@@ -810,10 +837,17 @@ class GUI( xbmcgui.WindowXMLDialog ):
     		LOG( LOG_INFO, "Keyboard Entry: [%s]" ,  self.search_string )
     		self.manuall = True
 		self.connect()
+
+###-------------------------- Exit script  -------------################
+
     		
     def exit_script( self, restart=False ):
 
         self.close()
+
+###-------------------------- Click  -------------################
+
+
 
     def onClick( self, controlId ):
 
@@ -1024,10 +1058,13 @@ class GUI( xbmcgui.WindowXMLDialog ):
 				if self.service == "Podnapisi":
 					self.download_subtitles( (self.getControl( SUBTITLES_LIST ).getSelectedPosition())  ) 										   					
 	
+###-------------------------- On Focus  -------------################
  
     
     def onFocus( self, controlId ):
     	self.controlId = controlId
+
+###-------------------------- "Esc" , "Back" button  -------------################
 	
 def onAction( self, action ):
 	if ( action.getButtonCode() in CANCEL_DIALOG ):

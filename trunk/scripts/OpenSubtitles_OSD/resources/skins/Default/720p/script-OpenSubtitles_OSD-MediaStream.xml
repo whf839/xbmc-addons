@@ -18,7 +18,7 @@
         <posy>-20</posy>
         <width>690</width>
         <height>520</height>
-        <texture border="23">default-panel.png</texture>
+        <texture border="23">default-panel1.png</texture>
       </control>
 
       <!-- ** Required ** Do not change <id> or <type> -->

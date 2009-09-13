@@ -3,7 +3,7 @@ import os
 import xmlrpclib
 import urllib, urllib2
 import unzip
-import globals
+#import globals
 from xml.dom import minidom  
 from utilities import *
 import socket
@@ -18,8 +18,8 @@ BASE_URL_SEARCH_ALL = u"http://www.opensubtitles.com/en/search/sublanguageid-%s/
 BASE_URL_SEARCH_OFFSET = u"http://www.opensubtitles.com/en/search/sublanguageid-%s/moviename-%s/offset-40/simplexml"
 BASE_URL_DOWNLOAD = u"http://dev.opensubtitles.org/%s"
 BASE_URL_SEARCH_HASH = u"http://www.opensubtitles.com/en/search/sublanguageid-%s/moviebytesize-%s/moviehash-%s/simplexml"
-def compare_columns(a, b):
-        return cmp( a["language_name"], b["language_name"] )  or cmp( b["sync"], a["sync"] ) 
+def compare_columns(b,a):
+        return cmp( b["language_name"], a["language_name"] )  or cmp( a["sync"], b["sync"] ) 
 
 class OSDBServer:
     def Create(self):
@@ -136,7 +136,7 @@ class OSDBServer:
 				
 ###-------------------------- Opensubtitles Alternative Hash -------------################				
 		else: 
-			LOG( LOG_INFO, "Searching subtitles by AltHash for ")
+			#LOG( LOG_INFO, "Searching subtitles by AltHash for ")
 
 			search_url = BASE_URL_SEARCH_HASH % ( language, size, hash )
 			search_url.replace( " ", "+" )
@@ -211,7 +211,7 @@ class OSDBServer:
 			search_url = "http://www.opensubtitles.com/en/search/sublanguageid-" + lang2 +"/moviename-" + name+"/offset-40/simplexml"
 		else:
 			search_url = "http://www.opensubtitles.com/en/search/sublanguageid-" + lang2 +"/moviename-" + name+"/simplexml"
-		LOG( LOG_INFO, search_url )
+		#LOG( LOG_INFO, search_url )
 
 		socket = urllib.urlopen( search_url )
 		result = socket.read()
@@ -255,7 +255,7 @@ class OSDBServer:
 				
 
 				self.subtitles_alt_list.append({'filename':filename,'link':link,'language_name':lang_name,'language_id':lang_id,'language_flag':flag_image,'movie':movie,"ID":subtitle_id,"rating":str( int( rating[0] ) ),"format":format,"sync":False, "no_files":no_files})
-			self.subtitles_list.append ( self.subtitles_alt_list )
+			#self.subtitles_list.append ( self.subtitles_alt_list )
 
 			message =  str( len ( self.subtitles_hash_list )  ) + " subtitles found"
 			LOG( LOG_INFO, message )
@@ -327,7 +327,7 @@ class OSDBServer:
 				
 					
 				self.subtitles_name_list.append({'filename':filename,'link':link,'language_name':lang_name,'language_id':lang_id,'language_flag':flag_image,'movie':movie,"ID":subtitle_id,"rating":str( int( rating[0] ) ),"format":format,"sync":False, "no_files":no_files})
-			self.subtitles_list.append ( self.subtitles_name_list )
+			#self.subtitles_list.append ( self.subtitles_name_list )
 
 			message =  str( len ( self.subtitles_hash_list )  ) + " subtitles found"
 			LOG( LOG_INFO, message )
@@ -413,8 +413,16 @@ class OSDBServer:
 					else:								
 						flag_image = "-.gif"
 					link = 	"http://www.podnapisi.net/ppodnapisi/download/i/" + str(item["id"])
-
-					self.subtitles_hash_list.append({'filename':title,'link':link,"language_name":toOpenSubtitles_fromtwo(item["lang"]),"language_flag":flag_image,"language_id":item["lang"],"ID":item["id"],"sync":item["inexact"], "format":"srt", "rating":"0"})
+					rating = int(item['rating'])*2
+					name = item['release']
+					if name == "" : name = title 
+					
+					if item["inexact"]:
+						sync1 = False
+					else:
+						sync1 = True	
+					LOG( LOG_INFO, str(item["inexact"]) )	
+					self.subtitles_hash_list.append({'filename':name,'link':link,"language_name":toOpenSubtitles_fromtwo(item["lang"]),"language_flag":flag_image,"language_id":item["lang"],"ID":item["id"],"sync":sync1, "format":"srt", "rating": str(rating) })
 
 
 				message =  str( len ( self.subtitles_hash_list )  ) + " subtitles found"

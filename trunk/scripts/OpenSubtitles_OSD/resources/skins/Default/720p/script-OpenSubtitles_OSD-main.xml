@@ -16,7 +16,7 @@
         <posy>0</posy>
         <width>690</width>
         <height>600</height>
-        <texture border="40">default-panel.png</texture>
+        <texture border="40">default-panel1.png</texture>
       </control>
       <!-- ** Required ** Do not change <id> or <type> -->
       <control type="group" id="110">
