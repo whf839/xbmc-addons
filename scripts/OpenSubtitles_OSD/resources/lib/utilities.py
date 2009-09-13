@@ -127,7 +127,7 @@ def getMovieTitleAndYear( filename ):
     # if there are no spaces, start making beginning from dots...
     if name.find(' ') == -1:
         name = name.replace('.', ' ')
-    if name.find(' ') == -1:
+    if name.find('-') == -1:
         name = name.replace('-', ' ')
     
     # remove extra and duplicate spaces!
