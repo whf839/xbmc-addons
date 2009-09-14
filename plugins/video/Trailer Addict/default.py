@@ -3,8 +3,8 @@ __scriptname__ = "Trailer Addict"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Trailer%20Addict"
-__date__ = '2009-06-30'
-__version__ = "1.5"
+__date__ = '2009-09-14'
+__version__ = "1.5.1"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1) Gecko/20090624 Firefox/3.5'
@@ -49,11 +49,11 @@ def showList(url, name):
 	a=f.read()
 	f.close()
 	image=re.compile('<center>\r\n<div style="background:url\((.*?)\);" class="searchthumb">',re.DOTALL).findall(a)
-	link_title=re.compile('</div><a href="/tags/(.+?)">(.+?)</a><br />').findall(a)
-	date=re.compile('<span style="font-size:7pt;">(.+?)</span><br /><br />').findall(a)
-	director=re.compile('<span style="color:#6D7D31;">Director:</span> (.+?)<br />').findall(a)
-	writer=re.compile('<span style="color:#6D7D31;">Writer:</span> (.+?)<br />').findall(a)
-	cast=re.compile('<span style="color:#6D7D31;">Condensed Cast:</span> (.+?)<br />').findall(a)
+	link_title=re.compile('</div><a href="/tags/(.*?)">(.*?)</a><br />').findall(a)
+	date=re.compile('<span style="font-size:7pt;">(.*?)</span><br /><br />').findall(a)
+	director=re.compile('<span style="color:#6D7D31;">Director:</span> (.*?)<br />').findall(a)
+	writer=re.compile('<span style="color:#6D7D31;">Writer:</span> (.*?)<br />').findall(a)
+	cast=re.compile('<span style="color:#6D7D31;">Condensed Cast:</span> (.*?)<br />').findall(a)
 	if len(link_title) == 0:
 		dialog = xbmcgui.Dialog()
 		ok = dialog.ok('Trailer Addict', 'Your search - '+name+' - did not match any documents.\nMake sure all words are spelled correctly\nor try different keywords.')
@@ -67,7 +67,7 @@ def showList(url, name):
 		name = clean(title)
 		item=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
 		year=re.compile('[0-9][0-9][0-9][0-9]').findall(date[item_count])
-		item.setInfo( type="Video", infoLabels={ "Title": clean(title), "Year": int(year[0]), "Director": director[item_count], "Writer": writer[item_count], "Cast": cast[item_count].split( ",  " ) } )
+		item.setInfo( type="Video", infoLabels={ "Title": clean(title), "Year": int(year[0]), "Director": director[item_count], "Writer": writer[item_count], "Cast": cast[item_count].split( ", " ) } )
 		u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(clean(title))+"&url="+urllib.quote_plus(url)
 		xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=item,isFolder=True)
 		item_count=item_count+1
