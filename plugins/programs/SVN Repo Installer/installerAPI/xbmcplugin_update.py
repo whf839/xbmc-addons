@@ -20,7 +20,7 @@ from xbmcplugin_lib import *
 
 # Script constants
 __plugin__ = sys.modules["__main__"].__plugin__
-__date__ = '19-06-2009'
+__date__ = '14-09-2009'
 log("Module: %s Dated: %s loaded!" % (__name__, __date__))
 
 # check if build is special:// aware - set roots paths accordingly
@@ -256,7 +256,7 @@ class Main:
 
 					# exclude self update from "update all"
 					if "SVN Repo Installer" not in category:
-						updateAllItems.append("?" + url_args)
+						updateAllItems.append("?" + info['download_url'])
 					path = '%s?%s' % ( sys.argv[ 0 ], url_args, )
 				else:
 					verState = "v%s (%s)" % ( svn_ver, xbmc.getLocalizedString( 30015 ), )	# eg. Incompatible

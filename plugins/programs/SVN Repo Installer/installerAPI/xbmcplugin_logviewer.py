@@ -23,7 +23,7 @@ class _Info:
 		self.__dict__.update( kwargs )
 
 __plugin__ = sys.modules["__main__"].__plugin__
-__date__ = '30-06-2009'
+__date__ = '14-09-2009'
 log( "Module: %s Dated: %s loaded!" % (__name__, __date__ ) )
 
 class ChangelogParser:
@@ -50,7 +50,7 @@ class ChangelogParser:
 				base_path = os.path.join( xbmc.translatePath( "special://profile/" ), "plugin_data", "programs", os.path.basename( os.getcwd() ) )
 			# make path
 			if ( not os.path.isdir( base_path ) ):
-				os.path.makedirs( base_path )
+				os.makedirs( base_path )
 			for page in range( self.PAGES ):
 				path = os.path.join( base_path, "%s%d.txt" % ( self.repo, page, ) )
 				# open socket
