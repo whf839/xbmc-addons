@@ -5,8 +5,8 @@ import urllib,urllib2,re,xbmcplugin,xbmcgui,os
 #.nF0
 __plugin__  = "widelec.org"
 __author__  = "pajretX"
-__date__    = "13 August 2009"
-__version__ = "1.37"
+__date__    = "16 September 2009"
+__version__ = "1.37.1"
 
 HOME_DIR = os.getcwd()
 base = "http://www.widelec.org/"
@@ -93,7 +93,7 @@ def FOTKI(url):
                                 response=urllib2.urlopen(req)
                                 html = response.read()
                                 response.close()
-                                matches=re.compile('<img src="stuff(.+?)">').findall(html)
+                                matches=re.compile('<img src="stuff(.+?)".+?class.+?>').findall(html)
                                 del html
                                 for foto in matches:
                                         addLink("fotka",base +'stuff/' +foto,'')
@@ -113,7 +113,7 @@ def FOTKI(url):
                                 response=urllib2.urlopen(req)
                                 html = response.read()
                                 response.close()
-                                matches=re.compile('<img src="stuff(.+?)">').findall(html)
+                                matches=re.compile('<img src="stuff(.+?)".+?class.+?>').findall(html)
                                 del html
                                 for foto in matches:
                                         addLink("fotka",base +'stuff/' +foto,'')
@@ -124,7 +124,7 @@ def FOTKI(url):
                 response=urllib2.urlopen(req)
                 link = response.read()
                 response.close()
-                matches=re.compile('<img src="stuff(.+?)">').findall(link)
+                matches=re.compile('<img src="stuff(.+?)".+?class.+?>').findall(link)
                 del link
                 for foto in matches:
                         addLink("fotka",base +'stuff/' +foto,'')
