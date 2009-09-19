@@ -153,17 +153,17 @@ def getMovieTitleAndYear( filename ):
     cutoffs = ['dvdrip', 'dvdscr', 'cam', 'r5', 'limited',
                'xvid', 'h264', 'x264', 'h.264', 'x.264',
                'dvd', 'screener', 'unrated', 'repack', 'rerip', 
-               'proper', '720p', '1080p', '1080i', 'bluray']
+               'proper', '720p', '1080p', '1080i', 'bluray', 'hdtv']
 
     # Clean file name from all kinds of crap...
-    for char in ['[', ']', '_', '(', ')']:
+    for char in ['[', ']', '_', '(', ')','.','-']:
         name = name.replace(char, ' ')
     
     # if there are no spaces, start making beginning from dots...
-    if name.find(' ') == -1:
-        name = name.replace('.', ' ')
-    if name.find(' ') == -1:
-        name = name.replace('-', ' ')
+#    if name.find('.') == -1:
+#        name = name.replace('.', ' ')
+#    if name.find('-') == -1:
+#        name = name.replace('-', ' ')
     
     # remove extra and duplicate spaces!
     name = name.strip()

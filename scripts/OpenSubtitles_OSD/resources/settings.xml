@@ -15,4 +15,6 @@
     <setting id="subfolderpath" type="folder" visible= "eq(-1,false)" enable="eq(-1,false)" source="files" label="30108" default="" />
     <setting type="lsep" label="30109" />
     <setting id="searchstr" type="bool" label="30110" default="false"/>
+    <setting type="lsep" label="Debug Log" />
+    <setting id="debug" type="bool" label="Enable Debug Log" default="false"/>
 </settings>

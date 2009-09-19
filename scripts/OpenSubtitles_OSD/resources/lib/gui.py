@@ -13,8 +13,8 @@ import time
 import base64
 import zipfile
 import re
-#import globals
 from urllib2 import Request, urlopen, URLError, HTTPError
+import unicodedata
 
 
 _ = sys.modules[ "__main__" ].__language__
@@ -25,15 +25,12 @@ __settings__ = xbmc.Settings( path=os.getcwd() )
 STATUS_LABEL = 100
 LOADING_IMAGE = 110
 SUBTITLES_LIST = 120
-OSDB_SERVER = "http://www.opensubtitles.org/xml-rpc"
 
 
 class GUI( xbmcgui.WindowXMLDialog ):
-    ##socket.setdefaulttimeout(10.0) #seconds
 	
     def __init__( self, *args, **kwargs ):
-	
-          
+    	
 	  pass
 	  
 
@@ -41,41 +38,40 @@ class GUI( xbmcgui.WindowXMLDialog ):
     def set_session(self,session_id):
 	  self.session_id = session_id
 
-    def set_allparam(self, path,search,temp,sub_folder, year):
-	  self.year = year
-	  LOG( LOG_INFO, "Year: [%s]" ,  str(self.year) )
+    def set_allparam(self, path,search,temp,sub_folder, year,debug):
+	  self.debug = debug											# debug?
+	  self.year = year 												# Year
 	  	  
-	  lang1 = toScriptLang(__settings__.getSetting( "Language1" ))
-	  lang2 = toScriptLang(__settings__.getSetting( "Language2" ))	  
+	  lang1 = toScriptLang(__settings__.getSetting( "Language1" )) 	# Full language 1
+	  lang2 = toScriptLang(__settings__.getSetting( "Language2" )) 	# Full language 2  
 	  
-	  self.lang1 = toOpenSubtitlesId( lang1 )
-	  self.lang_two1 = toOpenSubtitles_two(lang1)
-	  LOG( LOG_INFO, "Language 1: [%s]" ,  self.lang1  )
+	  self.lang1 = toOpenSubtitlesId( lang1 )						# 2 letter language 1
+	  self.lang_two1 = toOpenSubtitles_two(lang1)					# 3 letter language 1
 	  
-	  self.lang2 = toOpenSubtitlesId( lang2 )
-	  self.lang_two2 = toOpenSubtitles_two(lang2)
-	  LOG( LOG_INFO, "Language 2: [%s]" ,  self.lang2  )
+	  
+	  self.lang2 = toOpenSubtitlesId( lang2 )						# 3 letter language 2
+	  self.lang_two2 = toOpenSubtitles_two(lang2)					# 3 letter language 2
+	  
 	  	  
-	  self.sub_folder = sub_folder
-	  LOG( LOG_INFO, "Subtitle Folder: [%s]" ,  self.sub_folder )
+	  self.sub_folder = sub_folder									# Subtitle download folder
 	  
-	  self.file_original_path = path
+	  self.file_original_path = path								# Movie Path
 	  if not (path.find("special://") > -1 ):
 		self.file_path = path[path.find(os.sep):len(path)]
 	  else:
 		self.file_path = path
-	  LOG( LOG_INFO, "File Path: [%s]" ,  self.file_path )
 	  
-	  self.set_temp = temp
-	  LOG( LOG_INFO, "Temp?: [%s]" ,  self.set_temp )
-	          
-	  self.search_string = latin1_to_ascii(search)
-	  LOG( LOG_INFO, "Search String: [%s]" , self.search_string )
-	  
+	  self.set_temp = temp											
+  
+	  self.search_string1 = unicode(search, 'utf-8')				# de-accent Search String
+	  self.search_string = unicodedata.normalize('NFKD', unicode(self.search_string1)).encode('ascii','ignore')
+
+
+#### ---------------------------- Set Service ----------------------------###	  
+
 	  self.service = ""
 	  self.OS =  __settings__.getSetting( "OS" ) == "true"
 	  if self.OS and ( __settings__.getSetting( "defservice") == "2") : self.service = "OpenSubtitles"
-	  LOG( LOG_INFO, "OS Service : [%s]" , self.OS )
 
 	  self.PN =  __settings__.getSetting( "PN" ) == "true"
 	  self.username = __settings__.getSetting( "PNuser" )
@@ -86,11 +82,10 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	  else:	
 	  	self.PN = False
 	  	
-	  LOG( LOG_INFO, "PN Service : [%s]" , self.PN )
 
 	  self.SL =  __settings__.getSetting( "SL" ) == "true"
 	  if self.SL and ( __settings__.getSetting( "defservice") == "0"): self.service = "Sublight"
-	  LOG( LOG_INFO, "SL Service : [%s]" , self.SL )
+
 	  if self.service == "" :
 	  	if self.PN and len(self.username) > 1 and len(self.password) >1 :
 	  		
@@ -133,12 +128,12 @@ class GUI( xbmcgui.WindowXMLDialog ):
 				else:
 				
 					return -1	
-				#self.exit_script()
-		LOG( LOG_INFO, "Service : [%s]" , self.service )
-	  
-	  self.mansearch =  __settings__.getSetting( "searchstr" ) == "true"
-	  LOG( LOG_INFO, "Manual Search : [%s]" , self.mansearch )
-	  
+
+#### ---------------------------- end set Service ----------------------------###	  
+
+
+	  self.mansearch =  __settings__.getSetting( "searchstr" ) == "true" # Manual search string??
+
 	  self.pos = -1
 	  	  
 	  if self.SL : self.pos = self.pos +1
@@ -146,17 +141,37 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	  if self.PN : self.pos = self.pos +1
 	  service_num = self.pos
 	  if self.mansearch : self.pos = self.pos +1
-	  #LOG( LOG_INFO, "Self Pos : [%s]" , self.pos )
 	  
-	  self.pause = True
+	  
+	  if self.debug : ## Debug?
+	  	  
+		  LOG( LOG_INFO, "Manual Search : [%s]" , self.mansearch )
+		  LOG( LOG_INFO, "Service : [%s]" , self.service )
+		  LOG( LOG_INFO, "SL Service : [%s]" , self.SL )
+		  LOG( LOG_INFO, "PN Service : [%s]" , self.PN )
+		  LOG( LOG_INFO, "OS Service : [%s]" , self.OS )
+		  LOG( LOG_INFO, "Search String: [%s]" , self.search_string )
+		  LOG( LOG_INFO, "Temp?: [%s]" ,  self.set_temp )
+		  LOG( LOG_INFO, "File Path: [%s]" ,  self.file_path )
+		  LOG( LOG_INFO, "Year: [%s]" ,  str(self.year) )
+		  LOG( LOG_INFO, "Subtitle Folder: [%s]" ,  self.sub_folder )
+		  LOG( LOG_INFO, "Language 1: [%s]" ,  self.lang1  )
+		  LOG( LOG_INFO, "Language 2: [%s]" ,  self.lang2  )
+		  	  
+	  
 	  return service_num
+	  
+	  
+
+#### ---------------------------- End Set All ----------------------------###
+
 
     def set_filehash( self, hash ):
-        LOG( LOG_INFO, "File Hash: [%s]" , ( hash ) )
+        if self.debug : LOG( LOG_INFO, "File Hash: [%s]" , ( hash ) )
         self.file_hash = hash
 
     def set_filesize( self, size ):
-        LOG( LOG_INFO, "File Size: [%s]" , ( size ) )
+        if self.debug : LOG( LOG_INFO, "File Size: [%s]" , ( size ) )
         self.file_size = size
 
 
@@ -164,30 +179,14 @@ class GUI( xbmcgui.WindowXMLDialog ):
         self.subtitles = subtitles
 
     def onInit( self ):
-
-
-	LOG( LOG_INFO, "onInit" )
-        self.setup_all()
+		if self.debug : LOG( LOG_INFO, "onInit" )
+		self.setup_all()
 
 	    
-    def extract(self, file, dir):
-    
-
-        zf = zipfile.ZipFile(file, "r")
-
-        for i, name in enumerate(zf.namelist()):
-            #LOG( LOG_INFO, "Zip test: [%s]", name )	
-            if not name.endswith('/'):
-                outfile = open(os.path.join(dir, name), 'wb')
-                outfile.write(zf.read(name))
-                outfile.flush()
-                outfile.close()    
-    
-    
     
     def setup_all( self ):
 
-    
+        
         self.getControl( 300 ).setLabel( _( 601 ) )
         self.getControl( 301 ).setLabel( _( 602 ) )
         self.setup_variables()
@@ -202,17 +201,15 @@ class GUI( xbmcgui.WindowXMLDialog ):
         	self.set_xbox = False
         else:
         	self.set_xbox = True
-        LOG( LOG_INFO, "XBOX System: [%s]" ,  xbox )	
+        if self.debug : LOG( LOG_INFO, "XBOX System: [%s]" ,  xbox )	
         self.controlId = -1
-        self.allow_exception = False
         self.osdb_server = OSDBServer()
-        self.osdb_server.Create()
         self.manuall = False
     
     
     def connect( self ):
 		self.getControl( SUBTITLES_LIST ).reset()
-		self.osdb_server.Create()
+		self.osdb_server.Create(self.debug)
 
 		if self.service == "OpenSubtitles":
 			self.getControl( 111 ).setVisible( False )
@@ -237,173 +234,180 @@ class GUI( xbmcgui.WindowXMLDialog ):
 ###-------------------------- OS search -------------################
 
     def search_subtitles( self ):
-        ok = False
-	ok2 = False
-	ok3 = False
-	msg = ""
 
-	self.getControl( STATUS_LABEL ).setLabel( xbmc.getLocalizedString( 646 ) )	
-
-	try:
-            if not self.file_original_path.find("http") > -1 and not self.set_xbox :
-                LOG( LOG_INFO, "Search by hash " +  os.path.basename( self.file_original_path ) )
-                self.getControl( STATUS_LABEL ).setLabel( _( 642 ) % ( "...", ) )
-                self.set_filehash ( hashFile( self.file_original_path ) )
-                self.set_filesize ( os.path.getsize( self.file_original_path ) )    
-                try : ok,msg = self.osdb_server.searchsubtitles( self.search_string, self.file_hash,self.file_size,self.lang1,self.lang2,self.year )
-                except: self.connected = False
-                if not ok:
-                	self.connected = False
-                LOG( LOG_INFO, "Hash Search: " + msg )
-                        
-            if not self.connected or (len ( self.osdb_server.subtitles_hash_list )) < 2:
-                LOG( LOG_INFO,"Search by name " +  self.search_string )
-                self.getControl( STATUS_LABEL ).setLabel( _( 642 ) % ( "......", ) )
-                
-                ok2,msg2 = self.osdb_server.searchsubtitlesbyname( self.search_string, self.lang1 )
-                LOG( LOG_INFO, "Name Search: " + msg2 )
-                
-                ok3,msg3 = self.osdb_server.searchsubtitlesbyname_alt( self.search_string, self.lang2 , self.lang1 )
-                LOG( LOG_INFO, "Name 2 Search: " + msg3 )
-                
-            self.osdb_server.mergesubtitles()
-            if not ok and not ok2 and not ok3:
-                self.getControl( STATUS_LABEL ).setLabel( _( 634 ) % ( msg, ) )
-                
-            if self.osdb_server.subtitles_list:
-                label = ""
-                label2 = "[COLOR=FFFF0000]%s[/COLOR]" % (  _( 610 ) + "Sublight.si" )
-                listitem = xbmcgui.ListItem( label,label2 )
-                if self.SL : self.getControl( SUBTITLES_LIST ).addItem( listitem )
-                label2 = "[COLOR=FFFF0000]%s[/COLOR]" % (  _( 610 ) + "Podnapisi.net" )
-                listitem = xbmcgui.ListItem( label,label2 )
-                if self.PN : self.getControl( SUBTITLES_LIST ).addItem( listitem )
-                label2 = "[COLOR=FF00FF00]%s[/COLOR]" % (  _( 612 ) )
-                listitem = xbmcgui.ListItem( label,label2 )
-                if self.mansearch : self.getControl( SUBTITLES_LIST ).addItem( listitem )
-                for item in self.osdb_server.subtitles_list:
+		self.getControl( STATUS_LABEL ).setLabel( xbmc.getLocalizedString( 646 ) )	
+	
+		ok = False
+		msg = ""
+	
+	
+		if self.file_original_path.find("http") > -1  or self.set_xbox : 
+			hash_search = False
+		else:
+			hash_search = True	
+		
+		try:
+	            if hash_search :
+	                if self.debug : LOG( LOG_INFO, "Search by hash and name " +  os.path.basename( self.file_original_path ) )
+	                self.getControl( STATUS_LABEL ).setLabel( _( 642 ) % ( "...", ) )
+	                
+	                self.set_filehash ( hashFile( self.file_original_path ) )
+	                self.set_filesize ( os.path.getsize( self.file_original_path ) )
+	                   
+	                try : ok,msg = self.osdb_server.searchsubtitles( self.search_string, self.file_hash,self.file_size,self.lang1,self.lang2,self.year,hash_search )
+	                except: self.connected = False
+	
+	                if self.debug : LOG( LOG_INFO, "Hash and Name Search: " + msg )
+	                
+	            else: 
+	                if self.debug : LOG( LOG_INFO, "Search by Name " +  os.path.basename( self.file_original_path ) )
+	                self.getControl( STATUS_LABEL ).setLabel( _( 642 ) % ( "...", ) )
+	                 
+	                try : ok,msg = self.osdb_server.searchsubtitles( self.search_string, "000000000" ,"000000000",self.lang1,self.lang2,self.year,hash_search )
+	                except: self.connected = False
+	
+	                if self.debug : LOG( LOG_INFO, "Name Search: " + msg )                
+	                
+	
+	                
+	            self.osdb_server.mergesubtitles()
+	            if not ok:
+	                self.getControl( STATUS_LABEL ).setLabel( _( 634 ) % ( msg, ) )
+	                
+	            if self.osdb_server.subtitles_list:
+		
+	                label = ""
+	                label2 = "[COLOR=FFFF0000]%s[/COLOR]" % (  _( 610 ) + "Sublight.si" )
+	                listitem = xbmcgui.ListItem( label,label2 )
+	                if self.SL : self.getControl( SUBTITLES_LIST ).addItem( listitem )
+	                label2 = "[COLOR=FFFF0000]%s[/COLOR]" % (  _( 610 ) + "Podnapisi.net" )
+	                listitem = xbmcgui.ListItem( label,label2 )
+	                if self.PN : self.getControl( SUBTITLES_LIST ).addItem( listitem )
+	                label2 = "[COLOR=FF00FF00]%s[/COLOR]" % (  _( 612 ) )
+	                listitem = xbmcgui.ListItem( label,label2 )
+	                if self.mansearch : self.getControl( SUBTITLES_LIST ).addItem( listitem )
+	                for item in self.osdb_server.subtitles_list:
+			    
+	                    listitem = xbmcgui.ListItem( label=item["language_name"], label2=item["filename"], iconImage=item["rating"], thumbnailImage=item["language_flag"] )
+	                    
+	
+	                    if item["sync"]:
+	                        listitem.setProperty( "sync", "true" )
+	                    else:
+	                        listitem.setProperty( "sync", "false" )
+	                    self.getControl( SUBTITLES_LIST ).addItem( listitem )
+	            else:
+			    
+						label = ""
+						label2 = "[COLOR=FFFF0000]%s[/COLOR]" % (  _( 610 ) + "Sublight.si" )
+						listitem = xbmcgui.ListItem( label,label2 )
+						if self.SL : self.getControl( SUBTITLES_LIST ).addItem( listitem )
+						label2 = "[COLOR=FFFF0000]%s[/COLOR]" % (  _( 610 ) + "Podnapisi.net" )
+						listitem = xbmcgui.ListItem( label,label2 )
+						if self.PN : self.getControl( SUBTITLES_LIST ).addItem( listitem )
+						label2 = "[COLOR=FF00FF00]%s[/COLOR]" % (  _( 612 ) )
+						listitem = xbmcgui.ListItem( label,label2 )
+						if self.mansearch : self.getControl( SUBTITLES_LIST ).addItem( listitem )
+			    
+	
+	
+	
+	            movie_title1 = self.search_string.replace("+"," ")
+	            
+	            if self.year != 0 and self.year != "" : movie_title1 = movie_title1 + " (" + str(self.year) + ")"
+	            self.getControl( STATUS_LABEL ).setLabel(( str( len ( self.osdb_server.subtitles_list ) )) + _( 744 ) + '"' + movie_title1 + '"' )
 		    
-                    listitem = xbmcgui.ListItem( label=item["language_name"], label2=item["filename"], iconImage=item["rating"], thumbnailImage=item["language_flag"] )
-                    
-
-                    if item["sync"]:
-                        listitem.setProperty( "sync", "true" )
-                    else:
-                        listitem.setProperty( "sync", "false" )
-                    self.getControl( SUBTITLES_LIST ).addItem( listitem )
-            else:
+	            self.setFocus( self.getControl( SUBTITLES_LIST ) )
+	            self.getControl( SUBTITLES_LIST ).selectItem( 0 )
 		    
-					label = ""
-					label2 = "[COLOR=FFFF0000]%s[/COLOR]" % (  _( 610 ) + "Sublight.si" )
-					listitem = xbmcgui.ListItem( label,label2 )
-					if self.SL : self.getControl( SUBTITLES_LIST ).addItem( listitem )
-					label2 = "[COLOR=FFFF0000]%s[/COLOR]" % (  _( 610 ) + "Podnapisi.net" )
-					listitem = xbmcgui.ListItem( label,label2 )
-					if self.PN : self.getControl( SUBTITLES_LIST ).addItem( listitem )
-					label2 = "[COLOR=FF00FF00]%s[/COLOR]" % (  _( 612 ) )
-					listitem = xbmcgui.ListItem( label,label2 )
-					if self.mansearch : self.getControl( SUBTITLES_LIST ).addItem( listitem )
-		    
-
-
-
-            movie_title1 = self.search_string.replace("+"," ")
-            
-            if self.year != 0 : movie_title1 = movie_title1 + " (" + self.year + ")"
-            self.getControl( STATUS_LABEL ).setLabel(( str( len ( self.osdb_server.subtitles_list ) )) + _( 744 ) + '"' + movie_title1 + '"' )
-	    
-            self.setFocus( self.getControl( SUBTITLES_LIST ) )
-            self.getControl( SUBTITLES_LIST ).selectItem( 0 )
-	    
-        except Exception, e:
-            error = _( 634 ) % ( "search_subtitles:" + str ( e ) ) 
-            LOG( LOG_ERROR, error )
-            return False, error
-
+	        except Exception, e:
+	            error = _( 634 ) % ( "search_subtitles:" + str ( e ) ) 
+	            LOG( LOG_ERROR, error )
+	            return False, error
+	
 
 ###-------------------------- Podnapisi search   -------------################
 
 
         
     def search_subtitles_pod( self ):
-        ok = False
-	ok2 = False
-	ok3 = False
-	msg = ""
-	test = 0
-	self.getControl( STATUS_LABEL ).setLabel( _( 646 ) )	
-
-	try:
-            if test == 0 and not self.file_original_path.find("http") > -1 and not self.set_xbox :
-                LOG( LOG_INFO, "Search by hash_pod " +  os.path.basename( self.file_original_path ) )
-                self.getControl( STATUS_LABEL ).setLabel( _( 642 ) % ( "...", ) )
-                self.set_filehash( hashFile( self.file_original_path ) )
-
-                ok,msg = self.osdb_server.searchsubtitles_pod( self.search_string, self.file_hash,self.lang_two1,self.lang_two2 )
-                if not ok:
-                	self.connected = False
-                LOG( LOG_INFO, "Hash Search_pod: " + msg )
-                        
-            if (len ( self.osdb_server.subtitles_hash_list )) < 2:
-                LOG( LOG_INFO,"Search by name_pod" +  self.search_string )
-                self.getControl( STATUS_LABEL ).setLabel( _( 642 ) % ( "......", ) )
-                
-                ok2,msg2 = self.osdb_server.searchsubtitlesbyname_pod( self.search_string, self.lang_two1,self.lang_two2, self.year )
-                LOG( LOG_INFO, "Name Search_pod: " + msg2 )
-                
-                
-            self.osdb_server.mergesubtitles()
-            if not ok and not ok2 and not ok3:
-                self.getControl( STATUS_LABEL ).setLabel( _( 634 ) % ( msg, ) )
-                
-            if self.osdb_server.subtitles_list:
-                label = ""
-                label2 = "[COLOR=FFFF0000]%s[/COLOR]" % (  _( 610 ) + "Sublight.si" )
-                listitem = xbmcgui.ListItem( label,label2 )
-                if self.SL : self.getControl( SUBTITLES_LIST ).addItem( listitem )
-                label2 = "[COLOR=FFFF0000]%s[/COLOR]" % (  _( 610 ) + "OpenSubtitles.org" )
-                listitem = xbmcgui.ListItem( label,label2 )
-                if self.OS : self.getControl( SUBTITLES_LIST ).addItem( listitem )
-                label2 = "[COLOR=FF00FF00]%s[/COLOR]" % (  _( 612 ) )
-                listitem = xbmcgui.ListItem( label,label2 )
-                if self.mansearch : self.getControl( SUBTITLES_LIST ).addItem( listitem )
-                for item in self.osdb_server.subtitles_list:
+		ok = False
+		ok2 = False
+		msg = ""
+		
+		self.getControl( STATUS_LABEL ).setLabel( _( 646 ) )	
+	
+		try:
+	            if not self.file_original_path.find("http") > -1 and not self.set_xbox :
+	                if self.debug : LOG( LOG_INFO, "Search by hash_pod [" +  os.path.basename( self.file_original_path ) + "]" )
+	                self.getControl( STATUS_LABEL ).setLabel( _( 642 ) % ( "...", ) )
+	                self.set_filehash( hashFile( self.file_original_path ) )
+	
+	                ok,msg = self.osdb_server.searchsubtitles_pod( self.search_string, self.file_hash,self.lang_two1,self.lang_two2 )
+	                if not ok:
+	                	self.connected = False
+	                if self.debug : LOG( LOG_INFO, "Hash Search_pod: [" + msg + "]" )
+	                        
+	            if (len ( self.osdb_server.subtitles_hash_list )) < 2:
+	                if self.debug : LOG( LOG_INFO,"Search by name_pod [" +  self.search_string + "]" )
+	                self.getControl( STATUS_LABEL ).setLabel( _( 642 ) % ( "......", ) )
+	                
+	                ok2,msg2 = self.osdb_server.searchsubtitlesbyname_pod( self.search_string, self.lang_two1,self.lang_two2, self.year )
+	                if self.debug : LOG( LOG_INFO, "Name Search_pod: [" + msg2 + "]" )
+	                
+	                
+	            self.osdb_server.mergesubtitles()
+	            if not ok and not ok2:
+	                self.getControl( STATUS_LABEL ).setLabel( _( 634 ) % ( msg, ) )
+	                
+	            if self.osdb_server.subtitles_list:
+	                label = ""
+	                label2 = "[COLOR=FFFF0000]%s[/COLOR]" % (  _( 610 ) + "Sublight.si" )
+	                listitem = xbmcgui.ListItem( label,label2 )
+	                if self.SL : self.getControl( SUBTITLES_LIST ).addItem( listitem )
+	                label2 = "[COLOR=FFFF0000]%s[/COLOR]" % (  _( 610 ) + "OpenSubtitles.org" )
+	                listitem = xbmcgui.ListItem( label,label2 )
+	                if self.OS : self.getControl( SUBTITLES_LIST ).addItem( listitem )
+	                label2 = "[COLOR=FF00FF00]%s[/COLOR]" % (  _( 612 ) )
+	                listitem = xbmcgui.ListItem( label,label2 )
+	                if self.mansearch : self.getControl( SUBTITLES_LIST ).addItem( listitem )
+	                for item in self.osdb_server.subtitles_list:
+			    
+	                    listitem = xbmcgui.ListItem( label=item["language_name"], label2=item["filename"], iconImage=item["rating"], thumbnailImage=item["language_flag"] )
+	                    
+	
+	                    if item["sync"]:
+	                        listitem.setProperty( "sync", "true" )
+	                    else:
+	                        listitem.setProperty( "sync", "false" )
+	                    self.getControl( SUBTITLES_LIST ).addItem( listitem )
+	            else:
+			    
+						label = ""
+						label2 = "[COLOR=FFFF0000]%s[/COLOR]" % (  _( 610 ) + "Sublight.si" )
+						listitem = xbmcgui.ListItem( label,label2 )
+						if self.SL : self.getControl( SUBTITLES_LIST ).addItem( listitem )
+						label2 = "[COLOR=FFFF0000]%s[/COLOR]" % (  _( 610 ) + "OpenSubtitles.org" )
+						listitem = xbmcgui.ListItem( label,label2 )
+						if self.OS : self.getControl( SUBTITLES_LIST ).addItem( listitem )
+						label2 = "[COLOR=FF00FF00]%s[/COLOR]" % (  _( 612 ) )
+						listitem = xbmcgui.ListItem( label,label2 )
+						if self.mansearch : self.getControl( SUBTITLES_LIST ).addItem( listitem )
+			    
+	
+	
+	
+	            movie_title1 = self.search_string.replace("+"," ")
+	            if self.year != 0 and self.year != "" : movie_title1 = movie_title1 + " (" + str(self.year) + ")"
+	            self.getControl( STATUS_LABEL ).setLabel(   str( len ( self.osdb_server.subtitles_list ) ) + _( 744 ) + '"' + movie_title1 + '"' )
 		    
-                    listitem = xbmcgui.ListItem( label=item["language_name"], label2=item["filename"], iconImage=item["rating"], thumbnailImage=item["language_flag"] )
-                    
-
-                    if item["sync"]:
-                        listitem.setProperty( "sync", "true" )
-                    else:
-                        listitem.setProperty( "sync", "false" )
-                    self.getControl( SUBTITLES_LIST ).addItem( listitem )
-            else:
+	            self.setFocus( self.getControl( SUBTITLES_LIST ) )
+	            self.getControl( SUBTITLES_LIST ).selectItem( 0 )
 		    
-					label = ""
-					label2 = "[COLOR=FFFF0000]%s[/COLOR]" % (  _( 610 ) + "Sublight.si" )
-					listitem = xbmcgui.ListItem( label,label2 )
-					if self.SL : self.getControl( SUBTITLES_LIST ).addItem( listitem )
-					label2 = "[COLOR=FFFF0000]%s[/COLOR]" % (  _( 610 ) + "OpenSubtitles.org" )
-					listitem = xbmcgui.ListItem( label,label2 )
-					if self.OS : self.getControl( SUBTITLES_LIST ).addItem( listitem )
-					label2 = "[COLOR=FF00FF00]%s[/COLOR]" % (  _( 612 ) )
-					listitem = xbmcgui.ListItem( label,label2 )
-					if self.mansearch : self.getControl( SUBTITLES_LIST ).addItem( listitem )
-		    
-
-
-
-            movie_title1 = self.search_string.replace("+"," ")
-            if self.year != 0 : movie_title1 = movie_title1 + " (" + self.year + ")"
-            self.getControl( STATUS_LABEL ).setLabel(   str( len ( self.osdb_server.subtitles_list ) ) + _( 744 ) + '"' + movie_title1 + '"' )
-	    
-            self.setFocus( self.getControl( SUBTITLES_LIST ) )
-            self.getControl( SUBTITLES_LIST ).selectItem( 0 )
-	    
-        except Exception, e:
-            error = _( 634 ) % ( "search_subtitles:" + str ( e ) ) 
-            LOG( LOG_ERROR, error )
-            return False, error    
+	        except Exception, e:
+	            error = _( 634 ) % ( "search_subtitles:" + str ( e ) ) 
+	            LOG( LOG_ERROR, error )
+	            return False, error    
     
     
 ###-------------------------- Sublight search  -------------################
@@ -418,8 +422,6 @@ class GUI( xbmcgui.WindowXMLDialog ):
 		session_id = sublightWebService.LogInAnonymous()
 		self.set_session(session_id)
 	
-		videoInfoTag = xbmc.Player().getVideoInfoTag()
-		movie_year  = ( videoInfoTag.getYear(), "" ) [ videoInfoTag.getYear() == 0 ]
 		movie_title = self.search_string.replace ("+"," ")
 	
 		video_hash = ""
@@ -438,6 +440,12 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	
 		season = xbmc.getInfoLabel("VideoPlayer.Season")
 		episode = xbmc.getInfoLabel("VideoPlayer.Episode")
+		epchck = episode.lower()
+		if epchck.find("s") > -1:
+			season = "0"
+			episode = episode.replace("s","")
+			episode = episode.replace("S","")
+		
 		title = xbmc.getInfoLabel("VideoPlayer.TVshowtitle")
 
 	
@@ -451,12 +459,19 @@ class GUI( xbmcgui.WindowXMLDialog ):
 			movie_year = ""
 		else:
 			movie_title = title	
-
-		LOG( LOG_INFO, "Sublight Hash [%s]" , str(video_hash) )
-		LOG( LOG_INFO, "Sublight Language 1: [%s], Language 2: [%s]" , language1 ,language2 )
-		LOG( LOG_INFO, "Sublight Search Title:[%s] , Season:[%s] , Episode:[%s]" , movie_title,season,episode )
+		search_string1 = unicode(movie_title, 'utf-8')
+		movie_title1 = unicodedata.normalize('NFKD', unicode(search_string1)).encode('ascii','ignore')
+		if self.year == 0: 
+			year = ""
+		else:
+			year = str(self.year)
+			
+		if self.debug : 	
+			LOG( LOG_INFO, "Sublight Hash [%s]" , str(video_hash) )
+			LOG( LOG_INFO, "Sublight Language 1: [%s], Language 2: [%s]" , language1 ,language2 )
+			LOG( LOG_INFO, "Sublight Search Title:[%s] , Season:[%s] , Episode:[%s] Year:[%s]" , movie_title1,season,episode,year )
 		self.getControl( STATUS_LABEL ).setLabel( _( 642 ) % ( "......", ) )
-		subtitles = sublightWebService.SearchSubtitles(session_id, video_hash, movie_title, movie_year,season, episode, language2, language1, language3 )
+		subtitles = sublightWebService.SearchSubtitles(session_id, video_hash, movie_title1, year,season, episode, language2, language1, language3 )
 	
 		self.set_subtitles(subtitles)
 	
@@ -507,11 +522,11 @@ class GUI( xbmcgui.WindowXMLDialog ):
 		
 		
 		movie_title1 = self.search_string.replace("+"," ")
-		if self.year != 0 : movie_title1 = movie_title1 + " (" + self.year + ")"
+		if self.year != 0 and self.year != "" : movie_title1 = movie_title1 + " (" + str(self.year) + ")"
 		self.getControl( STATUS_LABEL ).setLabel( str( len ( self.subtitles ) ) +  _( 744 ) + '"' + movie_title1 + '"' )
 		self.setFocus( self.getControl( SUBTITLES_LIST ) )
 		self.getControl( SUBTITLES_LIST ).selectItem( 0 )
-		LOG( LOG_INFO,"Service "+self.service)
+		if self.debug : LOG( LOG_INFO,"Service "+self.service)
     
     
 ###-------------------------- Show control  -------------################
@@ -529,7 +544,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
 
     def file_download(self, url, dest):
-		LOG( LOG_INFO, "Link download" + url )
+		if self.debug : LOG( LOG_INFO, "Link download" + url )
 		req = Request(url)
 		f = urlopen(req)
 		local_file = open(dest, "w" + "b")
@@ -539,7 +554,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
             
 
     def download_subtitles(self, pos):
-        LOG( LOG_INFO, "download_subtitles" )
+        if self.debug : LOG( LOG_INFO, "download_subtitles" )
         self.getControl( STATUS_LABEL ).setLabel(  _( 649 ) )
         if self.osdb_server.subtitles_list:
             
@@ -570,134 +585,138 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
 
     def download_subtitles_sub(self, pos):
-        subtitle_id   =                          self.subtitles[pos][ "subtitleID" ]
-        language      =                          self.subtitles[pos][ "language" ]
-        numberOfDiscs = SublightUtils.toInteger( self.subtitles[pos][ "numberOfDiscs" ] )
- 
-	self.getControl( STATUS_LABEL ).setLabel(  _( 649 ) )
-	sublightWebService = SublightUtils.SublightWebService()
-        ticket_id, download_wait = sublightWebService.GetDownloadTicket(self.session_id, subtitle_id)
-	if ticket_id != "" :
-	    if download_wait > 0 :
-		time.sleep(float(download_wait))
-			
-            xbmc.Player().setSubtitles(xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib','dummy.srt' ) ) )
-            #subs = False
-            #xbmc.Player().setSubtitles("")
-            subtitle_b64_data = sublightWebService.DownloadByID(self.session_id, subtitle_id, ticket_id)
-            base64_file_path = os.path.join(  self.sub_folder, "subtitle.b64" )
-            base64_file      = open(base64_file_path, "wb")
-            base64_file.write( subtitle_b64_data )
-            base64_file.close()
-            
-            base64_file = open(base64_file_path, "r")
-             
-            zip_file_path = os.path.join( self.sub_folder , "subtitle.zip" )
-            zip_file      = open(zip_file_path, "wb")
-                     
-            base64.decode(base64_file, zip_file)
 
-            base64_file.close()
-            zip_file.close()
-
-            filename = ""
-            subtitle_format = "srt"
-            local_path = self.sub_folder
-            zip_filename = zip_file_path
-            sub_filename = os.path.basename( self.file_path )
-            form = "srt"
-            lang = str(toOpenSubtitles_two(language))
-            subtitle_lang = lang
-            subName1 = sub_filename[0:sub_filename.rfind(".")] 
-            if subName1 == "":
-				subName1 = self.search_string.replace("+", " ")
-
-            movie_files     = []
-            number_of_discs = int(numberOfDiscs)
-            if number_of_discs == 1 :
-                movie_files.append(sub_filename)
-            elif number_of_discs > 1 and not self.set_temp:
-
-                regexp = movie_file
-                regexp = regexp.replace( "\\", "\\\\" )
-                regexp = regexp.replace( "^", "\^" )
-                regexp = regexp.replace( "$", "\$" )
-                regexp = regexp.replace( "+", "\+" )
-                regexp = regexp.replace( "*", "\*" )
-                regexp = regexp.replace( "?", "\?" )
-                regexp = regexp.replace( ".", "\." )
-                regexp = regexp.replace( "|", "\|" )
-                regexp = regexp.replace( "(", "\(" )
-                regexp = regexp.replace( ")", "\)" )
-                regexp = regexp.replace( "{", "\{" )
-                regexp = regexp.replace( "}", "\}" )
-                regexp = regexp.replace( "[", "\[" )
-                regexp = regexp.replace( "]", "\]" )
-                regexp = re.sub( "\d+", "\\d+", regexp )
-                regex  = re.compile( regexp, re.IGNORECASE )
-                
-                
-                movie_dir  = os.path.dirname  (self.file_path)
-                movie_file = os.path.basename (self.file_path)
-                
-                files = os.listdir( movie_dir )
-                for file in files :
-                    if regex.match( self.file_path ) != None:
-                        movie_files.append(self.file_path)
-                
-
-                movie_files.sort()
-                
-
-            if not zipfile.is_zipfile( zip_file_path ) :
-
-        	    label = ""
-        	    label2 = "[COLOR=FFFF0000]%s[/COLOR]" % (  _( 610 ) + " OpenSubtitles.org")
-              
-        	    listitem = xbmcgui.ListItem( label,label2 )
-        	    if self.OS : self.getControl( SUBTITLES_LIST ).addItem( listitem )
-        	    label2 = "[COLOR=FFFF0000]%s[/COLOR]" % (  _( 610 ) + " Podnapisi.net")
-        	    listitem = xbmcgui.ListItem( label,label2 )
-        	    if self.PN : self.getControl( SUBTITLES_LIST ).addItem( listitem )
-        	    label2 = "[COLOR=FF00FF00]%s[/COLOR]" % (  _( 612 ) )
-        	    listitem = xbmcgui.ListItem( label,label2 )
-        	    if self.mansearch : self.getControl( SUBTITLES_LIST ).addItem( listitem )
-            else :
-
-                self.getControl( STATUS_LABEL ).setLabel(  _( 652 ) )
-                zip = zipfile.ZipFile (zip_file_path, "r")
-                i   = 0
-                for zip_entry in zip.namelist():
-
-                    file_name = zip_entry
-                    i         = i + 1
-                    if i <= len( movie_files ) :
-                    
-						sub_ext  = os.path.splitext( file_name )[1]
-						sub_name = os.path.splitext( movie_files[i - 1] )[0]
-						if self.set_temp:
-							sub_name = self.search_string.replace("+", " ")
-							
-						file_name = "%s.%s%s" % ( sub_name, subtitle_lang, sub_ext )   
-                    
-                    file_path = os.path.join(self.sub_folder, file_name)
-                    outfile   = open(file_path, "wb")
-                    outfile.write( zip.read(zip_entry) )
-                    outfile.close()
-                zip.close()
-                xbmc.Player().pause()
-                xbmc.Player().setSubtitles(file_path)
-
-            os.remove(base64_file_path)
-            os.remove(zip_file_path)
-            self.exit_script()            
-            
-
+		subtitle_id   =                          self.subtitles[pos][ "subtitleID" ]
+		language      =                          self.subtitles[pos][ "language" ]
+		numberOfDiscs = SublightUtils.toInteger( self.subtitles[pos][ "numberOfDiscs" ] )
+		self.getControl( STATUS_LABEL ).setLabel(  _( 649 ) )
+		sublightWebService = SublightUtils.SublightWebService()
+		ticket_id, download_wait = sublightWebService.GetDownloadTicket(self.session_id, subtitle_id)
+		
+		if ticket_id != "" :
+		    if download_wait > 0 :
+			time.sleep(float(download_wait))
+				
+	            xbmc.Player().setSubtitles(xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib','dummy.srt' ) ) )
+	
+	            subtitle_b64_data = sublightWebService.DownloadByID(self.session_id, subtitle_id, ticket_id)
+	            base64_file_path = os.path.join(  self.sub_folder, "subtitle.b64" )
+	            base64_file      = open(base64_file_path, "wb")
+	            base64_file.write( subtitle_b64_data )
+	            base64_file.close()
+	            
+	            base64_file = open(base64_file_path, "r")
+	             
+	            zip_file_path = os.path.join( self.sub_folder , "subtitle.zip" )
+	            zip_file      = open(zip_file_path, "wb")
+	                     
+	            base64.decode(base64_file, zip_file)
+	
+	            
+	            base64_file.close()
+	            zip_file.close()
+	
+	            filename = ""
+	            subtitle_format = "srt"
+	            local_path = self.sub_folder
+	            zip_filename = zip_file_path
+	            sub_filename = os.path.basename( self.file_path )
+	            form = "srt"
+	            lang = str(toOpenSubtitles_two(language))
+	            subtitle_lang = lang
+	            subName1 = sub_filename[0:sub_filename.rfind(".")] 
+	            if subName1 == "":
+					subName1 = self.search_string.replace("+", " ")
+	
+	            movie_files     = []
+	            number_of_discs = int(numberOfDiscs)
+	            if number_of_discs == 1 :
+	                movie_files.append(sub_filename)
+	            elif number_of_discs > 1 and not self.set_temp:
+	
+	                regexp = movie_file
+	                regexp = regexp.replace( "\\", "\\\\" )
+	                regexp = regexp.replace( "^", "\^" )
+	                regexp = regexp.replace( "$", "\$" )
+	                regexp = regexp.replace( "+", "\+" )
+	                regexp = regexp.replace( "*", "\*" )
+	                regexp = regexp.replace( "?", "\?" )
+	                regexp = regexp.replace( ".", "\." )
+	                regexp = regexp.replace( "|", "\|" )
+	                regexp = regexp.replace( "(", "\(" )
+	                regexp = regexp.replace( ")", "\)" )
+	                regexp = regexp.replace( "{", "\{" )
+	                regexp = regexp.replace( "}", "\}" )
+	                regexp = regexp.replace( "[", "\[" )
+	                regexp = regexp.replace( "]", "\]" )
+	                regexp = re.sub( "\d+", "\\d+", regexp )
+	                regex  = re.compile( regexp, re.IGNORECASE )
+	                
+	                
+	                movie_dir  = os.path.dirname  (self.file_path)
+	                movie_file = os.path.basename (self.file_path)
+	                
+	                files = os.listdir( movie_dir )
+	                for file in files :
+	                    if regex.match( self.file_path ) != None:
+	                        movie_files.append(self.file_path)
+	                
+	
+	                movie_files.sort()
+	                
+	
+	            if not zipfile.is_zipfile( zip_file_path ) :
+	
+	        	    label = ""
+	        	    label2 = "[COLOR=FFFF0000]%s[/COLOR]" % (  _( 610 ) + " OpenSubtitles.org")
+	              
+	        	    listitem = xbmcgui.ListItem( label,label2 )
+	        	    if self.OS : self.getControl( SUBTITLES_LIST ).addItem( listitem )
+	        	    label2 = "[COLOR=FFFF0000]%s[/COLOR]" % (  _( 610 ) + " Podnapisi.net")
+	        	    listitem = xbmcgui.ListItem( label,label2 )
+	        	    if self.PN : self.getControl( SUBTITLES_LIST ).addItem( listitem )
+	        	    label2 = "[COLOR=FF00FF00]%s[/COLOR]" % (  _( 612 ) )
+	        	    listitem = xbmcgui.ListItem( label,label2 )
+	        	    if self.mansearch : self.getControl( SUBTITLES_LIST ).addItem( listitem )
+	            else :
+	
+	                self.getControl( STATUS_LABEL ).setLabel(  _( 652 ) )
+	                zip = zipfile.ZipFile (zip_file_path, "r")
+	                i   = 0
+	                for zip_entry in zip.namelist():
+	
+	                    file_name = zip_entry
+	                    i         = i + 1
+	                    if i <= len( movie_files ) :
+	                    
+							sub_ext  = os.path.splitext( file_name )[1]
+							sub_name = os.path.splitext( movie_files[i - 1] )[0]
+							if self.set_temp:
+								sub_name = self.search_string.replace("+", " ")
+								
+							file_name = "%s.%s%s" % ( sub_name, subtitle_lang, sub_ext )   
+	                    
+	                    file_path = os.path.join(self.sub_folder, file_name)
+	                    outfile   = open(file_path, "wb")
+	                    outfile.write( zip.read(zip_entry) )
+	                    outfile.close()
+	                zip.close()
+	                xbmc.Player().pause()
+	                xbmc.Player().setSubtitles(file_path)
+	            
+	
+	            os.remove(base64_file_path)
+	            os.remove(zip_file_path)
+	            self.exit_script()            
+	            
+	
 ###-------------------------- Sub extract OS and Podnapisi  -------------################
 
 	     
     def extract_subtitles(self, filename, form, lang, subName1, subtitle_format, zip_filename, local_path ):
-        LOG( LOG_INFO, "extract_subtitles" )
+
+        if self.debug : LOG( LOG_INFO, "extract_subtitles" )
+
         self.getControl( STATUS_LABEL ).setLabel(  _( 652 ) )
         xbmc.Player().setSubtitles(xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib','dummy.srt' ) ) )
         
@@ -722,11 +741,14 @@ class GUI( xbmcgui.WindowXMLDialog ):
 			
 	    else:
 	    	self.getControl( STATUS_LABEL ).setLabel( _( 650 ) )
-            LOG( LOG_INFO, _( 631 ) % ( zip_filename, local_path ) )
             un.extract( zip_filename, local_path )
-            LOG( LOG_INFO, _( 644 ) % ( local_path ) )
             self.getControl( STATUS_LABEL ).setLabel( _( 651 ) )
-            LOG( LOG_INFO, "Number of subs in zip:[%s]" ,str(len(files)) )
+
+            if self.debug : 
+            
+            	LOG( LOG_INFO, "Number of subs in zip:[%s]" ,str(len(files)) )
+            	LOG( LOG_INFO, _( 644 ) % ( local_path ) )
+            	LOG( LOG_INFO, _( 631 ) % ( zip_filename, local_path ) )
             
             movie_files     = []
             number_of_discs = 1
@@ -777,13 +799,9 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 zip = zipfile.ZipFile (zip_filename, "r")
                 i   = 0
                 for zip_entry in zip.namelist():
-                    #LOG( LOG_INFO, "Zip [%s]" , self.sub_folder )
                     if (zip_entry.find( "srt" ) < 0)  and (zip_entry.find( "sub" ) < 0)  and (zip_entry.find( "txt" )< 0) :
-                		#LOG( LOG_INFO, "Brisi " + os.path.join( self.sub_folder, zip_entry ) )
                 		os.remove ( os.path.join( self.sub_folder, zip_entry ) )
 
-                    
-                    
                     if ( zip_entry.find( "srt" )  > 0 ) or ( zip_entry.find( "sub" )  > 0 ) or ( zip_entry.find( "txt" )  > 0 ):
                     
 						if i == 0 :
