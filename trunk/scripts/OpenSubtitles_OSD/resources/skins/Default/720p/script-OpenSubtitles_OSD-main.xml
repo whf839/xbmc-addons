@@ -274,9 +274,7 @@
           <visible>Control.IsVisible(120)</visible>
         </control>
       </control>
-      <control type="group" id="110">
-       
-      </control>
+
     </control>
   </controls>
 </window>

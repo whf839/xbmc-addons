@@ -5,8 +5,8 @@
     <posx>0</posx>
     <posy>0</posy>
   </coordinates>
-  <animation effect="fade" end="100" time="500">WindowOpen</animation>
-  <animation effect="fade" end="0" time="500">WindowClose</animation>
+  <animation effect="fade" time="250">WindowOpen</animation>
+  <animation effect="fade" time="250">WindowClose</animation>
 
   <controls>
 
@@ -60,7 +60,7 @@
       </control>
     </control>
       
-            <control type="label" id="300">
+      <control type="label" id="300">
         <description>textarea</description>
         <posx>450</posx>
         <posy>10</posy>
@@ -271,9 +271,7 @@
           <visible>Control.IsVisible(120)</visible>
         </control>
       </control>
-      <control type="group" id="110">
-        
-      </control>
+
     </control>
   </controls>
 </window>

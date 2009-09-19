@@ -118,17 +118,17 @@ def getMovieTitleAndYear( filename ):
     cutoffs = ['dvdrip', 'dvdscr', 'cam', 'r5', 'limited',
                'xvid', 'h264', 'x264', 'h.264', 'x.264',
                'dvd', 'screener', 'unrated', 'repack', 'rerip', 
-               'proper', '720p', '1080p', '1080i', 'bluray']
+               'proper', '720p', '1080p', '1080i', 'bluray', 'hdtv']
 
     # Clean file name from all kinds of crap...
-    for char in ['[', ']', '_', '(', ')']:
+    for char in ['[', ']', '_', '(', ')','.','-']:
         name = name.replace(char, ' ')
     
     # if there are no spaces, start making beginning from dots...
-    if name.find(' ') == -1:
-        name = name.replace('.', ' ')
-    if name.find('-') == -1:
-        name = name.replace('-', ' ')
+#    if name.find('.') == -1:
+#        name = name.replace('.", ' ')
+#    if name.find('-') == -1:
+#        name = name.replace('-", ' ')
     
     # remove extra and duplicate spaces!
     name = name.strip()
@@ -449,41 +449,173 @@ def toScriptLang(id):
         
         
         
+
 def latin1_to_ascii (unicrap):
+    """This takes a UNICODE string and replaces Latin-1 characters with
+        something equivalent in 7-bit ASCII. It returns a plain ASCII string. 
+        This function makes a best effort to convert Latin-1 characters into 
+        ASCII equivalents. It does not just strip out the Latin-1 characters.
+        All characters in the standard 7-bit ASCII range are preserved. 
+        In the 8th bit range all the Latin-1 accented letters are converted 
+        to unaccented equivalents. Most symbol characters are converted to 
+        something meaningful. Anything not converted is deleted.
+    """
+    xlate = {
+     u'\N{ACUTE ACCENT}': "'",
+     u'\N{BROKEN BAR}': "|",
+     u'\N{CEDILLA}': "{cedilla}",
+     u'\N{CENT SIGN}': "{cent}",
+     u'\N{COPYRIGHT SIGN}': "{C}",
+     u'\N{CURRENCY SIGN}': "{currency}",
+     u'\N{DEGREE SIGN}': "{degrees}",
+     u'\N{DIAERESIS}': "{umlaut}",
+     u'\N{DIVISION SIGN}': "/",
+     u'\N{FEMININE ORDINAL INDICATOR}': "{^a}",
+     u'\N{INVERTED EXCLAMATION MARK}': "!",
+     u'\N{INVERTED QUESTION MARK}': "?",
+     u'\N{LATIN CAPITAL LETTER A WITH ACUTE}': "A",
+     u'\N{LATIN CAPITAL LETTER A WITH CIRCUMFLEX}': "A",
+     u'\N{LATIN CAPITAL LETTER A WITH DIAERESIS}': "A",
+     u'\N{LATIN CAPITAL LETTER A WITH GRAVE}': "A",
+     u'\N{LATIN CAPITAL LETTER A WITH RING ABOVE}': "A",
+     u'\N{LATIN CAPITAL LETTER A WITH TILDE}': "A",
+     u'\N{LATIN CAPITAL LETTER AE}': "Ae",
+     u'\N{LATIN CAPITAL LETTER C WITH CEDILLA}': "C",
+     u'\N{LATIN CAPITAL LETTER E WITH ACUTE}': "E",
+     u'\N{LATIN CAPITAL LETTER E WITH CIRCUMFLEX}': "E",
+     u'\N{LATIN CAPITAL LETTER E WITH DIAERESIS}': "E",
+     u'\N{LATIN CAPITAL LETTER E WITH GRAVE}': "E",
+     u'\N{LATIN CAPITAL LETTER ETH}': "Th",
+     u'\N{LATIN CAPITAL LETTER I WITH ACUTE}': "I",
+     u'\N{LATIN CAPITAL LETTER I WITH CIRCUMFLEX}': "I",
+     u'\N{LATIN CAPITAL LETTER I WITH DIAERESIS}': "I",
+     u'\N{LATIN CAPITAL LETTER I WITH GRAVE}': "I",
+     u'\N{LATIN CAPITAL LETTER N WITH TILDE}': "N",
+     u'\N{LATIN CAPITAL LETTER O WITH ACUTE}': "O",
+     u'\N{LATIN CAPITAL LETTER O WITH CIRCUMFLEX}': "O",
+     u'\N{LATIN CAPITAL LETTER O WITH DIAERESIS}': "O",
+     u'\N{LATIN CAPITAL LETTER O WITH GRAVE}': "O",
+     u'\N{LATIN CAPITAL LETTER O WITH STROKE}': "O",
+     u'\N{LATIN CAPITAL LETTER O WITH TILDE}': "O",
+     u'\N{LATIN CAPITAL LETTER THORN}': "th",
+     u'\N{LATIN CAPITAL LETTER U WITH ACUTE}': "U",
+     u'\N{LATIN CAPITAL LETTER U WITH CIRCUMFLEX}': "U",
+     u'\N{LATIN CAPITAL LETTER U WITH DIAERESIS}': "U",
+     u'\N{LATIN CAPITAL LETTER U WITH GRAVE}': "U",
+     u'\N{LATIN CAPITAL LETTER Y WITH ACUTE}': "Y",
+     u'\N{LATIN SMALL LETTER A WITH ACUTE}': "a",
+     u'\N{LATIN SMALL LETTER A WITH CIRCUMFLEX}': "a",
+     u'\N{LATIN SMALL LETTER A WITH DIAERESIS}': "a",
+     u'\N{LATIN SMALL LETTER A WITH GRAVE}': "a",
+     u'\N{LATIN SMALL LETTER A WITH RING ABOVE}': "a",
+     u'\N{LATIN SMALL LETTER A WITH TILDE}': "a",
+     u'\N{LATIN SMALL LETTER AE}': "ae",
+     u'\N{LATIN SMALL LETTER C WITH CEDILLA}': "c",
+     u'\N{LATIN SMALL LETTER E WITH ACUTE}': "e",
+     u'\N{LATIN SMALL LETTER E WITH CIRCUMFLEX}': "e",
+     u'\N{LATIN SMALL LETTER E WITH DIAERESIS}': "e",
+     u'\N{LATIN SMALL LETTER E WITH GRAVE}': "e",
+     u'\N{LATIN SMALL LETTER ETH}': "th",
 
-	xlate={0xc0:'A', 0xc1:'A', 0xc2:'A', 0xc3:'A', 0xc4:'A', 0xc5:'A',
-    	0xc6:'Ae', 0xc7:'C',
-    	0xc8:'E', 0xc9:'E', 0xca:'E', 0xcb:'E',
-    	0xcc:'I', 0xcd:'I', 0xce:'I', 0xcf:'I',
-    	0xd0:'Th', 0xd1:'N',
-    	0xd2:'O', 0xd3:'O', 0xd4:'O', 0xd5:'O', 0xd6:'O', 0xd8:'O',
-    	0xd9:'U', 0xda:'U', 0xdb:'U', 0xdc:'U',
-    	0xdd:'Y', 0xde:'th', 0xdf:'ss',
-    	0xe0:'a', 0xe1:'a', 0xe2:'a', 0xe3:'a', 0xe4:'a', 0xe5:'a',
-    	0xe6:'ae', 0xe7:'c',
-    	0xe8:'e', 0xe9:'e', 0xea:'e', 0xeb:'e',
-    	0xec:'i', 0xed:'i', 0xee:'i', 0xef:'i',
-    	0xf0:'th', 0xf1:'n',
-    	0xf2:'o', 0xf3:'o', 0xf4:'o', 0xf5:'o', 0xf6:'o', 0xf8:'o',
-    	0xf9:'u', 0xfa:'u', 0xfb:'u', 0xfc:'u',
-    	0xfd:'y', 0xfe:'th', 0xff:'y',
-    	0xa1:'!', 0xa2:'{cent}', 0xa3:'{pound}', 0xa4:'{currency}',
-    	0xa5:'{yen}', 0xa6:'|', 0xa7:'{section}', 0xa8:'{umlaut}',
-    	0xa9:'{C}', 0xaa:'{^a}', 0xab:'<<', 0xac:'{not}',
-    	0xad:'-', 0xae:'{R}', 0xaf:'_', 0xb0:'{degrees}',
-    	0xb1:'{+/-}', 0xb2:'{^2}', 0xb3:'{^3}', 0xb4:"'",
-    	0xb5:'{micro}', 0xb6:'{paragraph}', 0xb7:'*', 0xb8:'{cedilla}',
-    	0xb9:'{^1}', 0xba:'{^o}', 0xbb:'>>',
-    	0xbc:'{1/4}', 0xbd:'{1/2}', 0xbe:'{3/4}', 0xbf:'?',
-    	0xd7:'*', 0xf7:'/'
-    	}
+     u'\N{LATIN SMALL LETTER I WITH ACUTE}': "i",
+     u'\N{LATIN SMALL LETTER I WITH CIRCUMFLEX}': "i",
+     u'\N{LATIN SMALL LETTER I WITH DIAERESIS}': "i",
+     u'\N{LATIN SMALL LETTER I WITH GRAVE}': "i",
+     u'\N{LATIN SMALL LETTER N WITH TILDE}': "n",
+     u'\N{LATIN SMALL LETTER O WITH ACUTE}': "o",
+     u'\N{LATIN SMALL LETTER O WITH CIRCUMFLEX}': "o",
+     u'\N{LATIN SMALL LETTER O WITH DIAERESIS}': "o",
+     u'\N{LATIN SMALL LETTER O WITH GRAVE}': "o",
+     u'\N{LATIN SMALL LETTER O WITH STROKE}': "o",
+     u'\N{LATIN SMALL LETTER O WITH TILDE}': "o",
+     u'\N{LATIN SMALL LETTER SHARP S}': "ss",
+     u'\N{LATIN SMALL LETTER THORN}': "th",
+     u'\N{LATIN SMALL LETTER U WITH ACUTE}': "u",
+     u'\N{LATIN SMALL LETTER U WITH CIRCUMFLEX}': "u",
+     u'\N{LATIN SMALL LETTER U WITH DIAERESIS}': "u",
+     u'\N{LATIN SMALL LETTER U WITH GRAVE}': "u",
+     u'\N{LATIN SMALL LETTER Y WITH ACUTE}': "y",
+     u'\N{LATIN SMALL LETTER Y WITH DIAERESIS}': "y",
+     u'\N{LEFT-POINTING DOUBLE ANGLE QUOTATION MARK}': "&lt;&lt;",
+     u'\N{MACRON}': "_",
+     u'\N{MASCULINE ORDINAL INDICATOR}': "{^o}",
+     u'\N{MICRO SIGN}': "{micro}",
+     u'\N{MIDDLE DOT}': "*",
+     u'\N{MULTIPLICATION SIGN}': "*",
+     u'\N{NOT SIGN}': "{not}",
+     u'\N{PILCROW SIGN}': "{paragraph}",
+     u'\N{PLUS-MINUS SIGN}': "{+/-}",
+     u'\N{POUND SIGN}': "{pound}",
+     u'\N{REGISTERED SIGN}': "{R}",
+     u'\N{RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK}': "&gt;&gt;",
+     u'\N{SECTION SIGN}': "{section}",
+     u'\N{SOFT HYPHEN}': "-",
+     u'\N{SUPERSCRIPT ONE}': "{^1}",
+     u'\N{SUPERSCRIPT THREE}': "{^3}",
+     u'\N{SUPERSCRIPT TWO}': "{^2}",
+     u'\N{VULGAR FRACTION ONE HALF}': "{1/2}",
+     u'\N{VULGAR FRACTION ONE QUARTER}': "{1/4}",
+     u'\N{VULGAR FRACTION THREE QUARTERS}': "{3/4}",
+     u'\N{YEN SIGN}': "{yen}"
+    }
 
-	r = ''
-	for i in unicrap:
-		if xlate.has_key(ord(i)):
-			r += xlate[ord(i)]
-		elif ord(i) >= 0x80:
-			pass
-		else:
-			r += i
-	return r        
+
+    r = ''
+    for i in unicrap:
+        print i
+        if xlate.has_key(i):
+            r += xlate[i]
+            print str(xlate[i])
+
+        elif ord(i) >= 0x80:
+            pass
+        else:
+            r += str(i)
+    return r     
+    
+    
+    
+    
+
+
+def htmlStripEscapes(s):
+
+
+    """Replace all html entities (escape sequences) in the string s with their
+    ISO Latin-1 (or bytecode) equivalent.  If no such equivalent can be found
+    then the entity is decomposed into its normal form and the constituent
+    
+    latin characters are retained.  Failing that, the entity is deleted."""
+    i=0
+    import htmlentitydefs
+    import unicodedata
+    
+    while True:
+        i = s.find('&',i)
+        j = s.find(';',i)+1
+        identifier = s[i+1:j-1]
+        if not j==0:
+            replacement = ''
+            if identifier in htmlentitydefs.entitydefs:
+                identifier = htmlentitydefs.entitydefs[identifier]
+                if len(identifier)==1:
+                    replacement = identifier
+                else:
+                    identifier = identifier.strip('&;')
+            if (len(identifier)>1) and (identifier[0] == '#'):
+                identifier = identifier[1:]
+                if identifier[0]=='x':
+                    identifier = int('0'+identifier,16)
+                else:
+                    identifier = int(identifier)
+                if identifier<256:
+                    replacement = chr(identifier)
+                elif identifier<=0xFFFF:
+                    replacement = unicodedata.normalize('NFKD',
+                        unichr(identifier)).encode('latin_1','ignore')
+            s = s[:i] + replacement + s[j:]
+            i += len(replacement)
+        else:
+            break
+    return(s)
+      
