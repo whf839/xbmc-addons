@@ -3,7 +3,7 @@ __scriptname__ = "XBMC Video Plugin"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/ESPN%20Video"
 __date__ = '09-19-2009'
-__version__ = "1.3.1"
+__version__ = "1.3.2"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 THUMBNAIL_PATH = os.path.join(os.getcwd().replace( ";", "" ),'resources','media')
@@ -360,8 +360,7 @@ except:
 
 if mode==None:
 	name=''
-	if xbmcplugin.getSetting("update") == "true":
-		Update(__version__)
+	Update(__version__)
 	showRoot()
 elif mode==1:
 	showList(url, name)
