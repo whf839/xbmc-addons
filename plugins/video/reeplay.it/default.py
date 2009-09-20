@@ -21,10 +21,13 @@ from xml.sax.saxutils import escape
 
 __plugin__ = "reeplay.it"
 __scriptname__ = __plugin__
-__version__ = '1.1'
 __author__ = 'BigBellyBilly [BigBellyBilly@gmail.com]'
-__svn_url__ = "http://xbmc-scripting.googlecode.com/svn/trunk/reeplay.it"
-__date__ = '23-03-2009'
+__url__ = "http://code.google.com/p/xbmc-addons/"
+__svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/reeplay.it"
+__date__ = '20-09-2009'
+__version__ = '1.2'
+__svn_revision__ = "$Revision:$"
+__XBMC_Revision__ = "19001"
 xbmc.output(__plugin__ + " Version: " + __version__ + " Date: " + __date__)
 
 # check if build is special:// aware - set roots paths accordingly
