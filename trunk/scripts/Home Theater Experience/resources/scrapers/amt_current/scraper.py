@@ -13,6 +13,14 @@ import urllib
 from random import shuffle
 from xml.sax.saxutils import unescape
 
+__useragent__ = "QuickTime/7.2 (qtver=7.2;os=Windows NT 5.1Service Pack 3)"
+
+
+class _urlopener( urllib.FancyURLopener ):
+    version = __useragent__
+# set for user agent
+urllib._urlopener = _urlopener()
+
 
 class _Parser:
     """
@@ -92,11 +100,15 @@ class _Parser:
                 xlarge = re.findall( "<xlarge>(.*?)</xlarge>", poster[ 0 ] )
                 location = re.findall( "<location>(.*?)</location>", poster[ 0 ] )
                 poster = xlarge[ 0 ] or location[ 0 ]
+                # add user agent to url
+                poster += "?|User-Agent=%s" % ( urllib.quote_plus( __useragent__ ), )
                 # trailer
                 trailer = re.findall( "<large[^>]*>(.*?)</large>", preview[ 0 ] )[ 0 ]
                 # replace with 1080p if quality == 1080p
                 if ( self.settings[ "trailer_quality" ] == 3 ):
                     trailer = trailer.replace( "a720p.m4v", "h1080p.mov" )
+                # add user agent to url
+                trailer += "?|User-Agent=%s" % ( urllib.quote_plus( __useragent__ ), )
                 # size
                 #size = long( re.findall( "filesize=\"([0-9]*)", preview[ 0 ] )[ 0 ] )
                 # add the item to our media list
