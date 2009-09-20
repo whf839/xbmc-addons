@@ -30,52 +30,50 @@ def showCategoriesC():
 	f=urllib2.urlopen(req)
 	a=f.read()
 	f.close()
-	p=re.compile('<div id="videoPodcasts_page1" style="display: block">(.+?)<div id="featuredvideoPodcasts" class="featured-events">', re.DOTALL)
-	o=re.compile('<a href="(.+?)"><img src="http://a.espncdn.com/i/espnradio/podcast/images/button_rss.gif"')
-	r=re.compile('<img src="(.+?)" width="90"')
-	q=re.compile('<div class="playlist-item"><h4>(.+?)</h4>')
-	title=p.findall(a)
-	urls=o.findall(title[0])
-	thumbs=r.findall(title[0])
-	names=q.findall(title[0])
-	x=0
+	data=re.compile('<a class="expanded" href="#">Category</a>(.+?)<a class="expanded" href="#">Topic</a>', re.DOTALL).findall(a)
+	title=re.compile('<li class="(in)?active {type:\'(.+?)\'}"><a href="#">(.+?)</a></li>').findall(data[0])
 	count=0
-	print thumbs
-	for url in urls:
-		if url != 'http://sports.espn.go.com/espnradio/podcast/index':
-			name1=names[x]
-			name = str(int(count+1))+'. '+name1
-			thumb=thumbs[x]
-			li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
-			u=sys.argv[0]+"?mode=7&name="+urllib.quote_plus(name1)+"&url="+urllib.quote_plus(url)
+	for txt,id,name in title:
+		if name.find('Insider') != 0:
+			url='http://espnradio.espn.go.com/espnradio/format/design09/podcenter/list?type='+id+'&header=true&xhr=1&page='
+			name=name.replace('The Latest','> The Latest')
+			li=xbmcgui.ListItem(name)
+			u=sys.argv[0]+"?mode=7&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 			count=count+1
-		x=x+1
 
 
-def RSS(url):
-		print url
-		req = urllib2.Request(url)
+def RSS(name,url):
+		cat=name
+		thisurl=url
+		req = urllib2.Request(url+str(page+1))
 		req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.6) Gecko/2009011913 Firefox/3.0.6')
 		f=urllib2.urlopen(req)
 		a=f.read()
 		f.close()
-		p=re.compile('<item>(.+?)<title>(.+?)</title>', re.DOTALL)
-		thumbs=re.compile('<url>(.+?)jpg</url>').findall(a)
-		o=re.compile('<enclosure url="http://(.+?)\?prm=(.+?)x(.+?)"')
-		match=p.findall(a)
-		URLS=o.findall(a)
+		titles=re.compile('<h4>(.+?)</h4>').findall(a)
+		thumbs=re.compile('<img alt="Podcast Image" src="(.+?)"/></a>').findall(a)
+		info=re.compile('<h5>(.*?)</h5>', re.DOTALL).findall(a)
+		URLS=re.compile('<a href="http://(.+?)\?prm=(.+?)x(.+?)">Download</a>').findall(a)
+		total=re.compile(',page:(.+?),total:(.+?)}').findall(a)
 		x=0
-		thumb=thumbs[0]+'jpg'
-		for title in match:
-			name1 = clean(match[x][1])
-			name = str(int(x+1))+'. '+name1
+		for title in titles:
+			name1 = clean(title)
 			url=URLS[x][2]
+			if url.find('.mp3') == -1:
+				name = str(int(x+1+10*int(page)))+'. '+name1+' - '+clean(info[x])
+			else:
+				name = str(int(x+1+10*int(page)))+'. '+name1+' (Audio) - '+clean(info[x])
+			thumb=thumbs[x]
 			li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
-			li.setInfo( type="Video", infoLabels={ "Title": name } )
-			u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(name1)+"&url="+urllib.quote_plus(url)+"&plot="+urllib.quote_plus('')+"&cat="+urllib.quote_plus('RSS')
+			li.setInfo( type="Video", infoLabels={ "Title": name, "Plot": clean(info[x]) } )
+			u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(name1)+"&url="+urllib.quote_plus(url)+"&plot="+urllib.quote_plus(clean(info[x]))+"&cat="+urllib.quote_plus('PodCenter')
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
 			x=x+1
+		if int(total[0][0]) != int(total[0][1]):
+			li=xbmcgui.ListItem(xbmc.getLocalizedString( 30004 ),iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'next.png'))
+			u=sys.argv[0]+"?mode=7&name="+urllib.quote_plus(cat)+"&url="+urllib.quote_plus(thisurl)+"&page="+str(int(page)+1)
+			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 		
 def showCategoriesB():
 		url='http://espn.go.com/video/'
@@ -96,7 +94,7 @@ def showCategoriesB():
 			num=num.replace(')','')
 			url='http://espn.go.com/video/beta/libraryPlaylist?categoryid='+num
 			test=info[x][2]
-			test=test.replace('<img src="http://assets.espn.go.com/i/in.gif"> ','')
+			test=test.replace('<img src="http://assets.espn.go.com/i/in.gif">','')
 			name=test[:-4]
 			name=name.replace('(','')
 			if (name=='The Latest'):
@@ -127,7 +125,7 @@ def showCategoriesA():
 			num=num.replace(')','')
 			url='http://espn.go.com/video/beta/libraryPlaylist?categoryid='+num
 			test=info[x][2]
-			test=test.replace('<img src="http://assets.espn.go.com/i/in.gif"> ','')
+			test=test.replace('<img src="http://assets.espn.go.com/i/in.gif">','')
 			name=test[:-3]
 			name=name.replace('(','')
 			if (name=='The Latest'):
@@ -296,7 +294,10 @@ def playVideo(url,name,plot,cat):
 		player_type = xbmc.PLAYER_CORE_MPLAYER
 	g_thumbnail = xbmc.getInfoImage( "ListItem.Thumb" )
 	listitem=xbmcgui.ListItem(title ,iconImage="DefaultVideo.png", thumbnailImage=g_thumbnail)
-	listitem.setInfo( type="Video", infoLabels={ "Title": title, "Director": 'ESPN', "Studio": 'ESPN', "Genre": cat, "Plot": plot } )
+	if url.find('.mp3') == -1:
+		listitem.setInfo( type="Video", infoLabels={ "Title": title, "Director": 'ESPN', "Studio": 'ESPN', "Genre": cat, "Plot": plot } )
+	else:
+		listitem.setInfo( type="Music", infoLabels={ "Title": title, "Artist": cat, "Album": 'ESPN' } )
 	if (flv_file != None and os.path.isfile(flv_file)):
 		xbmc.Player(player_type).play(str(flv_file), listitem)
 	elif (stream == 'true'):
@@ -304,7 +305,7 @@ def playVideo(url,name,plot,cat):
 	xbmc.sleep(200)
 	
 def clean_file(name):
-    remove=[(':',' - '),('\"',''),('|',''),('>',''),('<',''),('?',''),('*','')]
+    remove=[(':',' - '),('\"',''),('|',''),('>',''),('<',''),('?',''),('*',''),('/','')]
     for old, new in remove:
         name=name.replace(old,new)
     return name
@@ -375,7 +376,7 @@ elif mode==5:
 elif mode==6:
 	showCategoriesC()
 elif mode==7:
-	RSS(url)
+	RSS(name,url)
 elif mode==8:
 	showListB(url, name)
 
