@@ -110,7 +110,7 @@ def unicodeToAscii(text, charset='utf8'):
 
 ##############################################################################################################    
 def playMedia(source, li=None):
-	log("> playMedia()")
+	log("> playMedia() source=%s" % source)
 	isPlaying = False
 
 	try:
@@ -123,7 +123,9 @@ def playMedia(source, li=None):
 		isPlaying = xbmc.Player().isPlaying()
 	except:
 		traceback.print_exc()
-		log('xbmc.Player().play() failed trying xbmc.PlayMedia() ')
+
+	if not isPlaying:
+		log('trying executebuiltin xbmc.PlayMedia() ')
 		try:
 			cmd = 'xbmc.PlayMedia(%s)' % source
 			xbmc.executebuiltin(cmd)
