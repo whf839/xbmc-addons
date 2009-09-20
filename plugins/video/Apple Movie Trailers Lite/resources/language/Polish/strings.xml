@@ -45,10 +45,10 @@
   <string id="30601">Wyszukiwanie seansów, proszę czekać...</string>
   <string id="30602">Data</string>
   <string id="30603">Położenie</string>
-  <string id="30700">Standardowe klipy</string>
-  <string id="30701">klipy 480p</string>
-  <string id="30702">klipy 720p</string>
-  <string id="30703">klipy 1080p</string>
+  <string id="30800">Standardowe klipy</string>
+  <string id="30801">klipy 480p</string>
+  <string id="30802">klipy 720p</string>
+  <string id="30803">klipy 1080p</string>
   <string id="30900">Seanse kinowe</string>
   <string id="30910">Pobierz i odtwórz zwiastun</string>
   <string id="30920">Odtwórz zwiastun</string>

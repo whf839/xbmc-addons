@@ -45,10 +45,10 @@
     <string id="30603">Ort</string>
 
     <!-- PluginCategory infolabel -->
-    <string id="30700">Auflösung Standard</string>
-    <string id="30701">Auflösung 480p</string>
-    <string id="30702">Auflösung 720p</string>
-    <string id="30703">Auflösung 1080p</string>
+    <string id="30800">Auflösung Standard</string>
+    <string id="30801">Auflösung 480p</string>
+    <string id="30802">Auflösung 720p</string>
+    <string id="30803">Auflösung 1080p</string>
 
     <!-- context menu labels -->
     <string id="30900">Filmstart im Kino</string>

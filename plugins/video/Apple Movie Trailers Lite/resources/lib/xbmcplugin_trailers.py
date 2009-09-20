@@ -19,6 +19,12 @@ from util import get_filesystem, get_legal_filepath
 from MediaWindow import MediaWindow, DirectoryItem
 
 
+class _urlopener( urllib.FancyURLopener ):
+    version = sys.modules[ "__main__" ].__useragent__
+# set for user agent
+urllib._urlopener = _urlopener()
+
+
 class _Parser:
     """
         Parses an xml document for videos
@@ -85,11 +91,15 @@ class _Parser:
                     poster = xlarge[ 0 ]
                 else:
                     poster = location[ 0 ]
+                # add user agent to url
+                poster += "?|User-Agent=%s" % ( urllib.quote_plus( sys.modules[ "__main__" ].__useragent__ ), )
                 # trailer
                 trailer = re.findall( "<large[^>]*>(.*?)</large>", preview[ 0 ] )[ 0 ]
                 # replace with 1080p if quality == 1080p
                 if ( self.settings[ "quality" ] == "_1080p" ):
                     trailer = trailer.replace( "a720p.m4v", "h1080p.mov" )
+                # add user agent to url
+                trailer += "?|User-Agent=%s" % ( urllib.quote_plus( sys.modules[ "__main__" ].__useragent__ ), )
                 # size
                 size = long( re.findall( "filesize=\"([0-9]*)", preview[ 0 ] )[ 0 ] )
                 # add the item to our media list
@@ -129,28 +139,26 @@ class _Parser:
             dirItem.listitem.setProperty( "releasedate", release_date )
             # get filepath and tmp_filepath
             tmp_path, filepath = get_legal_filepath( video[ "title" ], video[ "trailer" ], 2, self.settings[ "download_path" ], self.settings[ "use_title" ], self.settings[ "use_trailer" ] )
-            # set context menu items
-            items = [ ( xbmc.getLocalizedString( 30900 ), "XBMC.RunPlugin(%s?Fetch_Showtimes=True&title=%s)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "title" ] ) ), ), ) ]
+            # set theater showtimes menu item
+            dirItem.addContextMenuItem( 30900, "XBMC.RunPlugin(%s?Fetch_Showtimes=True&title=%s)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "title" ] ) ), ) )
             # check if trailer already exists if user specified
             if ( self.settings[ "play_existing" ] and os.path.isfile( filepath.encode( "utf-8" ) ) ):
                 dirItem.url = filepath
                 # just add play trailer if trailer exists and user preference to always play existing
-                items += [ ( xbmc.getLocalizedString( 30920 ), "XBMC.PlayMedia(%s)" % ( dirItem.url ), ) ]
+                dirItem.addContextMenuItem( 30920, "XBMC.PlayMedia(%s)" % ( dirItem.url, ) )
             elif ( self.settings[ "play_mode" ] == 0 ):
                 dirItem.url = video[ "trailer" ]
                 # we want both play and download if user preference is to stream
-                items += [ ( xbmc.getLocalizedString( 30910 ), "XBMC.RunPlugin(%s?Download_Trailer=True&trailer_url=%s)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "trailer" ] ) ), ), ) ]
-                items += [ ( xbmc.getLocalizedString( 30920 ), "XBMC.PlayMedia(%s)" % ( dirItem.url ), ) ]
+                dirItem.addContextMenuItem( 30910, "XBMC.RunPlugin(%s?Download_Trailer=True&trailer_url=%s)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "trailer" ] ) ), ) )
+                dirItem.addContextMenuItem( 30920, "XBMC.PlayMedia(%s)" % ( dirItem.url, ) )
             else:
                 dirItem.url = "%s?Download_Trailer=True&trailer_url=%s" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "trailer" ] ) ) )
                 # only add download if user prefernce is not stream
-                items += [ ( xbmc.getLocalizedString( 30910 ), "XBMC.RunPlugin(%s?Download_Trailer=True&trailer_url=%s)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "trailer" ] ) ), ), ) ]
+                dirItem.addContextMenuItem( 30910, "XBMC.RunPlugin(%s?Download_Trailer=True&trailer_url=%s)" % ( sys.argv[ 0 ], urllib.quote_plus( repr( video[ "trailer" ] ) ), ) )
             # add the movie information item
-            items += [ ( xbmc.getLocalizedString( 30930 ), "XBMC.Action(Info)", ) ]
+            dirItem.addContextMenuItem( 30930, "XBMC.Action(Info)" )
             # add settings menu item
-            items += [ ( xbmc.getLocalizedString( 1045 ), "XBMC.RunPlugin(%s?OpenSettings)" % ( sys.argv[ 0 ], ) ) ]
-            # add items to listitem with replaceItems = True so only ours show
-            dirItem.listitem.addContextMenuItems( items, replaceItems=True )
+            dirItem.addContextMenuItem( 1045, "XBMC.RunPlugin(%s?OpenSettings)" % ( sys.argv[ 0 ], ) )
             # add the item to the media list
             return self.MediaWindow.add( dirItem )
         except:
@@ -173,19 +181,16 @@ class Main:
         sortmethods = ( xbmcplugin.SORT_METHOD_LABEL, xbmcplugin.SORT_METHOD_SIZE, xbmcplugin.SORT_METHOD_DATE,
                                  xbmcplugin.SORT_METHOD_VIDEO_RUNTIME, xbmcplugin.SORT_METHOD_VIDEO_YEAR, xbmcplugin.SORT_METHOD_GENRE,
                                  xbmcplugin.SORT_METHOD_MPAA_RATING, xbmcplugin.SORT_METHOD_STUDIO, )
+        # skin buttons
+        buttons = ( ( 1045, "XBMC.RunPlugin(%s?OpenSettings)" % ( sys.argv[ 0 ], ), None, None, 2, ), )
         # helper functions
-        self.MediaWindow = MediaWindow( int( sys.argv[ 1 ] ), category=self.PluginCategory, content="movies", sortmethods=sortmethods, fanart=( self.settings[ "fanart_image" ], self.Fanart, ) )
-        # set plugin buttons
-        self._set_buttons()
+        self.MediaWindow = MediaWindow( int( sys.argv[ 1 ] ), category=self.PluginCategory, content="movies", sortmethods=sortmethods, fanart=( self.settings[ "fanart_image" ], self.Fanart, buttons ) )
         # fetch videos
         self.MediaWindow.end( self.get_videos() )
 
-    def _set_buttons( self ):
-        self.MediaWindow.setButton( 1045, onclick="XBMC.RunPlugin(%s?OpenSettings)" % ( sys.argv[ 0 ], ), bId=2 )
-
     def _get_settings( self ):
         self.settings = {}
-        self.PluginCategory = ( xbmc.getLocalizedString( 30700 ), xbmc.getLocalizedString( 30701 ), xbmc.getLocalizedString( 30702 ), xbmc.getLocalizedString( 30703 ), )[ int( xbmcplugin.getSetting( "quality" ) ) ]
+        self.PluginCategory = ( xbmc.getLocalizedString( 30800 ), xbmc.getLocalizedString( 30801 ), xbmc.getLocalizedString( 30802 ), xbmc.getLocalizedString( 30803 ), )[ int( xbmcplugin.getSetting( "quality" ) ) ]
         self.Fanart = ( "standard", "480p", "720p", "1080p", )[ int( xbmcplugin.getSetting( "quality" ) ) ]
         self.settings[ "quality" ] = ( "", "_480p", "_720p", "_1080p", )[ int( xbmcplugin.getSetting( "quality" ) ) ]
         self.settings[ "poster" ] = ( xbmcplugin.getSetting( "poster" ) == "true" )
