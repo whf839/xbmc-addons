@@ -107,7 +107,7 @@ class Main:
         mpaa, genre, movie = self._get_queued_video_info()
         # get rating video
         self._get_special_videos(   items=1, 
-                                                path=self.settings[ "rating_videos_path" ],
+                                                path=os.path.join( self.settings[ "rating_videos_path" ], mpaa + ".avi" ),
                                                 genre=_( 32603 ),
                                                 index=0
                                             )

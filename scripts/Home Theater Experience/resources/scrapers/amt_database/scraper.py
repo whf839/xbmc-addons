@@ -16,6 +16,8 @@ env = ( os.environ.get( "OS", "win32" ), "win32", )[ os.environ.get( "OS", "win3
 sys.path.append( os.path.join( os.getcwd(), "resources", "platform_libraries", env ) )
 from pysqlite2 import dbapi2 as sqlite
 
+__useragent__ = "QuickTime/7.2 (qtver=7.2;os=Windows NT 5.1Service Pack 3)"
+
 
 class Main:
     BASE_DATA_PATH = os.path.join( xbmc.translatePath( "special://masterprofile/" ), "script_data", "Apple Movie Trailers" )
@@ -130,6 +132,8 @@ class Main:
         url = ""
         if ( choice >= 0 ):
             url = trailers[ choice ]
+            # add user agent to url
+            url += "?|User-Agent=%s" % ( quote_plus( __useragent__ ), )
         # return choice
         return url
 
