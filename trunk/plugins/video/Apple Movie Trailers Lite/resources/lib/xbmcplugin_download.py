@@ -43,6 +43,12 @@ import urllib
 from util import get_filesystem, get_legal_filepath
 
 
+class _urlopener( urllib.FancyURLopener ):
+    version = sys.modules[ "__main__" ].__useragent__
+# set for user agent
+urllib._urlopener = _urlopener()
+
+
 class _Info:
     def __init__( self, *args, **kwargs ):
         self.__dict__.update( kwargs )
@@ -62,6 +68,8 @@ class Main:
     def _parse_argv( self ):
         # call _Info() with our formatted argv to create the self.args object
         exec "self.args = _Info(%s)" % ( urllib.unquote_plus( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ) ), )
+        # strip User-Agent from trailer url
+        self.args.trailer_url = self.args.trailer_url.split( "?|" )[ 0 ]
 
     def _get_settings( self ):
         self.settings = {}
@@ -78,8 +86,10 @@ class Main:
             tmp_path, self.filepath = get_legal_filepath( g_title, self.args.trailer_url, self.settings[ "play_mode" ], self.settings[ "download_path" ], self.settings[ "use_title" ], self.settings[ "use_trailer" ] )
             # only download if the trailer doesn't exist
             if ( not os.path.isfile( self.filepath.encode( "utf-8" ) ) ):
-                # fetch the video
-                urllib.urlretrieve( self.args.trailer_url, tmp_path, self._report_hook )
+                # only need to retrieve video if not in tmp path
+                if ( not os.path.isfile( tmp_path.encode( "utf-8" ) ) ):
+                    # fetch the video
+                    urllib.urlretrieve( self.args.trailer_url, tmp_path, self._report_hook )
                 # create the conf file for xbox and copy to final location
                 ok = self._finalize_download( tmp_path )
                 # if the copy failed raise an error

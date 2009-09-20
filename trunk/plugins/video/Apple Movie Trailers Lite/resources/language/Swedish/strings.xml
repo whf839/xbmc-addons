@@ -45,10 +45,10 @@
   <string id="30601">Letar visningar, var god vänta...</string>
   <string id="30602">Datum</string>
   <string id="30603">Plats</string>
-  <string id="30700">Standard filmer</string>
-  <string id="30701">480p filmer</string>
-  <string id="30702">720p filmer</string>
-  <string id="30703">1080p filmer</string>
+  <string id="30800">Standard filmer</string>
+  <string id="30801">480p filmer</string>
+  <string id="30802">720p filmer</string>
+  <string id="30803">1080p filmer</string>
   <string id="30900">Biografvisningar</string>
   <string id="30910">Ladda ner trailer</string>
   <string id="30920">Spela trailer</string>

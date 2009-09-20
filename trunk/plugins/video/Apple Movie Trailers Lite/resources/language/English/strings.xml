@@ -48,11 +48,17 @@
     <string id="30602">Date</string>
     <string id="30603">Location</string>
 
+    <!-- compatible messages -->
+    <string id="30700">version</string>
+    <string id="30701">This version of %s requires an</string>
+    <string id="30702">XBMC revision of %s or greater to run.</string>
+    <string id="30703">Please update your XBMC.</string>
+
     <!-- PluginCategory infolabel -->
-    <string id="30700">Standard videos</string>
-    <string id="30701">480p videos</string>
-    <string id="30702">720p videos</string>
-    <string id="30703">1080p videos</string>
+    <string id="30800">Standard videos</string>
+    <string id="30801">480p videos</string>
+    <string id="30802">720p videos</string>
+    <string id="30803">1080p videos</string>
 
     <!-- context menu labels -->
     <string id="30900">Theater Showtimes</string>

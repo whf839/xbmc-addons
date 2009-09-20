@@ -49,10 +49,10 @@
     <string id="30603">Sijainti</string>
    
     <!-- PluginCategory infolabel -->
-    <string id="30700">Normaali videot</string>
-    <string id="30701">480p-videot</string>
-    <string id="30702">720p-videot</string>
-    <string id="30703">1080p-videot</string>
+    <string id="30800">Normaali videot</string>
+    <string id="30801">480p-videot</string>
+    <string id="30802">720p-videot</string>
+    <string id="30803">1080p-videot</string>
 
     <!-- context menu labels -->
     <string id="30900">Teatteriesitykset</string>

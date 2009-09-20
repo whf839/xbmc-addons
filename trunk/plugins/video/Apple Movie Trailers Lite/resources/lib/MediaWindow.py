@@ -14,8 +14,19 @@ class DirectoryItem:
     def __init__( self, *args, **kwargs ):
         self.url = ""
         self.listitem = ""
+        self.context = []
         self.isFolder = False
         self.totalItems = 0
+
+    def addContextMenuItem( self, label, action ):
+        # localize label if it's an integer
+        try:
+            id = int( label )
+            label = xbmc.getLocalizedString( id )
+        except:
+            pass
+        # add menu item to our list
+        self.context += [ ( label, action, ) ]
 
 
 class MediaWindow:
@@ -24,9 +35,11 @@ class MediaWindow:
     BUTTON_MIN = 1
     BUTTON_MAX = 10
     
-    def __init__( self, hId, wId=None, category=None, content=None, sortmethods=None, fanart=None ):
+    def __init__( self, hId, wId=None, category=None, content=None, sortmethods=None, fanart=None, buttons=None ):
         # set our handle id
         self.m_handle = hId
+        # set our window buttons
+        self.buttons = buttons
         # get the current window if no window id supplied
         if ( wId is None ):
             self.m_window = xbmcgui.Window( xbmcgui.getCurrentWindowId() )
@@ -35,24 +48,34 @@ class MediaWindow:
         # reset button counter
         self.m_buttonId = 0
         # set plugin category
-        if ( category is not None ):
-            xbmcplugin.setPluginCategory( handle=self.m_handle, category=category )
+        self._set_plugin_category( category )
         # set plugin content
-        if ( content is not None ):
-            xbmcplugin.setContent( handle=self.m_handle, content=content )
+        self._set_media_content( content )
         # set plugin sortmethods
-        self._setSortMethods( sortmethods )
+        self._set_sort_methods( sortmethods )
         # set fanart
-        self._setFanart( fanart )
+        self._set_fanart( fanart )
 
-    def _setSortMethods( self, sortmethods ):
+    def _set_plugin_category( self, category ):
+        # if user passed plugin content
+        if ( category is not None ):
+            # set plugin category
+            xbmcplugin.setPluginCategory( handle=self.m_handle, category=category )
+
+    def _set_media_content( self, content ):
+        # if user passed plugin content
+        if ( content is not None ):
+            # set media content
+            xbmcplugin.setContent( handle=self.m_handle, content=content )
+
+    def _set_sort_methods( self, sortmethods ):
         # if there are sortmethods add them
         if ( sortmethods is not None ):
             # enumerate thru and add each sort method
             for sortmethod in sortmethods:
                 xbmcplugin.addSortMethod( handle=self.m_handle, sortMethod=sortmethod )
 
-    def _setFanart( self, fanart ):
+    def _set_fanart( self, fanart ):
         # if user passed fanart tuple (path, method,)
         if ( fanart is not None ):
             # if skin has fanart image use it
@@ -64,13 +87,27 @@ class MediaWindow:
                 xbmcplugin.setPluginFanart( handle=self.m_handle, image=fanart[ 0 ] )
 
     def add( self, item ):
+        # add context menu items to listitem with replaceItems = True so only ours show
+        if ( item.context ):
+            item.listitem.addContextMenuItems( item.context, replaceItems=True )
+        # add directory item
         return xbmcplugin.addDirectoryItem( handle=self.m_handle, url=item.url, listitem=item.listitem, isFolder=item.isFolder, totalItems=item.totalItems )
 
     def end( self, succeeded=True ):
         # send notification we're finished, successfully or unsuccessfully
         xbmcplugin.endOfDirectory( handle=self.m_handle, succeeded=succeeded )
+        # set window buttons
+        self._set_buttons( succeeded )
 
-    def setButton( self, label, onclick=None, onfocus=None, onunfocus=None, bId=None ):
+    def _set_buttons( self, ok=True ):
+        # only set buttons on a successful directory listing
+        if ( ok and self.buttons is not None ):
+            # enumerate thru and set each button
+            for label, onclick, onfocus, onunfocus, bId in self.buttons:
+                # set button
+                self._set_button( label, onclick, onfocus, onunfocus, bId )
+
+    def _set_button( self, label, onclick=None, onfocus=None, onunfocus=None, bId=None ):
         # increment bId if none supplied
         if ( bId is None ):
             bId = self.m_buttonId + 1
@@ -86,11 +123,11 @@ class MediaWindow:
         except:
             pass
         # set button label property
-        self.m_window.setProperty( "PluginButton%s.Label" % bId, label )
+        self.m_window.setProperty( "PluginButton.%d.Label" % bId, label )
         # set optional button properties
         if ( onclick is not None ):
-            self.m_window.setProperty( "PluginButton%s.OnClick" % bId, onclick )
+            self.m_window.setProperty( "PluginButton.%d.OnClick" % bId, onclick )
         if ( onfocus is not None ):
-            self.m_window.setProperty( "PluginButton%s.OnFocus" % bId, onfocus )
+            self.m_window.setProperty( "PluginButton.%d.OnFocus" % bId, onfocus )
         if ( onunfocus is not None ):
-            self.m_window.setProperty( "PluginButton%s.OnUnFocus" % bId, onunfocus )
+            self.m_window.setProperty( "PluginButton.%d.OnUnFocus" % bId, onunfocus )
