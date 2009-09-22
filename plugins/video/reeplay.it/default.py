@@ -24,9 +24,9 @@ __scriptname__ = __plugin__
 __author__ = 'BigBellyBilly [BigBellyBilly@gmail.com]'
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/reeplay.it"
-__date__ = '20-09-2009'
-__version__ = '1.2'
-__svn_revision__ = "$Revision:$"
+__date__ = '21-09-2009'
+__version__ = '1.2a'
+__svn_revision__ = "$Revision$"
 __XBMC_Revision__ = "19001"
 xbmc.output(__plugin__ + " Version: " + __version__ + " Date: " + __date__)
 
