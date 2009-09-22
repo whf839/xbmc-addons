@@ -9,14 +9,14 @@
 
 import sys, os.path
 import xbmc, xbmcgui
-import os, re, unicodedata, traceback
+import os, re, unicodedata, traceback,time
 from string import strip, replace, find, rjust
 from shutil import rmtree
 
 __scriptname__ = sys.modules[ "__main__" ].__scriptname__
 __title__ = "bbbLib"
 __author__ = 'BigBellyBilly [BigBellyBilly@gmail.com]'
-__date__ = '25-02-2009'
+__date__ = '21-09-2009'
 xbmc.output("Imported From: " + __scriptname__ + " title: " + __title__ + " Date: " + __date__)
 
 global dialogProgress
@@ -120,6 +120,7 @@ def playMedia(source, li=None):
 		else:
 			log("player source PlayList")
 			xbmc.Player().play(source)
+		time.sleep(.2)     # give player chance to start
 		isPlaying = xbmc.Player().isPlaying()
 	except:
 		traceback.print_exc()
@@ -129,7 +130,7 @@ def playMedia(source, li=None):
 		try:
 			cmd = 'xbmc.PlayMedia(%s)' % source
 			xbmc.executebuiltin(cmd)
-			isPlaying = True
+			isPlaying = True    # wild assumption!
 		except:
 			handleException('playMedia()')
 
