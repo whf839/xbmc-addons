@@ -2,8 +2,8 @@
 __scriptname__ = "Justin.tv"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Justin.tv"
-__date__ = '2009-08-29'
-__version__ = "1.4.11"
+__date__ = '2009-09-23'
+__version__ = "1.4.12"
 __XBMC_Revision__ = "21803"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback, shutil
@@ -110,13 +110,14 @@ def showCategories():
 	a=f.read()
 	f.close()
 	match=re.compile('<ul class="fp_categories">(.+?)<div id="FPTakeoverSkinv2_holder">', re.DOTALL).findall(a)
-	cat=re.compile('<a href="(.+?)"><b>(.+?)</b></a>').findall(match[0])
+	cat=re.compile('<a href="(.+?)" id="(.+?)"><b>(.+?)</b></a>').findall(match[0])
 	name = 'All'
 	url='http://www.justin.tv/directory?order=hot&lang='+idd
 	li=xbmcgui.ListItem(name)
 	u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
 	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
-	for url,name in cat:
+	for url,trash,name in cat:
+		print url
 		new=url.replace('/directory','/directory/dropmenu/subcategory')
 		url='http://www.justin.tv'+new+'?kind=live&order=hot&lang='+idd
 		li=xbmcgui.ListItem(name)
@@ -130,6 +131,7 @@ def showCategories():
 	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
 def showSubCategories(url, name):
+	print url
 	cat_name=name
 	req = urllib2.Request(url)
 	req.add_header('User-Agent', HEADER)
@@ -368,6 +370,11 @@ def playVideo(url, name, thumb):
 		ok = dialog.ok('Justin.tv', 'Error: Invalid user or not a live feed.')
 		xbmc.executebuiltin( "Container.Refresh" )
 		return
+	if a.find('<needed_info>access_code</needed_info>') != -1:
+		dialog = xbmcgui.Dialog()
+		ok = dialog.ok('Justin.tv', 'Error: Sorry, this is a private stream.')
+		xbmc.executebuiltin( "Container.Refresh" )
+		return	
 	playpath = data[0][0]
 	rtmp_url = data[0][2]
 	swf='http://www.justin.tv/meta/'+url+'.xml'
