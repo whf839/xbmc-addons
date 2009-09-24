@@ -4,7 +4,7 @@ __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Justin.tv"
 __date__ = '2009-09-23'
 __version__ = "1.4.12"
-__XBMC_Revision__ = "21803"
+#__XBMC_Revision__ = "21803"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback, shutil
 from urllib2 import Request, urlopen, URLError, HTTPError
