@@ -56,10 +56,8 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	  self.sub_folder = sub_folder									# Subtitle download folder
 	  
 	  self.file_original_path = path								# Movie Path
-	  if not (path.find("special://") > -1 ):
-		self.file_path = path[path.find(os.sep):len(path)]
-	  else:
-		self.file_path = path
+
+	  self.file_path = path
 	  
 	  self.set_temp = temp											
   
@@ -571,8 +569,8 @@ class GUI( xbmcgui.WindowXMLDialog ):
             subName1 = sub_filename[0:sub_filename.rfind(".")] 
             if subName1 == "":
 				subName1 = self.search_string.replace("+", " ")
-            if self.set_temp:
-				subName1 = self.search_string.replace("+", " ")
+#            if self.set_temp:
+#				subName1 = self.search_string.replace("+", " ")
             
             self.file_download( url, zip_filename )
 	    self.extract_subtitles( filename, form, lang,subName1, subtitle_format, zip_filename, local_path )
@@ -632,7 +630,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	            number_of_discs = int(numberOfDiscs)
 	            if number_of_discs == 1 :
 	                movie_files.append(sub_filename)
-	            elif number_of_discs > 1 and not self.set_temp:
+	            elif number_of_discs > 1: #and not self.set_temp:
 	
 	                regexp = movie_file
 	                regexp = regexp.replace( "\\", "\\\\" )
@@ -691,8 +689,8 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	                    
 							sub_ext  = os.path.splitext( file_name )[1]
 							sub_name = os.path.splitext( movie_files[i - 1] )[0]
-							if self.set_temp:
-								sub_name = self.search_string.replace("+", " ")
+#							if self.set_temp:
+#								sub_name = self.search_string.replace("+", " ")
 								
 							file_name = "%s.%s%s" % ( sub_name, subtitle_lang, sub_ext )   
 	                    
@@ -756,7 +754,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
             
             if number_of_discs == 1 :
                 movie_files.append(sub_filename)
-            elif number_of_discs > 1 and not self.set_temp:
+            elif number_of_discs > 1:# and not self.set_temp:
 
                 regexp = movie_file
                 regexp = regexp.replace( "\\", "\\\\" )
@@ -810,8 +808,8 @@ class GUI( xbmcgui.WindowXMLDialog ):
 							file_name = zip_entry
 							sub_ext  = os.path.splitext( file_name )[1]
 							sub_name = os.path.splitext( movie_files[i - 1] )[0]
-							if self.set_temp:
-								sub_name = self.search_string.replace("+", " ")
+#							if self.set_temp:
+#								sub_name = self.search_string.replace("+", " ")
 									
 							file_name = "%s.%s%s" % ( sub_name, str(lang), ".srt" )
 							file_path = os.path.join(self.sub_folder, file_name)
