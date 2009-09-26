@@ -29,7 +29,7 @@ __url__ = "http://code.google.com/p/xbmc-scripting/"
 __svn_url__ = "http://xbmc-scripting.googlecode.com/svn/trunk/T3CH%20Upgrader"
 __date__ = '26-09-2009'
 __version__ = "1.9.5"
-__svn_revision__ = "$Revision: 2531 $"
+__svn_revision__ = "$Revision$"
 __XBMC_Revision__ = "19001"
 xbmc.log( "[%s]: v%s  Dated: %s svn %s" % (__scriptname__, __version__, __date__, __svn_revision__), xbmc.LOGNOTICE)
 
