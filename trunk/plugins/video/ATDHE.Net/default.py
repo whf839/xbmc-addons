@@ -30,7 +30,7 @@ def _check_for_update():
 		if link.find(__version__) != 0:
 			newVersion=link
 			dia = xbmcgui.Dialog()
-			ok = dia.ok("ATDHE.Net", 'Updates are available on SVN Repo Installer\n\n'+'Current Version: '+__version__+'\n'+'Update Version: '+newVersion)
+			ok = dia.ok("ATDHE.Net", 'Updates are available on both SVN Repo or XBMC Zone\n\n'+'Current Version: '+__version__+'\n'+'Update Version: '+newVersion)
 
 def showRoot():
 	url='http://atdhe.net/'
