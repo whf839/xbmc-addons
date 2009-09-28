@@ -3,8 +3,8 @@ __scriptname__ = "ATDHE.Net"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/ATDHE.Net"
-__date__ = '2009-09-27'
-__version__ = "1.0.1"
+__date__ = '2009-09-28'
+__version__ = "1.0.2"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 from urllib import urlretrieve, urlcleanup
@@ -64,8 +64,8 @@ def showList(url, name):
 	content=urllib2.urlopen(req)
 	data=content.read()
 	content.close()
-	#ustreamcode2=re.compile('embed type="application/x-shockwave-flash" src="http://www\.ustream\.tv/flash/live/1/(.+?)"').findall(data)
-	#ustreamcode=re.compile('<center>\n<script language="javascript">document\.write\(unescape\( \'(.+?)\' \)\);</script>').findall(data)
+	ustreamcode2=re.compile('embed type="application/x-shockwave-flash" src="http://www\.ustream\.tv/flash/live/1/(.+?)"').findall(data)
+	ustreamcode=re.compile('<center>\n<script language="javascript">document\.write\(unescape\( \'(.+?)\' \)\);</script>').findall(data)
 	code=re.compile('<script language="javascript">document\.write\(unescape\( \'(.+?)\' \)\);</script>').findall(data)
 	code2=re.compile('<script language="javascript">document\.write\(\'(.+?)\'\);</script>').findall(data)
 	print len(code)
@@ -113,10 +113,43 @@ def showList(url, name):
 		else:
 			dia = xbmcgui.Dialog()
 			ok = dia.ok("ATDHE.Net", 'Error 3: The stream is either offline or\nusing an unsupported protocol.')
+	elif len(ustreamcode2) != 0:
+		url='http://cgw.ustream.tv/Viewer/getStream/1/'+ustreamcode2[0]+'.amf'
+		req = urllib2.Request(url)
+		req.add_header('User-Agent', HEADER)
+		content=urllib2.urlopen(req)
+		data=content.read()
+		content.close()
+		playPath=re.compile('streamName\W\W\W(.+?)\x00', re.DOTALL).findall(data)
+		tcUrl=re.compile('cdnUrl\W\W\S(.+?)\x00', re.DOTALL).findall(data)
+		tcUrl2=re.compile('fmsUrl\W\W\S(.+?)\x00', re.DOTALL).findall(data)
+		if len(tcUrl) == 0:
+			if len(tcUrl2) == 0:
+				dialog = xbmcgui.Dialog()
+				ok = dialog.ok('ATDHE.Net', 'Error 4: Not a live feed.')
+				return
+			else:
+				new = tcUrl2[0].replace('/ustreamVideo',':1935/ustreamVideo')
+				rtmp_url = new + '/'
+				rtmp_url2 = new
+				dialog = xbmcgui.Dialog()
+				ok = dialog.ok('ATDHE.Net', 'WARNING: This stream is not compatible with XBMC.\nExpect the stream to end shortly.')
+		else:
+			rtmp_url = tcUrl[0]
+			rtmp_url2 = tcUrl[0]
+		thumb = xbmc.getInfoImage( "ListItem.Thumb" )
+		swfUrl = 'http://cdn1.ustream.tv/swf/4/viewer.rsl.210.swf'
+		item = xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
+		item.setInfo( type="Video", infoLabels={ "Title": name, "Director": 'USTREAM.tv', "Studio": 'USTREAM.tv' } )
+		#item.setProperty("PageURL", pageUrl)
+		item.setProperty("SWFPlayer", swfUrl)
+		item.setProperty("PlayPath", playPath[0])
+		item.setProperty("IsLive", "true")
+		item.setProperty("tcUrl", rtmp_url2)
+		xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(rtmp_url, item)
 	else:
-		print code
 		dialog = xbmcgui.Dialog()
-		ok = dialog.ok('ATDHE.Net', 'Error 3: No live streams available.')
+		ok = dialog.ok('ATDHE.Net', 'Error 5: No live streams available.')
 	
 def clean(name):
 	remove=[('&amp;','&'),('&quot;','"'),('&#39;','\'')]
