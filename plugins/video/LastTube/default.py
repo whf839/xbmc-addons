@@ -3,12 +3,23 @@
 """
 #thanks to Tim Bormans for opening up the api to me (tv.timbormans.com)
 
-import xbmc,xbmcgui,xbmcplugin,access
-import sys,re,urllib,urllib2
+import xbmc
+import xbmcgui
+import xbmcplugin
+import access
+import sys
+import re
+import urllib
+import urllib2
+
+__plugin__ = "LastTube"
+__author__ = "rwparris2"
+__url__ = "http://code.google.com/p/xbmc-addons/"
+__svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/LastTube"
+__credits__ = "Team XBMC"
+__version__ = "1.0.1"
 
 def main():
-    print '\n'*5,'Start LastTube Plugin'
-
     if ( __name__ == "__main__" ):
 
         class MyPlayer( xbmc.Player ) :            
