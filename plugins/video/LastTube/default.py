@@ -138,7 +138,7 @@ def main():
 
         def getLastFMUserName():
             try:
-                dUser=xbmc.executehttpapi('GetGuiSetting(3;lastfm.username)')
+                dUser=xbmc.executehttpapi('GetGuiSetting(3;scrobbler.lastfmusername)')
                 p=re.compile('<li>(.*)')
                 match=p.findall(dUser)
                 for dUser in match:
