@@ -1,228 +1,225 @@
 """
     TED Talks
 """
-#main imports
-import xbmc,xbmcgui,xbmcplugin
-import urllib,urllib2,re,sys,os
-import feedparser
+import sys
+import urllib
+import ted_talks_scraper
+import xbmc
+import xbmcplugin
+import xbmcgui
 
-class _Info:
-    def __init__( self, *args, **kwargs ):
-        self.__dict__.update( kwargs )
-        
-class Main:
+getLS = xbmc.getLocalizedString
+TedTalks = ted_talks_scraper.TedTalks()
 
-    #MAIN URLS
-    themes='http://www.ted.com/index.php/themes/atoz'
-    hdFeed='http://feeds.feedburner.com/TedtalksHD'
-    sdFeed='http://feeds.feedburner.com/tedtalks_video'
-    auFeed='http://feeds.feedburner.com/tedtalks_audio'
+class updateArgs:
+    def __init__(self, *args, **kwargs):
+        for key, value in kwargs.iteritems(): 
+            if value == 'None': kwargs[key] = None
+            else: kwargs[key] = urllib.unquote_plus(kwargs[key])
+        self.__dict__.update(kwargs)
 
+class UI:
     def __init__(self):
+        self.main = Main(checkMode = False)
         xbmcplugin.setContent(int(sys.argv[1]), 'movies')
-        self._parse_argv()
-        self._get_settings()
-    ####
-        if self.args.mode==None:
-            self.showCategories()
-            xbmcplugin.addSortMethod(int(sys.argv[1]), 16)#sort by date
-        elif self.args.mode=='1':
-            #List All
-            xbmcplugin.addSortMethod(int(sys.argv[1]), 16)#sort by date
-            xbmcplugin.addSortMethod(int(sys.argv[1]), 20)#sort by episode
-            t=self.listMedia(self.args.url,self.args.mode)
-        elif self.args.mode=='2':
-            #List Themes
-            self.listThemes()
-        elif self.args.mode=='3':
-            self.listThemeTalks()
-            xbmcplugin.addSortMethod(int(sys.argv[1]), 20)#sort by episode
-            xbmcplugin.addSortMethod(int(sys.argv[1]), 16)#sort by date
-        elif self.args.mode=='4':
-            self.listDownloadedTalks()
-
-    def _parse_argv(self):
-        # call _Info() with our formatted argv to create the self.args object
-        if (sys.argv[2]=="?Upgrade=True"):
-            self.args = _Info( mode=None )
-        elif ( sys.argv[ 2 ] ):
-            exec "self.args = _Info(%s')" % (sys.argv[ 2 ][ 1 : ].replace( "&", "', " ).replace("=", "='"))
+    
+    def endofdirectory(self, sortMethod = 'title'):
+        #set sortmethod to something xbmc can use
+        if sortMethod == 'title':
+            sortMethod = xbmcplugin.SORT_METHOD_TITLE_IGNORE_THE
+        elif sortMethod == 'date':
+            sortMethod = xbmcplugin.SORT_METHOD_DATE
+        #Sort methods are required in library mode.
+        xbmcplugin.addSortMethod(int(sys.argv[1]), sortMethod)
+        #If url is not None, then the script arrived here from a navItem, and don't want to add to the heirarchy
+        if self.main.args.url: dontAddToHierarchy = True
+        else: dontAddToHierarchy = False
+        #let xbmc know the script is done adding items to the list.
+        xbmcplugin.endOfDirectory(handle = int(sys.argv[1]), updateListing = dontAddToHierarchy )
+        
+    def addItem(self, info, isFolder=True):
+        #Defaults in dict. Use 'None' instead of None so it is compatible for quote_plus in parseArgs
+        info.setdefault('url', 'None')
+        info.setdefault('Thumb', 'None')
+        info.setdefault('Icon', info['Thumb'])
+        #create params for xbmcplugin module
+        u = sys.argv[0]+\
+            '?url='+urllib.quote_plus(info['url'])+\
+            '&mode='+urllib.quote_plus(info['mode'])+\
+            '&name='+urllib.quote_plus(info['Title'])+\
+            '&icon='+urllib.quote_plus(info['Thumb'])
+        #create list item
+        li=xbmcgui.ListItem(label = info['Title'], iconImage = info['Icon'], thumbnailImage = info['Thumb'])
+        li.setInfo(type='Video', infoLabels=info)
+        #for videos, replace context menu with queue and add to favorites
+        if not isFolder:
+            li.setProperty("IsPlayable", "true")#let xbmc know this can be played, unlike a folder.
+            #add context menu items to non-folder items.
+            contextmenu = [(xbmc.getLocalizedString(13347), 'Action(Queue)')]
+            #only add add to favorites context menu if the user has a username & isn't already looking at favorites.
+            print 'self.main.args.mode', self.main.args.mode
+            if self.main.settings['username']:
+                if self.main.args.mode == 'favorites':
+                    contextmenu += [(getLS(30093), 'RunPlugin(%s?removeFromFavorites=%s)' % (sys.argv[0], info['url']))]
+                else:
+                    contextmenu += [(getLS(30090), 'RunPlugin(%s?addToFavorites=%s)' % (sys.argv[0], info['url']))]
+            #replaceItems=True replaces the useless one with the two defined above.
+            li.addContextMenuItems(contextmenu, replaceItems=True)
+        #for folders, completely remove contextmenu, as it is totally useless.
         else:
-            self.args = _Info( mode=None )
+            li.addContextMenuItems([], replaceItems=True)
+        #add item to list
+        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=li, isFolder=isFolder)
 
-    def _get_settings(self):
-        self.settings = {}
-        self.settings['video_quality'] =  xbmcplugin.getSetting( 'video_quality' )
-        self.settings['download_mode'] =  xbmcplugin.getSetting( 'download_mode' )
-        self.settings['download_path'] =  xbmcplugin.getSetting( 'download_path' )
+    def playVideo(self):
+        video = TedTalks.getVideoDetails(self.main.args.url)
+        li=xbmcgui.ListItem(video['Title'], 
+                            iconImage = self.main.args.icon, 
+                            thumbnailImage = self.main.args.icon, 
+                            path = video['url'],)
+        li.setInfo(type='Video', infoLabels=video)
+        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, li)
 
-    def addFullDir(self,name,url,mode,plot,thumb):
-        u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
-        ok=True
-        liz=xbmcgui.ListItem(name, iconImage=thumb,thumbnailImage=thumb)
-        liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot":plot} )
-        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
-        return ok
-
-    def addFullLink(self,name,url,plot,date,year,genre,author,episode=''):
-        ok=True
-        liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png")
-        liz.setInfo( type="Video", infoLabels={"Title":name,"Studio":"Ted","Writer":author,"Plot":plot,"Plotoutline":plot,"Date":date,"Year":year,"Genre":genre,"Episode":episode } )
-        if(os.path.isdir(self.settings['download_path']) and self.settings['download_mode']=='1'):
-            action = "XBMC.RunPlugin(%s?downloadTalk=True)" % ( sys.argv[ 0 ], )
-            liz.addContextMenuItems([(xbmc.getLocalizedString(30020), action,)])
-        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
-        return ok
-
+    def navItems(self, navItems, mode):
+        #TODO LOCALIZE:
+        if navItems['next']:
+            self.addItem({'Title': getLS(30020), 'url':navItems['next'], 'mode':mode})
+        if navItems['previous']:
+            self.addItem({'Title': getLS(30021), 'url':navItems['previous'], 'mode':mode})
+        
     def showCategories(self):
-            #set rssfeed for 'Browse All'
-        if(self.settings['video_quality']=='0'):
-            feedUrl=self.hdFeed
-        elif(self.settings['video_quality']=='1'):
-            feedUrl=self.sdFeed
-        elif(self.settings['video_quality']=='2'):
-            feedUrl=self.auFeed
-            #check for downloads section
-        showDownloadCat=False
-        if(self.settings['download_mode']=='1'):
-            try:
-                folder=os.listdir(self.settings['download_path'])
-                for file in folder:
-                    if file.startswith('TedTalks'):
-                        showDownloadCat=True
-                        download_plot=xbmc.getLocalizedString(30033)
-                        download_thumb='http://images.ted.com/images/ted/215_291x218.jpg'
-            except: pass
-            ##set plots and thumbs
-        all_plot=xbmc.getLocalizedString(30004)
-        all_thumb='http://images.ted.com/images/ted/474_291x218.jpg'
-        theme_plot=xbmc.getLocalizedString(30003)
-        theme_thumb='http://images.ted.com/images/ted/481_291x218.jpg'
-            #add folders
-        ok=self.addFullDir(' '+xbmc.getLocalizedString(30031),feedUrl,1,all_plot,all_thumb)#space ensures this goes to the top
-        #ok=self.addFullDir(xbmc.getLocalizedString(30030),self.themes,2,theme_plot,theme_thumb)
-        if showDownloadCat:
-            ok=self.addFullDir(xbmc.getLocalizedString(30033),self.settings['download_path'],4,download_plot,download_thumb)
-        self.listThemes()
-        xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=ok )
+        self.addItem({'Title':getLS(30001), 'mode':'newTalks', 'Plot':getLS(30031)})#new
+        self.addItem({'Title':getLS(30002), 'mode':'speakers', 'Plot':getLS(30032)})#speakers
+        self.addItem({'Title':getLS(30003), 'mode':'themes', 'Plot':getLS(30033)})#themes
+        #self.addItem({'Title':getLS(30004), 'mode':'search', 'Plot':getLS(30034)})#search
+        if self.main.settings['username']:
+            self.addItem({'Title':getLS(30005), 'mode':'favorites', 'Plot':getLS(30035)})#favorites
+        self.endofdirectory()
+    
+    def newTalks(self):
+        newMode = 'playVideo'
+        newTalks = TedTalks.newTalks(self.main.args.url)
+        #add talks to the list
+        for talk in newTalks.getNewTalks():
+            talk['mode'] = newMode
+            self.addItem(talk, isFolder = False)
+        #add nav items to the list
+        self.navItems(newTalks.navItems, self.main.args.mode)
+        #end the list
+        self.endofdirectory(sortMethod = 'date')
+    
+    def speakers(self):
+        newMode = 'speakerVids'
+        speakers = TedTalks.speakers(self.main.args.url)
+        #add speakers to the list
+        for speaker in speakers.getAllSpeakers():
+            speaker['mode'] = newMode
+            self.addItem(speaker, isFolder = True)
+        #add nav items to the list
+        self.navItems(speakers.navItems, self.main.args.mode)
+        #end the list
+        self.endofdirectory()
+    
+    def speakerVids(self):
+        newMode = 'playVideo'
+        speakers = TedTalks.speakers(self.main.args.url)
+        for talk in speakers.getTalks():
+            talk['mode'] = newMode
+            self.addItem(talk, isFolder = False)
+        #end the list
+        self.endofdirectory()
+    
+    def themes(self):
+        newMode = 'themeVids'
+        themes = TedTalks.themes(self.main.args.url)
+        #add themes to the list
+        for theme in themes.getThemes():
+            theme['mode'] = newMode
+            self.addItem(theme, isFolder = True)
+        #end the list
+        self.endofdirectory()
+    
+    def themeVids(self):
+        newMode = 'playVideo'
+        themes = TedTalks.themes(self.main.args.url)
+        for talk in themes.getTalks():
+            talk['mode'] = newMode
+            self.addItem(talk, isFolder = False)
+        self.endofdirectory()
+        
+    def favorites(self):
+        newMode = 'playVideo'
+        #attempt to login
+        if self.main.isValidUser():
+            favorites = TedTalks.Favorites()
+            for talk in favorites.getFavoriteTalks(self.main.user):
+                talk['mode'] = newMode
+                self.addItem(talk, isFolder = False)
+            self.endofdirectory()
 
-    def clean_url(self,url):
-        return url.replace("%3A",":").replace("%2F","/")
+class Main:
+    def __init__(self, checkMode = True):
+        self.user = None
+        self.parseArgs()
+        self.getSettings()
+        if checkMode:
+            self.checkMode()
+        
+    def parseArgs(self):
+        # call updateArgs() with our formatted argv to create the self.args object
+        if (sys.argv[2]):
+            exec "self.args = updateArgs(%s')" % (sys.argv[2][1:].replace('&', "',").replace('=', "='"))
+        else:
+            # updateArgs will turn the 'None' into None.
+            # Don't simply define it as None because unquote_plus in updateArgs will throw an exception.
+            # This is a pretty ugly solution, but fuck it :(
+            self.args = updateArgs(mode = 'None', url = 'None')
 
-    def getHTML(self,site):
-        print 'TED Talks Plugin --> reading '+site
-        req = urllib2.Request(site)
-        req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
-        response = urllib2.urlopen(req)
-        link=response.read()
-        response.close()
-        return link
-
-    def listThemes(self):
-        iconDict = {'default':'http://ted.streamguys.net/TEDTalksvideo_tile_144.jpg','Media With Meaning':'http://images.ted.com/images/ted/55163_291x218.jpg','Live Music': 'http://images.ted.com/images/ted/233_291x218.jpg', 'Speaking at TED2009': 'http://images.ted.com/images/ted/70532_291x218.jpg', 'Whipsmart Comedy': 'http://images.ted.com/images/ted/8614_291x218.jpg', 'Spectacular Performance': 'http://images.ted.com/images/ted/45707_291x218.jpg', 'Peering into Space': 'http://images.ted.com/images/ted/496_291x218.jpg', 'TED Under 30': 'http://images.ted.com/images/ted/67719_291x218.jpg', 'Technology, History and Destiny': 'http://images.ted.com/images/ted/48704_291x218.jpg', 'How the Mind Works': 'http://images.ted.com/images/ted/54229_291x218.jpg', 'The Rise of Collaboration': 'http://images.ted.com/images/ted/481_291x218.jpg', 'Hidden Gems': 'http://images.ted.com/images/ted/200_291x218.jpg', "What's Next in Tech": 'http://images.ted.com/images/ted/63395_291x218.jpg', 'Medicine Without Borders': 'http://images.ted.com/images/ted/39479_291x218.jpg', 'TED Prize Winners': 'http://images.ted.com/images/ted/34766_291x218.jpg', "Evolution's Genius": 'http://images.ted.com/images/ted/1484_291x218.jpg', 'Unconventional Explanations': 'http://images.ted.com/images/ted/63348_291x218.jpg', 'Media That Matters': 'http://images.ted.com/images/ted/55163_291x218.jpg', 'Presentation Innovation': 'http://images.ted.com/images/ted/1473_291x218.jpg', 'Words About Words': 'http://images.ted.com/images/ted/16161_291x218.jpg', 'Art Unusual': 'http://images.ted.com/images/ted/18378_291x218.jpg', 'Not Business as Usual': 'http://images.ted.com/images/ted/143_291x218.jpg', 'To Boldly Go ...': 'http://images.ted.com/images/ted/268_291x218.jpg', 'Architectural Inspiration': 'http://images.ted.com/images/ted/474_291x218.jpg', 'Africa: The Next Chapter': 'http://images.ted.com/images/ted/13929_291x218.jpg', 'TED in 3 Minutes': 'http://images.ted.com/images/ted/68573_291x218.jpg', 'What Makes Us Happy?': 'http://images.ted.com/images/ted/387_291x218.jpg', 'Pangea Day': 'http://images.ted.com/images/ted/35977_291x218.jpg', 'Inspired by Nature': 'http://images.ted.com/images/ted/502_291x218.jpg', 'Is There a God?': 'http://images.ted.com/images/ted/1455_291x218.jpg', 'Tales of Invention': 'http://images.ted.com/images/ted/1497_291x218.jpg', 'Design Like You Give a Damn': 'http://images.ted.com/images/ted/6561_291x218.jpg', 'How We Learn': 'http://images.ted.com/images/ted/221_291x218.jpg', 'Bold Predictions, Stern Warnings': 'http://images.ted.com/images/ted/164_291x218.jpg', 'Master Storytellers': 'http://images.ted.com/images/ted/25111_291x218.jpg', 'Animals That Amaze': 'http://images.ted.com/images/ted/381_291x218.jpg', 'The Power of Cities': 'http://images.ted.com/images/ted/1456_291x218.jpg', 'A Greener Future?': 'http://images.ted.com/images/ted/1616_291x218.jpg', 'Top 10 TEDTalks': 'http://images.ted.com/images/ted/33852_291x218.jpg', 'New on TED.com': 'http://images.ted.com/images/ted/71466_291x218.jpg', 'Rethinking Poverty': 'http://images.ted.com/images/ted/18551_291x218.jpg', 'The Creative Spark': 'http://images.ted.com/images/ted/42622_291x218.jpg', 'Might You Live a Great Deal Longer?': 'http://images.ted.com/images/ted/1474_291x218.jpg'}
-        link=self.getHTML(self.themes)
-        p=re.compile('<li><a href="(/themes/.+?)">(.+?)</a></li>')
-        items=p.findall(link)
-        for i in range(len(items)):
-            feedUrl='http://ted.com'+items[i][0]
-            #iconDict fails if key doesn't exist
-            try:
-                ok=self.addFullDir(items[i][1],feedUrl,3,'', iconDict[items[i][1]])
-            except:
-                ok=self.addFullDir(items[i][1],feedUrl,3,'', iconDict['default'])
-        xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=ok )
-
-    def listThemeTalks(self):
-        link=self.getHTML(self.clean_url(self.args.url))
-        p=re.compile('alternate" href="(.*)" type')
-        match=p.findall(link)
-        p=re.compile('//')
-        match=p.sub('//www.',match[0])
-        if self.settings['video_quality']=='0':
-            d_HD=feedparser.parse(self.hdFeed)
-        elif self.settings['video_quality']=='2':
-            d_AU=feedparser.parse(self.auFeed)
-        talks=self.listMedia(match,self.args.mode)
-
-    def listDownloadedTalks(self):
-        path=self.settings['download_path']
-        items=os.listdir(path)
-        for item in items:
-             if item.startswith('TedTalks'):
-                name=item.split('TedTalks')[1].split('.mp4')[0]
-                path=xbmc.translatePath(os.path.join(path,item))
-                liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png")
-                liz.setInfo( type="Video", infoLabels={"Title":name} )
-                ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=path,listitem=liz)
-        xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=ok )
-                    
-
-    def checkHD(vid):
-        p = vid.rindex('.')
-        vid_tmp=vid[:p] + '_480.' + vid[p+1:]
-        for i in range(len(d_HD.entries)):
-            if d_HD.entries[i].has_key('enclosures'):
-                if vid_tmp==d_HD.entries[i].enclosures[0].href:
-                    vid=vid_tmp
-        return vid
-
-    def checkAU(vid):
-        try:
-            p=vid.rindex('-')
-            vid_tmp=vid[:p]+'.mp3'
-        except:
-            p=vid.rindex('.')
-            vid_tmp=vid[:p]+'.mp3'
-        for i in range(len(d_AU.entries)):
-            if d_AU.entries[i].has_key('enclosures'):
-                if vid_tmp==d_AU.entries[i].enclosures[0].href:
-                    vid=vid_tmp
-        return vid
-
-    def listMedia(self,url,mode):
-        talks=[]
-        talks.append(xbmc.getLocalizedString(30010))
-        url=self.clean_url(url)
-        d=feedparser.parse(url)
-        for i in range(len(d.entries)):
-            if d.entries[i].has_key('title'):
-                p=re.compile('TEDTalks : ') #remove tedtalks from title    
-                name=p.sub('',d.entries[i].title)
+    def getSettings(self):
+        #TODO: settings
+        self.settings = dict()
+        self.settings['username'] = xbmcplugin.getSetting('username')
+        self.settings['password'] = xbmcplugin.getSetting('password')
+    
+    def isValidUser(self):
+        self.user = TedTalks.User(self.settings['username'], self.settings['password'])
+        if self.user:
+            return True
+        else:
+            xbmcgui.Dialog().ok(getLS(30050), getLS(30051))
+            return False
+    
+    def addToFavorites(self, url):
+        if self.isValidUser():
+            successful = TedTalks.Favorites().addToFavorites(self.user, url)
+            if successful:
+                xbmc.executebuiltin('Notification(%s,%s,)' % (getLS(30000), getLS(30091)))
             else:
-                name=''
-            if d.entries[i].has_key('enclosures'):
-                vid=d.entries[i].enclosures[0].href
-                if mode==3 and settings['video_quality']=='0':
-                    vid=self.checkHD(vid)
-                elif mode==3 and settings['video_quality']=='2':
-                    vid=self.checkAU(vid)
+                xbmc.executebuiltin('Notification(%s,%s,)' % (getLS(30000), getLS(30092)))
+    
+    def removeFromFavorites(self, url):
+        if self.isValidUser():
+            successful = TedTalks.Favorites().removeFromFavorites(self.user, url)
+            if successful:
+                xbmc.executebuiltin('Notification(%s,%s,)' % (getLS(30000), getLS(30094)))
             else:
-                vid=''
-            if d.entries[i].has_key('summary'):
-                q=re.compile('<img .* />') #remove useless image tag from summary
-                plot=q.sub('',d.entries[i].summary)
-                
-            else:
-                plot=''
-            if d.entries[i].has_key('date'):
-                date_p=d.entries[i].date_parsed
-                date=str(date_p[2])+'/'+str(date_p[3])+'/'+str(date_p[0])#date ==dd/mm/yyyy
-            else:
-                date_p=''
-                date=''
-            if d.entries[i].has_key('category'):
-                genre=d.entries[i].category
-            else:
-                genre=''
-            if d.entries[i].has_key('author'):
-                author=d.entries[i].author
-            else:
-                author=''
-            ep=i+1
-            talk=[]
-            talk=(name,vid,plot,date,date_p[0],genre,author,ep)
-            talks.append(talk)
-            #print name,vid,plot,date,date_p[0],genre,author,ep
-            ok=self.addFullLink(name,vid,plot,date,date_p[0],genre,author,ep)
-        xbmcplugin.endOfDirectory( handle=int( sys.argv[ 1 ] ), succeeded=ok )
-        return talks
+                xbmc.executebuiltin('Notification(%s,%s,)' % (getLS(30000), getLS(30095)))
+
+    def checkMode(self):
+        mode = self.args.mode
+        if mode is None:
+            UI().showCategories()
+        elif mode == 'playVideo':
+            UI().playVideo()
+        elif mode == 'newTalks':
+            UI().newTalks()
+        elif mode == 'speakers':
+            UI().speakers()
+        elif mode == 'speakerVids':
+            UI().speakerVids()
+        elif mode == 'themes':
+            UI().themes()
+        elif mode == 'themeVids':
+            UI().themeVids()
+        elif mode == 'favorites':
+            UI().favorites()

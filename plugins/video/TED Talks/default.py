@@ -1,30 +1,30 @@
 """
     TED Talks
-        by rwparris2
-        http://ted.com
+    rwparris2
 """
-__script__ = "TED Talks"
-__version__ = "1.61"
-
-#for a clear log:
-print '\n'*5,'Start %s Plugin, version %s' %(__script__, __version__)
-
-#main imports
-import xbmcplugin
 import sys
 
+#plugin constants
 __plugin__ = "TED Talks"
 __author__ = "rwparris2"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/TED%20Talks"
-__version__ = "1.5.2"
+__version__ = "2.0"
 
+print "[PLUGIN] '%s: version %s' initialized!" % (__plugin__, __version__)
 
-if ( __name__ == "__main__" ):
-    if (sys.argv[2].startswith('?downloadTalk')):
-         import resources.lib.download as download
-         download.Main()
+if __name__ == "__main__":
+    if not sys.argv[2]:
+        import resources.lib.ted_talks as ted_talks
+        ted_talks.Main()
+    elif sys.argv[2].startswith('?addToFavorites'):
+        import resources.lib.ted_talks as ted_talks
+        ted_talks.Main(checkMode=False).addToFavorites(sys.argv[2].split('=')[-1])
+    elif sys.argv[2].startswith('?removeFromFavorites'):
+        import resources.lib.ted_talks as ted_talks
+        ted_talks.Main(checkMode=False).removeFromFavorites(sys.argv[2].split('=')[-1])
     else:
         import resources.lib.ted_talks as ted_talks
         ted_talks.Main()
+
 sys.modules.clear()
