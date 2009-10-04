@@ -1,55 +1,44 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
-    <string id="30000">TED Talks - Ideas Worth Spreading</string>
-
-    <string id="30001">Search</string>
-	<string id="30002">Add to Favorite Talks</string>
+    <string id="30000">TED Talks</string>
     
-    <string id="30003">Browse By Theme</string>
-    <string id="30004">Each year,  the TED (Technology, Entertainment, Design) conference hosts some of the world's most fascinating people: Trusted voices and convention-breaking mavericks, icons and geniuses. These podcasts (also available in audio format) capture the most extraordinary presentations delivered from the TED stage.</string>
-
-	<string id="30010">Play Random</string>
-    <string id="30020">Download Video</string>
-	
-	<string id="30030">Browse By Theme</string>
-	<string id="30031">Browse All Feeds</string>
-	<string id="30032">Your Favorites</string>
-	<string id="30033">Your Downloaded Videos</string>
-	
-	<!--Settings-->
+    <!--Categories-->
+    <string id="30001">Newest Talks</string>
+    <string id="30002">Speakers</string>
+    <string id="30003">Themes</string>
+    <string id="30004">Search</string>
+    <string id="30005">Favorites</string>
     
-	<string id="30040">Check for updates at startup</string>   
-	
-    <string id="30070">Video Quality</string>
-	<string id="30071">Standard Def</string>
-    <string id="30072">High Def (480p)</string>
-    <string id="30073">Audio </string>
-	
-	<string id="30074">Download Mode</string>
-	<string id="30076">Temp</string>
-	<string id="30077">Save</string>
-    <string id="30075">Download Path</string>
-	
-	<!--Addons upgrader-->	
-		<!-- Update messages -->
-	<string id="30080">Upgrade Avaliable</string>
-    <string id="30081">(Updating...)</string>
-    <string id="30082">Fetching file list...</string>
-    <string id="30083">Please wait...</string>
-    <string id="30084"></string>
-    <string id="30085">Fetching:</string>
-    <string id="30086">Path:</string>
-    <string id="30087">File:</string>
-    <string id="30088">Updating:</string>
-    <string id="30089">Skip</string>
-    <string id="30090">Install</string>
-	<string id="30091">Select "Install" to upgrade</string>
-	<string id="30092">Select "Skip" to continue without upgrading.</string>
-	<string id="30500">Downloading: %s</string>
-    <string id="30501">Saving: %s</string>
-    <string id="30502">To: %s</string>
-    <string id="30503">Copying: %s</string>
-		<!-- Update error messages -->
-    <string id="30099">There was an error installing item!</string>
-	
+    <!--NavItems-->
+    <string id="30020"> Next</string>
+    <string id="30021"> Previous</string>
+    
+    <!--Category Descriptions  30031-30033 from ted.com-->
+    <!--Newest-->
+    <string id="30031">TED is a small nonprofit devoted to Ideas Worth Spreading. It started out (in 1984) as a conference bringing together people from three worlds: Technology, Entertainment, Design. Since then its scope has become ever broader. Along with the annual TED Conference in Long Beach, California, and the TEDGlobal conference in Oxford UK, TED includes the award-winning TEDTalks video site, the Open Translation Program, the new TEDx community program, this year's TEDIndia Conference and the annual TED Prize.</string>
+    <!--Speakers-->
+    <string id="30032">The roster of presenters at TED has broadened to include scientists, philosophers, musicians, religious leaders, philanthropists and many others. Over the years, TED speakers have included Bill Gates, Frank Gehry, Jane Goodall, Al Gore, Billy Graham, Peter Gabriel, Quincy Jones, Bono. Yet often the real stars have been the unexpected: Li Lu, a key organizer of the Tiananmen Square student protest; Aimee Mullins, a Paralympics competitor who tried out a new pair of artificial legs onstage; or Jennifer Lin, a 14-year-old pianist whose 6-minute improvisation moved the audience to tears.</string>
+    <!--Themes-->
+    <string id="30033">More cancers will be preventable in 5 to 10 years, using a vaccine. People wearing artificial feet may scale walls a la Spider-Man. Robots will come with lifelike faces that convey human emotion. That was just a sampling of the technology envisioned for the future at TED, the annual gathering of corporate, Hollywood and scientific glitterati touted as a caldron of ideas and innovation.</string>
+    <!--Search-->
+    <string id="30034">Search for Talks on TED.com</string>
+    <!--Favorites-->
+    <string id="30035">Your favorite talks.</string>
+    
+    <!--Errors-->
+    <string id="30050">Logon Error</string>
+    <string id="30051">User could not be authenticated</string>
+    
+    <!--Settings-->
+    <string id="30070">username</string>
+    <string id="30071">password</string>
+    
+    <!--Context Menu-->
+    <!--<string id="13347">Queue item</string>from system-->
+    <string id="30090">Add to TED.com favorites</string>
+    <string id="30091">Add to favorites successful</string>
+    <string id="30092">Add to favorites failed</string>
+    <string id="30093">Remove from TED.com favorites</string>
+    <string id="30094">Remove from favorites successful</string>
+    <string id="30095">Remove from favorites failed</string>
 </strings>
