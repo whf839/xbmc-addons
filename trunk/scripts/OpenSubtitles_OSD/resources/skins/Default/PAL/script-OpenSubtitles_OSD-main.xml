@@ -16,7 +16,7 @@
         <posy>0</posy>
         <width>480</width>
         <height>520</height>
-        <texture border="40">default-panel.png</texture>
+        <texture border="40">default-panel1.png</texture>
       </control>
       <!-- ** Required ** Do not change <id> or <type> -->
        <control type="group" id="110">
@@ -41,25 +41,50 @@
             
       </control>
     </control>
-      <control type="label">
+    
+    <control type="group" id="112">
+      <control type="image" >
+            <description>page header tab icon</description>
+            <posx>20</posx>
+            <posy>2</posy>
+            <width>250</width>
+            <height>40</height>
+            <texture>podnapisi.png</texture>
+            <visible>!Control.IsVisible(111) + !Control.IsVisible(110)</visible>
+      </control>
+    </control>
+      <control type="label" id="300">
         <description>textarea</description>
-        <posx>210</posx>
+        <posx>345</posx>
         <posy>15</posy>
         <width>270</width>
         <height>15</height>
         <font>font12</font>
         <textcolor>white</textcolor>
-        <label>Items marked            work better</label>
+        <align>right</align>
+        
+      </control>
+                  <control type="label" id="301">
+        <description>textarea</description>
+        <posx>383</posx>
+        <posy>15</posy>
+        <width>140</width>
+        <height>22</height>
+        <font>font12</font>
+        <textcolor>white</textcolor>
+        
+        
       </control>              
       <control type="image">
-            <posx>321</posx>
+            <posx>351</posx>
             <posy>22</posy>
             <width>27</width>
             <height>7</height>
             <texture>icon_sync.png</texture>
             <visible>True</visible>
                     
-        </control>  
+        </control>
+
       <control type="image">
         <posx>15</posx>
         <posy>50</posy>
