@@ -1,4 +1,4 @@
-I. Installation 
+I. Installation
 
 The prefered way is to install via SVN REPO Installer.
 See http://xbmc.org/forum/showpost.php?p=159135&postcount=1
@@ -12,6 +12,8 @@ Select to enter an album.
 The 'info' key toggles the title, arrors, and description.
 The 'menu' key exits the script.
 The 'back' key returns to albums list, or exits the script if already in albums list.
+The 'context' key downloads albums in album view, or individual photos in photo view.
+
 
 Check your keymap.xml file if you're not sure what keys do what.
 See xbmc.org/wiki for more information regarding keymap.xml.
