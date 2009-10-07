@@ -6,7 +6,7 @@ __scriptname__ = "The Big Picture"
 __author__ = "rwparris2"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __credits__ = "Team XBMC"
-__version__ = "0.9.1"
+__version__ = "1.0.0"
 
 print "[SCRIPT] '%s: version %s' initialized!" % (__scriptname__, __version__)
 
