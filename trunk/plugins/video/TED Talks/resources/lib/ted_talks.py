@@ -1,28 +1,32 @@
-"""
-    TED Talks
-"""
 import sys
 import urllib
 import ted_talks_scraper
 import xbmc
 import xbmcplugin
 import xbmcgui
+from talkDownloader import Download
 
 getLS = xbmc.getLocalizedString
 TedTalks = ted_talks_scraper.TedTalks()
 
+
 class updateArgs:
+
     def __init__(self, *args, **kwargs):
-        for key, value in kwargs.iteritems(): 
-            if value == 'None': kwargs[key] = None
-            else: kwargs[key] = urllib.unquote_plus(kwargs[key])
+        for key, value in kwargs.iteritems():
+            if value == 'None':
+                kwargs[key] = None
+            else:
+                kwargs[key] = urllib.unquote_plus(kwargs[key])
         self.__dict__.update(kwargs)
 
+
 class UI:
+
     def __init__(self):
         self.main = Main(checkMode = False)
         xbmcplugin.setContent(int(sys.argv[1]), 'movies')
-    
+
     def endofdirectory(self, sortMethod = 'title'):
         #set sortmethod to something xbmc can use
         if sortMethod == 'title':
@@ -32,11 +36,13 @@ class UI:
         #Sort methods are required in library mode.
         xbmcplugin.addSortMethod(int(sys.argv[1]), sortMethod)
         #If url is not None, then the script arrived here from a navItem, and don't want to add to the heirarchy
-        if self.main.args.url: dontAddToHierarchy = True
-        else: dontAddToHierarchy = False
+        if self.main.args.url:
+            dontAddToHierarchy = True
+        else:
+            dontAddToHierarchy = False
         #let xbmc know the script is done adding items to the list.
-        xbmcplugin.endOfDirectory(handle = int(sys.argv[1]), updateListing = dontAddToHierarchy )
-        
+        xbmcplugin.endOfDirectory(handle = int(sys.argv[1]), updateListing = dontAddToHierarchy)
+
     def addItem(self, info, isFolder=True):
         #Defaults in dict. Use 'None' instead of None so it is compatible for quote_plus in parseArgs
         info.setdefault('url', 'None')
@@ -55,9 +61,9 @@ class UI:
         if not isFolder:
             li.setProperty("IsPlayable", "true")#let xbmc know this can be played, unlike a folder.
             #add context menu items to non-folder items.
-            contextmenu = [(xbmc.getLocalizedString(13347), 'Action(Queue)')]
+            contextmenu = [(getLS(13347), 'Action(Queue)')]
+            contextmenu += [(getLS(30096), 'RunPlugin(%s?downloadVideo=%s)' % (sys.argv[0], info['url']))]
             #only add add to favorites context menu if the user has a username & isn't already looking at favorites.
-            print 'self.main.args.mode', self.main.args.mode
             if self.main.settings['username']:
                 if self.main.args.mode == 'favorites':
                     contextmenu += [(getLS(30093), 'RunPlugin(%s?removeFromFavorites=%s)' % (sys.argv[0], info['url']))]
@@ -73,10 +79,10 @@ class UI:
 
     def playVideo(self):
         video = TedTalks.getVideoDetails(self.main.args.url)
-        li=xbmcgui.ListItem(video['Title'], 
-                            iconImage = self.main.args.icon, 
-                            thumbnailImage = self.main.args.icon, 
-                            path = video['url'],)
+        li=xbmcgui.ListItem(video['Title'],
+                            iconImage = self.main.args.icon,
+                            thumbnailImage = self.main.args.icon,
+                            path = video['url'])
         li.setInfo(type='Video', infoLabels=video)
         xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, li)
 
@@ -86,7 +92,7 @@ class UI:
             self.addItem({'Title': getLS(30020), 'url':navItems['next'], 'mode':mode})
         if navItems['previous']:
             self.addItem({'Title': getLS(30021), 'url':navItems['previous'], 'mode':mode})
-        
+
     def showCategories(self):
         self.addItem({'Title':getLS(30001), 'mode':'newTalks', 'Plot':getLS(30031)})#new
         self.addItem({'Title':getLS(30002), 'mode':'speakers', 'Plot':getLS(30032)})#speakers
@@ -95,10 +101,10 @@ class UI:
         if self.main.settings['username']:
             self.addItem({'Title':getLS(30005), 'mode':'favorites', 'Plot':getLS(30035)})#favorites
         self.endofdirectory()
-    
+
     def newTalks(self):
         newMode = 'playVideo'
-        newTalks = TedTalks.newTalks(self.main.args.url)
+        newTalks = TedTalks.NewTalks(self.main.args.url)
         #add talks to the list
         for talk in newTalks.getNewTalks():
             talk['mode'] = newMode
@@ -107,10 +113,10 @@ class UI:
         self.navItems(newTalks.navItems, self.main.args.mode)
         #end the list
         self.endofdirectory(sortMethod = 'date')
-    
+
     def speakers(self):
         newMode = 'speakerVids'
-        speakers = TedTalks.speakers(self.main.args.url)
+        speakers = TedTalks.Speakers(self.main.args.url)
         #add speakers to the list
         for speaker in speakers.getAllSpeakers():
             speaker['mode'] = newMode
@@ -119,34 +125,34 @@ class UI:
         self.navItems(speakers.navItems, self.main.args.mode)
         #end the list
         self.endofdirectory()
-    
+
     def speakerVids(self):
         newMode = 'playVideo'
-        speakers = TedTalks.speakers(self.main.args.url)
+        speakers = TedTalks.Speakers(self.main.args.url)
         for talk in speakers.getTalks():
             talk['mode'] = newMode
             self.addItem(talk, isFolder = False)
         #end the list
         self.endofdirectory()
-    
+
     def themes(self):
         newMode = 'themeVids'
-        themes = TedTalks.themes(self.main.args.url)
+        themes = TedTalks.Themes(self.main.args.url)
         #add themes to the list
         for theme in themes.getThemes():
             theme['mode'] = newMode
             self.addItem(theme, isFolder = True)
         #end the list
         self.endofdirectory()
-    
+
     def themeVids(self):
         newMode = 'playVideo'
-        themes = TedTalks.themes(self.main.args.url)
+        themes = TedTalks.Themes(self.main.args.url)
         for talk in themes.getTalks():
             talk['mode'] = newMode
             self.addItem(talk, isFolder = False)
         self.endofdirectory()
-        
+
     def favorites(self):
         newMode = 'playVideo'
         #attempt to login
@@ -157,14 +163,16 @@ class UI:
                 self.addItem(talk, isFolder = False)
             self.endofdirectory()
 
+
 class Main:
+
     def __init__(self, checkMode = True):
         self.user = None
         self.parseArgs()
         self.getSettings()
         if checkMode:
             self.checkMode()
-        
+
     def parseArgs(self):
         # call updateArgs() with our formatted argv to create the self.args object
         if (sys.argv[2]):
@@ -180,7 +188,7 @@ class Main:
         self.settings = dict()
         self.settings['username'] = xbmcplugin.getSetting('username')
         self.settings['password'] = xbmcplugin.getSetting('password')
-    
+
     def isValidUser(self):
         self.user = TedTalks.User(self.settings['username'], self.settings['password'])
         if self.user:
@@ -188,7 +196,7 @@ class Main:
         else:
             xbmcgui.Dialog().ok(getLS(30050), getLS(30051))
             return False
-    
+
     def addToFavorites(self, url):
         if self.isValidUser():
             successful = TedTalks.Favorites().addToFavorites(self.user, url)
@@ -196,7 +204,7 @@ class Main:
                 xbmc.executebuiltin('Notification(%s,%s,)' % (getLS(30000), getLS(30091)))
             else:
                 xbmc.executebuiltin('Notification(%s,%s,)' % (getLS(30000), getLS(30092)))
-    
+
     def removeFromFavorites(self, url):
         if self.isValidUser():
             successful = TedTalks.Favorites().removeFromFavorites(self.user, url)
@@ -204,6 +212,12 @@ class Main:
                 xbmc.executebuiltin('Notification(%s,%s,)' % (getLS(30000), getLS(30094)))
             else:
                 xbmc.executebuiltin('Notification(%s,%s,)' % (getLS(30000), getLS(30095)))
+
+    def downloadVid(self, url):
+        video = TedTalks.getVideoDetails(url)
+        downloadPath = xbmcgui.Dialog().browse(3, getLS(30096), 'files')
+        if downloadPath:
+            Download(video['Title'], video['url'], downloadPath)
 
     def checkMode(self):
         mode = self.args.mode
