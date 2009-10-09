@@ -110,9 +110,6 @@ class TedTalks:
                 yield {'url':link, 'Title':title, 'Thumb':pic}
 
     class Speakers:
-        """self.speakers=[{'url', 'Title', 'videos':[{'url','title','pic'},...]},...]
-        this method got nastey & hacky... but screw it, I'm tired of working on this plugin."""
-        # TODO: make this less nastey & hacky.
 
         def __init__(self, url=None):
             # adding 9999 to the url takes the script to the very last page of the list, providing the total # of pages.
@@ -138,7 +135,7 @@ class TedTalks:
                 if i is not 8:
                     html = getHTML(URLSPEAKERS+str(i+1))
                 else:
-                    html = getHTML(self.html)
+                    html = self.html
                 for speaker in BeautifulSoup(html, parseOnlyThese = speakerContainers):
                     title = speaker.string
                     link = URLTED+speaker['href']
