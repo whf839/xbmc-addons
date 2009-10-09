@@ -5,21 +5,22 @@ from util import getHTML, getUrllib2ResponseObject, cleanHTML, resizeImage
 from BeautifulSoup import SoupStrainer, MinimalSoup as BeautifulSoup
 
 #MAIN URLS
-URLTED      = 'http://www.ted.com'
-URLTHEMES   = 'http://www.ted.com/themes/atoz/page/'
+URLTED = 'http://www.ted.com'
+URLTHEMES = 'http://www.ted.com/themes/atoz/page/'
 URLSPEAKERS = 'http://www.ted.com/speakers/atoz/page/'
-URLNEW      = 'http://www.ted.com/talks/list/page/'
-URLSEARCH   = 'http://www.ted.com/search?q=%s/page/'
-URLLOGIN    = 'http://www.ted.com/users/signin/'
-URLPROFILE  = 'http://www.ted.com/profiles/view/id/'
-URLFAVORITES= 'http://www.ted.com/profiles/favorites/id/'
-URLADDFAV   ='http://www.ted.com/profiles/addfavorites?id=%s&modulename=talks'
-URLREMFAV   ='http://www.ted.com/profiles/removefavorites?id=%s&modulename=talks'
-
+URLNEW = 'http://www.ted.com/talks/list/page/'
+URLSEARCH = 'http://www.ted.com/search?q=%s/page/'
+URLLOGIN = 'http://www.ted.com/users/signin/'
+URLPROFILE = 'http://www.ted.com/profiles/view/id/'
+URLFAVORITES = 'http://www.ted.com/profiles/favorites/id/'
+URLADDFAV ='http://www.ted.com/profiles/addfavorites?id=%s&modulename=talks'
+URLREMFAV ='http://www.ted.com/profiles/removefavorites?id=%s&modulename=talks'
 
 pluginName = sys.modules['__main__'].__plugin__
 
+
 class TedTalks:
+
     def getNavItems(self, html):
         """self.navItems={'next':url, 'previous':url, 'selected':pagenumberasaninteger}"""
         navItems = {'next':None, 'previous':None, 'selected':1}
@@ -28,7 +29,7 @@ class TedTalks:
             if liTag.a.has_key('class'):
                 if liTag.a['class'] == 'next':
                     navItems['next'] = URLTED+liTag.a['href']
-                elif liTag.a['class'] == 'previous': 
+                elif liTag.a['class'] == 'previous':
                     navItems['previous'] = URLTED+liTag.a['href']
                 elif liTag.a['class'] == 'selected':
                     navItems['selected'] = int(liTag.a.string)
@@ -55,9 +56,9 @@ class TedTalks:
         id = url.split('/')[-1]
         return {'Title':title, 'Director':speaker, 'Genre':'TED', 'Plot':plot, 'PlotOutline':plot, 'id':id, 'url':url}
 
-
     class User:
         """makes a user object"""
+
         def __init__(self, username = None, password = None):
             self.username = username
             self.password = password
@@ -74,10 +75,10 @@ class TedTalks:
                     id = aTag['href'].split('/')[-1]
                     realName = aTag.string.strip()
                     break
-                else: 
+                else:
                     id = realName = None
             return id, realName
-        
+
         def getLoginResponse(self, url = URLLOGIN):
             #clientform doesn't like HTML, and I don't want to monkey patch it, so getUrllib2ResponseObject was born.
             response = getUrllib2ResponseObject(url)
@@ -91,11 +92,12 @@ class TedTalks:
             #click submit
             return getHTML(form.click())
 
-
-    class newTalks:
+    class NewTalks:
         """self.videos=[{'link':link,'Title':title,'pic':pic},...]"""
+
         def __init__(self, url=None):
-            if url is None: url = URLNEW
+            if url is None:
+                url = URLNEW
             self.html = getHTML(url)
             self.navItems = TedTalks().getNavItems(self.html)
 
@@ -107,14 +109,15 @@ class TedTalks:
                 pic = resizeImage(talk.find('img', attrs = {'src':re.compile('.+?\.jpg')})['src'])
                 yield {'url':link, 'Title':title, 'Thumb':pic}
 
-
-    class speakers:
+    class Speakers:
         """self.speakers=[{'url', 'Title', 'videos':[{'url','title','pic'},...]},...]
         this method got nastey & hacky... but screw it, I'm tired of working on this plugin."""
         # TODO: make this less nastey & hacky.
+
         def __init__(self, url=None):
             # adding 9999 to the url takes the script to the very last page of the list, providing the total # of pages.
-            if url == None: url = URLSPEAKERS+'9999'
+            if url == None:
+                url = URLSPEAKERS+'9999'
             self.html = getHTML(url)
             # only bother with navItems where they have a chance to appear.
             if URLSPEAKERS in url:
@@ -149,14 +152,15 @@ class TedTalks:
                 pic = resizeImage(talk.find('img', attrs = {'src':re.compile('.+?\.jpg')})['src'])
                 yield {'url':link, 'Title':title, 'Thumb':pic}
 
+    class Themes:
 
-    class themes:
         def __init__(self, url=None):
-            if url == None: url = URLTHEMES
+            if url == None:
+                url = URLTHEMES
             self.html = getHTML(url)
             # a-z themes don't yet have navItems, so the check can be skipped for now.
             # self.navItems = TedTalks().getNavItems(html)
-        
+
         def getThemes(self):
             themes = list()
             themeContainers = SoupStrainer(attrs = {'href':re.compile('/themes/\S.+?.html')})
@@ -170,7 +174,7 @@ class TedTalks:
             from simplejson import loads
             # search HTML for the link to tedtalk's "api".  It is easier to use regex here than BS.
             jsonUrl = URLTED+re.findall('DataSource\("(.+?)"', self.html)[0]
-            # make a dict from the json formatted string from above url 
+            # make a dict from the json formatted string from above url
             talksMarkup = loads(getHTML(jsonUrl))
             # parse through said dict for all the metadata
             for markup in talksMarkup['resultSet']['result']:
@@ -180,12 +184,11 @@ class TedTalks:
                 pic = resizeImage(talk.find('img', attrs = {'src':re.compile('.+?\.jpg')})['src'])
                 yield {'url':link, 'Title':title, 'Thumb':pic}
 
-
     class Favorites:
 
         def getFavoriteTalks(self, user, url = URLFAVORITES):
             """user must be TedTalks().User object with .id attribute"""
-            if user.id is not None: 
+            if user.id is not None:
                 html = getHTML(url+user.id)
                 talkContainer = SoupStrainer(attrs = {'class':re.compile('box clearfix')})
                 for talk in BeautifulSoup(html, parseOnlyThese = talkContainer):
@@ -195,7 +198,7 @@ class TedTalks:
                     yield {'url':link, 'Title':title, 'Thumb':pic}
             else:
                 print '[%s] %s invalid user object' % (pluginName, __name__)
-        
+
         def addToFavorites(self, user, url):
             """user must be TedTalks().User object with .id attribute"""
             if user.id is not None:
@@ -207,7 +210,7 @@ class TedTalks:
                     return True
             else:
                 print '[%s] %s invalid user object' % (pluginName, __name__)
-        
+
         def removeFromFavorites(self, user, url):
             """user must be TedTalks().User object with .id attribute"""
             if user.id is not None:
@@ -219,7 +222,6 @@ class TedTalks:
                     return True
             else:
                 print '[%s] %s invalid user object' % (pluginName, __name__)
-
 
     class Search:
         pass

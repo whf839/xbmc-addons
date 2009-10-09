@@ -6,6 +6,7 @@ import sys
 
 pluginName = sys.modules['__main__'].__plugin__
 
+
 def getHTML(url, cookiefile = 'special://temp/ted-cookies.lwp', headers = [('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')]):
     """Returns HTML from a given URL"""
     try:
@@ -35,8 +36,10 @@ def getHTML(url, cookiefile = 'special://temp/ted-cookies.lwp', headers = [('Use
         print Exception.__module__
         print dir(error)
 
+
 def getUrllib2ResponseObject(url):
     return urllib2.urlopen(url)
+
 
 def cleanHTML(s, noBS=False):
     """(string[, noBS=False])
@@ -53,11 +56,12 @@ def cleanHTML(s, noBS=False):
         s = ''.join(tmp)
     s = re.sub('\s+', ' ', s) #remove extra spaces
     s = re.sub('<.+?>|Image:.+?\r|\r', '', s) #remove htmltags, image captions, & newlines
-    s = s.replace('&#39;','\'') #replace html-encoded single-quotes
+    s = s.replace('&#39;', '\'') #replace html-encoded single-quotes
     s = s.replace('&quot;', '"') #replace html-encoded double-quotes
-    s = s.replace('&nbsp;',' ') #replace html-encoded nonbreaking space
+    s = s.replace('&nbsp;', ' ') #replace html-encoded nonbreaking space
     s = s.strip()
     return s
+
 
 def resizeImage(imagePath):
     return imagePath.replace('132x99', '291x218')
