@@ -5,12 +5,13 @@
     <string id="30002">Nedladdningssökväg</string>
     <string id="30003">Fråga om nedladdning innan uppspelning</string>
     <string id="30004">Videokvalitet (omstart krävs)</string>
+	<!--  Don't translate the quality, it breaks the plugin  -->
     <string id="30005">quicktime-high-definition</string>
-    <string id="30006">quicktime-stor</string>
-    <string id="30007">quicktime-liten</string>
-    <string id="30008">wmv-stor</string>
-    <string id="30009">wmv-liten</string>
-    <string id="30010">xvid-stor</string>
-    <string id="30011">xvid-liten</string>
+    <string id="30006">quicktime-large</string>
+    <string id="30007">quicktime-small</string>
+    <string id="30008">wmv-large</string>
+    <string id="30009">wmv-small</string>
+    <string id="30010">xvid-large</string>
+    <string id="30011">xvid-small</string>
     <string id="30012">Visa alla avsnitt (omstart krävs)</string>
 </strings>
