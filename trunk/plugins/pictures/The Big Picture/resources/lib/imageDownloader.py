@@ -23,13 +23,13 @@ class Download:
             self.filename = str(self.url.split('/')[-1])
             foldername = str(self.url.split('/')[-2])
             self.fullDownloadPath = os.path.join(downloadPath, foldername, self.filename)
-            print '[%s] %s : Attempting to download %s of %s' % (scriptName, __name__, i+1, len(photos))
-            print '[%s] %s --> %s\n' %  (scriptName, self.url, self.fullDownloadPath)
+            print '[SCRIPT][%s] %s : Attempting to download %s of %s' % (scriptName, __name__, i+1, len(photos))
+            print '[SCRIPT][%s] %s --> %s\n' %  (scriptName, self.url, self.fullDownloadPath)
 
             if self.checkPath(downloadPath, foldername, self.filename):
                 try:
                     re = urllib.urlretrieve(self.url, self.fullDownloadPath, reporthook = self.showdlProgress)
-                    print '[%s] Download Success!' % (scriptName)
+                    print '[SCRIPT][%s] Download Success!' % (scriptName)
                 except IOError, e:
                     print e
                     self.pDialog.close()

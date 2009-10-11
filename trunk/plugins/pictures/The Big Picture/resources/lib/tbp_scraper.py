@@ -7,27 +7,19 @@ scriptName = sys.modules['__main__'].__scriptname__
 
 
 class TBP:
-    """
-    docdocdoc
-    getHTML
-    cleanHTML
-    getFilters
-    getAlbums
-    getPhotos
-    """
 
     def getHTML(self, url, headers = [('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')]):
         """Returns HTML from a given URL"""
         opener = urllib2.build_opener()
         opener.addheaders = headers
         try:
-            print '[SCRIPT] %s %s attempting to open %s' % (scriptName, __name__, url)
+            print '[SCRIPT][%s] %s attempting to open %s' % (scriptName, __name__, url)
             usock = opener.open(url)
             response = usock.read()
             usock.close()
             return response
         except urllib2.HTTPError, error:
-            print '[SCRIPT] %s %s error opening %s' % (scriptName, __name__, url)
+            print '[SCRIPT][%s] %s error opening %s' % (scriptName, __name__, url)
             print error.msg, error.code, error.geturl()
             try:
                 import xbmcgui
