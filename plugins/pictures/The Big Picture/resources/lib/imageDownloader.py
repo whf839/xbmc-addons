@@ -11,12 +11,14 @@ scriptName = sys.modules['__main__'].__scriptname__
 class Download:
 
     def __init__(self, photos, downloadPath):
+        self.len = str(len(photos))
         self.pDialog = xbmcgui.DialogProgress()
         self.pDialog.create(getLS(32000))
         downloadPath = xbmc.translatePath(downloadPath)
 
         for i, photo in enumerate(photos):
             self.url = photo['pic']
+            self.index = str(i+1)
             #unicode causes problems here, convert to standard str
             self.filename = str(self.url.split('/')[-1])
             foldername = str(self.url.split('/')[-2])
@@ -32,7 +34,7 @@ class Download:
                     print e
                     self.pDialog.close()
                     dialog = xbmcgui.Dialog()
-                    dialog.ok('Error', str(i)+' of '+str(len(photos))+'\n'+self.url, e.__str__())
+                    dialog.ok('Error', '%s %s %s\n%s' % (self.index, getLS(32025), self.len, self.url), e.__str__())
                     break
                 if self.pDialog.iscanceled():
                     self.pDialog.close()
@@ -42,7 +44,10 @@ class Download:
 
     def showdlProgress(self, count, blockSize, totalSize):
         percent = int(count*blockSize*100/totalSize)
-        self.pDialog.update(percent, '%s %s' % (getLS(32023), self.url), '%s %s' % (getLS(32024), self.fullDownloadPath))
+        enum = '%s %s %s' % (self.index, getLS(32025), self.len)
+        fromPath = '%s %s' % (getLS(32023), self.url)
+        toPath = '%s %s' % (getLS(32024), self.fullDownloadPath)
+        self.pDialog.update(percent, enum, fromPath, toPath)
     
     def checkPath(self, path, folder, filename):
         if os.path.isdir(path):
