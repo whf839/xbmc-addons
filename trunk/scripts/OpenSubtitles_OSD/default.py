@@ -2,13 +2,14 @@ import sys
 import os
 import xbmc
 import string
-
+import tempfile
 __scriptname__ = "OpenSubtitles_OSD"
 __author__ = "Amet"
 __url__ = "http://code.google.com/p/opensubtitles-osd/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/scripts/OpenSubtitles_OSD"
 __credits__ = ""
-__version__ = "1.37"
+__version__ = "1.39"
+__XBMC_Revision__ = "22240"
 
 BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib' ) )
 
@@ -21,6 +22,23 @@ __language__ = xbmc.Language( os.getcwd() ).getLocalizedString
 _ = sys.modules[ "__main__" ].__language__
 __settings__ = xbmc.Settings( path=os.getcwd() )
 
+
+
+if __settings__.getSetting( "new_ver" ) == "true":
+	import re
+	import urllib
+	if not xbmc.getCondVisibility('Player.Paused') : xbmc.Player().pause() #Pause if not paused	
+	usock = urllib.urlopen(__svn_url__ + "/default.py")
+	htmlSource = usock.read()
+	usock.close()
+
+	version = re.search( "__version__.*?[\"'](.*?)[\"']",  htmlSource, re.IGNORECASE ).group(1)
+	print "SVN Latest Version :[ "+version+"]"
+	
+	if version > __version__:
+		import xbmcgui
+		dialog = xbmcgui.Dialog()
+		selected = dialog.ok("OpenSubtitles_OSD v" + str(__version__), "Version "+ str(version)+ " of OpenSubtitles_OSD is available" ,"Please use SVN repo Installer or XBMC zone Installer to update " )
 
 
 #############-----------------Is script runing from OSD? -------------------------------###############
@@ -64,14 +82,18 @@ else:
 
 ###-------------------Extract Media files -----------------------------------################
    
-   mediafolder = os.path.join("special://home/scripts/", __scriptname__ ,"resources","skins" , "Default" , "media" )
-   
-   if not os.path.exists(mediafolder):
+   mediafolder = os.path.join(xbmc.translatePath("special://home/scripts/"), __scriptname__ ,"resources","skins" , "Default" , "media" )
+   zip_file = os.path.join(xbmc.translatePath("special://home/scripts/"), __scriptname__ ,"resources","lib" , "media.zip" )
+   if os.path.exists(zip_file):
+		if os.path.exists(mediafolder):
+			import shutil
+			shutil.rmtree(mediafolder)
    
 		import unzip
-		zip_file = os.path.join("special://home/scripts/", __scriptname__ ,"resources","lib" , "media.zip" )
+		
 		un = unzip.unzip()	
 		un.extract_med( zip_file, mediafolder )
+		os.remove(zip_file)
 
 ###-------------------------- Set Search String and Path string -------------################
 
@@ -122,26 +144,31 @@ else:
 	#### ------------------------------ Get User Settings ---------------------------#####
 	
 		temp = False
+		access = True
 	
 		movieFullPath = xbmc.Player().getPlayingFile()
-		if (movieFullPath.find("http://") > -1 ) or (movieFullPath.find("smb://") > -1 ) or (movieFullPath.find("rar://") > -1 ):
+		if (movieFullPath.find("http://") > -1 ) or (movieFullPath.find("rar://") > -1 ):
 			temp = True
-		
+		if (movieFullPath.find("smb://") > -1 ): access = False	
 		path = __settings__.getSetting( "subfolder" ) == "true"
-		
+		sub_folder = xbmc.translatePath(__settings__.getSetting( "subfolderpath" ))
+		print "Access : [" + str(access) + "]"
 		if not path :
-			sub_folder = xbmc.translatePath(__settings__.getSetting( "subfolderpath" ))
 			if len(sub_folder) < 1 :
 				sub_folder = os.path.dirname( movieFullPath )
 				
 		
 		else:
-			if temp:
-				import xbmcgui
-				dialog = xbmcgui.Dialog()
-				sub_folder = dialog.browse( 0, "Choose Subtitle folder", "files")
+			
+			if not access or sub_folder.find("smb://") > -1:
+				if temp:
+					import xbmcgui
+					dialog = xbmcgui.Dialog()
+					sub_folder = dialog.browse( 0, "Choose Subtitle folder", "files")
+				else:
+					sub_folder = os.path.dirname( movieFullPath )
 			else:
-				sub_folder = os.path.dirname( movieFullPath )
+				sub_folder = os.path.dirname( movieFullPath )	
 	
 	#### ------------------------------ Get the main window going ---------------------------#####
 		import gui
