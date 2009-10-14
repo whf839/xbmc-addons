@@ -15,8 +15,8 @@ import zipfile
 import re
 from urllib2 import Request, urlopen, URLError, HTTPError
 import unicodedata
-
-
+import stat
+import shutil
 _ = sys.modules[ "__main__" ].__language__
 __scriptname__ = sys.modules[ "__main__" ].__scriptname__
 __version__ = sys.modules[ "__main__" ].__version__
@@ -25,6 +25,23 @@ __settings__ = xbmc.Settings( path=os.getcwd() )
 STATUS_LABEL = 100
 LOADING_IMAGE = 110
 SUBTITLES_LIST = 120
+
+def timeout(func, args=(), kwargs={}, timeout_duration=10, default=None):
+
+    import threading
+    class InterruptableThread(threading.Thread):
+        def __init__(self):
+            threading.Thread.__init__(self)
+            self.result = "000000000000"
+        def run(self):
+            self.result = func(*args, **kwargs)
+    it = InterruptableThread()
+    it.start()
+    it.join(timeout_duration)
+    if it.isAlive():
+        return it.result
+    else:
+        return it.result
 
 
 class GUI( xbmcgui.WindowXMLDialog ):
@@ -164,10 +181,13 @@ class GUI( xbmcgui.WindowXMLDialog ):
 #### ---------------------------- End Set All ----------------------------###
 
 
-    def set_filehash( self, hash ):
-        if self.debug : LOG( LOG_INFO, "File Hash: [%s]" , ( hash ) )
-        self.file_hash = hash
-
+    def set_filehash(self):
+        
+        hashFile(self.file_original_path)
+        self.file_hash = hashFile(self.file_original_path)
+        if self.debug : LOG( LOG_INFO, "File Hash: [%s]" , ( self.file_hash ) )
+        return self.file_hash
+		
     def set_filesize( self, size ):
         if self.debug : LOG( LOG_INFO, "File Size: [%s]" , ( size ) )
         self.file_size = size
@@ -233,12 +253,12 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
     def search_subtitles( self ):
 
-		self.getControl( STATUS_LABEL ).setLabel( xbmc.getLocalizedString( 646 ) )	
+		self.getControl( STATUS_LABEL ).setLabel( _( 646 ) )	
 	
 		ok = False
 		msg = ""
-	
-	
+		hashTry = timeout(self.set_filehash, timeout_duration=5)
+		
 		if self.file_original_path.find("http") > -1  or self.set_xbox : 
 			hash_search = False
 		else:
@@ -249,10 +269,9 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	                if self.debug : LOG( LOG_INFO, "Search by hash and name " +  os.path.basename( self.file_original_path ) )
 	                self.getControl( STATUS_LABEL ).setLabel( _( 642 ) % ( "...", ) )
 	                
-	                self.set_filehash ( hashFile( self.file_original_path ) )
 	                self.set_filesize ( os.path.getsize( self.file_original_path ) )
 	                   
-	                try : ok,msg = self.osdb_server.searchsubtitles( self.search_string, self.file_hash,self.file_size,self.lang1,self.lang2,self.year,hash_search )
+	                try : ok,msg = self.osdb_server.searchsubtitles( self.search_string, hashTry,self.file_size,self.lang1,self.lang2,self.year,hash_search )
 	                except: self.connected = False
 	
 	                if self.debug : LOG( LOG_INFO, "Hash and Name Search: " + msg )
@@ -339,9 +358,9 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	            if not self.file_original_path.find("http") > -1 and not self.set_xbox :
 	                if self.debug : LOG( LOG_INFO, "Search by hash_pod [" +  os.path.basename( self.file_original_path ) + "]" )
 	                self.getControl( STATUS_LABEL ).setLabel( _( 642 ) % ( "...", ) )
-	                self.set_filehash( hashFile( self.file_original_path ) )
-	
-	                ok,msg = self.osdb_server.searchsubtitles_pod( self.search_string, self.file_hash,self.lang_two1,self.lang_two2 )
+#	                self.set_filehash( hashFile( self.file_original_path ) )
+	                hashTry = timeout(self.set_filehash, timeout_duration=5)
+	                ok,msg = self.osdb_server.searchsubtitles_pod( self.search_string, hashTry ,self.lang_two1,self.lang_two2 )
 	                if not ok:
 	                	self.connected = False
 	                if self.debug : LOG( LOG_INFO, "Hash Search_pod: [" + msg + "]" )
@@ -542,7 +561,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
 
     def file_download(self, url, dest):
-		if self.debug : LOG( LOG_INFO, "Link download" + url )
+		if self.debug : LOG( LOG_INFO, "Link download " + url )
 		req = Request(url)
 		f = urlopen(req)
 		local_file = open(dest, "w" + "b")
@@ -560,7 +579,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
             filename = self.osdb_server.subtitles_list[pos]["filename"]
             subtitle_format = self.osdb_server.subtitles_list[pos]["format"]
             url = self.osdb_server.subtitles_list[pos]["link"]
-            local_path = self.sub_folder
+            local_path = xbmc.translatePath( "special://temp" )
             zip_filename = xbmc.translatePath( os.path.join( local_path, "zipsubs.zip" ) )
             
             sub_filename = os.path.basename( self.file_path )
@@ -598,14 +617,14 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	            xbmc.Player().setSubtitles(xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib','dummy.srt' ) ) )
 	
 	            subtitle_b64_data = sublightWebService.DownloadByID(self.session_id, subtitle_id, ticket_id)
-	            base64_file_path = os.path.join(  self.sub_folder, "subtitle.b64" )
+	            base64_file_path = os.path.join(xbmc.translatePath( "special://temp" ), "subtitle.b64" )
 	            base64_file      = open(base64_file_path, "wb")
 	            base64_file.write( subtitle_b64_data )
 	            base64_file.close()
 	            
 	            base64_file = open(base64_file_path, "r")
 	             
-	            zip_file_path = os.path.join( self.sub_folder , "subtitle.zip" )
+	            zip_file_path = os.path.join(xbmc.translatePath( "special://temp" ) , "subtitle.zip" )
 	            zip_file      = open(zip_file_path, "wb")
 	                     
 	            base64.decode(base64_file, zip_file)
@@ -689,19 +708,20 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	                    
 							sub_ext  = os.path.splitext( file_name )[1]
 							sub_name = os.path.splitext( movie_files[i - 1] )[0]
-#							if self.set_temp:
-#								sub_name = self.search_string.replace("+", " ")
-								
 							file_name = "%s.%s%s" % ( sub_name, subtitle_lang, sub_ext )   
-	                    
 	                    file_path = os.path.join(self.sub_folder, file_name)
-	                    outfile   = open(file_path, "wb")
-	                    outfile.write( zip.read(zip_entry) )
-	                    outfile.close()
+	                    
+	                    try:    
+		                    outfile   = open(file_path, "wb")
+		                    outfile.write( zip.read(zip_entry) )
+		                    outfile.close()
+		                    xbmc.Player().setSubtitles(file_path)
+	                    except:
+	                        import xbmcgui
+	                        dialog = xbmcgui.Dialog()
+	                        selected = dialog.ok("OpenSubtitles_OSD", "You can't save subtitle to Selected destination", "Please choose different Subtitle folder under Script Settings" )
 	                zip.close()
-	                xbmc.Player().pause()
-	                xbmc.Player().setSubtitles(file_path)
-	            
+
 	
 	            os.remove(base64_file_path)
 	            os.remove(zip_file_path)
@@ -721,7 +741,6 @@ class GUI( xbmcgui.WindowXMLDialog ):
         try:
             un = unzip.unzip()
             files = un.get_file_list( zip_filename )
-            ztest = os.path.join( self.sub_folder , "zip1.zip" )
             if not zipfile.is_zipfile( zip_filename ) :
             	self.getControl( STATUS_LABEL ).setLabel( _( 654 ) )
             	subtitle_set = False
@@ -798,7 +817,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 i   = 0
                 for zip_entry in zip.namelist():
                     if (zip_entry.find( "srt" ) < 0)  and (zip_entry.find( "sub" ) < 0)  and (zip_entry.find( "txt" )< 0) :
-                		os.remove ( os.path.join( self.sub_folder, zip_entry ) )
+                		os.remove ( os.path.join( "special://temp/", zip_entry ) )
 
                     if ( zip_entry.find( "srt" )  > 0 ) or ( zip_entry.find( "sub" )  > 0 ) or ( zip_entry.find( "txt" )  > 0 ):
                     
@@ -808,17 +827,24 @@ class GUI( xbmcgui.WindowXMLDialog ):
 							file_name = zip_entry
 							sub_ext  = os.path.splitext( file_name )[1]
 							sub_name = os.path.splitext( movie_files[i - 1] )[0]
-#							if self.set_temp:
-#								sub_name = self.search_string.replace("+", " ")
 									
 							file_name = "%s.%s%s" % ( sub_name, str(lang), ".srt" )
 							file_path = os.path.join(self.sub_folder, file_name)
-							outfile   = open(file_path, "wb")
-							outfile.write( zip.read(zip_entry) )
-							outfile.close()
-							os.remove ( os.path.join( self.sub_folder, zip_entry ) )
+
+							try:
+								outfile   = open(file_path, "wb")
+								outfile.write( zip.read(zip_entry) )
+								outfile.close()
+							except:
+								import xbmcgui
+								dialog = xbmcgui.Dialog()
+								selected = dialog.ok("OpenSubtitles_OSD", "You can't save subtitle to Selected destination", "Please choose different Subtitle folder under Script Settings" )									
+							 
+							try:os.remove ( os.path.join( "special://temp/", zip_entry ) )
+							except:pass
                 zip.close()
-                xbmc.Player().pause()
+#                xbmc.Player().pause()
+#                time.sleep(2)
                 xbmc.Player().setSubtitles(file_path)
 
 
