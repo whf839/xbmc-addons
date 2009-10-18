@@ -8,7 +8,7 @@ __author__ = "Amet"
 __url__ = "http://code.google.com/p/opensubtitles-osd/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/scripts/OpenSubtitles_OSD"
 __credits__ = ""
-__version__ = "1.39"
+__version__ = "1.40"
 __XBMC_Revision__ = "22240"
 
 BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib' ) )
@@ -145,21 +145,30 @@ else:
 	
 		temp = False
 		access = True
-	
+		rar = False
 		movieFullPath = xbmc.Player().getPlayingFile()
-		if (movieFullPath.find("http://") > -1 ) or (movieFullPath.find("rar://") > -1 ):
-			temp = True
-		if (movieFullPath.find("smb://") > -1 ): access = False	
 		path = __settings__.getSetting( "subfolder" ) == "true"
-		sub_folder = xbmc.translatePath(__settings__.getSetting( "subfolderpath" ))
-		print "Access : [" + str(access) + "]"
-		if not path :
+		print str(path)
+
+
+		if (movieFullPath.find("http://") > -1 ):
+			temp = True
+
+		if (movieFullPath.find("rar://") > -1 ) and path:
+			rar = True
+			import urllib
+			sub_folder = os.path.dirname(urllib.unquote(movieFullPath))
+			sub_folder = sub_folder.replace("rar://","")
+			sub_folder = os.path.dirname( sub_folder )
+			
+		if not path and not rar:
+			sub_folder = xbmc.translatePath(__settings__.getSetting( "subfolderpath" ))
 			if len(sub_folder) < 1 :
 				sub_folder = os.path.dirname( movieFullPath )
 				
 		
-		else:
-			
+		if path and not rar:
+			sub_folder = xbmc.translatePath(__settings__.getSetting( "subfolderpath" ))
 			if not access or sub_folder.find("smb://") > -1:
 				if temp:
 					import xbmcgui
