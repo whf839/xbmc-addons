@@ -719,7 +719,9 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	                    except:
 	                        import xbmcgui
 	                        dialog = xbmcgui.Dialog()
-	                        selected = dialog.ok("OpenSubtitles_OSD", "You can't save subtitle to Selected destination", "Please choose different Subtitle folder under Script Settings" )
+	                        selected = dialog.yesno("OpenSubtitles_OSD", "You can't save subtitle to Selected destination", "Please choose different Subtitle folder under Script Settings.", "Would you like to adjust the settings now?" )
+	                        if selected == 1:
+	                        	__settings__.openSettings()
 	                zip.close()
 
 	
@@ -756,10 +758,10 @@ class GUI( xbmcgui.WindowXMLDialog ):
             	listitem = xbmcgui.ListItem( label,label2 )
             	if self.mansearch : self.getControl( SUBTITLES_LIST ).addItem( listitem )
 			
-	    else:
-	    	self.getControl( STATUS_LABEL ).setLabel( _( 650 ) )
-            un.extract( zip_filename, local_path )
-            self.getControl( STATUS_LABEL ).setLabel( _( 651 ) )
+            else:
+            	self.getControl( STATUS_LABEL ).setLabel( _( 650 ) )
+            	un.extract( zip_filename, local_path )
+            	self.getControl( STATUS_LABEL ).setLabel( _( 651 ) )
 
             if self.debug : 
             
@@ -835,25 +837,23 @@ class GUI( xbmcgui.WindowXMLDialog ):
 								outfile   = open(file_path, "wb")
 								outfile.write( zip.read(zip_entry) )
 								outfile.close()
+								xbmc.Player().setSubtitles(file_path)
 							except:
 								import xbmcgui
-								dialog = xbmcgui.Dialog()
-								selected = dialog.ok("OpenSubtitles_OSD", "You can't save subtitle to Selected destination", "Please choose different Subtitle folder under Script Settings" )									
+								selected = dialog.yesno("OpenSubtitles_OSD", "You can't save subtitle to Selected destination", "Please choose different Subtitle folder under Script Settings.", "Would you like to adjust the settings now?" )
+								if selected == 1:
+									__settings__.openSettings()								
 							 
-							try:os.remove ( os.path.join( "special://temp/", zip_entry ) )
-							except:pass
+							os.remove ( os.path.join( "special://temp/", zip_entry ) )
+							
                 zip.close()
-#                xbmc.Player().pause()
-#                time.sleep(2)
-                xbmc.Player().setSubtitles(file_path)
-
 
             os.remove(zip_filename)
             self.exit_script()            
 
 
 
-	except Exception, e:
+        except Exception, e:
             error = _( 634 ) % ( str ( e ) )
             LOG( LOG_ERROR, error )
             
@@ -894,54 +894,56 @@ class GUI( xbmcgui.WindowXMLDialog ):
     def onClick( self, controlId ):
 
            	
-		if self.pos == 1:
-			if not self.mansearch:
-				if ( self.controlId == SUBTITLES_LIST ) and (self.getControl( SUBTITLES_LIST ).getSelectedPosition() == 0):
-    		
-					if (self.service == "OpenSubtitles"):
-						if self.PN:
-							service = "Podnapisi"
-						if self.SL:
-							service = "Sublight"
+		if self.pos == 1 and not self.mansearch:
+#			if not self.mansearch:
+			if ( self.controlId == SUBTITLES_LIST ) and (self.getControl( SUBTITLES_LIST ).getSelectedPosition() == 0):
+   		
+				if (self.service == "OpenSubtitles"):
+					if self.PN:
+						service = "Podnapisi"
+					if self.SL:
+						service = "Sublight"
 
-					if (self.service == "Podnapisi"):
-						if self.OS:
-							service = "OpenSubtitles"
-						if self.SL:
-							service = "Sublight"
+				if (self.service == "Podnapisi"):
+					if self.OS:
+						service = "OpenSubtitles"
+					if self.SL:
+						service = "Sublight"
 
-					if (self.service == "Sublight"):
-						if self.PN:
-							service = "Podnapisi"
-						if self.OS:
-							service = "OpenSubtitles"	
-					self.service = service
-					self.connect()
-					
-				if ( self.controlId == SUBTITLES_LIST ) and (self.getControl( SUBTITLES_LIST ).getSelectedPosition() >= 1):
-            	
-					if self.service == "OpenSubtitles":
-						self.download_subtitles( (self.getControl( SUBTITLES_LIST ).getSelectedPosition()) -1 )
+				if (self.service == "Sublight"):
+					if self.PN:
+						service = "Podnapisi"
+					if self.OS:
+						service = "OpenSubtitles"	
+				self.service = service
+				self.connect()
+				
+			if ( self.controlId == SUBTITLES_LIST ) and (self.getControl( SUBTITLES_LIST ).getSelectedPosition() >= 1):
 
-					if self.service == "Sublight":
-						self.download_subtitles_sub( (self.getControl( SUBTITLES_LIST ).getSelectedPosition()) - 1 )
-            	
-					if self.service == "Podnapisi":
-						self.download_subtitles( (self.getControl( SUBTITLES_LIST ).getSelectedPosition()) - 1 ) 	
-			else:
-				if ( self.controlId == SUBTITLES_LIST ) and (self.getControl( SUBTITLES_LIST ).getSelectedPosition() == 0):    
-					self.keyboard()
-					
-    			if ( self.controlId == SUBTITLES_LIST ) and (self.getControl( SUBTITLES_LIST ).getSelectedPosition() >= 1):
-            	
-					if self.service == "OpenSubtitles":
-						self.download_subtitles( (self.getControl( SUBTITLES_LIST ).getSelectedPosition()) -1 )
+				if self.service == "OpenSubtitles":
+					self.download_subtitles( (self.getControl( SUBTITLES_LIST ).getSelectedPosition()) -1 )
 
-					if self.service == "Sublight":
-						self.download_subtitles_sub( (self.getControl( SUBTITLES_LIST ).getSelectedPosition()) - 1 )
-            	
-					if self.service == "Podnapisi":
-						self.download_subtitles( (self.getControl( SUBTITLES_LIST ).getSelectedPosition()) - 1 )					 
+				if self.service == "Sublight":
+					self.download_subtitles_sub( (self.getControl( SUBTITLES_LIST ).getSelectedPosition()) - 1 )
+           	
+				if self.service == "Podnapisi":
+					self.download_subtitles( (self.getControl( SUBTITLES_LIST ).getSelectedPosition()) - 1 )
+
+
+		if self.pos == 1 and self.mansearch:
+			if ( self.controlId == SUBTITLES_LIST ) and (self.getControl( SUBTITLES_LIST ).getSelectedPosition() == 0):    
+				self.keyboard()
+				
+   			if ( self.controlId == SUBTITLES_LIST ) and (self.getControl( SUBTITLES_LIST ).getSelectedPosition() >= 1):
+           	
+				if self.service == "OpenSubtitles":
+					self.download_subtitles( (self.getControl( SUBTITLES_LIST ).getSelectedPosition()) -1 )
+
+				if self.service == "Sublight":
+					self.download_subtitles_sub( (self.getControl( SUBTITLES_LIST ).getSelectedPosition()) - 1 )
+           	
+				if self.service == "Podnapisi":
+					self.download_subtitles( (self.getControl( SUBTITLES_LIST ).getSelectedPosition()) - 1 )					 
 					
 		if self.pos == 2:
 			if not self.mansearch:
