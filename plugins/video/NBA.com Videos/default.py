@@ -2,12 +2,21 @@
 __scriptname__ = "NBA.com Videos"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/NBA.com%20Videos"
-__date__ = '2009-04-03'
-__version__ = "1.0.1"
+__date__ = '2009-10-18'
+__version__ = "1.0.2"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.8) Gecko/2009032609 Firefox/3.0.8'
 THUMBNAIL_PATH = os.path.join(os.getcwd().replace( ";", "" ),'resources','media')
+
+def open_url(url):
+	req = urllib2.Request(url)
+	req.add_header('User-Agent', HEADER)
+	content=urllib2.urlopen(req)
+	data=content.read()
+	content.close()
+	return data
+
 
 def _check_for_update():
 	print "NBA.com Videos"+__version__
@@ -83,18 +92,18 @@ def showList2(url,page,cat):
 		info=disc[x]
 		info=info.replace('<','')
 		info=info.replace('>','')
-		name = str(int(x+1))+'. '+vidname[x][1]+' - '+info
+		name = str(int(x+1+((page-1)*15)))+'. '+vidname[x][1]+' - '+info
 		url=vidname[x][0]
 		url=url.replace('/video/','')
 		url=url.replace('.json','')
 		url = 'http://nba.cdn.turner.com/nba/big/' + url + '_nba_576x324.flv'
 		li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
 		li.setInfo( type="Video", infoLabels={ "Title": vidname[x][1], "Plot": info } )
-		u=sys.argv[0]+"?mode=3&name="+urllib.quote_plus(vidname[x][1])+"&url="+urllib.quote_plus(url)+"&plot="+urllib.quote_plus('')+"&cat="+urllib.quote_plus(cat)
+		u=sys.argv[0]+"?mode=9&name="+urllib.quote_plus(vidname[x][1])+"&url="+urllib.quote_plus(vidname[x][0])+"&plot="+urllib.quote_plus('')+"&cat="+urllib.quote_plus(cat)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
 		x=x+1
 	li=xbmcgui.ListItem("Next Page",iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'next.png'))
-	u=sys.argv[0]+"?mode=6&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(thisurl)+"&page="+str(int(page)+1)
+	u=sys.argv[0]+"?mode=6&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(thisurl)+"&page="+str(int(page)+1)+"&cat="+urllib.quote_plus(cat)
 	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
 def showList3(url):
@@ -160,14 +169,16 @@ def showCategories2():
 			x=x+1
 
 def TeamO(url,page,name):
+	print url
 	cat=name
 	saveurl=url
 	url=url[:-6]+str(page)+'.html'
-	req = urllib2.Request(url)
-	req.add_header('User-Agent', HEADER)
-	content=urllib2.urlopen(req)
-	data=content.read()
-	content.close()
+	# req = urllib2.Request(url)
+	# req.add_header('User-Agent', HEADER)
+	# content=urllib2.urlopen(req)
+	# data=content.read()
+	# content.close()
+	data=open_url(url)
 	time=re.compile('>Play</a> <span class="nbaVidPodTime">(.+?)</span>').findall(data)
 	image=re.compile('<img src="(.+?)">').findall(data)
 	plot=re.compile('<p>(.*?)</p>').findall(data)
@@ -175,16 +186,32 @@ def TeamO(url,page,name):
 	count=0
 	for url,name in url_title:
 		label=str(count+1+((page-1)*12))+') '+name+' - '+plot[count]+' ('+time[count].replace('00:','')+')'
-		url='http://ht.cdn.turner.com/nba/big/'+url.replace('/video/','')+'_nba_576x324.flv'
+		#url='http://ht.cdn.turner.com/nba/big/'+url.replace('/video/','')+'_nba_576x324.flv'
 		thumb = image[count]
 		item=xbmcgui.ListItem(label, iconImage=thumb, thumbnailImage=thumb)
 		item.setInfo( type="Video", infoLabels={ "Title": name, "Director": 'NBA', "Studio": 'NBA', "Genre": cat, "Plot": plot[count] } )
-		u=sys.argv[0]+"?mode=3&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)+"&plot="+urllib.quote_plus(plot[count])+"&cat="+urllib.quote_plus(cat)
+		u=sys.argv[0]+"?mode=9&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)+"&plot="+urllib.quote_plus(plot[count])+"&cat="+urllib.quote_plus(cat)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,item)
 		count=count+1
 	li=xbmcgui.ListItem("Next Page",iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'next.png'))
 	u=sys.argv[0]+"?mode=8&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(saveurl)+"&page="+str(int(page)+1)
 	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+
+def get_video_info(url,page,name):
+	url='http://www.nba.com'+url+'.xml'
+	print url
+	data=open_url(url)
+	title=re.compile('<headline>(<!\[CDATA\[)?(.*?)(\]\]>)?</headline>').findall(data)
+	plot=re.compile('<description>(<!\[CDATA\[)?(.*?)(\]\]>)?</description>').findall(data)
+	url=re.compile('<file(.*?)type="large"(.*?)>(.+?)</file>').findall(data)
+	length=re.compile('<length(.*?)>(.+?)</length>').findall(data)
+	section=re.compile('<sectionName(.*?)>(.+?)</sectionName>', re.DOTALL).findall(data)
+	print title[0][1]
+	print plot[0][1]
+	print url[0][2]
+	print length[0][1]
+	print section[0][1].capitalize()
+	playVideo('http://nba.cdn.turner.com/nba/big'+url[0][2], title[0][1], plot[0][1], section[0][1].capitalize())
 
 def showList(url,page):
 		thisurl=url
@@ -219,8 +246,8 @@ def playVideo(url, name, plot, cat):
 	thisname=name
 	date=url
 	date=date.rsplit('/')
-	name=date[8]
-	#print name
+	name=date[10]
+	print name
 	def Download(url,dest):
 			dp = xbmcgui.DialogProgress()
 			dp.create('Downloading',thisname,'Filename: '+name)
@@ -333,6 +360,8 @@ elif mode==7:
 	showList3(url)
 elif mode==8:
 	TeamO(url,page,name)
+elif mode==9:
+	get_video_info(url,page,name)
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
 	
