@@ -5,8 +5,8 @@ import urllib,urllib2,re,xbmcplugin,xbmcgui,os
 #.nF0
 __plugin__  = "widelec.org"
 __author__  = "pajretX"
-__date__    = "16 September 2009"
-__version__ = "1.37.1"
+__date__    = "21 October 2009"
+__version__ = "1.37.2"
 
 HOME_DIR = os.getcwd()
 base = "http://www.widelec.org/"
@@ -93,7 +93,7 @@ def FOTKI(url):
                                 response=urllib2.urlopen(req)
                                 html = response.read()
                                 response.close()
-                                matches=re.compile('<img src="stuff(.+?)".+?class.+?>').findall(html)
+                                matches=re.compile('<img src="stuff(.+?)">\r\n').findall(html)
                                 del html
                                 for foto in matches:
                                         addLink("fotka",base +'stuff/' +foto,'')
@@ -113,7 +113,7 @@ def FOTKI(url):
                                 response=urllib2.urlopen(req)
                                 html = response.read()
                                 response.close()
-                                matches=re.compile('<img src="stuff(.+?)".+?class.+?>').findall(html)
+                                matches=re.compile('<img src="stuff(.+?)">\r\n').findall(html)
                                 del html
                                 for foto in matches:
                                         addLink("fotka",base +'stuff/' +foto,'')
@@ -124,7 +124,7 @@ def FOTKI(url):
                 response=urllib2.urlopen(req)
                 link = response.read()
                 response.close()
-                matches=re.compile('<img src="stuff(.+?)".+?class.+?>').findall(link)
+                matches=re.compile('<img src="stuff(.+?)">\r\n').findall(link)
                 del link
                 for foto in matches:
                         addLink("fotka",base +'stuff/' +foto,'')
@@ -156,7 +156,7 @@ def addLink(name,url,iconimage):
 	print "--------------------------"
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
-	liz.setInfo( type="Video", infoLabels={ "Title": name } )
+	liz.setInfo( type="Picture", infoLabels={ "Title": name } )
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
 	return ok
 
@@ -165,7 +165,7 @@ def addDir(name,url,mode,iconimage):
 	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
-	liz.setInfo( type="Video", infoLabels={ "Title": name } )
+	liz.setInfo( type="Picture", infoLabels={ "Title": name } )
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
 	return ok
 
