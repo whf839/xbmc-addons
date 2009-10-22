@@ -2,8 +2,8 @@
 __scriptname__ = "NBA.com Videos"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/NBA.com%20Videos"
-__date__ = '2009-10-19'
-__version__ = "1.0.3"
+__date__ = '2009-10-22'
+__version__ = "1.0.4"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.8) Gecko/2009032609 Firefox/3.0.8'
@@ -204,12 +204,12 @@ def get_video_info(url,page,name):
 	title=re.compile('<headline>(<!\[CDATA\[)?(.*?)(\]\]>)?</headline>').findall(data)
 	plot=re.compile('<description>(<!\[CDATA\[)?(.*?)(\]\]>)?</description>').findall(data)
 	url=re.compile('<file(.*?)type="large"(.*?)>(.+?)</file>').findall(data)
-	length=re.compile('<length(.*?)>(.+?)</length>').findall(data)
+	length=re.compile('<length(.*?)>((.+?)</length>)?').findall(data)
 	section=re.compile('<sectionName(.*?)>(.+?)</sectionName>', re.DOTALL).findall(data)
 	print title[0][1]
 	print plot[0][1]
 	print url[0][2]
-	print length[0][1]
+	#print length[0][2]
 	print section[0][1].capitalize()
 	playVideo('http://nba.cdn.turner.com/nba/big'+url[0][2], title[0][1], plot[0][1], section[0][1].capitalize())
 
