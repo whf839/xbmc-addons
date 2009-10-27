@@ -1,6 +1,12 @@
 import os
-import xbmc
 from xml.dom.minidom import parse, Document, _write_data, Node, Element
+
+try:
+    import xbmc
+    import xbmcgui
+except:
+    xbmc = None
+
 
 def writexml(self, writer, indent="", addindent="", newl=""):
     #credit: http://ronrothman.com/public/leftbraned/xml-dom-minidom-toprettyxml-and-silly-whitespace/
@@ -19,45 +25,56 @@ def writexml(self, writer, indent="", addindent="", newl=""):
             self.childNodes[0].writexml(writer, "", "", "")
             writer.write("</%s>%s" % (self.tagName, newl))
             return
-        writer.write(">%s"%(newl))
+        writer.write(">%s" % (newl))
         for node in self.childNodes:
-            node.writexml(writer,indent+addindent,addindent,newl)
-        writer.write("%s</%s>%s" % (indent,self.tagName,newl))
+            node.writexml(writer, indent+addindent, addindent, newl)
+        writer.write("%s</%s>%s" % (indent, self.tagName, newl))
     else:
-        writer.write("/>%s"%(newl))
+        writer.write("/>%s" % (newl))
 
 # monkey patch to fix whitespace issues with toprettyxml
 Element.writexml = writexml
 
+
 class XMLParser:
+
     def __init__(self):
-        self.RssFeedsPath = 'special://userdata/RssFeeds.xml'
+        if xbmc:
+            self.RssFeedsPath = 'special://userdata/RssFeeds.xml'
+        else:
+            self.RssFeedsPath = r'C:\Documents and Settings\Xerox\Application Data\XBMC\userdata\RssFeeds.xml'
         sane = self.checkRssFeedPathSanity()
-        if sane: 
+        if sane:
             self.feedsTree = parse(self.RssFeedsPath)
             self.feedsList = self.getCurrentRssFeeds()
         else:
             self.feedsList = False
+            print '[SCRIPT] RSS Editor --> Could not open ' + self.RssFeedsPath +'. Either the file does not exist, or its\
+                size is zero.'
 
     def checkRssFeedPathSanity(self):
         if os.path.isfile(self.RssFeedsPath):
-            if not os.path.getsize(self.RssFeedsPath):
-                return False
-        else:
-            return False
-        return True
-        
+            #If the filesize is zero, the parsing will fail.  XBMC creates 
+            if os.path.getsize(self.RssFeedsPath):
+                return True
+
     def getCurrentRssFeeds(self):
         feedsList = dict()
         sets = self.feedsTree.getElementsByTagName('set')
-        for i, s in enumerate(sets):
-            feedsList['set'+str(i+1)] = list()
+        for s in sets:
+            setName = 'set'+s.attributes["id"].value
+            feedsList[setName] = {'feedslist':list(), 'attrs':dict()}
+            #get attrs
+            for attrib in s.attributes.keys():
+                feedsList[setName]['attrs'][attrib] = s.attributes[attrib].value
+            #get feedslist
             feeds = s.getElementsByTagName('feed')
             for feed in feeds:
-                feedsList['set'+str(i+1)].append({'url':feed.firstChild.toxml(), 'updateinterval':feed.attributes['updateinterval'].value})
+                feedsList[setName]['feedslist'].append({'url':feed.firstChild.toxml(), 'updateinterval':feed.attributes['updateinterval'].value})
         return feedsList
 
     def formXml(self):
+        """Form the XML to be written to RssFeeds.xml"""
         #create the document
         doc = Document()
         #create root element
@@ -68,18 +85,15 @@ class XMLParser:
         c2Tag = doc.createComment('To use different sets in your skin, each must be called from skin with a unique id.')
         rssfeedsTag.appendChild(c1Tag)
         rssfeedsTag.appendChild(c2Tag)
-        #since dicts aren't ordered, the keys need to be copied to a list then sorted them before creating the elements
-        fl = list()
-        for setNum in self.feedsList.keys():
-            fl.append(setNum)
-        fl.sort()
-        #create set elements
-        for setNum in fl:
+        for setNum in sorted(self.feedsList.keys()):
+            #create sets
             setTag = doc.createElement('set')
-            setTag.setAttribute('id', setNum[3:])
+            #create attributes
+            setTag.setAttribute('id', self.feedsList[setNum]['attrs']['id'])
+            setTag.setAttribute('rtl', self.feedsList[setNum]['attrs']['rtl'])
             rssfeedsTag.appendChild(setTag)
             #create feed elements
-            for feed in self.feedsList[setNum]:
+            for feed in self.feedsList[setNum]['feedslist']:
                 feedTag = doc.createElement('feed')
                 feedTag.setAttribute('updateinterval', feed['updateinterval'])
                 feedUrl = doc.createTextNode(feed['url'])
@@ -88,7 +102,7 @@ class XMLParser:
         return doc.toprettyxml(indent = '  ', encoding = 'UTF-8')
 
     def writeXmlToFile(self):
-        print '[SCRIPT] RSS Ticker --> writing to %s' % (self.RssFeedsPath)
+        print '[SCRIPT] RSS Editor --> writing to %s' % (self.RssFeedsPath)
         xml = self.formXml()
         #hack for standalone attribute, minidom doesn't support DOM3
         xmlHeaderEnd = xml.find('?>')
@@ -97,16 +111,20 @@ class XMLParser:
             RssFeedsFile = open(self.RssFeedsPath, 'w')
             RssFeedsFile.write(xml)
             RssFeedsFile.close()
-            print '[SCRIPT] RSS Ticker --> write success'
+            print '[SCRIPT] RSS Editor --> write success'
             self.refreshFeed()
         except IOError, error:
-            print '[SCRIPT] RSS Ticker --> write failed', error
-    
+            print '[SCRIPT] RSS Editor --> write failed', error
+
     def refreshFeed(self):
-        #This probably makes more sense in the GUI class, but fuck it
-        currentRev = int(xbmc.getInfoLabel('System.BuildVersion')[-5:])
-        minRev = 21930
-        if currentRev >= minRev:
-            xbmc.executebuiltin('refreshrss()')
+        """Refresh XBMC's rss feed so changes can be seen immediately"""
+        #TODO: after next stable is released, remove the minversion check.
+        if xbmc:
+            currentRev = int(xbmc.getInfoLabel('System.BuildVersion')[-5:])
+            minRev = 21930
+            if currentRev >= minRev:
+                xbmc.executebuiltin('refreshrss()')
+            else:
+                xbmcgui.Dialog().ok(getLS(48), getLS(49))
         else:
-            xbmcgui.Dialog().ok(getLS(48), getLS(49))
+            print 'kthx'
