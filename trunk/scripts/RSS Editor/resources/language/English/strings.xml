@@ -18,7 +18,7 @@
   <string id="22">each must be called from the skin</string>
   <string id="23">with a unique id</string>
   <string id="24">Select a Set </string>
-  <string id="25">Set Number</string>
+  <string id="25">Set ID</string>
   <string id="26">Set %s already exists</string>
   <string id="27">Enable Right to Left Text for this Set?</string>
 
