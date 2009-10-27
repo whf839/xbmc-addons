@@ -25,11 +25,14 @@ class Main:
                 elif (xbmcplugin.getSetting("hdquality") == '2'):
                     pid=breakpid[1]
                     name = '720p: ' + name
+		elif (xbmcplugin.getSetting("hdquality") == '3'):
+                    pid=breakpid[2]
+                    name = '1080p: ' + name
                 #Ask HD Quality
                 else:
                     breakpid = pid.split('<break>')
                     dia = xbmcgui.Dialog()
-                    ret = dia.select('What do you want to do?', ['Play 480p','Play 720p','Exit'])
+                    ret = dia.select('What do you want to do?', ['Play 480p','Play 720p','Play 1080p','Exit'])
                     #480p selected
                     if (ret == 0):
                             pid=breakpid[0]
@@ -38,6 +41,9 @@ class Main:
                     elif (ret == 1):
                             pid=breakpid[1]
                             name = '720p: ' + name
+                    elif (ret == 2):
+                            pid=breakpid[2]
+                            name = '1080p: ' + name
                     #Exit
                     else:
                             return
