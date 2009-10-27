@@ -3,7 +3,7 @@
    <setting id="largethumbs" type ="bool" label="30011" default="true"/>
    <setting id="hdcat" type ="bool" label="30022" default="true"/>
    <!-- 0.Ask 1. 480p 2. 720p -->
-   <setting id="hdquality" type="enum" lvalues="30001|30002|30003" label="30004" default="0"/>
+   <setting id="hdquality" type="enum" lvalues="30001|30002|30003|30030" label="30004" default="0"/>
    <!-- 0.Shows and All 1.Shows Only 2. All Only 3.Disabled-->
    <setting id="recent" type="enum" lvalues="30015|30016|30017|30018" label="30013" default="0"/>
    <!-- 0.Shows and All 1.Shows Only 2. All Only 3.Disabled-->
