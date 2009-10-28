@@ -87,7 +87,6 @@ class UI:
         xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, li)
 
     def navItems(self, navItems, mode):
-        #TODO LOCALIZE:
         if navItems['next']:
             self.addItem({'Title': getLS(30020), 'url':navItems['next'], 'mode':mode})
         if navItems['previous']:
@@ -184,10 +183,11 @@ class Main:
             self.args = updateArgs(mode = 'None', url = 'None')
 
     def getSettings(self):
-        #TODO: settings
         self.settings = dict()
         self.settings['username'] = xbmcplugin.getSetting('username')
         self.settings['password'] = xbmcplugin.getSetting('password')
+        self.settings['downloadMode'] = xbmcplugin.getSetting('downloadMode')
+        self.settings['downloadPath'] = xbmcplugin.getSetting('downloadPath')
 
     def isValidUser(self):
         self.user = TedTalks.User(self.settings['username'], self.settings['password'])
@@ -215,7 +215,10 @@ class Main:
 
     def downloadVid(self, url):
         video = TedTalks.getVideoDetails(url)
-        downloadPath = xbmcgui.Dialog().browse(3, getLS(30096), 'files')
+        if self.settings['downloadMode'] == 'true':
+            downloadPath = xbmcgui.Dialog().browse(3, getLS(30096), 'files')
+        else:
+            downloadPath = self.settings['downloadPath']
         if downloadPath:
             Download(video['Title'], video['url'], downloadPath)
 
