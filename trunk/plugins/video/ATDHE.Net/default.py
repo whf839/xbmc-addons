@@ -3,8 +3,8 @@ __scriptname__ = "ATDHE.Net"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/ATDHE.Net"
-__date__ = '2009-10-19'
-__version__ = "1.0.4"
+__date__ = '2009-10-29'
+__version__ = "1.0.5"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback, shutil
 from urllib import urlretrieve, urlcleanup
@@ -86,11 +86,13 @@ def showList(url, name):
 	code=re.compile('<script language="javascript">document\.write\(unescape\( \'(.+?)\' \)\);</script>').findall(data)
 	code2=re.compile('<script language="javascript">document\.write\(\'(.+?)\'\);</script>').findall(data)
 	mms=re.compile('"mms://(.+?)"').findall(data)
+	justintv=re.compile('http://justin.tv/(.+?)/').findall(data)
 	print len(mms)
 	print len(ustreamcode2)
 	print len(ustreamcode)
 	print len(code)
 	print len(code2)
+	print len(justintv)
 	if len(code) == 1:
 		info=code[0].replace('%', '').replace('\u00', '').decode('hex')
 		print info
@@ -283,6 +285,13 @@ def showList(url, name):
 		item.setProperty("IsLive", "true")
 		item.setProperty("tcUrl", rtmp_url2)
 		xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(rtmp_url, item)
+	elif len(justintv) != 0:
+		channel=justintv 
+		thumb='http://static-cdn.justin.tv/previews/live_user_'+channel[0]+'-320x240.jpg'
+		img=get_thumbnail( thumb )
+		path = 'plugin://video/Justin.tv/'+"?mode=2&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(channel[0])+"&thumb="+urllib.quote_plus(img)
+		command = 'XBMC.RunPlugin(%s)' % path
+		xbmc.executebuiltin(command)
 	elif len(mms) > 0:
 		thumb = xbmc.getInfoImage( "ListItem.Thumb" )
 		item = xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
