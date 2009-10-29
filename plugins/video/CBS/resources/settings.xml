@@ -14,4 +14,8 @@
    <!-- 0.Ask 1.Play 2.  Download 3. Download and Play -->
    <setting id="download" type="enum" lvalues="30005|30006|30007|30008" label="30009" default="1"/>
    <setting id="download_path" type="folder" source="video" label="30010"  option="writeable" default="E:\"/>
+
+   <setting id="us_proxy_enable" type="bool" label="30039" default="false"/>
+   <setting id="us_proxy" type="text" label="30040" default="208.100.40.34"/>
+   <setting id="us_proxy_port" type="text" label="30041" default="80"/>
 </settings>
