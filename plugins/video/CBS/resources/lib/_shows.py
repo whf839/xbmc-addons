@@ -28,7 +28,7 @@ class Main:
     def LISTSHOWS(self,cat):
         url = common.ALL_SHOWS_URL
         link=common.getHTML(url)
-        match=re.compile('<a href="(.+?)" class="shows" target="_parent">(.+?)</a>').findall(link)
+        match=re.compile('<a href="(.+?)" class="shows" target="_parent">(.+?)<').findall(link)
         for url,name in match:
                 thumb = "http://www.cbs.com" + url + "images/common/show_logo.gif"
                 #Clean names
