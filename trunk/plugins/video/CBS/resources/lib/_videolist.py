@@ -186,13 +186,13 @@ class Main:
                         breakurl[6] = "0" + breakurl[6]
                 #Standard Definition pid
                 breakurl[15] = breakurl[15].replace("')","")
-                breakurl[16] = breakurl[16].replace("')","")
                 if breakurl[15] == '':
                         pid = breakurl[10]
                         if HD == True:
                             continue
                 #480p and 720p pids
                 elif breakurl[15] <> '':
+                        breakurl[16] = breakurl[16].replace("')","")
                         pid = breakurl[10] + "<break>" + breakurl[15] + "<break>" + breakurl[16]
                 if (xbmcplugin.getSetting('largethumbs') == 'true'):
                     thumbnail = breakurl[12]
@@ -205,7 +205,7 @@ class Main:
                 else:
                         season = 0
                 if breakurl[6] <> '':
-                        episode = int(breakurl[6].replace('_','').replace('-','').replace('.','').replace('A',''))
+                        episode = int(breakurl[6].replace('_','').replace('-','').replace('.','').replace('A','').replace('T',''))
                 else:
                         episode = 0
                 #seriestitle = breakurl[3]
