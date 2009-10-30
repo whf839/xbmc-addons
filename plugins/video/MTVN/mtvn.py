@@ -45,14 +45,7 @@ def getURL( url ):
 #####################################     VIDEO     ####################################       
 ########################################################################################
 
-#Requires parameters term ?term=
-#Returns a list of videos for a specific search term.
-def videoSearch(term):
-        VideoSearch = 'http://api.mtvnservices.com/1/video/search/'
-        term = '"'+term+'"'
-        encode = urllib.quote_plus(term)
-        url = VideoSearch +'?term='+ encode
-        response = getURL(url)
+def parseapiVideos(response):
         if response == False:
                 return False
         tree1 = ElementTree(fromstring(response))
@@ -82,6 +75,25 @@ def videoSearch(term):
                 videos.append(video)
         return videos
 
+
+#Requires parameters term ?term=
+#Returns a list of videos for a specific search term.
+def videoSearch(term):
+        VideoSearch = 'http://api.mtvnservices.com/1/video/search/'
+        term = '"'+term+'"'
+        encode = urllib.quote_plus(term)
+        url = VideoSearch +'?term='+ encode
+        response = getURL(url)
+        return parseapiVideos(response)
+
+#Returns videos associated to a specific artist.
+def artistVideos(artist):
+        #ArtistVideos = 'http://api.mtvnservices.com/1/artist/[artist_uri]/videos'
+        #url = ArtistVideos.replace('[artist_uri]',artist)
+        url = artist+'videos/'
+        response = getURL(url)
+        return parseapiVideos(response)
+
 #Returns a single video by encoded ID.
 def videoMethod(videoid):
         VideoMethod = 'http://api.mtvnservices.com/1/video/[video_id]/'
@@ -91,29 +103,15 @@ def videoMethod(videoid):
 #####################################     ARTIST    ####################################       
 ########################################################################################
 
-#Returns content associated to a specific artist.
-def artistAlias(artist):
-        ArtistAlias = 'http://api.mtvnservices.com/1/artist/[artist_alias]/'
-        return artist
-
-#Returns videos associated to a specific artist.
-def artistVideos(artist):
-        #ArtistVideos = 'http://api.mtvnservices.com/1/artist/[artist_uri]/videos'
-        #url = ArtistVideos.replace('[artist_uri]',artist)
-        url = artist+'videos/'
-        response = getURL(url)
+def parseapiArtists(response):
         if response == False:
                 return False
         tree1 = ElementTree(fromstring(response))
-        videos = []
-        count = 0
+        artists = []
         for entry in tree1.getroot().findall('{%s}entry' % atom):
-                video = []
-                m = entry.find('{%s}content' % media)
-                video.append(m.get('url').split('/')[-1])
-                name = entry.find('{%s}description' % media).text
-                name = name.split('|')[1]
-                video.append(name)
+                artist = []
+                artist.append(entry.find('{%s}id' % atom).text)
+                artist.append(entry.find('{%s}title' % atom).text)
                 turl = [0,'url']
                 for t in entry.findall('{%s}thumbnail' % media):
                         url = t.get('url')
@@ -126,11 +124,16 @@ def artistVideos(artist):
                                 turl[0] = pixels
                                 turl[1] = url
                 if turl[1] <> 'url':               
-                        video.append(turl[1])
+                        artist.append(turl[1])
                 else:
-                        video.append('')
-                videos.append(video)
-        return videos
+                        artist.append('')
+                artists.append(artist)
+        return artists
+
+#Returns content associated to a specific artist.
+def artistAlias(artist):
+        ArtistAlias = 'http://api.mtvnservices.com/1/artist/[artist_alias]/'
+        return artist
 
 #Requires parameters term ?term=
 #Returns a list of artists for a specific search term.
@@ -141,31 +144,7 @@ def artistSearch(term):
         url = ArtistSearch +'?term='+ encode
         print url
         response = getURL(url)
-        if response == False:
-                return False
-        tree1 = ElementTree(fromstring(response))
-        artists = []
-        for entry in tree1.getroot().findall('{%s}entry' % atom):
-                artist = []
-                artist.append(entry.find('{%s}id' % atom).text)
-                artist.append(entry.find('{%s}title' % atom).text)
-                turl = [0,'url']
-                for t in entry.findall('{%s}thumbnail' % media):
-                        url = t.get('url')
-                        width = t.get('width')
-                        height = t.get('height')
-                        w = int(width)
-                        h = int(height)
-                        pixels = w*h
-                        if pixels > turl[0]:
-                                turl[0] = pixels
-                                turl[1] = url
-                if turl[1] <> 'url':               
-                        artist.append(turl[1])
-                else:
-                        artist.append('')
-                artists.append(artist)
-        return artists
+        return parseapiArtists(response)
 
 #Retrieves a list of artists sorted alphabetically.
 # a-z and '-' for begining with numbers
@@ -173,31 +152,7 @@ def artistBrowse(letter):
         ArtistBrowse = 'http://api.mtvnservices.com/1/artist/browse/[alpha]'
         url = ArtistBrowse.replace('[alpha]',letter)
         response = getURL(url)
-        if response == False:
-                return False
-        tree1 = ElementTree(fromstring(response))
-        artists = []
-        for entry in tree1.getroot().findall('{%s}entry' % atom):
-                artist = []
-                artist.append(entry.find('{%s}id' % atom).text)
-                artist.append(entry.find('{%s}title' % atom).text)
-                turl = [0,'url']
-                for t in entry.findall('{%s}thumbnail' % media):
-                        url = t.get('url')
-                        width = t.get('width')
-                        height = t.get('height')
-                        w = int(width)
-                        h = int(height)
-                        pixels = w*h
-                        if pixels > turl[0]:
-                                turl[0] = pixels
-                                turl[1] = url
-                if turl[1] <> 'url':               
-                        artist.append(turl[1])
-                else:
-                        artist.append('')
-                artists.append(artist)
-        return artists
+        return parseapiArtists(response)
 
 #Returns a list of artists related to the specified artist.
 def relatedArtists(artist):
@@ -205,31 +160,7 @@ def relatedArtists(artist):
         #url = RelatedArtist.replace('[artist_uri]',artist)
         url = artist+'related/'
         response = getURL(url)
-        if response == False:
-                return False
-        tree1 = ElementTree(fromstring(response))
-        artists = []
-        for entry in tree1.getroot().findall('{%s}entry' % atom):
-                artist = []
-                artist.append(entry.find('{%s}id' % atom).text)
-                artist.append(entry.find('{%s}title' % atom).text)
-                turl = [0,'url']
-                for t in entry.findall('{%s}thumbnail' % media):
-                        url = t.get('url')
-                        width = t.get('width')
-                        height = t.get('height')
-                        w = int(width)
-                        h = int(height)
-                        pixels = w*h
-                        if pixels > turl[0]:
-                                turl[0] = pixels
-                                turl[1] = url
-                if turl[1] <> 'url':               
-                        artist.append(turl[1])
-                else:
-                        artist.append('')
-                artists.append(artist)
-        return artists
+        return parseapiArtists(response)
 
 ########################################################################################
 #####################################     GENRE     ####################################       
@@ -244,65 +175,69 @@ def genreArtists(genre):
         GenreArtists = 'http://api.mtvnservices.com/1/genre/[genre_alias]/artists/'
         url = GenreArtists.replace('[genre_alias]',genre)
         response = getURL(url)
-        if response == False:
-                return False
-        tree1 = ElementTree(fromstring(response))
-        artists = []
-        for entry in tree1.getroot().findall('{%s}entry' % atom):
-                artist = []
-                artist.append(entry.find('{%s}id' % atom).text)
-                artist.append(entry.find('{%s}title' % atom).text)
-                turl = [0,'url']
-                for t in entry.findall('{%s}thumbnail' % media):
-                        url = t.get('url')
-                        width = t.get('width')
-                        height = t.get('height')
-                        w = int(width)
-                        h = int(height)
-                        pixels = w*h
-                        if pixels > turl[0]:
-                                turl[0] = pixels
-                                turl[1] = url
-                if turl[1] <> 'url':               
-                        artist.append(turl[1])
-                else:
-                        artist.append('')
-                artists.append(artist)
-        return artists
+        return parseapiArtists(response)
 
 #Returns a list of videos for a specified genre.
 def genreVideos(genre):
         GenreVideos = 'http://api.mtvnservices.com/1/genre/[genre_alias]/videos/'
         url = GenreVideos.replace('[genre_alias]',genre)
         response = getURL(url)
+        return parseapiVideos(response)
+
+########################################################################################
+#####################################    MTV.COM    ####################################       
+########################################################################################
+#MTV.com video lists.
+
+def VideoPicksMTV():
+        url = 'http://www.mtv.com/music/video/'
+        response = getURL(url)
         if response == False:
                 return False
-        tree1 = ElementTree(fromstring(response))
+        data = re.compile('<a href="/videos/\?id=(.+?)&amp;vid=(.+?)">(.+?) - "(.+?)"</a>').findall(response)
         videos = []
-        for entry in tree1.getroot().findall('{%s}entry' % atom):
+        for id1, vid, artist, song in data:
                 video = []
-                m = entry.find('{%s}content' % media)
-                video.append(m.get('url').split('/')[-1])
-                name = entry.find('{%s}description' % media).text
-                name = name.split('|')[0] + '-' + name.split('|')[1]
-                video.append(name)
-                turl = [0,'url']
-                for t in entry.findall('{%s}thumbnail' % media):
-                        url = t.get('url')
-                        width = t.get('width')
-                        height = t.get('height')
-                        w = int(width)
-                        h = int(height)
-                        pixels = w*h
-                        if pixels > turl[0]:
-                                turl[0] = pixels
-                                turl[1] = url
-                if turl[1] <> 'url':               
-                        video.append(turl[1])
-                else:
-                        video.append('')
+                vid = 'mgid:uma:video:api.mtvnservices.com:' + vid
+                video.append(artist)
+                video.append(song)
+                video.append(vid)
                 videos.append(video)
         return videos
+
+def VideoPremieresMTV():
+        url = 'http://www.mtv.com/music/videos/premieres/'
+        response = getURL(url)
+        if response == False:
+                return False
+        response = response.replace('\n','')
+        data = re.compile('<a href="/videos/\?id=(.+?)&amp;vid=(.+?)"><img src="(.+?)"(.+?)</span>(.+?) - "(.+?)"</a>').findall(response)
+        videos = []
+        for id1, vid, thumbnail, junk1, artist, song in data:
+                video = []
+                vid = 'mgid:uma:video:api.mtvnservices.com:' + vid
+                video.append(artist)
+                video.append(song)
+                video.append(vid)
+                videos.append(video)
+        return videos
+
+def VideoPopularMTV():
+        url = 'http://www.mtv.com/music/video/popular.jhtml'
+        response = getURL(url)
+        if response == False:
+                return False
+        data = re.compile('<a href="/videos/\?vid=(.+?)">(.+?) "(.+?)"</a>').findall(response)
+        videos = []
+        for vid, artist, song in data:
+                video = []
+                vid = 'mgid:uma:video:api.mtvnservices.com:' + vid
+                video.append(artist)
+                video.append(song)
+                video.append(vid)
+                videos.append(video)
+        return videos
+
 
 ########################################################################################
 ####################################      RTMP      ####################################       
@@ -336,8 +271,11 @@ def getrtmp(uri):
                         rtmp.append(rtmpurl)
                         rtmp.append(playpath)
                         rtmps.append(rtmp)
+                else:
+                        print rtmpurl
         return rtmps
 
+# Needs updating to retrive current version from server
 def getswfUrl():
         swfUrl = "http://media.mtvnservices.com/player/release/?v=3.9.0"
         return swfUrl

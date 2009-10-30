@@ -1,7 +1,7 @@
 __plugin__ = "MTVN Plugin"
 __authors__ = "BlueCop"
 __credits__ = ""
-__version__ = "0.5"
+__version__ = "0.6"
 
 import urllib, urllib2
 import os, re, sys, md5, string
@@ -15,6 +15,9 @@ def listCategories():
         addDir('Browse Videos by Genre', 'videos', 2)
         addDir('Search Artist', 'searchArtist', 5)
         addDir('Search Video', 'searchVideo', 5)
+        addDir('Video Picks (MTV.com)', 'videopicks', 101)
+        addDir('Video Premieres (MTV.com)', 'videopremieres', 101)
+        addDir('Most Popular (MTV.com)', 'mostpopular', 101)
         #addDir('Favorite Videos', 'favArtist', 1)
         #addDir('Favorite Artists', 'favVideo', 1)
         return
@@ -73,83 +76,67 @@ def listGenres(mode):
         addDir('Soundtracks / Musicals',        'soundtracks_musicals', linkmode)
         return
 
+def ProcessResponse(response,mode): # Mode 3 Artist, Mode 4 Videos
+        if response == False:
+                return
+        for url, name, thumbnail in response:
+                name = name.replace('&amp;','&').replace('&#039;',"'")
+                addDir(name.encode('utf-8'), url, mode, thumbnail)
+        return
+
 def listArtistsAZ(letter):
         artists = mtvn.artistBrowse(letter)
-        if artists == False:
-                return
-        for url, name, thumbnail in artists:
-                name = name.replace('&amp;','&').replace('&#039;',"'")
-                addDir(name, url, 3, thumbnail)
+        ProcessResponse(artists,3)
         return
 
 def listGenreArtist(genre):
         artists = mtvn.genreArtists(genre)
-        if artists == False:
-                return
-        for url, name, thumbnail in artists:
-                name = name.replace('&amp;','&').replace('&#039;',"'")
-                addDir(name, url, 3, thumbnail)
-        return
-
-def listGenreVideos(genre):
-        videos = mtvn.genreVideos(genre)
-        if videos == False:
-                return
-        for url, name, thumbnail in videos:
-                name = name.replace('&amp;','&').replace('&#039;',"'")
-                addLink(name, url, 4, thumbnail)
-        return
-
-def listArtistVideos(artist):
-        videos = mtvn.artistVideos(artist)
-        if videos == False:
-                return
-        addDir(' Related Artists', artist, 6, '')
-        for url, name, thumbnail in videos:
-                name = name.replace('&amp;','&').replace('&#039;',"'")
-                addLink(name, url, 4, thumbnail)
+        ProcessResponse(artists,3)
         return
 
 def listRelatedArtists(artist):
         artists = mtvn.relatedArtists(artist)
-        if artists == False:
-                return
-        for url, name, thumbnail in artists:
-                name = name.replace('&amp;','&').replace('&#039;',"'")
-                addDir(name, url, 3, thumbnail)
+        ProcessResponse(artists,3)
+        return
+
+def listGenreVideos(genre):
+        videos = mtvn.genreVideos(genre)
+        ProcessResponse(videos,4)
+        return
+
+def listArtistVideos(artist):
+        videos = mtvn.artistVideos(artist)
+        addDir(' Related Artists', artist, 6, '')
+        ProcessResponse(videos,4)
         return
 
 def listSearch(searchtype):
         keyb = xbmc.Keyboard('', 'Search')
         keyb.doModal()
-        c = 0
         if (keyb.isConfirmed()):
                 search = keyb.getText()
                 if searchtype == 'searchArtist':
-                        videos = mtvn.artistSearch(search)
-                        if videos == False:
-                                return
-                        for url, name, thumbnail in videos:
-                                c = c + 1
-                                if len(str(c)) == 1:
-                                        count = '0'+str(c)+'. '
-                                else:
-                                        count = str(c)+'. '
-                                name = count + name.replace('&amp;','&').replace('&#039;',"'")
-                                addDir(name, url, 3, thumbnail)
+                        artists = mtvn.artistSearch(search)
+                        ProcessResponse(artists,3)
                 elif searchtype == 'searchVideo':
                         videos = mtvn.videoSearch(search)
-                        if videos == False:
-                                return
-                        for url, name, thumbnail in videos:
-                                c = c + 1
-                                if len(str(c)) == 1:
-                                        count = '0'+str(c)+'. '
-                                else:
-                                        count = str(c)+'. '
-                                name = str(count) +'. '+ name.replace('&amp;','&').replace('&#039;',"'")
-                                addLink(name, url, 4, thumbnail)
+                        ProcessResponse(videos,4)
                 xbmcplugin.endOfDirectory(int(sys.argv[1]),updateListing=False,cacheToDisc=True)
+        return
+
+def listMTVCOM(mode):
+        if mode == 'videopicks':
+                videos = mtvn.VideoPicksMTV()
+        if mode == 'videopremieres':
+                videos = mtvn.VideoPremieresMTV()
+        if mode == 'mostpopular':
+                videos = mtvn.VideoPopularMTV()
+        if videos == False:
+                return
+        for artist, song, uri in videos:
+                name = artist + ' - ' + song
+                name = name.replace('&amp;','&').replace('&#039;',"'").replace('&#039;',"'")
+                addDir(name, uri, 4, '')
         return
                 
 #Get SMIL url and play video
@@ -235,7 +222,7 @@ def addLink(name, url, mode, iconimage='', plot=''):
 
 
 def addDir(name, url, mode, iconimage='', plot=''):
-        u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name.encode('utf-8'))
+        u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
         ok=True
         liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title": name,
@@ -302,6 +289,7 @@ elif mode==3:
         listArtistVideos(url)
         xbmcplugin.endOfDirectory(int(sys.argv[1]),updateListing=False,cacheToDisc=True)
 
+
 #RELATED ARTISTS
 elif mode==6:
         print ""+url
@@ -312,6 +300,12 @@ elif mode==6:
 elif mode==5:
         print ""+url
         listSearch(url)
+
+#Video Picks
+elif mode==101:
+        print ""+url
+        listMTVCOM(url)
+        xbmcplugin.endOfDirectory(int(sys.argv[1]),updateListing=False,cacheToDisc=True)   
 
 #Play Video
 elif mode==4:
