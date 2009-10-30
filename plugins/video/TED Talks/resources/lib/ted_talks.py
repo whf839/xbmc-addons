@@ -28,15 +28,15 @@ class UI:
         xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 
     def endofdirectory(self, sortMethod = 'title'):
-        #set sortmethod to something xbmc can use
+        # set sortmethod to something xbmc can use
         if sortMethod == 'title':
             sortMethod = xbmcplugin.SORT_METHOD_TITLE_IGNORE_THE
         elif sortMethod == 'date':
             sortMethod = xbmcplugin.SORT_METHOD_DATE
         #Sort methods are required in library mode.
         xbmcplugin.addSortMethod(int(sys.argv[1]), sortMethod)
-        #If url is not None, then the script arrived here from a navItem, and don't want to add to the heirarchy
-        if self.main.args.url:
+        #If name is next or previous, then the script arrived here from a navItem, and won't to add to the heirarchy
+        if self.main.args.name in [getLS(30020), getLS(30021)]:
             dontAddToHierarchy = True
         else:
             dontAddToHierarchy = False
@@ -180,7 +180,7 @@ class Main:
             # updateArgs will turn the 'None' into None.
             # Don't simply define it as None because unquote_plus in updateArgs will throw an exception.
             # This is a pretty ugly solution, but fuck it :(
-            self.args = updateArgs(mode = 'None', url = 'None')
+            self.args = updateArgs(mode = 'None', url = 'None', name = 'None')
 
     def getSettings(self):
         self.settings = dict()
