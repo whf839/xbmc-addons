@@ -2,8 +2,8 @@
 __scriptname__ = "Revision3"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Revision3"
-__date__ = '11-09-2009'
-__version__ = "1.2"
+__date__ = '2009-10-29'
+__version__ = "1.3"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1.1) Gecko/20090715 Firefox/3.5.1'
@@ -56,7 +56,7 @@ def showListA(url,name):
 		f.close()
 		p=re.compile('<item>(.+?)<title>(.+?) - ', re.DOTALL)
 		o=re.compile('<enclosure url="(.+?)"')
-		q=re.compile('<media:thumbnail url="(.+?)"')
+		q=re.compile('</media:description>\n        (<media:thumbnail url="(.+?)" width="100" height="100" />\n        )?<media:player url', re.DOTALL)
 		r=re.compile('<guid isPermaLink="false">(.+?)</guid>')
 		info=re.compile('<content:encoded>\n(.+?)\n      </content:encoded>', re.DOTALL).findall(a)
 		print info
@@ -66,6 +66,7 @@ def showListA(url,name):
 		thumbs=q.findall(a)
 		x=0
 		for title in match:
+			thumb=thumbs[x][1]
 			name = clean(match[x][1])
 			date=time[x]
 			date=date.rsplit('/', 2)
@@ -74,7 +75,7 @@ def showListA(url,name):
 			title='Episode '+date+' - '+name
 			name = str(int(x+1))+'. '+title
 			url=URLS[x]
-			thumb=thumbs[x]
+			#thumb=thumbs[x]
 			li=xbmcgui.ListItem(clean(name), iconImage=thumb, thumbnailImage=thumb)
 			li.setInfo( type="Video", infoLabels={ "Title": clean(name), "Director": 'Revision3', "Studio": 'Revision3', "Genre": cat, "Plot": clean(info[x]) } )
 			u=sys.argv[0]+"?mode=2&name="+urllib.quote_plus(title)+"&url="+urllib.quote_plus(url)+"&plot="+urllib.quote_plus(clean(info[x]))+"&cat="+urllib.quote_plus(cat)
