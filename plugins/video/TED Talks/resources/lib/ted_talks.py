@@ -30,7 +30,7 @@ class UI:
     def endofdirectory(self, sortMethod = 'title'):
         # set sortmethod to something xbmc can use
         if sortMethod == 'title':
-            sortMethod = xbmcplugin.SORT_METHOD_TITLE_IGNORE_THE
+            sortMethod = xbmcplugin.SORT_METHOD_LABEL
         elif sortMethod == 'date':
             sortMethod = xbmcplugin.SORT_METHOD_DATE
         #Sort methods are required in library mode.
