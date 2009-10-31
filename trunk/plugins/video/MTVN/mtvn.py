@@ -176,16 +176,16 @@ def genreAlias(genre):
         GenreAlias = 'http://api.mtvnservices.com/1/genre/[genre_alias]/'
 
 #Returns a list of artists for a specified genre.
-def genreArtists(genre,maxitems,startindex):
+def genreArtists(genre,maxitems,startindex,sort):
         GenreArtists = 'http://api.mtvnservices.com/1/genre/[genre_alias]/artists/'
-        url = GenreArtists.replace('[genre_alias]',genre) + "?max-results=" + str(maxitems) + "&start-index=" + str(startindex)
+        url = GenreArtists.replace('[genre_alias]',genre) + "?max-results=" + str(maxitems) + "&start-index=" + str(startindex) + "&sort=" + sort
         response = getURL(url)
         return parseapiArtists(response)
 
 #Returns a list of videos for a specified genre.
-def genreVideos(genre,maxitems,startindex):
+def genreVideos(genre,maxitems,startindex,sort):
         GenreVideos = 'http://api.mtvnservices.com/1/genre/[genre_alias]/videos/'
-        url = GenreVideos.replace('[genre_alias]',genre) + "?max-results=" + str(maxitems) + "&start-index=" + str(startindex)
+        url = GenreVideos.replace('[genre_alias]',genre) + "?max-results=" + str(maxitems) + "&start-index=" + str(startindex) + "&sort=" + sort
         response = getURL(url)
         return parseapiVideos(response)
 

@@ -1,7 +1,7 @@
 __plugin__ = "MTVN Plugin"
 __authors__ = "BlueCop"
 __credits__ = ""
-__version__ = "0.71"
+__version__ = "0.72"
 
 import urllib, urllib2
 import os, re, sys, md5, string
@@ -10,7 +10,13 @@ import xbmc, xbmcgui, xbmcplugin
 import mtvn as mtvn
 
 MAXLISTING = (int(xbmcplugin.getSetting("maxlist")) + 1) * 5
-
+if xbmcplugin.getSetting("sort") == '0':#Relevance
+        SORTORDER = 'relevance'
+elif xbmcplugin.getSetting("sort") == '1':#Date Ascending
+        SORTORDER = 'date_ascending'
+elif xbmcplugin.getSetting("sort") == '2':#Date Descending
+        SORTORDER = 'date_descending'
+        
 def listCategories():
         addDir('Browse Artists A-Z', 'artists', 1)
         addDir('Browse Artists by Genre', 'artists', 2)
@@ -102,7 +108,7 @@ def listGenreArtist(genre):
                 start = 0
                 nextpage = ' Next Page (' + str(MAXLISTING+1) + '-' + str(MAXLISTING*2) + ')'
                 pagegenre = genre+"<start>"+str(MAXLISTING+1)
-        artists = mtvn.genreArtists(genre,MAXLISTING,start)
+        artists = mtvn.genreArtists(genre,MAXLISTING,start,SORTORDER)
         if len(artists) == MAXLISTING:
                 addDir(nextpage, pagegenre, 22)
         ProcessResponse(artists,3)
@@ -119,7 +125,7 @@ def listGenreVideos(genre):
                 start = 0
                 nextpage = ' Next Page (' + str(MAXLISTING+1) + '-' + str(MAXLISTING*2) + ')'
                 pagegenre = genre+"<start>"+str(MAXLISTING+1)
-        videos = mtvn.genreVideos(genre,MAXLISTING,start)
+        videos = mtvn.genreVideos(genre,MAXLISTING,start,SORTORDER)
         if len(videos) == MAXLISTING:
                 addDir(nextpage, pagegenre, 23)
         ProcessResponse(videos,4)
