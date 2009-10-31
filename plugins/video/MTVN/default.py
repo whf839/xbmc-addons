@@ -1,7 +1,7 @@
 __plugin__ = "MTVN Plugin"
 __authors__ = "BlueCop"
 __credits__ = ""
-__version__ = "0.65"
+__version__ = "0.7"
 
 import urllib, urllib2
 import os, re, sys, md5, string
@@ -185,16 +185,41 @@ def playRTMP(url, name):
                         option = filesplit[-2] + ' ' + filesplit[-1] + 'kbps (vp6/mp3)'
                 options.append(option) 
         options.append(xbmc.getLocalizedString(30007))
-        if (xbmcplugin.getSetting("quality") == '0'):
+        if (xbmcplugin.getSetting("askquality") == 'true'):
                 dia = xbmcgui.Dialog()
                 ret = dia.select(xbmc.getLocalizedString(30006), options)
                 if (ret == (len(options)-1)):
                         return
-        elif (xbmcplugin.getSetting("quality") == '1'):
-                ret = 0
-        elif (xbmcplugin.getSetting("quality") == '2'):
-                ret = 1
-        print rtmps
+        else:
+                hbitrate = 0
+                hpixels = 0
+                finalret = 0
+                for quality in options:
+                        finalret += 1
+                        if quality == xbmc.getLocalizedString(30007):
+                                continue
+                        quality = quality.split(' ')
+                        resolution = quality[0].split('x')
+                        print quality
+                        w = int(resolution[0])
+                        h = int(resolution[1])
+                        pixels = w * h
+                        bitrate = int(quality[1].replace('kbps',''))
+                        codec = quality[2].replace('(','').replace(')','')
+                        if xbmcplugin.getSetting("codec") == '1':
+                                dcodec = 'h264/aac'
+                        elif xbmcplugin.getSetting("codec") == '0':
+                                dcodec = 'vp6/mp3'
+                        if codec == dcodec:
+                                if bitrate > hbitrate:
+                                        hbitrate = bitrate
+                                        ret = finalret - 1
+                                if hpixels > pixels:
+                                        pixels = hpixels
+                                        ret = finalret - 1
+                        else:
+                                ret = finalret - 1 
+
         for _url,_playpath in rtmps:
                 optsplit = options[ret].replace('x240','').replace('x180','').replace('kbps','').split(' ')
                 if optsplit[2] == '(vp6/mp3)' and 'mp4:' in _playpath:
