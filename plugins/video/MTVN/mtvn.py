@@ -9,6 +9,10 @@ atom="http://www.w3.org/2005/Atom"
 opensearch="http://a9.com/-/spec/opensearch/1.1/"
 
 
+########################################################################################
+#####################################    COMMON    #####################################       
+########################################################################################
+
 def getURL( url ):
         try:
                 print 'MTVN --> getURL :: url = '+url
@@ -25,25 +29,6 @@ def getURL( url ):
                 return False
         else:
                 return link
-
-#Universal Parameters
-#max-results:   Limit the maximum number of results. The default value is 25. The maximum value is 100 	25, 1-100
-#example:       ?max-results=25
-        
-#start-index:   Choose the first result to display in the returns. The first return is
-#                       1. When used with the max-results parameter, multiple pages of results can be created.
-#                       1, numeric value
-#example:       ?start-index=26
-
-#date: 	        Limit the returns to date range specified.	MMDDYYYY-MMDDYYYY
-#example:       ?date=01011980-12311989
-
-#sort:          Specifies the sort order for returns.	relevance, date_ascending, date_descending
-#example:       ?sort=date_ascending
-
-########################################################################################
-#####################################     VIDEO     ####################################       
-########################################################################################
 
 def parseapiVideos(response):
         if response == False:
@@ -75,6 +60,52 @@ def parseapiVideos(response):
                 videos.append(video)
         return videos
 
+def parseapiArtists(response):
+        if response == False:
+                return False
+        tree1 = ElementTree(fromstring(response))
+        artists = []
+        for entry in tree1.getroot().findall('{%s}entry' % atom):
+                artist = []
+                artist.append(entry.find('{%s}id' % atom).text)
+                artist.append(entry.find('{%s}title' % atom).text)
+                turl = [0,'url']
+                for t in entry.findall('{%s}thumbnail' % media):
+                        url = t.get('url')
+                        width = t.get('width')
+                        height = t.get('height')
+                        w = int(width)
+                        h = int(height)
+                        pixels = w*h
+                        if pixels > turl[0]:
+                                turl[0] = pixels
+                                turl[1] = url
+                if turl[1] <> 'url':               
+                        artist.append(turl[1])
+                else:
+                        artist.append('')
+                artists.append(artist)
+        return artists
+
+#Universal Parameters
+#max-results:   Limit the maximum number of results. The default value is 25. The maximum value is 100 	25, 1-100
+#example:       ?max-results=25
+        
+#start-index:   Choose the first result to display in the returns. The first return is
+#                       1. When used with the max-results parameter, multiple pages of results can be created.
+#                       1, numeric value
+#example:       ?start-index=26
+
+#date: 	        Limit the returns to date range specified.	MMDDYYYY-MMDDYYYY
+#example:       ?date=01011980-12311989
+
+#sort:          Specifies the sort order for returns.	relevance, date_ascending, date_descending
+#example:       ?sort=date_ascending
+
+########################################################################################
+#####################################     VIDEO     ####################################       
+########################################################################################
+
 
 #Requires parameters term ?term=
 #Returns a list of videos for a specific search term.
@@ -103,32 +134,6 @@ def videoMethod(videoid):
 #####################################     ARTIST    ####################################       
 ########################################################################################
 
-def parseapiArtists(response):
-        if response == False:
-                return False
-        tree1 = ElementTree(fromstring(response))
-        artists = []
-        for entry in tree1.getroot().findall('{%s}entry' % atom):
-                artist = []
-                artist.append(entry.find('{%s}id' % atom).text)
-                artist.append(entry.find('{%s}title' % atom).text)
-                turl = [0,'url']
-                for t in entry.findall('{%s}thumbnail' % media):
-                        url = t.get('url')
-                        width = t.get('width')
-                        height = t.get('height')
-                        w = int(width)
-                        h = int(height)
-                        pixels = w*h
-                        if pixels > turl[0]:
-                                turl[0] = pixels
-                                turl[1] = url
-                if turl[1] <> 'url':               
-                        artist.append(turl[1])
-                else:
-                        artist.append('')
-                artists.append(artist)
-        return artists
 
 #Returns content associated to a specific artist.
 def artistAlias(artist):
@@ -163,7 +168,7 @@ def relatedArtists(artist):
         return parseapiArtists(response)
 
 ########################################################################################
-#####################################     GENRE     ####################################       
+######################################    GENRE     ####################################       
 ########################################################################################
 
 #Returns content links for a specified genre.
@@ -171,16 +176,16 @@ def genreAlias(genre):
         GenreAlias = 'http://api.mtvnservices.com/1/genre/[genre_alias]/'
 
 #Returns a list of artists for a specified genre.
-def genreArtists(genre):
+def genreArtists(genre,maxitems,startindex):
         GenreArtists = 'http://api.mtvnservices.com/1/genre/[genre_alias]/artists/'
-        url = GenreArtists.replace('[genre_alias]',genre)
+        url = GenreArtists.replace('[genre_alias]',genre) + "?max-results=" + str(maxitems) + "&start-index=" + str(startindex)
         response = getURL(url)
         return parseapiArtists(response)
 
 #Returns a list of videos for a specified genre.
-def genreVideos(genre):
+def genreVideos(genre,maxitems,startindex):
         GenreVideos = 'http://api.mtvnservices.com/1/genre/[genre_alias]/videos/'
-        url = GenreVideos.replace('[genre_alias]',genre)
+        url = GenreVideos.replace('[genre_alias]',genre) + "?max-results=" + str(maxitems) + "&start-index=" + str(startindex)
         response = getURL(url)
         return parseapiVideos(response)
 
