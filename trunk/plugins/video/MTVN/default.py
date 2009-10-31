@@ -1,7 +1,7 @@
 __plugin__ = "MTVN Plugin"
 __authors__ = "BlueCop"
 __credits__ = ""
-__version__ = "0.7"
+__version__ = "0.71"
 
 import urllib, urllib2
 import os, re, sys, md5, string
@@ -200,7 +200,6 @@ def playRTMP(url, name):
                                 continue
                         quality = quality.split(' ')
                         resolution = quality[0].split('x')
-                        print quality
                         w = int(resolution[0])
                         h = int(resolution[1])
                         pixels = w * h
@@ -210,15 +209,21 @@ def playRTMP(url, name):
                                 dcodec = 'h264/aac'
                         elif xbmcplugin.getSetting("codec") == '0':
                                 dcodec = 'vp6/mp3'
-                        if codec == dcodec:
+                        if codec <> dcodec:
+                                if hbitrate == 0 or hpixels == 0:
+                                        if bitrate > hbitrate:
+                                                hbitrate = bitrate
+                                                ret = finalret - 1
+                                        if pixels > hpixels:
+                                                hpixels = pixels
+                                                ret = finalret - 1     
+                        else:
                                 if bitrate > hbitrate:
                                         hbitrate = bitrate
                                         ret = finalret - 1
-                                if hpixels > pixels:
-                                        pixels = hpixels
+                                if pixels > hpixels:
+                                        hpixels = pixels
                                         ret = finalret - 1
-                        else:
-                                ret = finalret - 1 
 
         for _url,_playpath in rtmps:
                 optsplit = options[ret].replace('x240','').replace('x180','').replace('kbps','').split(' ')
