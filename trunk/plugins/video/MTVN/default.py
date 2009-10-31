@@ -1,13 +1,15 @@
 __plugin__ = "MTVN Plugin"
 __authors__ = "BlueCop"
 __credits__ = ""
-__version__ = "0.6"
+__version__ = "0.65"
 
 import urllib, urllib2
 import os, re, sys, md5, string
 import xbmc, xbmcgui, xbmcplugin
 
 import mtvn as mtvn
+
+MAXLISTING = (int(xbmcplugin.getSetting("maxlist")) + 1) * 5
 
 def listCategories():
         addDir('Browse Artists A-Z', 'artists', 1)
@@ -90,23 +92,36 @@ def listArtistsAZ(letter):
         return
 
 def listGenreArtist(genre):
-        artists = mtvn.genreArtists(genre)
-        ProcessResponse(artists,3)
-        return
-
-def listRelatedArtists(artist):
-        artists = mtvn.relatedArtists(artist)
+        if '<start>' in genre:
+                breakgenre = genre.split('<start>')
+                genre = breakgenre[0]
+                start = int(breakgenre[1])
+                nextpage = ' Next Page (' + str(start+MAXLISTING) + '-' + str(start+(MAXLISTING*2)-1) + ')'
+                pagegenre = genre+"<start>"+str(start+MAXLISTING)
+        else:
+                start = 0
+                nextpage = ' Next Page (' + str(MAXLISTING+1) + '-' + str(MAXLISTING*2) + ')'
+                pagegenre = genre+"<start>"+str(MAXLISTING+1)
+        artists = mtvn.genreArtists(genre,MAXLISTING,start)
+        if len(artists) == MAXLISTING:
+                addDir(nextpage, pagegenre, 22)
         ProcessResponse(artists,3)
         return
 
 def listGenreVideos(genre):
-        videos = mtvn.genreVideos(genre)
-        ProcessResponse(videos,4)
-        return
-
-def listArtistVideos(artist):
-        videos = mtvn.artistVideos(artist)
-        addDir(' Related Artists', artist, 6, '')
+        if '<start>' in genre:
+                breakgenre = genre.split('<start>')
+                genre = breakgenre[0]
+                start = int(breakgenre[1])
+                nextpage = ' Next Page (' + str(start+MAXLISTING) + '-' + str(start+(MAXLISTING*2)-1) + ')'
+                pagegenre = genre+"<start>"+str(start+MAXLISTING)
+        else:
+                start = 0
+                nextpage = ' Next Page (' + str(MAXLISTING+1) + '-' + str(MAXLISTING*2) + ')'
+                pagegenre = genre+"<start>"+str(MAXLISTING+1)
+        videos = mtvn.genreVideos(genre,MAXLISTING,start)
+        if len(videos) == MAXLISTING:
+                addDir(nextpage, pagegenre, 23)
         ProcessResponse(videos,4)
         return
 
@@ -122,6 +137,17 @@ def listSearch(searchtype):
                         videos = mtvn.videoSearch(search)
                         ProcessResponse(videos,4)
                 xbmcplugin.endOfDirectory(int(sys.argv[1]),updateListing=False,cacheToDisc=True)
+        return
+
+def listArtistVideos(artist):
+        videos = mtvn.artistVideos(artist)
+        addDir(' Related Artists', artist, 6, '')
+        ProcessResponse(videos,4)
+        return
+
+def listRelatedArtists(artist):
+        artists = mtvn.relatedArtists(artist)
+        ProcessResponse(artists,3)
         return
 
 def listMTVCOM(mode):
@@ -185,11 +211,7 @@ def playRTMP(url, name):
                         item.setProperty("SWFPlayer", swfUrl)
                         item.setProperty("PlayPath", _playpath)
                         rtmpurl = _url
-        if xbmcplugin.getSetting("dvdplayer") == "true":
-                player_type = xbmc.PLAYER_CORE_DVDPLAYER
-        else:
-                player_type = xbmc.PLAYER_CORE_MPLAYER
-        xbmc.Player(player_type).play(rtmpurl, item)
+        xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(rtmpurl, item)
         
         
 def get_params():
@@ -282,6 +304,7 @@ elif mode==23:
         print ""+url
         listGenreVideos(url)
         xbmcplugin.endOfDirectory(int(sys.argv[1]),updateListing=False,cacheToDisc=True)
+
 
 #ARTISTS VIDEOS
 elif mode==3:
