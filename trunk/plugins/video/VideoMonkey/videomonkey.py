@@ -627,25 +627,25 @@ class CCurrentList:
                     firstInfo = False
                     url = smart_unicode(item.infos_names[info_idx]) + ':' + smart_unicode(info_value)
                 else:
-                    url = smart_unicode(url) + '|' + smart_unicode(item.infos_names[info_idx]) + ':' + smart_unicode(info_value)
+                    url = smart_unicode(url) + '&' + smart_unicode(item.infos_names[info_idx]) + ':' + smart_unicode(info_value)
             info_idx = info_idx + 1
         if firstInfo:
             url = smart_unicode(item.infos_names[url_idx]) + ':' + smart_unicode(item.infos_values[url_idx])
         else:
-            url = smart_unicode(url) + '|' + smart_unicode(item.infos_names[url_idx]) + ':' + smart_unicode(item.infos_values[url_idx])
+            url = smart_unicode(url) + '&' + smart_unicode(item.infos_names[url_idx]) + ':' + smart_unicode(item.infos_values[url_idx])
         if len(suffix) > 0:
             url = url + '.' + suffix
         return url
 
     def decodeUrl(self, url, type = 'rss'):
         item = CListItem()
-        if url.find('|') == -1:
+        if url.find('&') == -1:
             item.infos_names.append('url')
             item.infos_values.append(clean_safe(url))
             item.infos_names.append('type')
             item.infos_values.append(type)
             return item
-        infos_names_values = url.split('|')
+        infos_names_values = url.split('&')
         for info_name_value in infos_names_values:
             sep_index = info_name_value.find(':')
             if sep_index != -1:
