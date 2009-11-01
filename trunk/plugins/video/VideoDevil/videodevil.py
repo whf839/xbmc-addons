@@ -600,25 +600,25 @@ class CCurrentList:
                     firstInfo = False
                     url = smart_unicode(item.infos_names[info_idx]) + ':' + smart_unicode(info_value)
                 else:
-                    url = smart_unicode(url) + '|' + smart_unicode(item.infos_names[info_idx]) + ':' + smart_unicode(info_value)
+                    url = smart_unicode(url) + '&' + smart_unicode(item.infos_names[info_idx]) + ':' + smart_unicode(info_value)
             info_idx = info_idx + 1
         if firstInfo:
             url = smart_unicode(item.infos_names[url_idx]) + ':' + smart_unicode(item.infos_values[url_idx])
         else:
-            url = smart_unicode(url) + '|' + smart_unicode(item.infos_names[url_idx]) + ':' + smart_unicode(item.infos_values[url_idx])
+            url = smart_unicode(url) + '&' + smart_unicode(item.infos_names[url_idx]) + ':' + smart_unicode(item.infos_values[url_idx])
         if len(suffix) > 0:
             url = url + '.' + suffix
         return url
 
     def decodeUrl(self, url, type = 'rss'):
         item = CListItem()
-        if url.find('|') == -1:
+        if url.find('&') == -1:
             item.infos_names.append('url')
             item.infos_values.append(clean_safe(url))
             item.infos_names.append('type')
             item.infos_values.append(type)
             return item
-        infos_names_values = url.split('|')
+        infos_names_values = url.split('&')
         for info_name_value in infos_names_values:
             sep_index = info_name_value.find(':')
             if sep_index != -1:
@@ -914,9 +914,9 @@ class CCurrentList:
                 except:
                     pass
             if self.reference == '':
-                txheaders = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14', 'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
+                txheaders = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 5.2; en-GB; rv:1.8.1.18) Gecko/20081029 Firefox/2.0.0.18', 'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
             else:
-                txheaders = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14', 'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.7', self.reference:self.content}
+                txheaders = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 5.2; en-GB; rv:1.8.1.18) Gecko/20081029 Firefox/2.0.0.18', 'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.7', self.reference:self.content}
             if enable_debug:
                 f = open(os.path.join(cacheDir, 'page.html'), 'w')
                 f.write('<Titel>'+ curr_url + '</Title>\n\n')
@@ -1311,7 +1311,7 @@ class Main:
             if xbmcplugin.getSetting('download') == 'true':
                 self.pDialog = xbmcgui.DialogProgress()
                 self.pDialog.create('VideoDevil', xbmc.getLocalizedString(30050), xbmc.getLocalizedString(30051))
-                flv_file = self.downloadMovie(url, title)
+		flv_file = self.downloadMovie(url, title)
                 self.pDialog.close()
                 if flv_file == None:
                     dialog = xbmcgui.Dialog()
@@ -1350,9 +1350,9 @@ class Main:
     def downloadMovie(self, url, title):
         if enable_debug:
             xbmc.output('Trying to download video ' + str(url))
-        file_path = os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension)
+        file_path = xbmc.makeLegalFilename(os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension))
         if os.path.isfile(file_path):
-            file_path = self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '_', suffix = self.videoExtension)
+            file_path = xbmc.makeLegalFilename(self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '&', suffix = self.videoExtension))
         try:
             urllib.urlretrieve(url, file_path, self.video_report_hook)
             if enable_debug:
@@ -1360,9 +1360,9 @@ class Main:
             return file_path
         except IOError:
             title = first_clean_filename(title)
-            file_path = os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension)
+            file_path = xbmc.makeLegalFilename(os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension))
             if os.path.isfile(file_path):
-                file_path = self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '_', suffix = self.videoExtension)
+                file_path = xbmc.makeLegalFilename(self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '&', suffix = self.videoExtension))
             try:
                 urllib.urlretrieve(url, file_path, self.video_report_hook)
                 if enable_debug:
@@ -1370,9 +1370,9 @@ class Main:
                 return file_path
             except IOError:
                 title = second_clean_filename(title)
-                file_path = os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension)
+                file_path = xbmc.makeLegalFilename(os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension))
                 if os.path.isfile(file_path):
-                    file_path = self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '_', suffix = self.videoExtension)
+                    file_path = xbmc.makeLegalFilename(self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '&', suffix = self.videoExtension))
                 try:
                     urllib.urlretrieve(url, file_path, self.video_report_hook)
                     if enable_debug:
@@ -1380,9 +1380,9 @@ class Main:
                     return file_path
                 except IOError:
                     title = third_clean_filename(title)
-                    file_path = os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension)
+                    file_path = xbmc.makeLegalFilename(os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension))
                     if os.path.isfile(file_path):
-                        file_path = self.currentlist.randomFilename(dir = xbmcplugin.getSetting('download_Path'), suffix = self.videoExtension)
+                        file_path = xbmc.makeLegalFilename(self.currentlist.randomFilename(dir = xbmcplugin.getSetting('download_Path'), suffix = self.videoExtension))
                     try:
                         urllib.urlretrieve(url, file_path, self.video_report_hook)
                         if enable_debug:
@@ -1390,9 +1390,9 @@ class Main:
                         return file_path
                     except IOError:
                         title = self.currentlist.randomFilename()
-                        file_path = os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension)
+                        file_path = xbmc.makeLegalFilename(os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension))
                         if os.path.isfile(file_path):
-                            file_path = self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '_', suffix = self.videoExtension)
+                            file_path = xbmc.makeLegalFilename(self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '&', suffix = self.videoExtension))
                         try:
                             urllib.urlretrieve(url, file_path, self.video_report_hook)
                             if enable_debug:
@@ -1500,7 +1500,7 @@ class Main:
         u = sys.argv[0] + '?url=' + url
         liz = xbmcgui.ListItem(title, title, icon, icon)
         if self.currentlist.getFileExtension(url) == 'videodevil' and self.currentlist.skill.find('nodownload') == -1:
-            action = 'XBMC.RunPlugin(%s.dwnlddevil)' % u[:len(u)-11]
+	    action = 'XBMC.RunPlugin(%s.dwnlddevil)' % u[:len(u)-11]
             try:
                 liz.addContextMenuItems([(xbmc.getLocalizedString(30007), action)])
             except:
