@@ -102,6 +102,12 @@ target=so.addVariable\('videoUrl','([^']+)'\)
 url=%s
 quality=standard
 ########################################################
+title=mofosex.com
+target=videoPath: "http://www.mofosex.com/playlist.php[?]v=([^"]+)%
+url=%s
+build=http://media.mofosex.com/media/flvs/%s.flv
+quality=standard
+########################################################
 title=xclips.ws
 target=<param name="movie" value="http://www.xclips.ws/media/player/player.swf[?]f=(http://www.xclips.ws/media/player/config.php[?]vkey=\d+)" />
 url=%s
