@@ -3,7 +3,7 @@ __scriptname__ = "ChannelSurfing.net"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/ChannelSurfing.net"
 __date__ = '2009-11-01'
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback, shutil
 from urllib import urlretrieve, urlcleanup
@@ -23,7 +23,7 @@ def check_for_update():
 		if link.find(__version__) != 0:
 			newVersion=link
 			dia = xbmcgui.Dialog()
-			ok = dia.ok("ChannelSurfing.net", 'Updates are available on both SVN Repo or XBMC Zone\n\n'+'Current Version: '+__version__+'\n'+'Update Version: '+newVersion)
+			ok = dia.ok("ChannelSurfing.net", 'Updates are available on the SVN Repo Installer\n\n'+'Current Version: '+__version__+'\n'+'Update Version: '+newVersion)
 
 def check_for_jtv():
 	if os.path.isdir('special://home/plugins/video/Justin.tv') == False:
@@ -66,8 +66,8 @@ def get_links():
 	count=0
 	for a,thumb,c,d,url,f,title in info:
 		url='http://www.channelsurfing.net/'+url
-		item=xbmcgui.ListItem(label=title.replace('\t',''), iconImage=thumb, thumbnailImage=thumb)
-		item.setInfo( type="Video", infoLabels={ "Title": title.replace('\t',''), "Director": 'ChannelSurfing.net', "Studio": 'ChannelSurfing.net' } )
+		label=str(count+1)+') '+title.replace('\t','')
+		item=xbmcgui.ListItem(label, iconImage=thumb, thumbnailImage=thumb)
 		u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(title.replace('\t',''))+"&url="+urllib.quote_plus(url)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,item)
 		count=count+1
