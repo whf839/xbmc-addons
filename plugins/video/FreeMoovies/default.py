@@ -46,7 +46,7 @@ def CATEGORIES():
         items = re.sub('\n', ' ', items)
         items = re.sub('\t', ' ', items)
         topmenu=re.compile('<div id="horiz-menu" class="moomenu">(.+?)</div>').findall(items)
-        match=re.compile('<a href="(.+?)"><span>(.+?)</span></a></li>').findall(topmenu[0])
+        match=re.compile('<a class="topdaddy link" href="(.+?)"  >       <span>(.+?)</span>   </a>      </li>').findall(topmenu[0])
         for category,name in match:
                 if str(name) == 'Home' or str(name) == 'Community':
                         continue
