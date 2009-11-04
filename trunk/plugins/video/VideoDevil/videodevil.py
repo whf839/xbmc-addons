@@ -605,7 +605,7 @@ class CCurrentList:
         if firstInfo:
             url = smart_unicode(item.infos_names[url_idx]) + ':' + smart_unicode(item.infos_values[url_idx])
         else:
-            url = smart_unicode(url) + '&' + smart_unicode(item.infos_names[url_idx]) + ':' + smart_unicode(item.infos_values[url_idx])
+            url = smart_unicode(url) + '&' + smart_unicode(item.infos_names[url_idx]) + ':' + smart_unicode(urllib.quote_plus(item.infos_values[url_idx]))
         if len(suffix) > 0:
             url = url + '.' + suffix
         return url
@@ -881,6 +881,7 @@ class CCurrentList:
         return clean_safe(info_value)
 
     def loadRemote(self, remote_url, recursive = True, lItem = None):
+	remote_url = urllib.unquote_plus(remote_url)
         if enable_debug:
             xbmc.output(repr(remote_url))
         if lItem == None:
