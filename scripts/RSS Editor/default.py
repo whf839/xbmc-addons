@@ -13,7 +13,7 @@ print "[SCRIPT] '%s: version %s' initialized!" % (__scriptname__, __version__, )
 
 if (__name__ == "__main__"):
     import resources.lib.rssEditor as rssEditor
-    ui = rssEditor.GUI("rssEditor.xml", os.getcwd(), "default", setNum = 'set1')
+    ui = rssEditor.GUI("script-RSS_Editor-rssEditor.xml", os.getcwd(), "default", setNum = 'set1')
     ui.doModal()
     del ui
 
