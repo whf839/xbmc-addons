@@ -54,7 +54,7 @@ class GUI(xbmcgui.WindowXMLDialog):
     def closeDialog(self):
         """Close the Set Editor Dialog and open RSS Editor Dialog"""
         import rssEditor
-        rssEditorUI = rssEditor.GUI("rssEditor.xml", os.getcwd(), "default", setNum = self.setNum)
+        rssEditorUI = rssEditor.GUI("script-RSS_Editor-rssEditor.xml", os.getcwd(), "default", setNum = self.setNum)
         rssEditorUI.doModal()
         self.close()
         del rssEditorUI

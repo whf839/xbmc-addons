@@ -76,7 +76,7 @@ class GUI(xbmcgui.WindowXMLDialog):
         #change/modify set
         elif controlId == self.control_changeSet_button_id:
             import setEditor
-            setEditorUI = setEditor.GUI("setEditor.xml", os.getcwd(), "default", setNum = self.setNum)
+            setEditorUI = setEditor.GUI("script-RSS_Editor-setEditor.xml", os.getcwd(), "default", setNum = self.setNum)
             setEditorUI.doModal()
             self.close()
             del setEditorUI
