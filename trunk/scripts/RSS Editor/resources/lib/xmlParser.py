@@ -90,7 +90,9 @@ class XMLParser:
             setTag = doc.createElement('set')
             #create attributes
             setTag.setAttribute('id', self.feedsList[setNum]['attrs']['id'])
-            setTag.setAttribute('rtl', self.feedsList[setNum]['attrs']['rtl'])
+            #only write rtl tags if they've been explicitly set
+            if 'rtl' in self.feedsList[setNum]['attrs']:
+                setTag.setAttribute('rtl', self.feedsList[setNum]['attrs']['rtl'])
             rssfeedsTag.appendChild(setTag)
             #create feed elements
             for feed in self.feedsList[setNum]['feedslist']:
