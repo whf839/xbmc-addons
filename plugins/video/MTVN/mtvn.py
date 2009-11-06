@@ -199,13 +199,14 @@ def VideoPicksMTV():
         response = getURL(url)
         if response == False:
                 return False
-        data = re.compile('<a href="/videos/\?id=(.+?)&amp;vid=(.+?)">(.+?) - "(.+?)"</a>').findall(response)
+        response = response.replace('\n',' ')
+        data = re.compile('<a href="/videos/(.+?)"> <img src="(.+?)".+?> <span class="icon icon-play">Video: </span>(.+?)</a>').findall(response)
         videos = []
-        for id1, vid, artist, song in data:
+        for vid, thumb, artist in data:
                 video = []
-                vid = 'mgid:uma:video:api.mtvnservices.com:' + vid
-                video.append(artist)
-                video.append(song)
+                vid = 'mgid:uma:video:api.mtvnservices.com:' + vid.split('/')[1]
+                video.append(artist.replace('"',''))
+                video.append("http://www.mtv.com" + thumb)
                 video.append(vid)
                 videos.append(video)
         return videos
@@ -215,14 +216,14 @@ def VideoPremieresMTV():
         response = getURL(url)
         if response == False:
                 return False
-        response = response.replace('\n','')
-        data = re.compile('<a href="/videos/\?id=(.+?)&amp;vid=(.+?)"><img src="(.+?)"(.+?)</span>(.+?) - "(.+?)"</a>').findall(response)
+        response = response.replace('\n',' ')
+        data = re.compile('<a href="/videos/(.+?)"> <img src="(.+?)".+?> <span class="icon icon-play">Video: </span>(.+?)</a>').findall(response)
         videos = []
-        for id1, vid, thumbnail, junk1, artist, song in data:
+        for vid, thumb, artist in data:
                 video = []
-                vid = 'mgid:uma:video:api.mtvnservices.com:' + vid
-                video.append(artist)
-                video.append(song)
+                vid = 'mgid:uma:video:api.mtvnservices.com:' + vid.split('/')[1]
+                video.append(artist.replace('"',''))
+                video.append("http://www.mtv.com" + thumb)
                 video.append(vid)
                 videos.append(video)
         return videos
@@ -232,13 +233,14 @@ def VideoPopularMTV():
         response = getURL(url)
         if response == False:
                 return False
-        data = re.compile('<a href="/videos/\?vid=(.+?)">(.+?) "(.+?)"</a>').findall(response)
+        response = response.replace('\n',' ')
+        data = re.compile('<a href="/videos/\?vid=(.+?)"> <img src="(.+?)".+?> <span class="icon icon-play">Video: </span>(.+?)</a>').findall(response)
         videos = []
-        for vid, artist, song in data:
+        for vid, thumb, artist in data:
                 video = []
                 vid = 'mgid:uma:video:api.mtvnservices.com:' + vid
                 video.append(artist)
-                video.append(song)
+                video.append("http://www.mtv.com" + thumb)
                 video.append(vid)
                 videos.append(video)
         return videos

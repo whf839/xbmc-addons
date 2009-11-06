@@ -1,7 +1,7 @@
 __plugin__ = "MTVN Plugin"
 __authors__ = "BlueCop"
 __credits__ = ""
-__version__ = "0.72"
+__version__ = "0.73"
 
 import urllib, urllib2
 import os, re, sys, md5, string
@@ -23,13 +23,11 @@ def listCategories():
         addDir('Browse Videos by Genre', 'videos', 2)
         addDir('Search Artist', 'searchArtist', 5)
         addDir('Search Video', 'searchVideo', 5)
-        addDir('Video Picks (MTV.com)', 'videopicks', 101)
-        addDir('Video Premieres (MTV.com)', 'videopremieres', 101)
-        addDir('Most Popular (MTV.com)', 'mostpopular', 101)
+        addDir('MTV.com', 'mtvlist', 101)
         #addDir('Favorite Videos', 'favArtist', 1)
         #addDir('Favorite Artists', 'favVideo', 1)
         return
-        
+
 def listAZ():
         addDir('#', '-', 11)
         addDir('A', 'a', 11)
@@ -156,19 +154,28 @@ def listRelatedArtists(artist):
         ProcessResponse(artists,3)
         return
 
+def listMTV():
+        addDir('Video Picks', 'videopicks', 101)
+        addDir('Video Premieres', 'videopremieres', 101)
+        addDir('Most Popular', 'mostpopular', 101)
+        return
+
 def listMTVCOM(mode):
-        if mode == 'videopicks':
+        if mode == 'mtvlist':
+                listMTV()
+                return
+        elif mode == 'videopicks':
                 videos = mtvn.VideoPicksMTV()
-        if mode == 'videopremieres':
+        elif mode == 'videopremieres':
                 videos = mtvn.VideoPremieresMTV()
-        if mode == 'mostpopular':
+        elif mode == 'mostpopular':
                 videos = mtvn.VideoPopularMTV()
         if videos == False:
-                return
-        for artist, song, uri in videos:
-                name = artist + ' - ' + song
+                return False
+        for artist, thumb, uri in videos:
+                name = artist #+ ' - ' + song
                 name = name.replace('&amp;','&').replace('&#039;',"'").replace('&#039;',"'")
-                addDir(name, uri, 4, '')
+                addDir(name, uri, 4, thumb)
         return
                 
 #Get SMIL url and play video
