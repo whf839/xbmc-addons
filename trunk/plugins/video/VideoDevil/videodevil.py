@@ -1352,6 +1352,13 @@ class Main:
     def downloadMovie(self, url, title):
         if enable_debug:
             xbmc.output('Trying to download video ' + str(url))
+	if xbmcplugin.getSetting('download_Path') == '':
+	    try:
+		dl_path = xbmcgui.Dialog().browse(0,'Select download path:','files', '', False, False)
+		xbmcplugin.setSetting(id='download_path', value=dl_path)
+		if not os.path.exists(dl_path):
+		    os.mkdir(dl_path)
+	    except:pass
         file_path = xbmc.makeLegalFilename(os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension))
         if os.path.isfile(file_path):
             file_path = xbmc.makeLegalFilename(self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '&', suffix = self.videoExtension))
