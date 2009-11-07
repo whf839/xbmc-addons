@@ -1354,7 +1354,7 @@ class Main:
             xbmc.output('Trying to download video ' + str(url))
 	if xbmcplugin.getSetting('download_Path') == '':
 	    try:
-		dl_path = xbmcgui.Dialog().browse(0,'Select download path:','files', '', False, False)
+		dl_path = xbmcgui.Dialog().browse(0, xbmc.getLocalizedString(30017),'files', '', False, False)
 		xbmcplugin.setSetting(id='download_path', value=dl_path)
 		if not os.path.exists(dl_path):
 		    os.mkdir(dl_path)
@@ -1577,17 +1577,6 @@ class Main:
                     os.mkdir(cacheDir)
                     if enable_debug:
                         xbmc.output('Cache directory created')
-                if not os.path.exists(xbmcplugin.getSetting('download_Path')):
-                    try:
-                        if enable_debug:
-                            xbmc.output('Creating download directory ' + str(xbmcplugin.getSetting('download_Path')))
-                        os.mkdir(xbmcplugin.getSetting('download_Path'))
-                        if enable_debug:
-                            xbmc.output('Download directory created')
-                    except:
-                        if enable_debug:
-                            xbmc.output('Cannot create download directory')
-                            traceback.print_exc(file = sys.stdout)
                 if enable_debug:
                     xbmc.output('Purging cache directory')
                 self.purgeCache()
