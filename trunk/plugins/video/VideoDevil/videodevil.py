@@ -921,6 +921,7 @@ class CCurrentList:
             if enable_debug:
                 f = open(os.path.join(cacheDir, 'page.html'), 'w')
                 f.write('<Titel>'+ curr_url + '</Title>\n\n')
+	    curr_url = urllib.unquote_plus(curr_url)
             req = Request(curr_url, None, txheaders)
             try:
                 handle = urlopen(req)
@@ -1434,15 +1435,18 @@ class Main:
         if ext == 'cfg' or ext == 'list':
             result = self.currentlist.loadLocal(url, lItem = lItem)
         elif ext == 'add':
+	    url = urllib.unquote_plus(url)
             self.currentlist.addItem(url[:len(url) - 4])
             return -2
         elif ext == 'remove':
             dia = xbmcgui.Dialog()
             if dia.yesno('', xbmc.getLocalizedString(30054)):
+		url = urllib.unquote_plus(url)
                 self.currentlist.removeItem(url[:len(url) - 7])
                 xbmc.executebuiltin('Container.Refresh')
             return -2
         elif ext == 'videodevil' or ext == 'dwnlddevil':
+	    url = urllib.unquote_plus(url)		
             url = url[:len(url) - 11]
             lItem.infos_values[lItem.infos_names.index('url')] = url
             cfg_file = lItem.infos_values[lItem.infos_names.index('cfg')]
