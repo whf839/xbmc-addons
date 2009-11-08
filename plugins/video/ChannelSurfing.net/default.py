@@ -2,8 +2,8 @@
 __scriptname__ = "ChannelSurfing.net"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/ChannelSurfing.net"
-__date__ = '2009-11-01'
-__version__ = "1.0.1"
+__date__ = '2009-11-08'
+__version__ = "1.0.2"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback, shutil
 from urllib import urlretrieve, urlcleanup
@@ -62,7 +62,7 @@ def temp_dir():
 
 def get_links():
 	data=open_url('http://www.channelsurfing.net')
-	info=re.compile('<tr>\n\t\t\t\t<td (.+?)">\n\t\t\t\t<img border="0" src="(.+?)"(.+?)align="right"></td>\n\t\t\t\t<td width="(.+?)"><a href="(.+?)"( onclick="doPop\(this\.href\); return false;")?>\n\t\t(.+?)</a>').findall(data)
+	info=re.compile('<td (.+?)">\n\t\t\t\t<img border="0" src="(.+?)"(.+?)align="right"></td>\n\t\t\t\t<td width="(.+?)"><a href="(.+?)"( onclick="doPop\(this\.href\); return false;")?>\n\t\t(.+?)</a>').findall(data)
 	count=0
 	for a,thumb,c,d,url,f,title in info:
 		url='http://www.channelsurfing.net/'+url
@@ -74,11 +74,16 @@ def get_links():
 
 def play_video(name,url):
 	data=open_url(url)
-	justintv=re.compile('"http://www\.justin\.tv/widgets/live_embed_player\.swf\?channel=(.+?)"').findall(data)
-	if len(justintv) != 0:
-		thumb='http://static-cdn.justin.tv/previews/live_user_'+justintv[0]+'-320x240.jpg'
+	if data.find('justin.tv') != -1:
+		justintv=re.compile('"http://www\.justin\.tv/widgets/live_embed_player\.swf\?channel=(.+?)"').findall(data)
+		justintv2=re.compile('"http://www\.justin\.tv/(.+?)/popout"').findall(data)
+		if len(justintv) == 0:
+			channel = justintv2[0]
+		else:
+			channel = justintv[0].rsplit('&')[0]
+		thumb='http://static-cdn.justin.tv/previews/live_user_'+channel+'-320x240.jpg'
 		img=get_thumbnail( thumb )
-		path = 'plugin://video/Justin.tv/'+"?mode=2&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(justintv[0])+"&thumb="+urllib.quote_plus(img)
+		path = 'plugin://video/Justin.tv/'+"?mode=2&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(channel)+"&thumb="+urllib.quote_plus(img)
 		command = 'XBMC.RunPlugin(%s)' % path
 		xbmc.executebuiltin(command)
 	elif data.find('rtmp') != -1:
