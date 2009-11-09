@@ -2,8 +2,8 @@
 __scriptname__ = "ChannelSurfing.net"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/ChannelSurfing.net"
-__date__ = '2009-11-08'
-__version__ = "1.0.2"
+__date__ = '2009-11-09'
+__version__ = "1.0.3"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback, shutil
 from urllib import urlretrieve, urlcleanup
@@ -62,11 +62,11 @@ def temp_dir():
 
 def get_links():
 	data=open_url('http://www.channelsurfing.net')
-	info=re.compile('<td (.+?)">\n\t\t\t\t<img border="0" src="(.+?)"(.+?)align="right"></td>\n\t\t\t\t<td width="(.+?)"><a href="(.+?)"( onclick="doPop\(this\.href\); return false;")?>\n\t\t(.+?)</a>').findall(data)
+	info=re.compile('<td (.+?)">\n\t\t\t\t<img border="0" src="(.+?)"(.+?)align="right"></td>\n\t\t\t\t<td width="(.+?)"><a href="(.+?)"( onclick="doPop\(this\.href\); return false;")?>\n\t\t(.+?)</a>', re.DOTALL).findall(data)
 	count=0
 	for a,thumb,c,d,url,f,title in info:
 		url='http://www.channelsurfing.net/'+url
-		label=str(count+1)+') '+title.replace('\t','')
+		label=str(count+1)+') '+title.replace('\t','').replace('\n','')
 		item=xbmcgui.ListItem(label, iconImage=thumb, thumbnailImage=thumb)
 		u=sys.argv[0]+"?mode=1&name="+urllib.quote_plus(title.replace('\t',''))+"&url="+urllib.quote_plus(url)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,item)
