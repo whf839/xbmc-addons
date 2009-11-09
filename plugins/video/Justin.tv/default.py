@@ -2,8 +2,8 @@
 __scriptname__ = "Justin.tv"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Justin.tv"
-__date__ = '2009-11-08'
-__version__ = "1.4.13"
+__date__ = '2009-11-09'
+__version__ = "1.4.14"
 #__XBMC_Revision__ = "21803"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback, shutil
@@ -370,11 +370,14 @@ def playVideo(url, name, thumb):
 		ok = dialog.ok('Justin.tv', 'Error: Invalid user or not a live feed.')
 		xbmc.executebuiltin( "Container.Refresh" )
 		return
-	if a.find('<error>Bad Password</error>') != -1:
-		dialog = xbmcgui.Dialog()
-		ok = dialog.ok('Justin.tv', 'Error: XBMC cannot play password protected streams.')
-		xbmc.executebuiltin( "Container.Refresh" )
-		return	
+	if xbmcplugin.getSetting('private') == 'true':
+		if a.find('<error>Bad Password</error>') != -1:
+			dialog = xbmcgui.Dialog()
+			if dialog.yesno('Warning!', 'This is a private stream and it can cause\nXBMC to crash. Do you still want to continue?'):
+				pass
+			else:
+				xbmc.executebuiltin( "Container.Refresh" )
+				return
 	playpath = data[0][0]
 	rtmp_url = data[0][2]
 	swf='http://www.justin.tv/meta/'+url+'.xml'

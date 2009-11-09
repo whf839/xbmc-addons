@@ -29,6 +29,7 @@
     <string id="30026">Turkish (tr)</string>
     <string id="30027">Ukrainian (uk)</string>
     <string id="30028">Chinese (zh-TW)</string>
+	<string id="30029">Enable private stream check</string>
     <string id="30700">version</string>
     <string id="30701">This version of %s requires an</string>
     <string id="30702">XBMC revision of %s or greater to run.</string>
