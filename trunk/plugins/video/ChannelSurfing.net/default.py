@@ -2,8 +2,8 @@
 __scriptname__ = "ChannelSurfing.net"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/ChannelSurfing.net"
-__date__ = '2009-11-09'
-__version__ = "1.0.3"
+__date__ = '2009-11-13'
+__version__ = "1.0.4"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback, shutil
 from urllib import urlretrieve, urlcleanup
@@ -62,6 +62,10 @@ def temp_dir():
 
 def get_links():
 	data=open_url('http://www.channelsurfing.net')
+	remove=re.compile('<!--(.+?)-->', re.DOTALL).findall(data)
+	for trash in remove:
+		print trash
+		data=data.replace(trash,'')
 	info=re.compile('<td (.+?)">\n\t\t\t\t<img border="0" src="(.+?)"(.+?)align="right"></td>\n\t\t\t\t<td width="(.+?)"><a href="(.+?)"( onclick="doPop\(this\.href\); return false;")?>\n\t\t(.+?)</a>', re.DOTALL).findall(data)
 	count=0
 	for a,thumb,c,d,url,f,title in info:
@@ -74,6 +78,14 @@ def get_links():
 
 def play_video(name,url):
 	data=open_url(url)
+	code=re.compile('<script language="javascript">document\.write\(unescape\( \'(.+?)\' \) \);</script>').findall(data)
+	print len(code)
+	if len(code) == 1:
+		data=code[0].replace('%', '').replace('\u00', '').decode('hex')
+		if data.find('document.write(unescape') != -1:
+			#code=re.compile('<script language="javascript">document\.write\(unescape\( \'(.+?)\' \) \);</script>').findall(data)
+			code=re.compile('<script language="javascript">document\.write\(unescape\( \'(.+?)\' \)\);</script>').findall(data)
+			data=code[0].replace('%', '').replace('\u00', '').decode('hex')
 	if data.find('justin.tv') != -1:
 		justintv=re.compile('"http://www\.justin\.tv/widgets/live_embed_player\.swf\?channel=(.+?)"').findall(data)
 		justintv2=re.compile('"http://www\.justin\.tv/(.+?)/popout"').findall(data)
@@ -110,6 +122,34 @@ def play_video(name,url):
 		item = xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
 		item.setInfo( type="Video", infoLabels={ "Title": name, "Director": 'ChannelSurfing.net', "Studio": 'ChannelSurfing.net' } )
 		xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play('mms://'+mms[0], item)
+	elif data.find('freedocast') != -1:
+		freeid=re.compile('http://www\.freedocast\.com/forms/PopOut\.aspx\?sc=(.+?)&').findall(data)[0]
+		url='http://www.freedocast.com/forms/watchstream.aspx?sc='+freeid
+		req = urllib2.Request(url)
+		req.add_header('User-Agent', HEADER)
+		req.add_header('Referer', 'http://www.freedocast.com')
+		content=urllib2.urlopen(req)
+		data1=content.read()
+		content.close()	
+		if data1.find('rtmp') != -1:
+			tcUrl=re.compile('netConnectionUrl:\'(.+?)\'\r\n', re.DOTALL).findall(data1)[0]
+			swfUrl=re.compile('src:\'(.+?)\'').findall(data1)[0]
+			playPath=re.compile('url:\'(.+?)\'').findall(data1)[0]
+			pageUrl='http://www.freedocast.com/forms/PopOut.aspx?sc='+freeid
+			thumb = xbmc.getInfoImage( "ListItem.Thumb" )
+			item = xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
+			item.setInfo( type="Video", infoLabels={ "Title": name, "Director": 'FreedoCast.com', "Studio": 'FreedoCast.com' } )
+			item.setProperty("SWFPlayer", swfUrl)
+			item.setProperty("PlayPath", playPath)
+			item.setProperty("PageURL", pageUrl)
+			item.setProperty("IsLive", "true")
+			item.setProperty("tcUrl", tcUrl)
+			xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(tcUrl, item)
+		else:
+			dialog = xbmcgui.Dialog()
+			ok = dialog.ok('ChannelSurfing.net', 'Error: Not a live stream.')
+			xbmc.executebuiltin( "Container.Refresh" )
+			return	
 	else:
 		print url
 		print data
