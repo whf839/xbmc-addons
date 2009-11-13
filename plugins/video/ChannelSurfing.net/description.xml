@@ -23,7 +23,7 @@
     <title>ChannelSurfing.net</title>
 
     <!-- (required) Major.minor.build -->
-    <version></version>
+    <version>1.0.4</version>
 
     <!-- (required) author name & email.  at least one author name is required -->
     <authors>
