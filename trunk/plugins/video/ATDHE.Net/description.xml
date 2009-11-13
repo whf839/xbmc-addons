@@ -23,7 +23,7 @@
     <title>ATDHE.Net</title>
 
     <!-- (required) Major.minor.build -->
-    <version></version>
+    <version>1.0.7</version>
 
     <!-- (required) author name & email.  at least one author name is required -->
     <authors>
