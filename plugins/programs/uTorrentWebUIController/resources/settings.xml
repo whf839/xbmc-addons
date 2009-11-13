@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+	<setting id="ip" type="text" label="IP Address:" default="10.0.0.2" />
+	<setting id="port" type="text" label="Port Number:" default="8080" />
+	<setting id="usr" type="text" label="Username:" default="user" />
+	<setting id="pwd" type="text" label="Password:" default="pass" />
+	<setting id="tdir" type="text" label="Torrent Directory:" default="special://profile/torrents/" />
+</settings>

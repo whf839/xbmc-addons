@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<strings>
+	<!-- dialog.select -->
+	<string id="32001">Perform function:</string>
+	<string id="32002">Pause</string>
+	<string id="32003">Resume</string>
+	<string id="32004">Start</string>
+	<string id="32005">Stop</string>
+	<string id="32006">Force Start</string>
+	<string id="32007">Remove</string>
+	<string id="32008">Remove and Remove Data</string>
+	<!-- dialog.numeric -->
+	<string id="32009">Enter Max. Upload Speed:</string>
+	<string id="32010">Enter Max. Download Speed:</string>
+	<!-- context.menu -->
+	<string id="32011">Pause All</string>
+	<string id="32012">Resume All</string>
+	<string id="32013">Stop All</string>
+	<string id="32014">Start All</string>
+	<string id="32015">Limit Upload / Download Speeds</string>
+	<string id="32016">Add Files (from Torrents dir.)</string>
+</strings>
