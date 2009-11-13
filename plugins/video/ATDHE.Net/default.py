@@ -178,7 +178,7 @@ def showList(url, name):
 		item.setInfo( type="Video", infoLabels={ "Title": name, "Director": 'ATDHE.Net', "Studio": 'ATDHE.Net' } )
 		xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play('mms://'+mms[0], item)
 	elif info.find('freedocast') != -1:
-		freeid=re.compile('http://www\.freedocast\.com/forms/PopOut\.aspx\?sc=(.+?)&ftype=stream').findall(info)[0]
+		freeid=re.compile('http://www\.freedocast\.com/forms/PopOut\.aspx\?sc=(.+?)&').findall(info)[0]
 		url='http://www.freedocast.com/forms/watchstream.aspx?sc='+freeid
 		req = urllib2.Request(url)
 		req.add_header('User-Agent', HEADER)
