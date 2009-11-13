@@ -3,8 +3,8 @@ __scriptname__ = "ATDHE.Net"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/ATDHE.Net"
-__date__ = '2009-10-29'
-__version__ = "1.0.5"
+__date__ = '2009-11-13'
+__version__ = "1.0.6"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback, shutil
 from urllib import urlretrieve, urlcleanup
@@ -95,141 +95,152 @@ def showList(url, name):
 	print len(justintv)
 	if len(code) == 1:
 		info=code[0].replace('%', '').replace('\u00', '').decode('hex')
-		print info
-		if info.find('justin.tv') != -1:
-			if info.find('popout') != -1:
-				channel=re.compile('http://justin\.tv/(.+?)/popout').findall(info)
-			else:
-				channel=re.compile('id="jtv_player_flash" data="http://www\.justin\.tv/widgets/live_embed_player\.swf\?channel=(.+?)" bgcolor').findall(info) 
-			thumb='http://static-cdn.justin.tv/previews/live_user_'+channel[0]+'-320x240.jpg'
-			img=get_thumbnail( thumb )
-			path = 'plugin://video/Justin.tv/'+"?mode=2&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(channel[0])+"&thumb="+urllib.quote_plus(img)
-			command = 'XBMC.RunPlugin(%s)' % path
-			xbmc.executebuiltin(command)
-		elif info.find('force_remote_auth') != -1:
-			channel=re.compile('<iframe src="(.+?)"').findall(info)
-			data=open_url(channel[0])
-			channel2=re.compile('id="jtv_player_flash" data="http://www\.justin\.tv/widgets/live_embed_player\.swf\?channel=(.+?)" bgcolor').findall(data)
-			thumb='http://static-cdn.justin.tv/previews/live_user_'+channel2[0]+'-320x240.jpg'
-			img=get_thumbnail( thumb )
-			path = 'plugin://video/Justin.tv/'+"?mode=2&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(channel2[0])+"&thumb="+urllib.quote_plus(img)
-			command = 'XBMC.RunPlugin(%s)' % path
-			xbmc.executebuiltin(command)
-		elif info.find('rtmp') != -1:
-			rtmp_id=re.compile('file=(.+?)&id=(.+?)&').findall(info)
-			rtmp_id2=re.compile('streamer=(.+?)&file=(.+?)&').findall(info)
-			if len(rtmp_id) == 0:
-				rtmp_url = rtmp_id2[0][0]
-				rtmp_url2 = rtmp_id2[0][1]
-			else:
-				rtmp_url = rtmp_id[0][0]
-				rtmp_url2 = rtmp_id[0][1]
-			thumb = xbmc.getInfoImage( "ListItem.Thumb" )
-			swfUrl = 'http://cdn1.ustream.tv/swf/4/viewer.rsl.210.swf'
-			item = xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
-			item.setInfo( type="Video", infoLabels={ "Title": name, "Director": 'USTREAM.tv', "Studio": 'USTREAM.tv' } )
-			#item.setProperty("PageURL", pageUrl)
-			item.setProperty("SWFPlayer", swfUrl)
-			item.setProperty("PlayPath", rtmp_url2)
-			item.setProperty("IsLive", "true")
-			item.setProperty("tcUrl", rtmp_url)
-			xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(rtmp_url, item)
-		elif info.find('cvi') != -1:
-			cvicode=re.compile('src="http://www\.ustream\.tv/flash/live/(.+?)/cvi"').findall(info)
-			url='http://cgw.ustream.tv/Viewer/getStream/'+cvicode[0]+'/cvi.amf'
-			req = urllib2.Request(url)
-			req.add_header('User-Agent', HEADER)
-			content=urllib2.urlopen(req)
-			data=content.read()
-			content.close()
-			playPath=re.compile('streamName\W\W\W(.+?)\x00', re.DOTALL).findall(data)
-			tcUrl=re.compile('cdnUrl\W\W\S(.+?)\x00', re.DOTALL).findall(data)
-			tcUrl2=re.compile('fmsUrl\W\W\S(.+?)\x00', re.DOTALL).findall(data)
-			if len(tcUrl) == 0:
-				if len(tcUrl2) == 0:
-					dialog = xbmcgui.Dialog()
-					ok = dialog.ok('ATDHE.Net', 'Error 4: Not a live feed.')
-					return
-				else:
-					new = tcUrl2[0].replace('/ustreamVideo',':1935/ustreamVideo')
-					rtmp_url = new + '/'
-					rtmp_url2 = new
-					dialog = xbmcgui.Dialog()
-					ok = dialog.ok('ATDHE.Net', 'WARNING: This stream is not compatible with XBMC.\nExpect the stream to end shortly.')
-			else:
-				rtmp_url = tcUrl[0]
-				rtmp_url2 = tcUrl[0]
-			thumb = xbmc.getInfoImage( "ListItem.Thumb" )
-			swfUrl = 'http://cdn1.ustream.tv/swf/4/viewer.rsl.210.swf'
-			item = xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
-			item.setInfo( type="Video", infoLabels={ "Title": name, "Director": 'USTREAM.tv', "Studio": 'USTREAM.tv' } )
-			#item.setProperty("PageURL", pageUrl)
-			item.setProperty("SWFPlayer", swfUrl)
-			item.setProperty("PlayPath", playPath[0])
-			item.setProperty("IsLive", "true")
-			item.setProperty("tcUrl", rtmp_url2)
-			xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(rtmp_url, item)
-		elif info.find('mms') != -1:
-			mms=re.compile('"mms://(.+?)"').findall(info)
-			thumb = xbmc.getInfoImage( "ListItem.Thumb" )
-			item = xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
-			item.setInfo( type="Video", infoLabels={ "Title": name, "Director": 'ATDHE.Net', "Studio": 'ATDHE.Net' } )
-			xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play('mms://'+mms[0], item)
-		elif info.find('viewerlite') != -1:
-			cvicode=re.compile('swf\?cid=(.+?)"').findall(info)
-			url='http://cgw.ustream.tv/Viewer/getStream/1/'+cvicode[0]+'.amf'
-			print url
-			req = urllib2.Request(url)
-			req.add_header('User-Agent', HEADER)
-			content=urllib2.urlopen(req)
-			data=content.read()
-			content.close()
-			playPath=re.compile('streamName\W\W\W(.+?)\x00', re.DOTALL).findall(data)
-			tcUrl=re.compile('cdnUrl\W\W\S(.+?)\x00', re.DOTALL).findall(data)
-			tcUrl2=re.compile('fmsUrl\W\W\S(.+?)\x00', re.DOTALL).findall(data)
-			if len(tcUrl) == 0:
-				if len(tcUrl2) == 0:
-					dialog = xbmcgui.Dialog()
-					ok = dialog.ok('ATDHE.Net', 'Error 4: Not a live feed.')
-					return
-				else:
-					new = tcUrl2[0].replace('/ustreamVideo',':1935/ustreamVideo')
-					rtmp_url = new + '/'
-					rtmp_url2 = new
-					dialog = xbmcgui.Dialog()
-					ok = dialog.ok('ATDHE.Net', 'WARNING: This stream is not compatible with XBMC.\nExpect the stream to end shortly.')
-			else:
-				rtmp_url = tcUrl[0]
-				rtmp_url2 = tcUrl[0]
-			thumb = xbmc.getInfoImage( "ListItem.Thumb" )
-			swfUrl = 'http://cdn1.ustream.tv/swf/4/viewer.rsl.210.swf'
-			item = xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
-			item.setInfo( type="Video", infoLabels={ "Title": name, "Director": 'USTREAM.tv', "Studio": 'USTREAM.tv' } )
-			#item.setProperty("PageURL", pageUrl)
-			item.setProperty("SWFPlayer", swfUrl)
-			item.setProperty("PlayPath", playPath[0])
-			item.setProperty("IsLive", "true")
-			item.setProperty("tcUrl", rtmp_url2)
-			xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(rtmp_url, item)
-		else:
-			print url
-			print data
-			dia = xbmcgui.Dialog()
-			ok = dia.ok("ATDHE.Net", 'Error 1: The stream is either offline or\nusing an unsupported protocol.')
 	elif len(code2) != 0:
 		info=code2[0].replace('%', '').replace('\u00', '').decode('hex')
-		if info.find('justin.tv') != -1:
-			channel=re.compile('id="jtv_player_flash" data="http://www\.justin\.tv/widgets/live_embed_player\.swf\?channel=(.+?)" bgcolor').findall(info) 
-			thumb='http://static-cdn.justin.tv/previews/live_user_'+channel[0]+'-320x240.jpg'
-			img=get_thumbnail( thumb )
-			path = 'plugin://video/Justin.tv/'+"?mode=2&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(channel[0])+"&thumb="+urllib.quote_plus(img)
-			command = 'XBMC.RunPlugin(%s)' % path
-			xbmc.executebuiltin(command)
+	print info
+	if info.find('justin.tv') != -1:
+		if info.find('popout') != -1:
+			channel=re.compile('http://justin\.tv/(.+?)/popout').findall(info)
 		else:
-			print url
-			print data
-			dia = xbmcgui.Dialog()
-			ok = dia.ok("ATDHE.Net", 'Error 2: The stream is either offline or\nusing an unsupported protocol.')				
+			channel=re.compile('id="jtv_player_flash" data="http://www\.justin\.tv/widgets/live_embed_player\.swf\?channel=(.+?)" bgcolor').findall(info) 
+		thumb='http://static-cdn.justin.tv/previews/live_user_'+channel[0]+'-320x240.jpg'
+		img=get_thumbnail( thumb )
+		path = 'plugin://video/Justin.tv/'+"?mode=2&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(channel[0])+"&thumb="+urllib.quote_plus(img)
+		command = 'XBMC.RunPlugin(%s)' % path
+		xbmc.executebuiltin(command)
+	elif info.find('force_remote_auth') != -1:
+		channel=re.compile('<iframe src="(.+?)"').findall(info)
+		data=open_url(channel[0])
+		channel2=re.compile('id="jtv_player_flash" data="http://www\.justin\.tv/widgets/live_embed_player\.swf\?channel=(.+?)" bgcolor').findall(data)
+		thumb='http://static-cdn.justin.tv/previews/live_user_'+channel2[0]+'-320x240.jpg'
+		img=get_thumbnail( thumb )
+		path = 'plugin://video/Justin.tv/'+"?mode=2&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(channel2[0])+"&thumb="+urllib.quote_plus(img)
+		command = 'XBMC.RunPlugin(%s)' % path
+		xbmc.executebuiltin(command)
+	elif info.find('rtmp') != -1:
+		rtmp_id=re.compile('file=(.+?)&id=(.+?)&').findall(info)
+		rtmp_id2=re.compile('streamer=(.+?)&file=(.+?)&').findall(info)
+		if len(rtmp_id) == 0:
+			rtmp_url = rtmp_id2[0][0]
+			rtmp_url2 = rtmp_id2[0][1]
+		else:
+			rtmp_url = rtmp_id[0][0]
+			rtmp_url2 = rtmp_id[0][1]
+		thumb = xbmc.getInfoImage( "ListItem.Thumb" )
+		swfUrl = 'http://cdn1.ustream.tv/swf/4/viewer.rsl.210.swf'
+		item = xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
+		item.setInfo( type="Video", infoLabels={ "Title": name, "Director": 'USTREAM.tv', "Studio": 'USTREAM.tv' } )
+		#item.setProperty("PageURL", pageUrl)
+		item.setProperty("SWFPlayer", swfUrl)
+		item.setProperty("PlayPath", rtmp_url2)
+		item.setProperty("IsLive", "true")
+		item.setProperty("tcUrl", rtmp_url)
+		xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(rtmp_url, item)
+	elif info.find('cvi') != -1:
+		cvicode=re.compile('src="http://www\.ustream\.tv/flash/live/(.+?)/cvi"').findall(info)
+		url='http://cgw.ustream.tv/Viewer/getStream/'+cvicode[0]+'/cvi.amf'
+		req = urllib2.Request(url)
+		req.add_header('User-Agent', HEADER)
+		content=urllib2.urlopen(req)
+		data=content.read()
+		content.close()
+		playPath=re.compile('streamName\W\W\W(.+?)\x00', re.DOTALL).findall(data)
+		tcUrl=re.compile('cdnUrl\W\W\S(.+?)\x00', re.DOTALL).findall(data)
+		tcUrl2=re.compile('fmsUrl\W\W\S(.+?)\x00', re.DOTALL).findall(data)
+		if len(tcUrl) == 0:
+			if len(tcUrl2) == 0:
+				dialog = xbmcgui.Dialog()
+				ok = dialog.ok('ATDHE.Net', 'Error 4: Not a live feed.')
+				return
+			else:
+				new = tcUrl2[0].replace('/ustreamVideo',':1935/ustreamVideo')
+				rtmp_url = new + '/'
+				rtmp_url2 = new
+				dialog = xbmcgui.Dialog()
+				ok = dialog.ok('ATDHE.Net', 'WARNING: This stream is not compatible with XBMC.\nExpect the stream to end shortly.')
+		else:
+			rtmp_url = tcUrl[0]
+			rtmp_url2 = tcUrl[0]
+		thumb = xbmc.getInfoImage( "ListItem.Thumb" )
+		swfUrl = 'http://cdn1.ustream.tv/swf/4/viewer.rsl.210.swf'
+		item = xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
+		item.setInfo( type="Video", infoLabels={ "Title": name, "Director": 'USTREAM.tv', "Studio": 'USTREAM.tv' } )
+		#item.setProperty("PageURL", pageUrl)
+		item.setProperty("SWFPlayer", swfUrl)
+		item.setProperty("PlayPath", playPath[0])
+		item.setProperty("IsLive", "true")
+		item.setProperty("tcUrl", rtmp_url2)
+		xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(rtmp_url, item)
+	elif info.find('mms') != -1:
+		mms=re.compile('"mms://(.+?)"').findall(info)
+		thumb = xbmc.getInfoImage( "ListItem.Thumb" )
+		item = xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
+		item.setInfo( type="Video", infoLabels={ "Title": name, "Director": 'ATDHE.Net', "Studio": 'ATDHE.Net' } )
+		xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play('mms://'+mms[0], item)
+	elif info.find('freedocast') != -1:
+		freeid=re.compile('http://www\.freedocast\.com/forms/PopOut\.aspx\?sc=(.+?)&ftype=stream').findall(info)[0]
+		url='http://www.freedocast.com/forms/watchstream.aspx?sc='+freeid
+		req = urllib2.Request(url)
+		req.add_header('User-Agent', HEADER)
+		req.add_header('Referer', 'http://www.freedocast.com')
+		content=urllib2.urlopen(req)
+		data=content.read()
+		content.close()	
+		if data.find('rtmp') != -1:
+			tcUrl=re.compile('netConnectionUrl:\'(.+?)\'\r\n', re.DOTALL).findall(data)[0]
+			swfUrl=re.compile('src:\'(.+?)\'').findall(data)[0]
+			playPath=re.compile('url:\'(.+?)\'').findall(data)[0]
+			pageUrl='http://www.freedocast.com/forms/PopOut.aspx?sc='+freeid
+			thumb = xbmc.getInfoImage( "ListItem.Thumb" )
+			item = xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
+			item.setInfo( type="Video", infoLabels={ "Title": name, "Director": 'FreedoCast.com', "Studio": 'FreedoCast.com' } )
+			item.setProperty("SWFPlayer", swfUrl)
+			item.setProperty("PlayPath", playPath)
+			item.setProperty("PageURL", pageUrl)
+			item.setProperty("IsLive", "true")
+			item.setProperty("tcUrl", tcUrl)
+			xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(tcUrl, item)
+		else:
+			dialog = xbmcgui.Dialog()
+			ok = dialog.ok('ATDHE.Net', 'Error: Not a live stream.')
+			xbmc.executebuiltin( "Container.Refresh" )
+			return	
+	elif info.find('viewerlite') != -1:
+		cvicode=re.compile('swf\?cid=(.+?)"').findall(info)
+		url='http://cgw.ustream.tv/Viewer/getStream/1/'+cvicode[0]+'.amf'
+		print url
+		req = urllib2.Request(url)
+		req.add_header('User-Agent', HEADER)
+		content=urllib2.urlopen(req)
+		data=content.read()
+		content.close()
+		playPath=re.compile('streamName\W\W\W(.+?)\x00', re.DOTALL).findall(data)
+		tcUrl=re.compile('cdnUrl\W\W\S(.+?)\x00', re.DOTALL).findall(data)
+		tcUrl2=re.compile('fmsUrl\W\W\S(.+?)\x00', re.DOTALL).findall(data)
+		if len(tcUrl) == 0:
+			if len(tcUrl2) == 0:
+				dialog = xbmcgui.Dialog()
+				ok = dialog.ok('ATDHE.Net', 'Error 4: Not a live feed.')
+				return
+			else:
+				new = tcUrl2[0].replace('/ustreamVideo',':1935/ustreamVideo')
+				rtmp_url = new + '/'
+				rtmp_url2 = new
+				dialog = xbmcgui.Dialog()
+				ok = dialog.ok('ATDHE.Net', 'WARNING: This stream is not compatible with XBMC.\nExpect the stream to end shortly.')
+		else:
+			rtmp_url = tcUrl[0]
+			rtmp_url2 = tcUrl[0]
+		thumb = xbmc.getInfoImage( "ListItem.Thumb" )
+		swfUrl = 'http://cdn1.ustream.tv/swf/4/viewer.rsl.210.swf'
+		item = xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
+		item.setInfo( type="Video", infoLabels={ "Title": name, "Director": 'USTREAM.tv', "Studio": 'USTREAM.tv' } )
+		#item.setProperty("PageURL", pageUrl)
+		item.setProperty("SWFPlayer", swfUrl)
+		item.setProperty("PlayPath", playPath[0])
+		item.setProperty("IsLive", "true")
+		item.setProperty("tcUrl", rtmp_url2)
+		xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(rtmp_url, item)				
 	elif len(code) == 2:
 		info=code[1].replace('%', '').replace('\u00', '').decode('hex')
 		if info.find('ustream') != -1:
