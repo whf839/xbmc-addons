@@ -1,5 +1,7 @@
 <settings>
 	<setting id="username" type="text" label="Username:" default="enter user"/>
 	<setting id="password" type="text" label="Password:" default="enter pass"/>
-	<setting id="archiveDate" type="text" label="Archive Date:" default="/04-30-2009/"/>
+	<setting id="archiveMonth" type="enum" label="Month:" values="01|02|03|04|05|06|07|08|09|10|11|12" default="01"/>
+	<setting id="archiveDay" type="enum" label="Day:" values="01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31" default="01"/>
+	<setting id="archiveYear" type="enum" label="Year:" values="2009|2010" default="2009"/>
 </settings>

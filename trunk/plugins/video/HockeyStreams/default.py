@@ -321,7 +321,30 @@ name = None
 mode = None
 username = xbmcplugin.getSetting('username')
 password = xbmcplugin.getSetting('password')
-archiveDate = xbmcplugin.getSetting('archiveDate')
+archiveMonth = xbmcplugin.getSetting('archiveMonth')
+archiveDay = xbmcplugin.getSetting('archiveDay')
+archiveYear = xbmcplugin.getSetting('archiveYear')
+archiveMonth = str(int(archiveMonth) + 1)
+archiveDay = str(int(archiveDay) + 1)
+
+if len(archiveMonth) == 1:
+    archiveMonth = '0' + str(archiveMonth)
+elif len(archiveMonth) == 2:
+    archiveMonth = str(archiveMonth)
+    
+if len(archiveDay) == 1:
+    archiveDay = '0' + str(archiveDay)
+elif len(archiveDay) == 2:
+    archiveDay = str(archiveDay)
+    
+if archiveYear == int('0') or '0':
+    archiveYear = '2009'
+elif archiveYear == int('1') or '1':
+    archiveYear = '2010'
+    
+archiveDate = '/' + str(archiveMonth) + '-' + str(archiveDay) + '-' + str(archiveYear) + '/'
+str(archiveDate)
+
 hs = 'http://hockeystreams.com'
 
 try:
@@ -335,7 +358,9 @@ except:
 try:
     mode=int(params['mode'])
 except:
-    pass   
+    pass
+
+print 'archiveDate: '+str(archiveDate)
 
 if mode == None or url == None or len(url)<1:
     ipException(hs,username,password)
