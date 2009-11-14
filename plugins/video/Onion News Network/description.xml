@@ -20,7 +20,7 @@
     <type>8</type>
 
     <!-- (required) Title -->
-    <title>LastTube</title>
+    <title>Onion News Network</title>
 
     <!-- (required) Major.minor.build -->
     <version>1.0</version>
@@ -31,14 +31,15 @@
     </authors>
 
     <!-- (required) Short description of addon. -->
-    <summary>A Youtube.com and Last.FM mashup site by Tim Bormans</summary>
+    <summary>Watch videos from the hilarious fake-news organization.</summary>
 
     <!-- Longer descrption of addon.  Usage instructions should go here if required. -->
     <description>The Onion is a national publication and website that offers award-winning news and views that readers can't get anywhere else. Every week, our attention grabbing headlines and photojournalism paint a unique picture of the world.</description>
 
     <!-- user defined tags e.g. <tags><tag>Example</tag></tags> -->
     <tags>
-        <tag>music videos</tag>
+        <tag>news</tag>
+        <tag>funny</tag>
     </tags>
 
     <!-- minimum revision of xbmc your addon will run on.  Leave blank all for revisions-->
