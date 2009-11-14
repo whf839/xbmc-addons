@@ -3,11 +3,11 @@ import os
 import xbmc
 
 # Script constants
-__scriptname__ = "RSS Ticker Manager"
+__scriptname__ = "RSS Editor"
 __author__ = "rwparris2"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __credits__ = "Team XBMC"
-__version__ = "1.5.0"
+__version__ = "1.5.3"
 
 print "[SCRIPT] '%s: version %s' initialized!" % (__scriptname__, __version__, )
 
