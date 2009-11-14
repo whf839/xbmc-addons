@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings> <!--  Finnish 4.6.2009 -->
+<strings> <!--  Finnish 14.11.2009 -->
     <!-- settings labels -->
     <string id="30000">Kuvanlaatu</string>
     <string id="30001">Normaali</string>
@@ -47,7 +47,13 @@
     <string id="30601">Etsitään esityksiä, odota hetki ...</string>
     <string id="30602">Päivä</string>
     <string id="30603">Sijainti</string>
-   
+
+    <!-- compatible messages -->
+    <string id="30700">versio</string>
+    <string id="30701">Tämä %s:n versio vaatii toimiakseen</string>
+    <string id="30702">XBMC revision %s tai uudemman.</string>
+    <string id="30703">Päivitä XBMC uudempaan versioon.</string>
+
     <!-- PluginCategory infolabel -->
     <string id="30800">Normaali videot</string>
     <string id="30801">480p-videot</string>
