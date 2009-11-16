@@ -632,7 +632,7 @@ class CCurrentList:
         if firstInfo:
             url = smart_unicode(item.infos_names[url_idx]) + ':' + smart_unicode(item.infos_values[url_idx])
         else:
-            url = smart_unicode(url) + '&' + smart_unicode(item.infos_names[url_idx]) + ':' + smart_unicode(item.infos_values[url_idx])
+            url = smart_unicode(url) + '&' + smart_unicode(item.infos_names[url_idx]) + ':' + smart_unicode(urllib.quote_plus(item.infos_values[url_idx]))
         if len(suffix) > 0:
             url = url + '.' + suffix
         return url
@@ -919,6 +919,7 @@ class CCurrentList:
         return clean_safe(info_value)
 
     def loadRemote(self, remote_url, recursive = True, lItem = None):
+	remote_url = urllib.unquote_plus(remote_url)
         if enable_debug:
             xbmc.output(repr(remote_url))
         if lItem == None:
@@ -955,6 +956,7 @@ class CCurrentList:
                 txheaders = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14', 'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.7'}
             else:
                 txheaders = {'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14', 'Accept-Charset':'ISO-8859-1,utf-8;q=0.7,*;q=0.7', self.reference:self.content}
+	    curr_url = urllib.unquote_plus(curr_url)
             if enable_debug:
                 f = open(os.path.join(cacheDir, 'page.html'), 'w')
                 f.write('<Titel>'+ curr_url + '</Title>\n\n')
@@ -1400,6 +1402,13 @@ class Main:
     def downloadMovie(self, url, title):
         if enable_debug:
             xbmc.output('Trying to download video ' + str(url))
+	if xbmcplugin.getSetting('download_Path') == '':
+	    try:
+		dl_path = xbmcgui.Dialog().browse(0, xbmc.getLocalizedString(30017),'files', '', False, False)
+		xbmcplugin.setSetting(id='download_path', value=dl_path)
+		if not os.path.exists(dl_path):
+		    os.mkdir(dl_path)
+	    except:pass
         file_path = xbmc.makeLegalFilename(os.path.join(xbmc.translatePath(xbmcplugin.getSetting('download_Path')), title + self.videoExtension))
         if os.path.isfile(file_path):
             file_path = xbmc.makeLegalFilename(self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '_', suffix = self.videoExtension))
@@ -1483,15 +1492,18 @@ class Main:
         if ext == 'cfg' or ext == 'list':
             result = self.currentlist.loadLocal(url, lItem = lItem)
         elif ext == 'add':
+	    url = urllib.unquote_plus(url)
             self.currentlist.addItem(url[:len(url) - 4])
             return -2
         elif ext == 'remove':
             dia = xbmcgui.Dialog()
             if dia.yesno('', xbmc.getLocalizedString(30054)):
+		url = urllib.unquote_plus(url)
                 self.currentlist.removeItem(url[:len(url) - 7])
                 xbmc.executebuiltin('Container.Refresh')
             return -2
         elif ext == 'videomonkey' or ext == 'dwnldmonkey':
+	    url = urllib.unquote_plus(url)
             url = url[:len(url) - 12]
             lItem.infos_values[lItem.infos_names.index('url')] = url
             cfg_file = lItem.infos_values[lItem.infos_names.index('cfg')]
@@ -1617,17 +1629,6 @@ class Main:
                     os.mkdir(cacheDir)
                     if enable_debug:
                         xbmc.output('Cache directory created')
-                if not os.path.exists(xbmc.translatePath(xbmcplugin.getSetting('download_Path'))):
-                    try:
-                        if enable_debug:
-                            xbmc.output('Creating download directory ' + str(xbmcplugin.getSetting('download_Path')))
-                        os.mkdir(xbmcplugin.getSetting('download_Path'))
-                        if enable_debug:
-                            xbmc.output('Download directory created')
-                    except:
-                        if enable_debug:
-                            xbmc.output('Cannot create download directory')
-                            traceback.print_exc(file = sys.stdout)
                 if enable_debug:
                     xbmc.output('Purging cache directory')
                 self.purgeCache()
