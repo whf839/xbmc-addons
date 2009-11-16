@@ -819,7 +819,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 i   = 0
                 for zip_entry in zip.namelist():
                     if (zip_entry.find( "srt" ) < 0)  and (zip_entry.find( "sub" ) < 0)  and (zip_entry.find( "txt" )< 0) :
-                		os.remove ( os.path.join( "special://temp/", zip_entry ) )
+                		os.remove (xbmc.translatePath(( os.path.join( "special://temp/", zip_entry ) )))
 
                     if ( zip_entry.find( "srt" )  > 0 ) or ( zip_entry.find( "sub" )  > 0 ) or ( zip_entry.find( "txt" )  > 0 ):
                     
@@ -844,7 +844,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 								if selected == 1:
 									__settings__.openSettings()								
 							 
-							os.remove ( os.path.join( "special://temp/", zip_entry ) )
+							os.remove (xbmc.translatePath( ( os.path.join( "special://temp/", zip_entry ) )))
 							
                 zip.close()
 
