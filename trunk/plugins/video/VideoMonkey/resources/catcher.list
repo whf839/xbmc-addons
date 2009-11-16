@@ -39,7 +39,7 @@ quality=high
 ########################################################
 title=keepvid.com
 target=<a href="(/[^"]+)"[^>]+>[^<]+</a>[^<]+<em>\([^\.]+\.... - Low Quality\)</em>
-url=http://keepvid.com/index.php?url=%s
+url=http://keepvid.com/?url=%s
 header=Referer|http://keepvid.com/
 build=http://keepvid.com%s
 extension=flv
@@ -74,6 +74,13 @@ quality=high
 #header=Referer|http://www.atrapavideo.com/en/
 #quality=standard
 ########################################################
+title=clipsave.de
+target=<a href="([^"]+)"><span class="[^"]+"><strong>Download von
+url=http://www.nachrichtenmann.de/cgi-bin/video/video.cgi
+data=action=index&downloadurl=%s
+header=Referer|http://www.nachrichtenmann.de/cgi-bin/video/video.cgi
+quality=standard
+########################################################
 title=degrab.de
 target=Download Link.+?<a href="([^"]+)"
 url=http://www.degrab.de/?url=%s
@@ -83,6 +90,11 @@ quality=standard
 title=kcoolonline.com
 target=<a href='(.+?)'
 url=http://www.kcoolonline.com/index.php?url=%s
+quality=standard
+########################################################
+title=arte.live
+target=<param name="movie" value="(/flash/player.swf[?]eventId[^"]+)" />
+url=http://liveweb.arte.tv%s
 quality=standard
 ########################################################
 title=arte.tv
@@ -188,23 +200,29 @@ extension=flv
 quality=high
 ########################################################
 title=zdf.de
-target="assetUrl": *"([^"]+)"
-url=%s&bw=isdn&pp=wmp
-ext_target=href *= *"([^"]+)"
-info=Modem- oder ISDN-Verbindung
-extension=asf
+target=<li>DSL 1000 <a href="(http[^"]+asx)"
+url=%s
+ext_target=<Ref href="([^"]+)"/>
+info=DSL1000
+extension=asx
 quality=low
-target="assetUrl": *"([^"]+)"
-url=%s&bw=dsl1000&pp=wmp
-ext_target=href *= *"([^"]+)"
-info=DSL- oder Breitband-Verbindung
-extension=asf
-quality=standard
-target="assetUrl": *"([^"]+)"
-url=%s&bw=dsl2000&pp=wmp
-ext_target=href *= *"([^"]+)"
-info=ab DSL-2000
-extension=asf
+target=<li>DSL 2000 <a href="(http[^"]+asx)"
+url=%s
+ext_target=<Ref href="([^"]+)"/>
+info=DSL2000
+extension=asx
+quality=high
+target=<li>DSL 1000 <a href="(http[^"]+asx)"
+url=%s
+ext_target=<Ref href = "([^"]+)" />
+info=DSL1000
+extension=asx
+quality=low
+target=<li>DSL 2000 <a href="(http[^"]+asx)"
+url=%s
+ext_target=<Ref href = "([^"]+)" />
+info=DSL2000
+extension=asx
 quality=high
 ########################################################
 title=br.de
