@@ -12,11 +12,14 @@ class GUI(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
         xbmcgui.WindowXMLDialog.__init__(self, *args, **kwargs)
         self.setNum = kwargs['setNum']
+        self.parser = XMLParser()
+        if self.parser.feedsTree:
+            self.doModal()
+
 
     def onInit(self):
-        self.parser = XMLParser()
-        self.feedsList = self.parser.feedsList[self.setNum]['feedslist'] #shortname
         self.defineControls()
+        self.feedsList = self.parser.feedsList[self.setNum]['feedslist'] #shortname
         if not self.feedsList:
             xbmcgui.Dialog().ok(getLS(40)+'RssFeeds.xml', 'RssFeeds.xml '+getLS(41), getLS(42), getLS(43))
             self.closeDialog()
@@ -77,7 +80,6 @@ class GUI(xbmcgui.WindowXMLDialog):
         elif controlId == self.control_changeSet_button_id:
             import setEditor
             setEditorUI = setEditor.GUI("script-RSS_Editor-setEditor.xml", os.getcwd(), "default", setNum = self.setNum)
-            setEditorUI.doModal()
             self.close()
             del setEditorUI
         #save xml

@@ -33,4 +33,7 @@
   <string id="48">Reset Required</string>
   <string id="49">You need to restart XBMC for your changes to take effect</string>
   <string id="50">Set %s already exists.</string>
+  <string id="51">Your RSSFeeds.xml file is corrupt.</string>
+  <string id="52">Attempt to regenerate</string>
+  <string id="53">You will loose all previous settings</string>
 </strings>

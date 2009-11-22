@@ -12,9 +12,12 @@ class GUI(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
         xbmcgui.WindowXMLDialog.__init__(self, *args, **kwargs)
         self.setNum = kwargs['setNum']
+        self.parser = XMLParser()
+        if self.parser.feedsTree:
+            self.doModal()
+
 
     def onInit(self):
-        self.parser = XMLParser()
         self.defineControls()
         if not self.parser.feedsList:
             xbmcgui.Dialog().ok(getLS(40)+'RssFeeds.xml', 'RssFeeds.xml '+getLS(41), getLS(42), getLS(43))
@@ -55,7 +58,6 @@ class GUI(xbmcgui.WindowXMLDialog):
         """Close the Set Editor Dialog and open RSS Editor Dialog"""
         import rssEditor
         rssEditorUI = rssEditor.GUI("script-RSS_Editor-rssEditor.xml", os.getcwd(), "default", setNum = self.setNum)
-        rssEditorUI.doModal()
         self.close()
         del rssEditorUI
 

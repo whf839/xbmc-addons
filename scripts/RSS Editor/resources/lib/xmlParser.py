@@ -34,6 +34,8 @@ def writexml(self, writer, indent="", addindent="", newl=""):
 
 # monkey patch to fix whitespace issues with toprettyxml
 Element.writexml = writexml
+#enable localization
+getLS = xbmc.Language(os.getcwd()).getLocalizedString
 
 
 class XMLParser:
@@ -45,8 +47,26 @@ class XMLParser:
             self.RssFeedsPath = r'C:\Documents and Settings\Xerox\Application Data\XBMC\userdata\RssFeeds.xml'
         sane = self.checkRssFeedPathSanity()
         if sane:
-            self.feedsTree = parse(self.RssFeedsPath)
-            self.feedsList = self.getCurrentRssFeeds()
+            try:
+                self.feedsTree = parse(self.RssFeedsPath)
+            except:
+                print '[script] RSS Editor --> Failed to parse ' + self.RssFeedsPath
+                regen = xbmcgui.Dialog().yesno(getLS(40), getLS(51), getLS(52), getLS(53))
+                if regen:
+                    print '[script] RSS Editor --> Attempting to Regenerate RssFeeds.xml'
+                    xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<rssfeeds>\n\
+                    <!-- RSS feeds. To have multiple feeds, just add a feed to the set. You can also have multiple sets. 	!-->\n\
+                    <!-- To use different sets in your skin, each must be called from skin with a unique id.             	!-->\n\
+                    <set id="1">\n    <feed updateinterval="30">http://feeds.feedburner.com/xbmc</feed>\n  </set>\n</rssfeeds>'
+                    f = open(self.RssFeedsPath, 'w')
+                    f.write(xml)
+                    f.close()
+                    self.__init__()
+                else:
+                    print '[script] RSS Editor --> User opted to not regenerate RssFeeds.xml.  Script Exiting'
+                    self.feedsTree = False
+            if self.feedsTree:
+                self.feedsList = self.getCurrentRssFeeds()
         else:
             self.feedsList = False
             print '[SCRIPT] RSS Editor --> Could not open ' + self.RssFeedsPath +'. Either the file does not exist, or its\
@@ -120,13 +140,7 @@ class XMLParser:
 
     def refreshFeed(self):
         """Refresh XBMC's rss feed so changes can be seen immediately"""
-        #TODO: after next stable is released, remove the minversion check.
         if xbmc:
-            currentRev = int(xbmc.getInfoLabel('System.BuildVersion')[-5:])
-            minRev = 21930
-            if currentRev >= minRev:
-                xbmc.executebuiltin('refreshrss()')
-            else:
-                xbmcgui.Dialog().ok(getLS(48), getLS(49))
+            xbmc.executebuiltin('refreshrss()')
         else:
             print 'kthx'
