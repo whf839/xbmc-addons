@@ -8,7 +8,7 @@ __author__ = "Amet"
 __url__ = "http://code.google.com/p/opensubtitles-osd/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/scripts/OpenSubtitles_OSD"
 __credits__ = ""
-__version__ = "1.41"
+__version__ = "1.42"
 __XBMC_Revision__ = "22240"
 
 BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib' ) )
@@ -38,7 +38,12 @@ if __settings__.getSetting( "new_ver" ) == "true":
 	if version > __version__:
 		import xbmcgui
 		dialog = xbmcgui.Dialog()
-		selected = dialog.ok("OpenSubtitles_OSD v" + str(__version__), "Version "+ str(version)+ " of OpenSubtitles_OSD is available" ,"Please use SVN repo Installer or XBMC zone Installer to update " )
+		
+		ok = dialog.ok(	_(30000),
+                     	_(30153),
+                     	_(30154) + __version__,
+                     	_(30155) + version)
+
 
 
 #############-----------------Is script runing from OSD? -------------------------------###############
@@ -69,7 +74,9 @@ else:
    if ( skin1.find( "aeon" ) > -1 ):
 	skin = "Aeon"
    if ( skin1.find( "alaska" ) > -1 ):
-	skin = "Aeon"	
+	skin = "Aeon"
+   if ( skin1.find( "confluence" ) > -1 ):
+	skin = "confluence"	
    
    if __settings__.getSetting( "debug" ) == "true":	
    		print "OpenSubtitles_OSD version [" +  __version__ +"]"
@@ -183,6 +190,7 @@ else:
 		import gui
 	
 		if not xbmc.getCondVisibility('Player.Paused') : xbmc.Player().pause() #Pause if not paused
+		
 		
 		ui = gui.GUI( "script-OpenSubtitles_OSD-"+ skin +".xml" , os.getcwd(), "Default")
 		service_present = ui.set_allparam ( movieFullPath,search_string,temp,sub_folder, year, debug )
