@@ -39,10 +39,7 @@ if __settings__.getSetting( "new_ver" ) == "true":
 		import xbmcgui
 		dialog = xbmcgui.Dialog()
 		
-		ok = dialog.ok(	_(30000),
-                     	_(30153),
-                     	_(30154) + __version__,
-                     	_(30155) + version)
+		selected = dialog.ok("OpenSubtitles_OSD v" + str(__version__), "Version "+ str(version)+ " of OpenSubtitles_OSD is available" ,"Please use SVN repo Installer or XBMC zone Installer to update " )
 
 
 
