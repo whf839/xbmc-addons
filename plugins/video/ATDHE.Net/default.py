@@ -3,8 +3,8 @@ __scriptname__ = "ATDHE.Net"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/ATDHE.Net"
-__date__ = '2009-11-13'
-__version__ = "1.0.7"
+__date__ = '2009-11-22'
+__version__ = "1.0.8"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback, shutil
 from urllib import urlretrieve, urlcleanup
@@ -100,6 +100,7 @@ def showList(url, name):
 	else:
 		info=''
 	print len(info)
+	print info
 	if len(info) != 0:
 		if info.find('justin.tv') != -1:
 			if info.find('popout') != -1:
@@ -180,6 +181,12 @@ def showList(url, name):
 			item = xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
 			item.setInfo( type="Video", infoLabels={ "Title": name, "Director": 'ATDHE.Net', "Studio": 'ATDHE.Net' } )
 			xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play('mms://'+mms[0], item)
+		elif info.find('application/x-mplayer2') != -1:
+			mms=re.compile('type="application/x-mplayer2" src="(.+?)" enableContextMenu').findall(info)
+			thumb = xbmc.getInfoImage( "ListItem.Thumb" )
+			item = xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
+			item.setInfo( type="Video", infoLabels={ "Title": name, "Director": 'ATDHE.Net', "Studio": 'ATDHE.Net' } )
+			xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(mms[0], item)
 		elif info.find('freedocast') != -1:
 			freeid=re.compile('http://www\.freedocast\.com/forms/PopOut\.aspx\?sc=(.+?)&').findall(info)[0]
 			url='http://www.freedocast.com/forms/watchstream.aspx?sc='+freeid
