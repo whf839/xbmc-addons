@@ -364,7 +364,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	                self.getControl( STATUS_LABEL ).setLabel( _( 642 ) % ( "...", ) )
 #	                self.set_filehash( hashFile( self.file_original_path ) )
 	                hashTry = timeout(self.set_filehash, timeout_duration=5)
-	                ok,msg = self.osdb_server.searchsubtitles_pod( self.search_string, hashTry ,self.lang_two1,self.lang_two2,self_lang_two3)
+	                ok,msg = self.osdb_server.searchsubtitles_pod( self.search_string, hashTry ,self.lang_two1,self.lang_two2,self.lang_two3)
 	                if not ok:
 	                	self.connected = False
 	                if self.debug : LOG( LOG_INFO, "Hash Search_pod: [" + msg + "]" )
