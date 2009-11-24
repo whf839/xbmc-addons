@@ -52,7 +52,7 @@ class OSDBServer:
 ###-------------------------- Opensubtitles Search -------------################
         
 
-    def searchsubtitles( self, srcstring ,hash, size, lang1,lang2,year,hash_search ):
+    def searchsubtitles( self, srcstring ,hash, size, lang1,lang2,lang3,year,hash_search ):
 	
 		self.subtitles_hash_list = []
 	
@@ -68,12 +68,12 @@ class OSDBServer:
 		else:
 			srch_string = srcstring
 				
+		language = lang1
+		if lang1 != lang2:
+			language += "," + lang2
+		if lang3 != lang1 and lang3 != lang2:
+			language += "," + lang3
 			
-		if lang1 == lang2:
-			language = lang1
-		else:
-			language = lang1 + "," + lang2
-		
 		try:
 			if ( self.osdb_token ) :
 				
@@ -124,7 +124,7 @@ class OSDBServer:
 ###-------------------------- Podnapisi Hash -------------################
 
 
-    def searchsubtitles_pod( self, file, movie_hash, lang1,lang2 ):
+    def searchsubtitles_pod( self, file, movie_hash, lang1,lang2,lang3):
 	
 		self.subtitles_hash_list = []
 	
@@ -133,9 +133,13 @@ class OSDBServer:
 		
 		lang = []
 		lang11 = twotoone(lang1)
-		lang22 = twotoone(lang2)
 		lang.append(lang11)
-		lang.append(lang22)
+		if lang1!=lang2:
+			lang22 = twotoone(lang2)
+			lang.append(lang22)
+		if lang3!=lang2 and lang3!=lang1:
+			lang33 = twotoone(lang3)
+			lang.append(lang33)
 		hash_pod =[]
 		hash_pod.append(movie_hash)
 		if self.debug : 
@@ -225,7 +229,7 @@ class OSDBServer:
 
 ###-------------------------- Podnapisi By Name -------------################
 
-    def searchsubtitlesbyname_pod( self, name, lang1,lang2,year ):
+    def searchsubtitlesbyname_pod( self, name, lang1,lang2,lang3,year ):
 	
 		self.subtitles_name_list = []
 		year = str(year)
@@ -237,7 +241,12 @@ class OSDBServer:
 		if year == "0" : year = ""
 		tbsl = "1"
 		lang_num1 = twotoone(lang1)
-		lang_num2 = twotoone(lang2)
+		lang_num2 = None
+		lang_num3 = None
+		if lang2!=lang1:
+			lang_num2 = twotoone(lang2)
+		if lang3!=lang1 and lang3!=lang2:
+			lang_num3 = twotoone(lang3)
 	
 		if len(title) > 1:
 			name = title
@@ -245,7 +254,14 @@ class OSDBServer:
 			episode = xbmc.getInfoLabel("VideoPlayer.Episode")
 			
 		search_url = "http://www.podnapisi.net/ppodnapisi/search?tbsl=1&sK=" + name + "&sJ=" +lang_num1+ "&sY=" + str(year)+ "&sTS=" + str(season) + "&sTE=" + str(episode) + "&sXML=1"
-		search_url1 = "http://www.podnapisi.net/ppodnapisi/search?tbsl=1&sK=" + name + "&sJ=" +lang_num2+ "&sY=" + str(year)+ "&sTS=" + str(season) + "&sTE=" + str(episode) + "&sXML=1"
+		search_url1 = None
+		search_url2 = None
+	
+		if lang_num2 is not None:
+			search_url1 = "http://www.podnapisi.net/ppodnapisi/search?tbsl=1&sK=" + name + "&sJ=" +lang_num2+ "&sY=" + str(year)+ "&sTS=" + str(season) + "&sTE=" + str(episode) + "&sXML=1"
+	
+		if lang_num3 is not None:
+			search_url2 = "http://www.podnapisi.net/ppodnapisi/search?tbsl=1&sK=" + name + "&sJ=" +lang_num3+ "&sY=" + str(year)+ "&sTS=" + str(season) + "&sTE=" + str(episode) + "&sXML=1"
 	
 		try:
 			
@@ -262,15 +278,22 @@ class OSDBServer:
 			
 			subtitles = xmldoc.getElementsByTagName("subtitle")
 			
-			socket = urllib.urlopen( search_url1 )
-			result = socket.read()
-			socket.close()
+			if search_url1 is not None: 
+				socket = urllib.urlopen( search_url1 )
+				result = socket.read()
+				socket.close()
+				xmldoc = minidom.parseString(result)
+				subtitles1 = xmldoc.getElementsByTagName("subtitle")
+				subtitles = subtitles + subtitles1		
 			
-			xmldoc = minidom.parseString(result)
+			if search_url2 is not None: 
+				socket = urllib.urlopen( search_url2 )
+				result = socket.read()
+				socket.close()
+				xmldoc = minidom.parseString(result)
+				subtitles1 = xmldoc.getElementsByTagName("subtitle")
+				subtitles = subtitles + subtitles1
 			
-			subtitles1 = xmldoc.getElementsByTagName("subtitle")
-			
-			subtitles = subtitles + subtitles1		
 			if subtitles:
 				url_base = "http://www.podnapisi.net/ppodnapisi/download/i/"
 	

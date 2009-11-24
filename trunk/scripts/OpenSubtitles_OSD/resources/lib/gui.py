@@ -61,13 +61,17 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	  	  
 	  lang1 = toScriptLang(__settings__.getSetting( "Language1" )) 	# Full language 1
 	  lang2 = toScriptLang(__settings__.getSetting( "Language2" )) 	# Full language 2  
+	  lang3 = toScriptLang(__settings__.getSetting( "Language3" )) 	# Full language 2
 	  
 	  self.lang1 = toOpenSubtitlesId( lang1 )						# 2 letter language 1
 	  self.lang_two1 = toOpenSubtitles_two(lang1)					# 3 letter language 1
 	  
 	  
-	  self.lang2 = toOpenSubtitlesId( lang2 )						# 3 letter language 2
+	  self.lang2 = toOpenSubtitlesId( lang2 )						# 2 letter language 2
 	  self.lang_two2 = toOpenSubtitles_two(lang2)					# 3 letter language 2
+	  
+	  self.lang3 = toOpenSubtitlesId( lang3 )						# 2 letter language 3
+	  self.lang_two3 = toOpenSubtitles_two(lang3)					# 3 letter language 3
 	  
 	  	  
 	  self.sub_folder = sub_folder									# Subtitle download folder
@@ -172,7 +176,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 		  LOG( LOG_INFO, "Subtitle Folder: [%s]" ,  self.sub_folder )
 		  LOG( LOG_INFO, "Language 1: [%s]" ,  self.lang1  )
 		  LOG( LOG_INFO, "Language 2: [%s]" ,  self.lang2  )
-		  	  
+		  LOG( LOG_INFO, "Language 3: [%s]" ,  self.lang3  )	  
 	  
 	  return service_num
 	  
@@ -271,7 +275,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	                
 	                self.set_filesize ( os.path.getsize( self.file_original_path ) )
 	                   
-	                try : ok,msg = self.osdb_server.searchsubtitles( self.search_string, hashTry,self.file_size,self.lang1,self.lang2,self.year,hash_search )
+	                try : ok,msg = self.osdb_server.searchsubtitles( self.search_string, hashTry,self.file_size,self.lang1,self.lang2,self.lang3,self.year,hash_search )
 	                except: self.connected = False
 	
 	                if self.debug : LOG( LOG_INFO, "Hash and Name Search: " + msg )
@@ -280,7 +284,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	                if self.debug : LOG( LOG_INFO, "Search by Name " +  os.path.basename( self.file_original_path ) )
 	                self.getControl( STATUS_LABEL ).setLabel( _( 642 ) % ( "...", ) )
 	                 
-	                try : ok,msg = self.osdb_server.searchsubtitles( self.search_string, "000000000" ,"000000000",self.lang1,self.lang2,self.year,hash_search )
+	                try : ok,msg = self.osdb_server.searchsubtitles( self.search_string, "000000000" ,"000000000",self.lang1,self.lang2,self.lang3,self.year,hash_search )
 	                except: self.connected = False
 	
 	                if self.debug : LOG( LOG_INFO, "Name Search: " + msg )                
@@ -360,7 +364,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	                self.getControl( STATUS_LABEL ).setLabel( _( 642 ) % ( "...", ) )
 #	                self.set_filehash( hashFile( self.file_original_path ) )
 	                hashTry = timeout(self.set_filehash, timeout_duration=5)
-	                ok,msg = self.osdb_server.searchsubtitles_pod( self.search_string, hashTry ,self.lang_two1,self.lang_two2 )
+	                ok,msg = self.osdb_server.searchsubtitles_pod( self.search_string, hashTry ,self.lang_two1,self.lang_two2,self_lang_two3)
 	                if not ok:
 	                	self.connected = False
 	                if self.debug : LOG( LOG_INFO, "Hash Search_pod: [" + msg + "]" )
@@ -369,7 +373,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	                if self.debug : LOG( LOG_INFO,"Search by name_pod [" +  self.search_string + "]" )
 	                self.getControl( STATUS_LABEL ).setLabel( _( 642 ) % ( "......", ) )
 	                
-	                ok2,msg2 = self.osdb_server.searchsubtitlesbyname_pod( self.search_string, self.lang_two1,self.lang_two2, self.year )
+	                ok2,msg2 = self.osdb_server.searchsubtitlesbyname_pod( self.search_string, self.lang_two1,self.lang_two2,self.lang_two3, self.year )
 	                if self.debug : LOG( LOG_INFO, "Name Search_pod: [" + msg2 + "]" )
 	                
 	                
@@ -453,7 +457,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 		subtitles = []
         	language1 = SublightUtils.toSublightLanguage( self.lang1 )
         	language2 = SublightUtils.toSublightLanguage(  self.lang2 )
-        	language3 = SublightUtils.toSublightLanguage( "0" )
+        	language3 = SublightUtils.toSublightLanguage( self.lang3 )
 	
 		season = xbmc.getInfoLabel("VideoPlayer.Season")
 		episode = xbmc.getInfoLabel("VideoPlayer.Episode")
@@ -485,7 +489,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 			
 		if self.debug : 	
 			LOG( LOG_INFO, "Sublight Hash [%s]" , str(video_hash) )
-			LOG( LOG_INFO, "Sublight Language 1: [%s], Language 2: [%s]" , language1 ,language2 )
+			LOG( LOG_INFO, "Sublight Language 1: [%s], Language 2: [%s], Language 3: [%s]" , language1 ,language2 , language3)
 			LOG( LOG_INFO, "Sublight Search Title:[%s] , Season:[%s] , Episode:[%s] Year:[%s]" , movie_title1,season,episode,year )
 		self.getControl( STATUS_LABEL ).setLabel( _( 642 ) % ( "......", ) )
 		subtitles = sublightWebService.SearchSubtitles(session_id, video_hash, movie_title1, year,season, episode, language2, language1, language3 )
