@@ -8,6 +8,7 @@ import array
 import httplib
 import xbmc
 import xml.dom.minidom
+import xml.sax.saxutils as SaxUtils
 
 #
 # Integer => Hexadecimal
@@ -423,6 +424,7 @@ class SublightWebService :
     # SearchSubtitles
     #
     def SearchSubtitles(self, sessionId, videoHash, title, year, season, episode,language1, language2, language3):
+        title = SaxUtils.escape(title)    
         # Build request XML...
         requestXML = """<?xml version="1.0" encoding="utf-8"?>
                         <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
