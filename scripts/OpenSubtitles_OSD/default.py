@@ -8,8 +8,10 @@ __author__ = "Amet"
 __url__ = "http://code.google.com/p/opensubtitles-osd/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/scripts/OpenSubtitles_OSD"
 __credits__ = ""
-__version__ = "1.42"
+__version__ = "1.43"
 __XBMC_Revision__ = "22240"
+
+### ------ thanks to hentar for adding the third language option ----- ###
 
 BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib' ) )
 
