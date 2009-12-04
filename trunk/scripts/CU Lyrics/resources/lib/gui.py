@@ -65,6 +65,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
     def get_lyrics(self, artist1, song1):
         self.reset_controls()
+        self.getControl( 100 ).setText( "" )
         self.getControl( 200 ).setLabel( "" )
         self.menu_items = []
         self.allow_exception = False
