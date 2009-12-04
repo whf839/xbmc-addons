@@ -9,7 +9,7 @@ __author__ = "Amet"
 __url__ = ""
 __svn_url__ = ""
 __credits__ = "EnderW,Nuka1195"
-__version__ = "0.6.2"
+__version__ = "0.6.3"
 __XBMC_Revision__ = "22240"
 __svn_revision__ = 0
 
