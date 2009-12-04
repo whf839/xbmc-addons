@@ -19,6 +19,13 @@ __scriptname__ = sys.modules[ "__main__" ].__scriptname__
 __version__ = sys.modules[ "__main__" ].__version__
 __svn_revision__ = sys.modules[ "__main__" ].__svn_revision__
 
+SELECT_ITEM = ( 11, 256, 61453, )
+EXIT_SCRIPT = ( 6, 10, 247, 275, 61467, 216, 257, 61448, )
+CANCEL_DIALOG = EXIT_SCRIPT + ( 216, 257, 61448, )
+GET_EXCEPTION = ( 216, 260, 61448, )
+SELECT_BUTTON = ( 229, 259, 261, 61453, )
+MOVEMENT_UP = ( 166, 270, 61478, )
+MOVEMENT_DOWN = ( 167, 271, 61480, )
 
 class GUI( xbmcgui.WindowXMLDialog ):
     def __init__( self, *args, **kwargs ):
@@ -178,10 +185,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
         self.controlId = controlId
 
-    def onAction( self, action ):
-        actionId = action.getId()
-        if ( action.getButtonCode() in CANCEL_DIALOG ):
-            self.exit_script()
+
 
 
     def get_artist_from_filename( self, filename ):
@@ -232,6 +236,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 xbmc.sleep( 50 )
 
 
+
 ## Thanks Thor918 for this class ##
 class MyPlayer( xbmc.Player ):
     """ Player Class: calls function when song changes or playback ends """
@@ -251,3 +256,8 @@ class MyPlayer( xbmc.Player ):
     
     def onPlayBackStarted( self ):
         self.function( 2 )
+
+def onAction( self, action ):
+    actionId = action.getId()
+    if ( action.getButtonCode() in CANCEL_DIALOG ):
+        self.exit_script()
