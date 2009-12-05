@@ -72,8 +72,8 @@ def INDEX(url,name):
 
 def VIDEOLINKS(url,name):
         items = getHTML(url)
-        match=re.compile('&captions=(.+?)&image=(.+?)&file=(.+?)&logo=').findall(items) 
-        for captions,image,url in match:
+        match=re.compile('&captions=.+?(&image=.+?)?&file=(http://.+?vid_.+?)&').findall(items)
+        for _,url in match:
                 item=xbmcgui.ListItem(name, iconImage='', thumbnailImage='')
                 item.setInfo( type="Video",infoLabels={ "Title": name
                                               #"Season": season,
