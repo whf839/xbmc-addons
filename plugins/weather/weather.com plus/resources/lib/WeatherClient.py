@@ -292,14 +292,14 @@ class Forecast36HourParser:
                 # we separate each item with single pipe
                 text = "|".join( outlook )
                 # separator for different info
-                text += "||"
+                text += "|||||"
                 # we separate each item with single pipe
                 text += "|".join( brief )
                 # translate text
                 text = _translate_text( text, self.translate )
                 # split text into it's original list
-                outlook = text.split( "||" )[ 0 ].split( "|" )
-                brief = text.split( "||" )[ 1 ].split( "|" )
+                outlook = text.split( "|||||" )[ 0 ].split( "|" )
+                brief = text.split( "|||||" )[ 1 ].split( "|" )
             for count, day in enumerate( days ):
                 # make icon path
                 iconpath = "/".join( [ "special://temp", "weather", "128x128", icon[ count ] + ".png" ] )
@@ -309,7 +309,6 @@ class Forecast36HourParser:
 
 class ForecastHourlyParser:
     def __init__( self, htmlSource, translate ):
-        self.headings = []
         self.forecast = []
         self.translate = translate
         self._get_forecast( htmlSource )
@@ -367,14 +366,14 @@ class ForecastHourlyParser:
                 # we separate each item with single pipe
                 text = "|".join( wind )
                 # separator for different info
-                text += "||"
+                text += "|||||"
                 # we separate each item with single pipe
                 text += "|".join( brief )
                 # translate text
                 text = _translate_text( text, self.translate )
                 # split text into it's original list
-                wind = text.split( "||" )[ 0 ].split( "|" )
-                brief = text.split( "||" )[ 1 ].split( "|" )
+                wind = text.split( "|||||" )[ 0 ].split( "|" )
+                brief = text.split( "|||||" )[ 1 ].split( "|" )
             # create our forecast list
             for count, item in enumerate( info ):
                 # make icon path
@@ -499,14 +498,14 @@ class ForecastWeekendParser:
             # we separate each item with single pipe
             text = "|".join( outlooks )
             # separator for different info
-            text += "||"
+            text += "|||||"
             # we separate each item with single pipe
             text += "|".join( brief )
             # translate text
             text = _translate_text( text, self.translate )
             # split text into it's original list
-            outlooks = text.split( "||" )[ 0 ].split( "|" )
-            brief = text.split( "||" )[ 1 ].split( "|" )
+            outlooks = text.split( "|||||" )[ 0 ].split( "|" )
+            brief = text.split( "|||||" )[ 1 ].split( "|" )
         # enumerate thru and create our forecast list
         if ( len( headings ) ):
             for count, ( day, date, alert, ) in enumerate( headings ):
@@ -528,7 +527,6 @@ class ForecastWeekendParser:
 
 class Forecast10DayParser:
     def __init__( self, htmlSource, translate ):
-        self.headings = []
         self.forecast = []
         self.translate = translate
         self._get_forecast( htmlSource )
@@ -574,14 +572,14 @@ class Forecast10DayParser:
                 # we separate each item with single pipe
                 text = "|".join( wind )
                 # separator for different info
-                text += "||"
+                text += "|||||"
                 # we separate each item with single pipe
                 text += "|".join( brief )
                 # translate text
                 text = _translate_text( text, self.translate )
                 # split text into it's original list
-                wind = text.split( "||" )[ 0 ].split( "|" )
-                brief = text.split( "||" )[ 1 ].split( "|" )
+                wind = text.split( "|||||" )[ 0 ].split( "|" )
+                brief = text.split( "|||||" )[ 1 ].split( "|" )
             # create our forecast list
             for count, item in enumerate( info ):
                 # make icon path
@@ -821,7 +819,7 @@ class WeatherClient:
         # parse source for forecast
         parser = ForecastHourlyParser( htmlSource, self.translate )
         # return forecast
-        return parser.headings, parser.forecast
+        return parser.forecast
 
     def fetch_weekend_forecast( self ):
         # fetch source
@@ -837,7 +835,7 @@ class WeatherClient:
         # parse source for forecast
         parser = Forecast10DayParser( htmlSource, self.translate )
         # return forecast
-        return parser.headings, parser.forecast
+        return parser.forecast
 
     def fetch_map_list( self, maptype=0 ):
         # set url

@@ -254,7 +254,7 @@ class Main:
             # clear all hourly times as some locals do not have all 27
             self.WEATHER_WINDOW.clearProperty( "Hourly.%d.Time" % ( count + 1, ) )
         # fetch hourly forecast
-        headings, forecasts = self.WeatherClient.fetch_hourly_forecast()
+        forecasts = self.WeatherClient.fetch_hourly_forecast()
         # enumerate thru and set the info
         for count, forecast in enumerate( forecasts ):
             self.WEATHER_WINDOW.setProperty( "Hourly.%d.Time" % ( count + 1, ), forecast[ 0 ] )
@@ -315,7 +315,7 @@ class Main:
         if ( self.areacode != xbmc.getInfoLabel( "Window(Weather).Property(AreaCode)" ) ):
             return
         # fetch daily forecast
-        headings, forecasts = self.WeatherClient.fetch_10day_forecast()
+        forecasts = self.WeatherClient.fetch_10day_forecast()
         # clear the 10th day as sometimes there is not one
         self.WEATHER_WINDOW.clearProperty( "Daily.10.ShortDay" )
         self.WEATHER_WINDOW.clearProperty( "Daily.10.LongDay" )
