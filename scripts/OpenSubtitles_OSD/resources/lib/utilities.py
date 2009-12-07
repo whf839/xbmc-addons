@@ -206,6 +206,7 @@ def toOpenSubtitles_two( id ):
                       "Polish" 		: "pl",
                       "Portuguese" 	: "pt",
                       "PortugueseBrazil" 	: "pb",
+                      "Brazilian"	: "pb",
                       "Romanian" 	: "ro",
                       "Russian" 	: "ru",
                       "SerbianLatin" 	: "sr",
