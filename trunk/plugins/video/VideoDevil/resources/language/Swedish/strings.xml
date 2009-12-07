@@ -2,7 +2,7 @@
 <!--Language file translated with Team XBMC Translator-->
 <!--Translator: blittan-->
 <!--Email: blittan@xbmc.org-->
-<!--Date of translation: 04/16/2009-->
+<!--Date of translation: 12/07/2009-->
 <!--$Revision$-->
 <strings>
   <string id="30000">VideoDevil</string>
@@ -22,6 +22,7 @@
   <string id="30014">Låg</string>
   <string id="30015">Standard</string>
   <string id="30016">Hög</string>
+  <string id="30017">Välj nedladdningssökväg:</string>
   <string id="30050">Laddar ner film...</string>
   <string id="30051">Var god vänta.</string>
   <string id="30052">Vill du ladda ner denna film?</string>

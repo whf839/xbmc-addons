@@ -2,7 +2,7 @@
 <!--Language file translated with Team XBMC Translator-->
 <!--Translator: blittan-->
 <!--Email: blittan@xbmc.org-->
-<!--Date of translation: 04/14/2009-->
+<!--Date of translation: 12/07/2009-->
 <!--$Revision$-->
 <strings>
   <string id="30000">Använd DVD-spelaren  istället för den vanliga spelaren</string>
@@ -13,13 +13,9 @@
   <string id="30005">Wad vill du göra?</string>
   <string id="30006">Avsluta</string>
   <string id="30007">Strömma</string>
-  <string id="30008">Kontrollerar uppdateringar</string>
-  <string id="30017">Var god vänta</string>
-  <string id="30018">Laddar ner uppdatering...</string>
+  <string id="30008">Fråga efter nedladdningsfilnamn</string>
   <string id="30019">ESPN video</string>
   <string id="30020">Uppdatering tillgänglig på SVN Repo installer</string>
   <string id="30021">Nuvarande version:</string>
   <string id="30022">Uppdaterad version:</string>
-  <string id="30023">Uppdatering komplett</string>
-  <string id="30024">Starta om detta tillägg för att ändringarna skall träda ikraft.</string>
 </strings>

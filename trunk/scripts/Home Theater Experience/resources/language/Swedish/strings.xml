@@ -2,10 +2,10 @@
 <!--Language file translated with Team XBMC Translator-->
 <!--Translator: blittan-->
 <!--Email: blittan@xbmc.org-->
-<!--Date of translation: 08/01/2009-->
+<!--Date of translation: 12/07/2009-->
 <!--$Revision$-->
 <strings>
-  <string id="32000">Spela trailer före filmen</string>
+  <string id="32000">Spela slumpmässig trailer före filmen</string>
   <string id="32001">Av</string>
   <string id="32002">1 trailer</string>
   <string id="32003">2 trailers</string>
@@ -38,7 +38,7 @@
   <string id="32205">30 min</string>
   <string id="32206">45 min</string>
   <string id="32207">60 min</string>
-  <string id="32210">- Trivia frågors bildsökväg</string>
+  <string id="32210">- Trivia frågornas bildsökväg</string>
   <string id="32220">- Visa varje bildspel för</string>
   <string id="32221">10 sek</string>
   <string id="32222">15 sek</string>
@@ -52,9 +52,16 @@
   <string id="32250">- Slut på trivia bild</string>
   <string id="32260">- Slut på trivia musiken</string>
   <string id="32300">Betyg videors sökväg</string>
-  <string id="32310">- Kommande attraktioner video/spellista</string>
-  <string id="32320">Föreställningspresentation video/spellista</string>
-  <string id="32330">Slut på föreställningspresentations video/spellista</string>
+  <string id="32310">- Spela intro för kommande attraktioner</string>
+  <string id="32320">Spela intro för framtida presentation</string>
+  <string id="32321">Av</string>
+  <string id="32322">Ensam video/spellista</string>
+  <string id="32323">1 slumpmässig video</string>
+  <string id="32324">2 slumpmässiga videor</string>
+  <string id="32325">3 slumpmässiga videor</string>
+  <string id="32330">Spela outro för framtida presentation</string>
+  <string id="32340">- Fil</string>
+  <string id="32350">- Mapp</string>
   <string id="32500">Väljer slumpmässiga trailers...</string>
   <string id="32510">Slumar trivia frågespel...</string>
   <string id="32520">Sätter upp spellista...</string>
@@ -65,6 +72,10 @@
   <string id="32603">MPAA betyg</string>
   <string id="32604">Hemmabio</string>
   <string id="32605">Trailer</string>
+  <string id="32700">Version</string>
+  <string id="32701">Denna version av %s kräver en</string>
+  <string id="32702">XBMC version lika med %s eller högre</string>
+  <string id="32703">Var god uppdatera ditt XBMC.</string>
   <string id="32800">Fimtrailers (tillval)</string>
   <string id="32801">Trivia frågor (tillval)</string>
   <string id="32802">Speciella videor (tillval)</string>

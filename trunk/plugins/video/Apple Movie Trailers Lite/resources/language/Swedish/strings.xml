@@ -29,10 +29,10 @@
   <string id="30077">Dag 7</string>
   <string id="30078">Dag 8</string>
   <string id="30080">- Använd filmtitel för sparat filnamn</string>
-  <string id="30090">Fan-konstsbild</string>
-  <string id="30100">- Fan-konst färg ett (AARRGGBB)</string>
-  <string id="30110">- Fan-konst färg två (AARRGGBB)</string>
-  <string id="30120">- Fan-konst färg tre (AARRGGBB)</string>
+  <string id="30090">Fanart-bild</string>
+  <string id="30100">- Fanart-färg ett (AARRGGBB)</string>
+  <string id="30110">- Fanart-färg två (AARRGGBB)</string>
+  <string id="30120">- Fanart-färg tre (AARRGGBB)</string>
   <string id="30130">- Spela alltid sparade trailers</string>
   <string id="30140">- Lägg till '-trailer' till sparade trailers</string>
   <string id="30201">Sök...</string>
