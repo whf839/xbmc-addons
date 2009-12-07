@@ -42,10 +42,16 @@ class LyricsFetcher:
 
     def lyricwiki_format(self, text):
 		return urllib.quote(str(unicode(text).title()))
+	
+    def lyricwiki_quote(self, text):
+		return urllib.quote(str(unicode(text)))	
 
-    def get_lyrics_thread(self, artist, title):
+    def get_lyrics_thread(self, artist, title,quote):
 		try:
-			song_search = urllib.urlopen("http://lyricwiki.org/index.php?title=%s:%s&fmt=js" % (self.lyricwiki_format(artist), self.lyricwiki_format(title))).read()
+			if quote:
+				song_search = urllib.urlopen("http://lyricwiki.org/index.php?title=%s:%s&fmt=js" % (self.lyricwiki_format(artist), self.lyricwiki_format(title))).read()
+			else:
+				song_search = urllib.urlopen("http://lyricwiki.org/index.php?title=%s:%s&fmt=js" % (self.lyricwiki_quote(artist), self.lyricwiki_quote(title))).read()
 			song_title = song_search.split("<title>")[1].split("</title>")[0]
 			song_clean_title = song_title.replace(" Lyrics - LyricWiki - Music lyrics from songs and albums","")
 			print "Title:[" + song_clean_title+"]"

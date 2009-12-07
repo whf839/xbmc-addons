@@ -85,7 +85,6 @@ class GUI( xbmcgui.WindowXMLDialog ):
         lyrics = ""
         current_song = self.song
         lyrics, kind = self.get_lyrics_from_file( artist, song, show )
-       
         if show :
 	        if ( lyrics != "" ):
 	            if ( current_song == self.song ):
@@ -95,8 +94,14 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	        else:
 	            self.getControl( 200 ).setEnabled( True )
 	            self.getControl( 200 ).setLabel( "LyricWiki API" )
-	            lyrics = self.LyricsScraper.get_lyrics_thread( artist, song )
-	
+
+	            if (artist.find( "\'" )) or (song.find( "\'", )):
+	                quote = False
+	            else:
+	                quote = True
+	                    
+	            lyrics = self.LyricsScraper.get_lyrics_thread( artist, song, quote )
+
 	            if ( current_song == self.song ):
 	                self.show_lyrics( lyrics, True )
         else:
@@ -139,9 +144,19 @@ class GUI( xbmcgui.WindowXMLDialog ):
             LOG( LOG_ERROR, "%s (rev: %s) %s::%s (%d) [%s]", __scriptname__, __svn_revision__, self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             return False
 
+    def unescape(self,s):
+        s = s.replace("&lt;", "<")
+        s = s.replace("&quot;", '"')
+        s = s.replace("&apos;", "'")
+        s = s.replace("&gt;", ">")
+        s = s.replace("&amp;", "&")
+        return s
+
+    
+    
     def show_lyrics( self, lyrics1, save=False ):
         xbmcgui.lock()
-        lyrics = lyrics1.replace("&quot;","\"")
+        lyrics = self.unescape(lyrics1)
         if ( lyrics == "" ):
             self.getControl( 100 ).setText( _( 632 ) )
             self.getControl( 110 ).addItem( _( 632 ) )
