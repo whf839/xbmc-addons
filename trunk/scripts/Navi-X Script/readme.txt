@@ -1,4 +1,4 @@
-Welcome to Navi-X v2.7
+Welcome to Navi-X v3.0
 
 Changelog:
 
