@@ -2,15 +2,14 @@
 <!--Language file translated with Team XBMC Translator-->
 <!--Translator: blittan-->
 <!--Email: blittan@xbmc.org-->
-<!--Date of translation: 04/14/2009-->
+<!--Date of translation: 12/07/2009-->
 <!--$Revision$-->
 <strings>
-  <string id="30000">Använd DVD spelare istället för den vanliga</string>
+  <string id="30000">Använd DVD-spelaren istället för den vanliga</string>
   <string id="30001">Fråga</string>
   <string id="30002">480p</string>
   <string id="30003">720p</string>
   <string id="30004">Standard HD kvalitet</string>
-  <string id="30030">1080p</string>
   <string id="30005">Fråga</string>
   <string id="30006">Spela</string>
   <string id="30007">Ladda ner</string>
@@ -28,4 +27,8 @@
   <string id="30020">Lista 'klipp' kategorin (endast shower)</string>
   <string id="30021">Lista 'Alla videor' kategoring (endast shower)</string>
   <string id="30022">Lista 'HD videor' kategorin</string>
+  <string id="30030">1080p</string>
+  <string id="30039">Aktivera proxy</string>
+  <string id="30040">U.S. Proxy IP</string>
+  <string id="30041">U.S. Proxy port</string>
 </strings>
