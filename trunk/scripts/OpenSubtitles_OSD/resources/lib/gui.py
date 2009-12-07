@@ -581,22 +581,16 @@ class GUI( xbmcgui.WindowXMLDialog ):
             
 
             filename = self.osdb_server.subtitles_list[pos]["filename"]
-            subtitle_format = self.osdb_server.subtitles_list[pos]["format"]
             url = self.osdb_server.subtitles_list[pos]["link"]
             local_path = xbmc.translatePath( "special://temp" )
             zip_filename = xbmc.translatePath( os.path.join( local_path, "zipsubs.zip" ) )
-            
-            sub_filename = os.path.basename( self.file_path )
-            form = self.osdb_server.subtitles_list[pos]["format"]
+            sub_filename = os.path.basename( self.file_path )           
             lang = toOpenSubtitles_two(self.osdb_server.subtitles_list[pos]["language_name"])
             subName1 = sub_filename[0:sub_filename.rfind(".")] 
             if subName1 == "":
 				subName1 = self.search_string.replace("+", " ")
-#            if self.set_temp:
-#				subName1 = self.search_string.replace("+", " ")
-            
             self.file_download( url, zip_filename )
-	    self.extract_subtitles( filename, form, lang,subName1, subtitle_format, zip_filename, local_path )
+	    self.extract_subtitles( filename, lang,subName1, zip_filename, local_path )
 	    
 	    
     
@@ -737,7 +731,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 ###-------------------------- Sub extract OS and Podnapisi  -------------################
 
 	     
-    def extract_subtitles(self, filename, form, lang, subName1, subtitle_format, zip_filename, local_path ):
+    def extract_subtitles(self, filename, lang, subName1, zip_filename, local_path ):
 
         if self.debug : LOG( LOG_INFO, "extract_subtitles" )
 
