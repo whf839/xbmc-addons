@@ -19,16 +19,6 @@ from settings import *
 try: Emulating = xbmcgui.Emulating
 except: Emulating = False
 
-RootDir = os.getcwd()
-if RootDir[-1]==';': RootDir=RootDir[0:-1]
-if RootDir[-1]!='\\': RootDir=RootDir+'\\'
-imageDir = RootDir + "\\images\\"
-cacheDir = RootDir + "\\cache\\"
-imageCacheDir = RootDir + "\\cache\\imageview\\"
-scriptDir = "Q:\\scripts\\"
-myDownloadsDir = RootDir + "My Downloads\\"
-initDir = RootDir + "\\init\\"
-
 ######################################################################
 # Description: Playlist item class. 
 ######################################################################
@@ -49,10 +39,14 @@ class CMediaItem:
                   description='', \
                   date='', \
                   thumb='default', \
+                  icon='default', \
                   URL='', \
                   DLloc='', \
                   player='default', \
                   processor='', \
+                  playpath='', \
+                  swfplayer='', \
+                  pageurl='', \
                   background='default'):
         self.type = type    #(required) type (playlist, image, video, audio, text)
         self.version = version #(optional) playlist version
@@ -60,12 +54,34 @@ class CMediaItem:
         self.description = description    #(optional) description of this item
         self.date = date    #(optional) release date of this item (yyyy-mm-dd)
         self.thumb = thumb  #(optional) URL to thumb image or 'default'
-#        self.icon = thumb  #(optional) URL to icon image or 'default'
+        self.icon = icon  #(optional) URL to icon image or 'default'
         self.URL = URL      #(required) URL to playlist entry
         self.DLloc = DLloc  #(optional) Download location
         self.player = player #(optional) player core to use for playback
         self.processor = processor #(optional) URL to mediaitem processing server 
+        self.playpath = playpath #(optional) 
+        self.swfplayer = swfplayer #(optional)
+        self.pageurl = pageurl #(optional)
         self.background = background #(optional) background image
+               
+    ######################################################################
+    # Description: Get mediaitem type.
+    # Parameters : field: field to retrieve (type or attributes)
+    # Return     : -
+    ######################################################################
+    def GetType(self, field=0):
+        index = self.type.find(':')
+        if index != -1:
+            if field == 0:
+                value = self.type[:index]
+            elif field == 1:
+                value = self.type[index+1:]
+            else: #invalid field
+                value == ''
+        else:
+            value = self.type
+
+        return value
         
 ######################################################################
 # Description: Playlist item class. 
@@ -74,13 +90,6 @@ class CHistorytem:
     def __init__(self, index=0, mediaitem=CMediaItem()):
         self.index = index
         self.mediaitem = mediaitem
-
-#class CHistorytem2:
-#    def __init__(self, URL='', index=0, type='unknown'):
-#        self.URL = URL        
-#        self.index = index
-#        self.type = type
- 
 
 ######################################################################
 # Description: Get the file extension of a URL
@@ -124,7 +133,17 @@ def Trace(string):
     f = open(RootDir + "trace.txt", "a")
     f.write(string + '\n')
     f.close()
-      
+
+
+######################################################################
+# Description: Display popup error message
+# Parameters : string: text string to trace
+# Return     : -
+######################################################################
+def Message(string):
+    dialog = xbmcgui.Dialog()
+    dialog.ok("Error", string)  
+    
 ######################################################################
 # Description: Retrieve the platform Navi-X is running on.
 # Parameters : -
@@ -148,16 +167,48 @@ def get_system_platform():
 # Parameters : URL
 # Return     : string containing the page contents.
 ######################################################################  
-def get_HTML(url):
+def get_HTML(url,referer='',cookie=''):
     headers = { 'User-Agent' : 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.4) Gecko/2008102920 Firefox/3.0.4',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
-    req = urllib2.Request(url=url, headers=headers)
-    response = urllib2.urlopen(req)
-    link=response.read()
-    response.close()
-    return link   
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Referer': referer,
+                'Cookie': cookie}
+    try:
+        oldtimeout=socket_getdefaulttimeout()
+        socket_setdefaulttimeout(url_open_timeout)
+        req = urllib2.Request(url=url, headers=headers)
+        response = urllib2.urlopen(req)
+        link=response.read()
+        response.close()
+    except IOError:         
+        link = ""
+    
+    socket_setdefaulttimeout(oldtimeout)
+    
+    return link
      
+
+######################################################################
+# Description: Controls the info text label on the left bottom side
+#              of the screen.
+# Parameters : folder=path to local folder
+# Return     : -
+######################################################################
+def SetInfoText(text='', window=0):
+    global win
+    
+    if window != 0:
+        win=window
+        
+    if text != '':
+        win.setLabel(text)
+        win.setVisible(1)
+    else:
+        win.setVisible(0)
+
+        
 #retrieve the platform.
 platform = get_system_platform()
 
- 
+        
+
+
