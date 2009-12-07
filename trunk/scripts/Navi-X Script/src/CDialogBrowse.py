@@ -18,7 +18,6 @@ import urllib2
 import re, random, string
 import xbmc, xbmcgui
 import re, os, time, datetime, traceback
-#import Image, ImageFile
 import shutil
 import zipfile
 from settings import *
@@ -26,43 +25,35 @@ from settings import *
 try: Emulating = xbmcgui.Emulating
 except: Emulating = False
 
-RootDir = os.getcwd()
-if RootDir[-1]==';': RootDir=RootDir[0:-1]
-if RootDir[-1]!='\\': RootDir=RootDir+'\\'
-imageDir = RootDir + "images\\"
-cacheDir = RootDir + "cache\\"
-imageCacheDir = RootDir + "cache\\imageview\\"
-scriptDir = "Q:\\scripts\\"
-myDownloadsDir = RootDir + "My Downloads\\"
-initDir = RootDir + "init\\"
-
 ######################################################################
 # Description: Browse dialog class
 ######################################################################
 class CDialogBrowse(xbmcgui.WindowDialog):
-    def __init__(self):
+    def __init__(self, parent=None):
         if Emulating: xbmcgui.WindowDialog.__init__(self)
         
         self.filename=''
         self.dir=''
       
+        width=parent.getWidth()
+      
         #background image
-        self.bg = xbmcgui.ControlImage(100,200,520,160, imageDir + "dialog-panel.png")
+        self.bg = xbmcgui.ControlImage(100,200,width-200,160, imageDir + "dialog-panel.png")
         self.addControl(self.bg)
 
-        self.title = xbmcgui.ControlLabel(125,210,155,40, 'Download location', "font14")
+        self.title = xbmcgui.ControlLabel(130,210,155,40, 'Download location', "font14")
         self.addControl(self.title)
 
-        self.button_dest = xbmcgui.ControlButton(125,240,480,32, '' , RootDir + "images\\button-focus.png", RootDir + "images\\button-nofocus.png")
+        self.button_dest = xbmcgui.ControlButton(130,240,width-245,32, '' , RootDir + "images\\button-focus.png", RootDir + "images\\button-nofocus.png")
         self.addControl(self.button_dest)
 
-        self.button_browse = xbmcgui.ControlButton(125,290,140,32,'Browse', RootDir + "images\\button-focus.png", RootDir + "images\\button-nofocus.png")
+        self.button_browse = xbmcgui.ControlButton(130,290,145,32,'Browse', RootDir + "images\\button-focus.png", RootDir + "images\\button-nofocus.png")
         self.addControl(self.button_browse)
           
-        self.button_ok = xbmcgui.ControlButton(295,290,140,32,'OK', RootDir + "images\\button-focus.png", RootDir + "images\\button-nofocus.png")
+        self.button_ok = xbmcgui.ControlButton(300,290,140,32,'OK', RootDir + "images\\button-focus.png", RootDir + "images\\button-nofocus.png")
         self.addControl(self.button_ok)
         
-        self.button_cancel = xbmcgui.ControlButton(465,290,140,32,'Cancel', RootDir + "images\\button-focus.png", RootDir + "images\\button-nofocus.png")
+        self.button_cancel = xbmcgui.ControlButton(475,290,140,32,'Cancel', RootDir + "images\\button-focus.png", RootDir + "images\\button-nofocus.png")
         self.addControl(self.button_cancel)
         
         #button key behaviour
@@ -84,8 +75,12 @@ class CDialogBrowse(xbmcgui.WindowDialog):
                        
         if action == ACTION_SELECT_ITEM:
             if self.getFocus() == self.button_ok:
-                self.state = 0 #success
-                self.close() #exit
+                if os.path.exists(self.dir) == False:
+                    dialog = xbmcgui.Dialog()
+                    dialog.ok("Error", "Destination directory does not exist")
+                else:
+                    self.state = 0 #success
+                    self.close() #exit
             if self.getFocus() == self.button_cancel:
                 self.state = -1 #success
                 self.close() #exit
@@ -114,6 +109,7 @@ class CDialogBrowse(xbmcgui.WindowDialog):
                     if self.type == 3:
                         if fn[-1] != '\\':
                             fn = fn + '\\'
+                            
                         self.dir = fn
                     else:
                         pos = fn.rfind('\\') #find last '\' in the string

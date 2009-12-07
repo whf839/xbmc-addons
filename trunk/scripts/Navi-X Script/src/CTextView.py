@@ -26,16 +26,6 @@ from libs2 import *
 try: Emulating = xbmcgui.Emulating
 except: Emulating = False
 
-RootDir = os.getcwd()
-if RootDir[-1]==';': RootDir=RootDir[0:-1]
-if RootDir[-1]!='\\': RootDir=RootDir+'\\'
-imageDir = RootDir + "\\images\\"
-cacheDir = RootDir + "\\cache\\"
-imageCacheDir = RootDir + "\\cache\\imageview\\"
-scriptDir = "Q:\\scripts\\"
-myDownloadsDir = RootDir + "My Downloads\\"
-initDir = RootDir + "\\init\\"
-
 ######################################################################
 # Description: Text viewer
 ######################################################################
@@ -56,13 +46,28 @@ class CTextView(xbmcgui.Window):
         self.TextBox.setVisible(1)
         
         self.setFocus(self.TextBox)
+        
+        self.offset = 0
        
     def onAction(self, action):
         if (action == ACTION_PREVIOUS_MENU) or (action == ACTION_PARENT_DIR) or (action == ACTION_MOVE_LEFT):
             self.close()
+        if (action == ACTION_MOVE_DOWN):
+            self.onScrollDown()
+        if (action == ACTION_MOVE_UP):
+            self.onScrollUp()
             
     def onControl(self, control):
         self.setFocus(control)
+           
+    def onScrollDown(self):
+        self.offset = self.offset + 100
+        self.TextBox.setText(self.text[self.offset:])
+        
+    def onScrollUp(self):
+        if self.offset > 0:
+            self.offset = self.offset - 100
+            self.TextBox.setText(self.text[self.offset:])              
 
     ######################################################################
     # Description: Reads the document and prepares the display. The
@@ -101,7 +106,7 @@ class CTextView(xbmcgui.Window):
                 f=open(loader.localfile, 'r')
                 data = f.read()
                 f.close()
-                text=""
+                self.text=""
                 lines = data.split("\n")
                 #we check each line if it exceeds 80 characters and does not contain
                 #any space characters (e.g. long URLs). The textbox widget does not
@@ -109,8 +114,10 @@ class CTextView(xbmcgui.Window):
                 for m in lines:
                     if (len(m) > 80) and (m.find(" ") == -1):
                         m = m[:80] + " " + m[80:]
-                    text = text + m + "\n"
-                self.TextBox.setText(text)
+                    self.text = self.text + m + "\n"
+                self.TextBox.setText(self.text)
+                
+                self.offset = 0
                 return 0 #success
             except IOError:
                 return -1 #failure

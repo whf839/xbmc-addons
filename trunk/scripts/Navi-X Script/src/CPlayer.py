@@ -28,16 +28,6 @@ from CFileLoader import *
 try: Emulating = xbmcgui.Emulating
 except: Emulating = False
 
-RootDir = os.getcwd()
-if RootDir[-1]==';': RootDir=RootDir[0:-1]
-if RootDir[-1]!='\\': RootDir=RootDir+'\\'
-imageDir = RootDir + "\\images\\"
-cacheDir = RootDir + "\\cache\\"
-imageCacheDir = RootDir + "\\cache\\imageview\\"
-scriptDir = "Q:\\scripts\\"
-myDownloadsDir = RootDir + "My Downloads\\"
-initDir = RootDir + "\\init\\"
-
 #####################################################################
 # Description: My player class, overrides the XBMC Player
 ######################################################################
@@ -80,17 +70,23 @@ class CPlayer(xbmc.Player):
             index = first
             urlopener = CURLLoader()
             self.stopped=False
-            while index <= last and self.stopped == False and self.pls.size() < 100:                
+            while index <= last and self.stopped == False and self.pls.size() < 100:               
                 type = playlist.list[index].type
                 if type == 'video' or type == 'audio':
                     URL = playlist.list[index].URL
 
-                    result = urlopener.urlopen(URL)
+                    result = urlopener.urlopen(URL, playlist.list[index])
                     if result == 0:
                         loc_url = urlopener.loc_url
 
                         name = playlist.list[index].name
-                        self.pls.add(loc_url, name)
+                        
+                        if version == '9':  
+                            listitem = xbmcgui.ListItem(name)
+                            listitem.setInfo('video', {'Title': name})
+                            self.pls.add(url=loc_url, listitem=listitem)                      
+                        else:
+                            self.pls.add(loc_url, name)
                         
                         if self.pls.size() == 1:
                             #start playing                        
@@ -102,29 +98,65 @@ class CPlayer(xbmc.Player):
                 return -1
                 
         return 0
-        
-    def play_URL(self, URL):
+
+    ######################################################################
+    ######################################################################            
+    def play_URL(self, URL, mediaitem=0):
+        #URL=mediaitem.URL
+        #check if the URL is empty or not
+        if URL == '':
+            return -1
+    
+        self.pls.clear() #clear the playlist
+
+        urlopener = CURLLoader()
+        result = urlopener.urlopen(URL, mediaitem)
+        if result != 0:
+            return -1    
+        URL = urlopener.loc_url
+    
+        ext = getFileExtension(URL)
+        if ext == 'pls' or ext == 'm3u':
+            loader = CFileLoader2() #file loader
+            loader.load(URL, cacheDir + "playlist." + ext, retries=2)
+            if loader.state == 0: #success
+                result = self.pls.load(loader.localfile)
+                if result == False:
+                    return -1
+        else:
+#            urlopener = CURLLoader()
+#            result = urlopener.urlopen(URL, mediaitem)
+#            if result != 0:
+#                return -1
+            self.pls.add(urlopener.loc_url)
+
+        SetInfoText("Loading... ")
+
+        if mediaitem.playpath != '':
+            self.play_RTMP(mediaitem.URL, mediaitem.playpath, mediaitem.swfplayer, mediaitem.pageurl);
+        else:  
+            xbmc.Player.play(self, self.pls)
+            
+        return 0
+
+    ######################################################################
+    ###################################################################### 
+    def play_RTMP(self, URL, playpath, swfplayer, pageurl):
         #check if the URL is empty or not
         if URL == '':
             return -1
     
         self.pls.clear() #clear the playlist
     
-        ext = getFileExtension(URL)
-        if ext == 'pls' or ext == 'm3u':
-            loader = CFileLoader2() #file loader
-            loader.load(URL, cacheDir + "playlist." + ext)
-            if loader.state == 0: #success
-                result = self.pls.load(loader.localfile)
-                if result == False:
-                    return -1
-        else:
-            urlopener = CURLLoader()
-            result = urlopener.urlopen(URL)
-            if result != 0:
-                return -1
-            self.pls.add(urlopener.loc_url)
+        item=xbmcgui.ListItem('', iconImage='', thumbnailImage='')
+        if swfplayer != '':
+            item.setProperty("SWFPlayer", swfplayer)
+        if playpath != '':
+            item.setProperty("PlayPath", playpath)
+        if pageurl != '':
+            item.setProperty("PageURL", pageurl)
 
-        xbmc.Player.play(self, self.pls)
+        xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(URL, item)
+        
         return 0
         
