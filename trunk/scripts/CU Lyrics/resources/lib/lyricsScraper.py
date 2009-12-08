@@ -34,11 +34,19 @@ class LyricsFetcher:
         self._set_exceptions()
         
         
-        
     def get_lyrics_start(self, *args):
 		lyricThread = threading.Thread(target=self.get_lyrics_thread, args=args)
 		lyricThread.setDaemon(True)
 		lyricThread.start()
+
+    def unescape(self,s):
+        s = s.replace("&lt;", "<")
+        s = s.replace("&quot;", '"')
+        s = s.replace("&apos;", "'")
+        s = s.replace("&gt;", ">")
+        s = s.replace("&amp;", "&")
+        return s       
+        
 
     def lyricwiki_format(self, text):
 		return urllib.quote(str(unicode(text).title()))
@@ -53,7 +61,7 @@ class LyricsFetcher:
 			else:
 				song_search = urllib.urlopen("http://lyricwiki.org/index.php?title=%s:%s&fmt=js" % (self.lyricwiki_quote(artist), self.lyricwiki_quote(title))).read()
 			song_title = song_search.split("<title>")[1].split("</title>")[0]
-			song_clean_title = song_title.replace(" Lyrics - LyricWiki - Music lyrics from songs and albums","")
+			song_clean_title = self.unescape(song_title.replace(" Lyrics - LyricWiki - Music lyrics from songs and albums",""))
 			print "Title:[" + song_clean_title+"]"
 			lyricpage = urllib.urlopen("http://lyricwiki.org/index.php?title=%s&action=edit" % (urllib.quote(song_clean_title),)).read()
 			print ("http://lyricwiki.org/index.php?title=%s&action=edit" % (urllib.quote(song_clean_title),))
