@@ -85,6 +85,10 @@ class GUI( xbmcgui.WindowXMLDialog ):
         lyrics = ""
         current_song = self.song
         lyrics, kind = self.get_lyrics_from_file( artist, song, show )
+        if (artist.find( "\'" )) or (song.find( "\'", )):
+	        quote = False
+        else:
+	        quote = True
         if show :
 	        if ( lyrics != "" ):
 	            if ( current_song == self.song ):
@@ -94,11 +98,6 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	        else:
 	            self.getControl( 200 ).setEnabled( True )
 	            self.getControl( 200 ).setLabel( "LyricWiki API" )
-
-	            if (artist.find( "\'" )) or (song.find( "\'", )):
-	                quote = False
-	            else:
-	                quote = True
 	                    
 	            lyrics = self.LyricsScraper.get_lyrics_thread( artist, song, quote )
 
@@ -109,7 +108,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 
                 print "Next Lyrics Already Exist"
             else:
-                lyrics = self.LyricsScraper.get_lyrics_thread( artist, song )
+                lyrics = self.LyricsScraper.get_lyrics_thread( artist, song, quote )
                 if ( len(lyrics) > 100):
 	                success = self.save_lyrics_to_file( lyrics )
 	                print "Next Lyrics Saved"                
