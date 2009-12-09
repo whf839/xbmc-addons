@@ -70,8 +70,10 @@ class LyricsFetcher:
 			if content.startswith("#REDIRECT [["):
 				addr = "http://lyricwiki.org/index.php?title=%s&action=edit" % urllib.quote(content.split("[[")[1].split("]]")[0])
 			        content = urllib.urlopen(addr).read()
-			lyrics = content.split("&lt;lyrics&gt;")[1].split("&lt;/lyrics&gt;")[0]
-
+			try:
+				lyrics = content.split("&lt;lyrics&gt;")[1].split("&lt;/lyrics&gt;")[0]
+			except:
+				lyrics = content.split("&lt;lyric&gt;")[1].split("&lt;/lyric&gt;")[0]
 			return lyrics
 
 		except:
