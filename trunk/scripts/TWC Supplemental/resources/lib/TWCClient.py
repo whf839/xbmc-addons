@@ -536,9 +536,8 @@ class TWCClient:
             titles = []
             # enumerate thru the alert urls and add the alerts to one big string
             for url in urls:
-                # TODO: verify there is no need to refresh alerts
                 # fetch source
-                htmlSource, expires = self._fetch_data( self.BASE_URL + url[ 2 ] )
+                htmlSource, expires = self._fetch_data( self.BASE_URL + url[ 2 ], 15 )
                 # parse source for alerts
                 parser = WeatherAlert( htmlSource )
                 # needed in case a new alert format was used and we errored
