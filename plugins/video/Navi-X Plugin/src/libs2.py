@@ -53,10 +53,14 @@ class CMediaItem:
                   description='', \
                   date='', \
                   thumb='default', \
+                  icon='default', \
                   URL='', \
                   DLloc='', \
                   player='default', \
                   processor='', \
+                  playpath='', \
+                  swfplayer='', \
+                  pageurl='', \
                   background='default'):
         self.type = type    #(required) type (playlist, image, video, audio, text)
         self.version = version #(optional) playlist version
@@ -64,11 +68,14 @@ class CMediaItem:
         self.description = description    #(optional) description of this item
         self.date = date    #(optional) release date of this item (yyyy-mm-dd)
         self.thumb = thumb  #(optional) URL to thumb image or 'default'
-#        self.icon = thumb  #(optional) URL to icon image or 'default'
+        self.icon = icon  #(optional) URL to icon image or 'default'
         self.URL = URL      #(required) URL to playlist entry
         self.DLloc = DLloc  #(optional) Download location
         self.player = player #(optional) player core to use for playback
         self.processor = processor #(optional) URL to mediaitem processing server 
+        self.playpath = playpath #(optional) 
+        self.swfplayer = swfplayer #(optional)
+        self.pageurl = pageurl #(optional)
         self.background = background #(optional) background image
         
 ######################################################################
@@ -128,7 +135,17 @@ def Trace(string):
     f = open(RootDir + "trace.txt", "a")
     f.write(string + '\n')
     f.close()
-      
+
+    
+######################################################################
+# Description: Display popup error message
+# Parameters : string: text string to trace
+# Return     : -
+######################################################################
+def Message(string):
+    dialog = xbmcgui.Dialog()
+    dialog.ok("Error", string)  
+          
 ######################################################################
 # Description: Retrieve the platform Navi-X is running on.
 # Parameters : -
@@ -152,15 +169,37 @@ def get_system_platform():
 # Parameters : URL
 # Return     : string containing the page contents.
 ######################################################################  
-def get_HTML(url):
+##def get_HTML(url):
+##    headers = { 'User-Agent' : 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.4) Gecko/2008102920 Firefox/3.0.4',
+##                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
+##    req = urllib2.Request(url=url, headers=headers)
+##    response = urllib2.urlopen(req)
+##    link=response.read()
+##    response.close()
+##    return link   
+##
+def get_HTML(url,referer='',cookie=''):
     headers = { 'User-Agent' : 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.4) Gecko/2008102920 Firefox/3.0.4',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
-    req = urllib2.Request(url=url, headers=headers)
-    response = urllib2.urlopen(req)
-    link=response.read()
-    response.close()
-    return link   
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Referer': referer,
+                'Cookie': cookie}
+    try:
+        oldtimeout=socket_getdefaulttimeout()
+        socket_setdefaulttimeout(url_open_timeout)
+        req = urllib2.Request(url=url, headers=headers)
+        response = urllib2.urlopen(req)
+        link=response.read()
+        response.close()
+    except IOError:         
+        link = ""
+    
+    socket_setdefaulttimeout(oldtimeout)
+    
+    return link
      
+
+
+
 #retrieve the platform.
 platform = get_system_platform()
 

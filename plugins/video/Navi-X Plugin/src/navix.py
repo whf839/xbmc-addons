@@ -162,10 +162,10 @@ def ParsePlaylist(mediaitem=CMediaItem() , proxy="CACHING"):
     URL=''
    
     #load the playlist
-    if type == 'rss':
-        result = playlist.load_rss_20(URL, mediaitem, proxy)
-    elif type == 'rss_flickr_daily':
+    if type == 'rss_flickr_daily':
         result = playlist.load_rss_flickr_daily(URL, mediaitem, proxy)
+    elif type[0:3] == 'rss':
+        result = playlist.load_rss_20(URL, mediaitem, proxy)
     elif type == 'html_youtube':
         result = playlist.load_html_youtube(URL, mediaitem, proxy)
     elif type == 'xml_shoutcast':
@@ -194,18 +194,18 @@ def ParsePlaylist(mediaitem=CMediaItem() , proxy="CACHING"):
     #fill the main list
     
     xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_NONE)
-    #xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
+    xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_VIDEO_TITLE)
     
     for m in playlist.list:
         if m.thumb != 'default':
-            #thumb = m.thumb            
-            loader = CFileLoader2()
-            ext = getFileExtension(m.thumb)
-            loader.load(m.thumb, cacheDir + "thumb." + ext, timeout=1, proxy="ENABLED", content_type='image')
-            if loader.state == 0:
-                thumb = loader.localfile
-            else:
-                thumb = getPlEntryThumb(m.type) 
+            thumb = m.thumb            
+##            loader = CFileLoader2()
+##            ext = getFileExtension(m.thumb)
+##            loader.load(m.thumb, cacheDir + "thumb." + ext, timeout=1, proxy="ENABLED", content_type='image')
+##            if loader.state == 0:
+##                thumb = loader.localfile
+##            else:
+##                thumb = getPlEntryThumb(m.type) 
         else:
             thumb = getPlEntryThumb(m.type)
 
@@ -227,10 +227,21 @@ def ParsePlaylist(mediaitem=CMediaItem() , proxy="CACHING"):
            (m.type == 'rss_flickr_daily') or (m.type == 'html_youtube') or \
            (m.type == 'xml_applemovie') or (m.type == 'directory') or \
            (m.type == 'xml_shoutcast') or (m.type == 'search_shoutcast') or \
-           (m.type == 'search_youtube'):
+           (m.type == 'search_youtube') or (m.type == 'search'):
             folder = True
-           
-        item = xbmcgui.ListItem(unicode(m.name+label2, "utf-8" ), iconImage=thumb, thumbnailImage=thumb)       
+            
+        desc=''
+        if m.description:
+            desc=m.description
+        
+        item = xbmcgui.ListItem(unicode(m.name+label2, "utf-8" ), iconImage=thumb, thumbnailImage=thumb)
+        item.setInfo( type=m.type, infoLabels={ "Title": m.name , "Plot": desc } )
+        #hack to play youtube swf
+        if m.URL.find('youtube.com/v/')>-1:
+                m.URL=m.URL.replace('http://youtube.com','http://www.youtube.com')
+                m.URL=m.URL.replace('youtube.com/v/','youtube.com/watch?v=')
+                m.URL=m.URL.replace('.swf','')
+                m.processor='http://navix.turner3d.net/proc/youtube_movies'
 
         URL = sys.argv[0] + "?mode=0&name=" + urllib.quote_plus(m.name) + \
                              "&type=" + urllib.quote_plus(m.type) + \
@@ -286,7 +297,7 @@ def getPlEntryThumb(type):
 ######################################################################
 def SelectItem(mediaitem=CMediaItem()):
     type = mediaitem.type
-    if type == 'playlist' or type == 'favorite' or type == 'rss' or \
+    if type == 'playlist' or type == 'favorite' or type[0:3] == 'rss' or \
        type == 'rss_flickr_daily' or type == 'directory' or \
        type == 'html_youtube' or type == 'xml_shoutcast' or \
        type == 'xml_applemovie':
@@ -313,51 +324,18 @@ def SelectItem(mediaitem=CMediaItem()):
 #        else:
         if(True):
 #            xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).play(mediaitem.URL)
-            if mediaitem.player == 'mplayer':
-                MyPlayer = CPlayer(xbmc.PLAYER_CORE_MPLAYER, function=myPlayerChanged)
-            elif mediaitem.player == 'dvdplayer':
-                MyPlayer = CPlayer(xbmc.PLAYER_CORE_DVDPLAYER, function=myPlayerChanged)
-            else:
+#            if mediaitem.player == 'mplayer':
+#                MyPlayer = CPlayer(xbmc.PLAYER_CORE_MPLAYER, function=myPlayerChanged)
+#            elif mediaitem.player == 'dvdplayer':
+#                MyPlayer = CPlayer(xbmc.PLAYER_CORE_DVDPLAYER, function=myPlayerChanged)
+#            else:
                 MyPlayer = CPlayer(xbmc.PLAYER_CORE_AUTO, function=myPlayerChanged)
-#####################Start modification Navi-Xtreme
-#todo: move to separate class    
-            if mediaitem.processor != '':
-#               self.setInfoText("Processor: getting filter...")
-                dialog = xbmcgui.DialogProgress()
-                dialog.create("Loading", "Processor: Getting filter...")
-                #
-                (URL,filt)=get_HTML(mediaitem.processor+'?url='+urllib.quote_plus(mediaitem.URL)).splitlines()
-#               self.setInfoText("Processor: scraping...")
-                dialog.update(33, "Processor: Scraping...")
-                htm=get_HTML(URL)
-                p=re.compile(filt)
-                match=p.search(htm)
-                if match:
-                    tgt=mediaitem.processor
-                    sep='?'
-                    for i in range(1,len(match.groups())+1):
-                        val=urllib.quote_plus(match.group(i))
-                        tgt=tgt+sep+'v'+str(i)+'='+val
-                        sep='&'
-#                   self.setInfoText("Processor: processing...")
-                    dialog.update(66, "Processor: Processing...")
-                    arr=get_HTML(tgt).splitlines()
-                    mediaitem.URL=arr[0]
-                    if len(arr)>1:
-                        mediaitem.swfplayer=arr[1]
-                        mediaitem.playpath=arr[2]
-                    mediaitem.processor=''
-#                   self.setInfoText("Loading... ")
-                    dialog.update(100, "Playing...")
-
-#####################End modification Navi-Xtreme                      
-                        
-            result = MyPlayer.play_URL(mediaitem.URL)      
-            dialog.close()   
+                result = MyPlayer.play_URL(mediaitem.URL, mediaitem)      
+#            dialog.close()   
             
-            if result != 0:
-                dialog = xbmcgui.Dialog()
-                dialog.ok("Error", "Could not open file.")
+                if result != 0:
+                    dialog = xbmcgui.Dialog()
+                    dialog.ok("Error", "Could not open file.")
                 
     elif type == 'image':
         viewImage(mediaitem.URL) #single file show
@@ -365,16 +343,23 @@ def SelectItem(mediaitem=CMediaItem()):
         OpenTextFile(mediaitem=mediaitem)
     elif type[0:6] == 'script' or type[0:6] == 'plugin':
         InstallApp(mediaitem=mediaitem)
-#            elif type == 'download':
-#                self.onDownload()
-    elif (type == 'search_youtube') or (type == 'search_shoutcast'):
+    elif type == 'download':
+        Download(mediaitem.URL)
+    elif (type[0:6] == 'search'):
         PlaylistSearch(mediaitem, True)
     else:
         dialog = xbmcgui.Dialog()
         dialog.ok("Playlist format error", '"' + type + '"' + " is not a valid type.")
 
 #    
-
+def Download(url):
+        dialog = xbmcgui.Dialog()
+        fn = dialog.browse(3,'Select destination','files')
+        name=url[url.rfind('/'):]
+        name=urllib.unquote_plus(name)
+        fn=fn+name
+        urllib.urlretrieve(url,fn)
+        
 ######################################################################
 # Description: Player changed info can be catched here
 # Parameters : action=user key action
@@ -569,9 +554,15 @@ def PlaylistSearch(item, append):
     #    if len(self.SearchHistory) > 8: #maximum 8 items
     #        self.SearchHistory.pop()
     #    self.onSaveSearchHistory()
-        
+    
+    index=item.type.find(":")
+    if index != -1:
+        search_type = item.type[index+1:]
+    else:
+        search_type = ''
+            
     #youtube search
-    if item.type == 'search_youtube':
+    if item.type == 'search_youtube' or (search_type == 'html_youtube'):
         fn = searchstring.replace(' ','+')
         if item.URL != '':
             URL = item.URL
@@ -609,8 +600,8 @@ def PlaylistSearch(item, append):
 #        if result == 0 and append == True: #successful
 #            self.History.append(tmp)
 #            self.history_count = self.history_count + 1
-    elif item.type == 'search_shoutcast':
-        fn=searchstring
+    elif item.type == 'search_shoutcast' or (search_type == 'xml_shoutcast'):
+        fn=urllib.quote(searchstring)
         URL = 'http://www.shoutcast.com/sbin/newxml.phtml?search='
         URL = URL + fn
         
@@ -630,7 +621,7 @@ def PlaylistSearch(item, append):
 #        if result == 0 and append == True: #successful
 #            self.History.append(tmp)
 #            self.history_count = self.history_count + 1
-    elif item.type == 'search_flickr':
+    elif item.type == 'search_flickr' or (search_type == 'html_flickr'):
         fn = searchstring.replace(' ','+')
         URL = 'http://www.flickr.com/search/?q='
         URL = URL + fn
@@ -651,7 +642,35 @@ def PlaylistSearch(item, append):
                 
 #        if result == 0 and append == True: #successful
 #            self.History.append(tmp)
-#            self.history_count = self.history_count + 1               
+#            self.history_count = self.history_count + 1
+
+    else: #generic search
+        fn = urllib.quote(searchstring)
+        URL = item.URL
+        URL = URL + fn
+                       
+        mediaitem=CMediaItem()
+        mediaitem.URL = URL
+        if search_type != '':
+            mediaitem.type = search_type
+        else: #default
+            mediaitem.type = 'playlist'
+                    
+        mediaitem.name = 'search results: ' + searchstring
+        mediaitem.player = item.player
+
+        #create history item
+        #tmp = CHistorytem()
+
+        #tmp.index = self.getPlaylistPosition()
+        #tmp.mediaitem = self.mediaitem
+
+        #self.pl_focus = self.playlist
+        result = ParsePlaylist(mediaitem=mediaitem)
+                
+        #if result == 0 and append == True: #successful
+            #self.History.append(tmp)
+            #self.history_count = self.history_count + 1             
 
 ######################################################################
 # Description: Deletes all files in a given folder and sub-folders.
