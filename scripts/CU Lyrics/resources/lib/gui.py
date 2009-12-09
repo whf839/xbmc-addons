@@ -161,10 +161,19 @@ class GUI( xbmcgui.WindowXMLDialog ):
             self.getControl( 110 ).addItem( _( 632 ) )
         else:
 
-            if (len(lyrics) < 100):
+            if (len(lyrics) < 100 and lyrics.find("{{Instrumental}}")):
+           		lyrics = lyrics.replace("{","")
+           		lyrics = lyrics.replace("}","")
+           		self.getControl( 100 ).setText( lyrics )
+           		lyrics1 = lyrics.splitlines()
+           		for x in lyrics1:
+           			self.getControl( 110 ).addItem( x )
+           		save = True                		
+            	
+            if (len(lyrics) < 100 and not lyrics.find("{{Instrumental}}")):
             	self.getControl( 100 ).setText( "No lyrics have been found for ' %s '" % (self.song)  )
             	save = False
-            else:	
+            if (len(lyrics) > 100):	
             	self.getControl( 100 ).setText( lyrics )
             	lyrics1 = lyrics.splitlines()
              	for x in lyrics1:
