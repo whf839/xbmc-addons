@@ -54,4 +54,4 @@ home_URL_old='http://www.navi-x.nl/playlists/home.plx'
 home_URL='http://www.navi-x.org/playlists/homeplg.plx'
 home_URL_mirror='http://navi-x.googlecode.com/svn/trunk/Playlists/home.plx'
 
-url_open_timeout = 10
+url_open_timeout = 30
