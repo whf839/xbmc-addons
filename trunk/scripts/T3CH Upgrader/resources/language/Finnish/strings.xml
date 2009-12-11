@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings>    <!--  Finnish 14.11.2009 -->
+<strings>    <!--  Finnish 11.12.2009 -->
     <string id="0">XBMC-päivitys</string>
 
 
@@ -39,7 +39,7 @@
     <string id="322">RAR-paketti on erittäin suuri, eikä sitä välttättä pysty avaamaan![CR](Vinkki: pakkaa uudelleen ilman ylimääräisiä skinejä. ~ 60Mb)[CR]Jatketaanko kuitenkin?</string>
 
     <!-- Yes/No buttons -->
-    <string id="400">Lataa</string>
+    <string id="400">Lataus</string>
     <string id="401">Peru</string>
     <string id="402">Kyllä</string>
     <string id="403">Ei</string>
@@ -55,7 +55,7 @@
     <string id="413">Ei</string>
     <string id="414">Ohje</string>
     <string id="415">Muutokset</string>
-    <string id="416">Asenna</string>
+    <string id="416">Asennus</string>
     <string id="417">SVN Nightly</string>
 
     <!-- Status messages -->
@@ -63,7 +63,7 @@
     <string id="501">Haluatko ladata tämän version?</string>
     <string id="502">Latausosoite:</string>
     <string id="503">Latauspolku:</string>
-    <string id="504">Purku sijainti:</string>
+    <string id="504">Purkukansio:</string>
     <string id="505">Paketti purettiin kansioon:</string>
     <string id="506">Selvitetään T3CH-paketin sisältöä ...</string>
     <string id="507">Aloitetaanko tietojen kopiointi uuteen versioon?</string>
