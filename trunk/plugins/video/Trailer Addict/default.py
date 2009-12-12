@@ -10,6 +10,21 @@ import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, tracebac
 HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1) Gecko/20090624 Firefox/3.5'
 THUMBNAIL_PATH = os.path.join(os.getcwd().replace( ";", "" ),'resources','media')
 
+def _check_for_update():
+	print "Trailer Addict v"+__version__
+	url = 'http://code.google.com/p/xbmc-addons/source/browse/trunk/plugins/video/Trailer%20Addict/default.py'
+	req = urllib2.Request(url)
+	req.add_header('User-Agent', HEADER)
+	f=urllib2.urlopen(req)
+	a=f.read()
+	f.close()
+	ALL = re.compile('<td class="source">__version__ = &quot;(.+?)&quot;<br></td>').findall(a)
+	for link in ALL :
+		if link.find(__version__) != 0:
+			newVersion=link
+			dia = xbmcgui.Dialog()
+			ok = dia.ok("Trailer Addict", 'Updates are available on the SVN Repo Installer\n\n'+'Current Version: '+__version__+'\n'+'Update Version: '+newVersion)
+
 def main():
 	li3=xbmcgui.ListItem("1. Search",iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'search_icon.png'))
 	u3=sys.argv[0]+"?mode=0&name="+urllib.quote_plus('Search')
@@ -365,6 +380,7 @@ except:
 
 if mode==None:
 	name=''
+	_check_for_update()
 	main()
 elif mode==0:
 	runKeyboard()
