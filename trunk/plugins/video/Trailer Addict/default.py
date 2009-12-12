@@ -3,8 +3,8 @@ __scriptname__ = "Trailer Addict"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Trailer%20Addict"
-__date__ = '2009-09-14'
-__version__ = "1.5.1"
+__date__ = '2009-12-12'
+__version__ = "1.5.2"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1) Gecko/20090624 Firefox/3.5'
@@ -180,6 +180,12 @@ def get_trailer(url,name):
 		thumb=z[0]
 		#print thumb
 		#print url
+		#Gets redirect url, fixes problem in linux and osx
+		req = urllib2.Request(url)
+		req.add_header('User-Agent', HEADER)
+		content=urllib2.urlopen(req)
+		url=content.geturl()
+		content.close()
 		play_video(name,url)
 
 def download_button(url,name):
