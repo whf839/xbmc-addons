@@ -20,7 +20,7 @@
     <type>4</type>
 
     <!-- (required) Title -->
-    <title>Navi-X Media Browser</title>
+    <title>Navi-X</title>
 
     <!-- (required) Major.minor.build -->
     <version>3.0.1</version>
@@ -33,30 +33,13 @@
     <!-- (required) Short description of addon. -->
     <summary>The Navi-X Media Browser.</summary>
 
-    <!-- Longer descrption of addon.  Usage instructions should go here if required. -->
-    <description>The Navi-X Media Browser is an add-on for XBMC or the Xbox Media Center that lets you stream and play video, audio, pictures, podcasts, RSS, and text from all sources on the internet!</description>
-
-    <!-- user defined tags e.g. <tags><tag>Example</tag></tags> -->
-    <tags>
-        <tag></tag>
-    </tags>
-
-    <!-- minimum revision of xbmc your addon will run on.  Leave blank all revisions-->
+    <!-- minimum revision of xbmc your addon will run on.  Leave blank all for revisions-->
     <minrevision></minrevision>
 
     <!--patforms compatible with your addon.   xbox, osx, windows, linux, or all -->
     <platforms>
         <platform>all</platform>
     </platforms>
-
-    <!--list any dependancies (such as another addon,  your addon may have.  minversion and maxversion are optional-->
-    <dependencies>
-        <dependency minversion="" maxversion=""></dependency>
-    </dependencies>
-
-    <!-- (optional) Whatever is put in disclaimer will be shown before download in an ok/cancel dialog.
-    Keep it short and to the point. -->
-    <disclaimer></disclaimer>
 
     <!-- (optional) The License the addon is released under.-->
     <license>GPL</license>
