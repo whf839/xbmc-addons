@@ -25,10 +25,7 @@ class Main:
         key = utils.Key( sys.argv[2] )
         self._load_shows(self.get_xml_source())
         
-        if len(self.shows) > 0:
-            self._url = utils.Key.build_url('favorites')
-        else:
-            self._url = sys.argv[0]
+        
             
         if key.action == 'add':
             self._add_show(key.name, key.id, key.thumb)
@@ -41,6 +38,7 @@ class Main:
     
     def _add_show(self, name, id, thumb):
         xbmc.log('Add %s to favorites' % name, xbmc.LOGNOTICE)
+        xbmc.executebuiltin("Notification(Added to favorites,%s)" % name)
         showdata = {}
         showdata["name"]  = name
         showdata["thumb"] = thumb
@@ -56,6 +54,11 @@ class Main:
         if (ret):
             self.shows.pop(showName)
             self._save_shows()
+            
+            if len(self.shows) > 0:
+                self._url = utils.Key.build_url('favorites')
+            else:
+                self._url = sys.argv[0]
             xbmc.executebuiltin("ReplaceWindow(Programs,%s)" % (self._url))
             
                 

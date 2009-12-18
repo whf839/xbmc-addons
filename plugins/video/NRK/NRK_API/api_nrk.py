@@ -37,6 +37,7 @@ SHOW          = 'prosjekt';     SHOW_CLIP        = 'klipp'
 SHOW_FOLDER   = 'kategori';     SHOW_CLIP_INDEX  = 'indeks'
 PLAYLIST      = 'spilleliste';  PLAYLIST_ITEM    = 'spillefil'
 PLAYLIST_CLIP = 'verdi';        PLAYLIST_VIGNETE = 'vignett'
+PLAYLIST_ALT_CLIP = 'spill'
 
 PROGRAM = 'program';  VIGNETE  = 'vignett';  
 SEARCH  = 'search';   ROOT     = 'root'
