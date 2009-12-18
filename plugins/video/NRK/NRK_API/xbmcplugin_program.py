@@ -233,6 +233,13 @@ class Main(WebTV):
 
     def __init__(self):
         Plugin.__init__(self)
+        
+        if self.state.refresh == True:
+            self.state.refresh = False
+            key = Key.build_url('program', words=self.state.__dict__)
+            xbmc.executebuiltin("ReplaceWindow(Programs,%s)" % key)
+            return
+            
         self.stack = []
         self.__set_settings()
         self.__map_functions()
@@ -350,8 +357,18 @@ class Main(WebTV):
             if self.state.type == nrk.PLAYLIST and self.state.view:
                 self.player.queue(i.url, li)
             
-            if i.key.type == nrk.SHOW:
-                commands = []
+            
+            commands = []
+            commands.append(( 'Oppdater', 
+                                  'XBMC.RunPlugin(%s)' % (
+                                        Key.build_url(
+                                              'program',
+                                              words = self.state.__dict__,
+                                              refresh = True
+                                        )), 
+                                ))
+                                
+            if i.key.type == nrk.SHOW:                
                 commands.append(( 'Legg til i favoritt programmer', 
                                   'XBMC.RunPlugin(%s)' % (
                                         Key.build_url(
@@ -362,10 +379,9 @@ class Main(WebTV):
                                               id    = i.key.id
                                         )), 
                                 ))
-                li.addContextMenuItems( commands )
-            """
+                
+            
             elif i.defntion == 'video/mp4':
-                commands = []
                 commands.append(( 'Last ned video', 
                                   'XBMC.RunPlugin(%s)' % (
                                         Key.build_url(
@@ -376,8 +392,11 @@ class Main(WebTV):
                                               url   = i.url
                                         )), 
                                 ))
-                li.addContextMenuItems( commands )
-            """        
+                
+            
+            li.addContextMenuItems( commands )  
+            
+    
             if i.key.type != nrk.VIGNETE:
                 ok = self.dir.add(i.url, li, i.isFolder, int(sys.argv[1]))
                 if ok == False:
@@ -394,6 +413,7 @@ class Main(WebTV):
 
         self.settings.add('fetch_subtitles')
         self.settings.add('transparency')
+        self.settings.add('transparent_media')
         self.settings.add('fetch_chapters')
         self.settings.add('test_images')
         self.settings.add('cache_files')
@@ -451,6 +471,9 @@ class Main(WebTV):
         if len(self.stack) == 1 and self.settings['transparency']:
             # Got only one item, so if transparent folder is enabled in
             # settings, do transparent..
+            if ( (self.stack[0].key.type == nrk.SHOW_CLIP) and self.settings('transparent_media') == False ):
+                return True
+                 
             Log.debug('PLUGIN::SPAM -> Create transparent transparency')
             item = self.stack.pop(0)
             item.key.transparent = True
