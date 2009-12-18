@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+
+	<!-- Settings -->
+	<string id="30000">Bruk hurtiglager</string>
+	<string id="30001">Sett filetternavn for ukjente bilder</string>
+  <string id="30002">Bruk stifragment fra nettstedet [WIP]</string>
+  <string id="30003">Bruk og konverter undertekster hvis tilgjengelig [WIP]</string>
+  <string id="30004">Vis kapitler for media hvis tilgjengelig [WIP]</string>
+	<string id="30005">Bruk gjennomsiktige mapper</string>
+	
+    
+	<!-- Settings :: connection -->
+    <string id="30010">Din tilkoblingshastighet</string>
+    
+	<string id="30011">Lav (mindre enn 700 kbps)</string>
+	<string id="30012">Medium (mellom 700 - 1200 kbps)</string>
+	<string id="30013">Høy (Over 1200 kbps)</string>
+	
+    
+	<!-- Settings :: cache time -->
+  <string id="30020">Gyldighetstid for hurtiglagering</string>
+    
+	<string id="30021">Aldri</string>
+	<string id="30022">1 time</string>
+	<string id="30023">2 timer</string>
+	<string id="30024">12 timer</string>
+	<string id="30025">24 timer</string>
+    
+  <string id="30030">Nedlastingsmappe</string>
+  
+    
+  <string id="30100">Skriv inn søkefrase</string>
+
+
+  <!-- compatible messages -->
+  <string id="30700">Versjon</string>
+  <string id="30701">Denne versjonen av %s krever</string>
+  <string id="30702">versjon %s av XBMC for å kjøre.</string>
+  <string id="30703">Vennligst oppdater XBMC.</string>
+  
+</strings>
