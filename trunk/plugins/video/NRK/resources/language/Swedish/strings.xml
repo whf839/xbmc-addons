@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!--Language file translated with Team XBMC Translator-->
+<!--Translator: blittan-->
+<!--Email: blittan@xbmc.org-->
+<!--Date of translation: 12/18/2009-->
+<!--$Revision$-->
+<strings>
+  <string id="30000">Använd buffert</string>
+  <string id="30001">Testbildfiländelser</string>
+  <string id="30002">Hämta visuella mediesökvägar från webbsida [ostabilt]</string>
+  <string id="30003">Hämta och konvertera hittade undertexter [WIP]</string>
+  <string id="30004">Använd hittade kapitel/indexer för media [WIP]</string>
+  <string id="30005">Gör mappar med endast en fil transparenta</string>
+  <string id="30007">Autospela spellista vid öppning</string>
+  <string id="30008">Utöka felmeddelanden</string>
+  <string id="30010">Din anslutningshastighet</string>
+  <string id="30011">Låg (mindre än 700kbps)</string>
+  <string id="30012">Medium (mellan 700-1200 kbps)</string>
+  <string id="30013">Hög (över 1200 kbps)</string>
+  <string id="30020">Tid innan uppdatering av buffert</string>
+  <string id="30021">Aldrig</string>
+  <string id="30022">1 timme</string>
+  <string id="30023">2 timmar</string>
+  <string id="30024">12 timmar</string>
+  <string id="30025">24 timmar</string>
+  <string id="30030">Nedladdningsmapp</string>
+  <string id="30100">Ange söksträng</string>
+  <string id="30700">Version</string>
+  <string id="30701">Denna version av %s kräver en</string>
+  <string id="30702">XBMC version högre än %s för att köras.</string>
+  <string id="30703">Var god uppdatera ditt XBMC.</string>
+</strings>
