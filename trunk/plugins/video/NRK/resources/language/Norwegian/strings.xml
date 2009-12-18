@@ -14,12 +14,12 @@
     <string id="30010">Din tilkoblingshastighet</string>
     
 	<string id="30011">Lav (mindre enn 700 kbps)</string>
-	<string id="30012">Medium (mellom 700 - 1200 kbps)</string>
+	<string id="30012">Medium (mellom 700 og 1200 kbps)</string>
 	<string id="30013">Høy (Over 1200 kbps)</string>
 	
     
 	<!-- Settings :: cache time -->
-  <string id="30020">Gyldighetstid for hurtiglagering</string>
+  <string id="30020">Gyldighetstid for hurtiglagring</string>
     
 	<string id="30021">Aldri</string>
 	<string id="30022">1 time</string>
