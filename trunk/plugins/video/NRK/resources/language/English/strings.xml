@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+
+	<!-- Settings -->
+	<string id="30000">Use Caching</string>
+	<string id="30001">Test image extensions</string>
+  <string id="30002">Fetch visual media path from website [Unstable]</string>
+  <string id="30003">Fetch and convert subtitles if found [WIP]</string>
+  <string id="30004">Use chapters/indexes for media if found [WIP]</string>
+	<string id="30005">Make folders with only one file transparent</string>
+	<string id="30007">Autoplay playlist when opened</string>
+  <string id="30008">Extdended error messages</string>
+    
+	<!-- Settings :: connection -->
+  <string id="30010">Your connection speed</string>
+    
+	<string id="30011">Low (Less than 700 kbps)</string>
+	<string id="30012">Medium (Between 700 - 1200 kbps)</string>
+	<string id="30013">High (Over 1200 kbps)</string>
+	
+    
+	<!-- Settings :: cache time -->
+  <string id="30020">Time before updating the cache</string>
+    
+	<string id="30021">Never</string>
+	<string id="30022">1 Hour</string>
+	<string id="30023">2 Hours</string>
+	<string id="30024">12 Hours</string>
+	<string id="30025">24 Hours</string>
+  
+  <string id="30030">Download folder</string>
+  
+  <string id="30100">Input search string</string>
+
+  <!-- compatible messages -->
+  <string id="30700">Version</string>
+  <string id="30701">This version of %s requires an</string>
+  <string id="30702">XBMC revision of %s or greater to run.</string>
+  <string id="30703">Please update your XBMC.</string>
+  
+</strings>
