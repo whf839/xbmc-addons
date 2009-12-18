@@ -414,15 +414,16 @@ class Main(WebTV):
         #Use a dict to map types against methods to
         #avoid some messy nested loops
         self.mapping = {
-                nrk.SHOW_CLIP_INDEX: self._handle_show_clip_index,
-                nrk.PLAYLIST_CLIP:   self._handle_playlist_clip,
-                nrk.SHOW_FOLDER:     self._handle_show,
-                nrk.SHOW_CLIP:       self._handle_show_clip,
-                nrk.PLAYLIST:        self._handle_playlist,
-                nrk.PROGRAM:         self._handle_program_list,
-                nrk.SEARCH:          self._handle_search,
-                nrk.SHOW:            self._handle_show,
-                nrk.LIVE:            self._handle_live_show
+                nrk.PLAYLIST_ALT_CLIP:  self._handle_playlist_clip,
+                nrk.SHOW_CLIP_INDEX:    self._handle_show_clip_index,
+                nrk.PLAYLIST_CLIP:      self._handle_playlist_clip,
+                nrk.SHOW_FOLDER:        self._handle_show,
+                nrk.SHOW_CLIP:          self._handle_show_clip,
+                nrk.PLAYLIST:           self._handle_playlist,
+                nrk.PROGRAM:            self._handle_program_list,
+                nrk.SEARCH:             self._handle_search,
+                nrk.SHOW:               self._handle_show,
+                nrk.LIVE:               self._handle_live_show
             }
     # - EOM -
     
