@@ -13,7 +13,7 @@ from NRK_API.utils import PluginError, PluginScriptError
 #plugin constants
 __plugin__         = "NRK"
 __author__         = "VictorV"
-__version__        = "0.9.2"
+__version__        = "0.9.3"
 __XBMC_Revision__  = "21735"
 
 

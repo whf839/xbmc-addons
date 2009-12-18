@@ -321,6 +321,8 @@ class Key(PluginBase):
         if not path: 
             path = sys.argv[0]
         if words: 
+            for kw in kwargs:
+                words[kw] = kwargs[kw]
             kwargs = words
             
         key = Key.build_key(prefix, kwargs)
