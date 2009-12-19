@@ -58,8 +58,7 @@ def load_skin(window):
     window.download_logo.setVisible(0)
     
     #URL label at top-center position
-    window.urllbl = xbmcgui.ControlLabel(40,60,350,40, "", "special13")
-    #window.urllbl = xbmcgui.ControlFadeLabel(40,60,350,40, "special13")    
+    window.urllbl = xbmcgui.ControlLabel(40,60,350,40, "", "special13")   
     window.addControl(window.urllbl)
 
     #Time + Date label at top-right position

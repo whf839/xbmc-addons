@@ -41,7 +41,7 @@ class CTextView(xbmcgui.Window):
         self.bg1 = xbmcgui.ControlImage(0,0,720,576, imageDir + "background_txt.png")
         self.addControl(self.bg1)
 
-        self.TextBox = xbmcgui.ControlTextBox(40, 50, 720-80, 460)
+        self.TextBox = xbmcgui.ControlTextBox(40, 50, 720-80, 460, "special13")
         self.addControl(self.TextBox)
         self.TextBox.setVisible(1)
         
@@ -91,7 +91,7 @@ class CTextView(xbmcgui.Window):
         #first load the background image
         if (mediaitem.background != 'default'): #default BG image
             ext = getFileExtension(mediaitem.background)
-            loader.load(mediaitem.background, cacheDir + "backtextview." + ext, 8, proxy="ENABLED")
+            loader.load(mediaitem.background, imageCacheDir + "backtextview." + ext, 8, proxy="ENABLED")
             if loader.state == 0: #if this fails we still continue
                 self.bg.setImage(loader.localfile)
         
