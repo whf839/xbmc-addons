@@ -19,7 +19,12 @@ sys.path.append(os.path.join(os.getcwd().replace(";",""),'src'))
 
 RootDir = os.getcwd()
 if RootDir[-1]==';': RootDir=RootDir[0:-1]
-if RootDir[-1]!='\\': RootDir=RootDir+'\\'
+if RootDir[0] == '/':
+    if RootDir[-1] != '/': RootDir = RootDir+'/'
+    SEPARATOR = '/'    
+else:
+    if RootDir[-1] != '\\': RootDir=RootDir+'\\'
+    SEPARATOR = '\\'
 
 version_default = '0.0.0'
 version_URL='http://www.navi-x.org/updates/version30.dat'
@@ -59,9 +64,12 @@ def onReadNewVersion(URL):
 
 #############################################################################
 def onSaveVersion(version):
-    f=open(RootDir + 'version.dat', 'w')
-    f.write(version + '\n')
-    f.close()
+    try:
+        f=open(RootDir + 'version.dat', 'w')
+        f.write(version + '\n')
+        f.close()
+    except IOError:
+        pass
 
 ######################################################################
 def installUpdate(URL):
@@ -84,7 +92,6 @@ def installUpdate(URL):
     zfobj = zipfile.ZipFile(RootDir + "update.zip")
 
     for name in zfobj.namelist():
-#        Trace(name)
         index = name.rfind('/')
         if index != -1:
             #entry contains path
