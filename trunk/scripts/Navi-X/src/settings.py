@@ -53,21 +53,28 @@ if RootDir[0] == '/':
     initDir = RootDir + "init/"
     myPlaylistsDir = RootDir + "My Playlists/"
     srcDir = RootDir + "src/"
+    imageDir = RootDir + "images/"
+    cacheDir = RootDir + "cache/"
+    imageViewCacheDir = RootDir + "cache/mageview/"
+    imageCacheDir = RootDir + "cache/images/"
+    tempCacheDir = RootDir + "cache/temp/"    
     SEPARATOR = '/'
 else:
-    if RootDir[-1]!='\\': RootDir = RootDir+'\\'
+    if RootDir[-1] != '\\': RootDir = RootDir+'\\'
     myDownloadsDir = RootDir + "My Downloads\\"
     initDir = RootDir + "init\\"
     myPlaylistsDir = RootDir + "My Playlists\\"
     srcDir = RootDir + "src\\"
+    imageDir = RootDir + "images\\"
+    cacheDir = RootDir + "cache\\"
+    imageViewCacheDir = RootDir + "cache\\imageview\\"
+    imageCacheDir = RootDir + "cache\\images\\"
+    tempCacheDir = RootDir + "cache\\temp\\"    
     SEPARATOR = '\\'
 
 import xbmc
 version = xbmc.getInfoLabel("System.BuildVersion")[:1]
 
-imageDir = RootDir + "images\\"
-cacheDir = RootDir + "cache\\"
-imageCacheDir = RootDir + "cache\\imageview\\"
 if version == '9':
     scriptDir = "special://home/scripts/"
     pluginDir = "special://home/plugins/"
@@ -80,7 +87,7 @@ else:
 
 ######################################################################
 Version='3' #program version
-SubVersion='0.1'
+SubVersion='0.2'
 
 favorite_file='favorites.plx' #the favorite list is also a playlist
 downloads_file='downlmenu.plx' #the downloads list is also a playlist

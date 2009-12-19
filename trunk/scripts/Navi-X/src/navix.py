@@ -41,9 +41,9 @@
 # -v2.9.4 (2009/09/01)
 # -v3.0 RC  (2009/10/03)
 # -v3.0  (2009/11/08)
-# -v3.0.1  (2009/11/xx)
+# -v3.0.1  (2009/11/14)
+# -v3.1  (2009/12/xx)
 #
-#@todo: youtube info.
 #@todo: only add content to history is name is not empty
 #@todo: change default timeout only at startup.
 #############################################################################
@@ -84,11 +84,16 @@ class MainWindow(xbmcgui.Window):
             if not Emulating:
                 self.setCoordinateResolution(PAL_4x3)
 
-            self.delFiles(cacheDir) #clear the cache first
+            self.delFiles(tempCacheDir) #clear the temp cache first            
+            self.delFiles(imageViewCacheDir) #clear the image view cache first           
 
             #Create default DIRs if not existing.
             if not os.path.exists(cacheDir): 
-                os.mkdir(cacheDir) 
+                os.mkdir(cacheDir)
+            if not os.path.exists(imageCacheDir): 
+                os.mkdir(imageCacheDir)
+            if not os.path.exists(tempCacheDir): 
+                os.mkdir(tempCacheDir)                   
             if not os.path.exists(myDownloadsDir): 
                 os.mkdir(myDownloadsDir)
 
@@ -219,17 +224,20 @@ class MainWindow(xbmcgui.Window):
         ######################################################################
         def onAction(self, action):
             self.state_action = 1                          
-                     
-            #if action == ACTION_PREVIOUS_MENU:
-            #    self.setInfoText("Shutting Down Navi-X...") 
-            #    self.onSaveSettings()
-            #    self.delFiles(cacheDir) #clear the cache first
-            #    self.bkgndloadertask.kill()
-            #    self.bkgndloadertask.join(10) #timeout after 10 seconds.
-            #    self.downloader.kill()
-            #    self.downloader.join(10) #timeout after 10 seconds.
-            #    
-            #    self.close() #exit
+                   
+            #always allow exit even if busy
+            if (action == ACTION_SELECT_ITEM) and (self.getFocus() == self.button_about):
+                self.setInfoText("Shutting Down Navi-X...") 
+                self.onSaveSettings()
+            
+                self.delFiles(tempCacheDir) #clear the temp cache first            
+                self.delFiles(imageViewCacheDir) #clear the image view cache first
+    
+                self.bkgndloadertask.kill()
+                self.bkgndloadertask.join(10) #timeout after 10 seconds.
+                self.downloader.kill()
+                self.downloader.join(10) #timeout after 10 seconds.
+                self.close() #exit            
              
             if self.state_busy == 0:
                 if action == ACTION_SELECT_ITEM:
@@ -261,7 +269,8 @@ class MainWindow(xbmcgui.Window):
                     elif self.getFocus() == self.button_about:
                         self.setInfoText("Shutting Down Navi-X...") 
                         self.onSaveSettings()
-                        self.delFiles(cacheDir) #clear the cache first
+#############################                        
+#                        self.delFiles(cacheDir) #clear the cache first
                         self.bkgndloadertask.kill()
                         self.bkgndloadertask.join(10) #timeout after 10 seconds.
                         self.downloader.kill()
@@ -443,7 +452,7 @@ class MainWindow(xbmcgui.Window):
                 elif m != 'previous': #URL to image located elsewhere
                     ext = getFileExtension(m)
                     loader = CFileLoader2() #file loader
-                    loader.load(m, cacheDir + "background." + ext, timeout=2, proxy="ENABLED", content_type='image')
+                    loader.load(m, imageCacheDir + "background." + ext, timeout=2, proxy="ENABLED", content_type='image')
                     if loader.state == 0:
                         self.bg.setImage(loader.localfile)
                         self.bg1.setImage(imageDir + background_image1)
@@ -640,7 +649,7 @@ class MainWindow(xbmcgui.Window):
             if URL != '':
                 ext = getFileExtension(URL)
                 loader = CFileLoader2() #file loader
-                loader.load(URL, cacheDir + "icon." + ext, timeout=2, proxy="ENABLED", content_type='image')
+                loader.load(URL, imageCacheDir + "icon." + ext, timeout=2, proxy="ENABLED", content_type='image')
                 if loader.state == 0:
                     return loader.localfile
             
@@ -965,15 +974,15 @@ class MainWindow(xbmcgui.Window):
         def viewImage(self, playlist, pos, mode, iURL=''):
             self.setInfoText("Loading...")
             #clear the imageview cache
-            self.delFiles(imageCacheDir)
+            self.delFiles(imageViewCacheDir)
 
-            if not os.path.exists(imageCacheDir): 
-                os.mkdir(imageCacheDir) 
+            if not os.path.exists(imageViewCacheDir): 
+                os.mkdir(imageViewCacheDir) 
 
             loader = CFileLoader2() #create file loader instance
 
             if mode == 0: #single file show
-                localfile= imageCacheDir + '0.'
+                localfile= imageViewCacheDir + '0.'
                 if iURL != '':
                     URL = iURL
                 else:    
@@ -989,21 +998,21 @@ class MainWindow(xbmcgui.Window):
                 if URL[:4] == 'http':                   
                     loader.load(URL, localfile + ext, proxy="DISABLED")
                     if loader.state == 0:
-                        xbmc.executebuiltin('xbmc.slideshow(' + imageCacheDir + ')')
+                        xbmc.executebuiltin('xbmc.slideshow(' + imageViewCacheDir + ')')
                     else:
                         dialog = xbmcgui.Dialog()
                         dialog.ok("Error", "Cannot open image.")
                 else:
                     #local file
                     shutil.copyfile(URL, localfile + ext)
-                    xbmc.executebuiltin('xbmc.slideshow(' + imageCacheDir + ')')
+                    xbmc.executebuiltin('xbmc.slideshow(' + imageViewCacheDir + ')')
             
             elif mode == 1: #recursive slideshow
                 #in case of slideshow store default image
                 count=0
                 for i in range(self.list.size()):
                     if playlist.list[i].type == 'image':
-                        localfile=imageCacheDir+'%d.'%(count)
+                        localfile=imageViewCacheDir+'%d.'%(count)
                         URL = playlist.list[i].URL
                         ext = getFileExtension(URL)
                         shutil.copyfile(imageDir+'imageview.png', localfile + ext)
@@ -1013,13 +1022,13 @@ class MainWindow(xbmcgui.Window):
                     index = pos
                     for i in range(self.list.size()):
                         if count == 2:
-                            xbmc.executebuiltin('xbmc.recursiveslideshow(' + imageCacheDir + ')')
+                            xbmc.executebuiltin('xbmc.recursiveslideshow(' + imageViewCacheDir + ')')
                             self.state_action = 0
                         elif (count > 2) and (self.state_action == 1):
                             break
                             
                         if playlist.list[index].type == 'image':
-                            localfile=imageCacheDir+'%d.'%(count)
+                            localfile=imageViewCacheDir+'%d.'%(count)
                             URL = playlist.list[index].URL
                             ext = getFileExtension(URL)
                             loader.load(URL, localfile + ext, proxy="DISABLED")
@@ -1030,7 +1039,7 @@ class MainWindow(xbmcgui.Window):
                     if self.list.size() < 3:
                         #start the slideshow after the first two files. load the remaining files
                         #in the background
-                        xbmc.executebuiltin('xbmc.recursiveslideshow(' + imageCacheDir + ')')
+                        xbmc.executebuiltin('xbmc.recursiveslideshow(' + imageViewCacheDir + ')')
                 if count == 0:
                     dialog = xbmcgui.Dialog()
                     dialog.ok("Error", "No images in playlist.")
@@ -1324,15 +1333,7 @@ class MainWindow(xbmcgui.Window):
                 self.onPlayUsing()
             elif choice == 1: #Cut item
 
-                pos = self.getPlaylistPosition()
-                #if pos > 0:
-                #    item = self.favoritelist.list[pos-1]
-                #    self.favoritelist.list[pos-1] = self.favoritelist.list[pos]
-                #    self.favoritelist.list[pos] = item
-                #    self.favoritelist.save(RootDir + favorite_file)
-                #    self.ParsePlaylist(reload=False) #display download list
-                #    self.list.selectItem(pos-1)
-                
+                pos = self.getPlaylistPosition()               
                 self.mediaitem_cutpaste = self.favoritelist.list[pos]
                 self.favoritelist.remove(pos)
                 self.favoritelist.save(RootDir + favorite_file)                
@@ -1340,21 +1341,12 @@ class MainWindow(xbmcgui.Window):
                 
             elif choice == 2: #Paste item
     
-                pos = self.getPlaylistPosition()       
-                #if pos < (self.list.size())-1:
-                #    item = self.favoritelist.list[pos+1]
-                #    self.favoritelist.list[pos+1] = self.favoritelist.list[pos]
-                #    self.favoritelist.list[pos] = item
-                #    self.favoritelist.save(RootDir + favorite_file)
-                #    self.ParsePlaylist(reload=False) #display download list
-                #    self.list.selectItem(pos+1)            
-
+                pos = self.getPlaylistPosition()                 
                 if self.mediaitem_cutpaste != 0:
                     self.favoritelist.insert(self.mediaitem_cutpaste, pos)
                     self.mediaitem_cutpaste = 0
                     self.favoritelist.save(RootDir + favorite_file)                
                     self.ParsePlaylist(reload=False) #display favorite list                    
-
                 else:
                     dialog = xbmcgui.Dialog()
                     dialog.ok("Error", "Nothing to paste.")
@@ -1469,8 +1461,8 @@ class MainWindow(xbmcgui.Window):
                 possibleChoices = ["Download Queue", \
                                    "Download Queue + Shutdown", \
                                    "Stop Downloading", \
-                                   "Move Item Up", \
-                                   "Move Item Down", \
+                                   "Cut Item", \
+                                   "Paste Item", \
                                    "Remove Item", \
                                    "Clear List", \
                                    "Cancel"]
@@ -1491,26 +1483,26 @@ class MainWindow(xbmcgui.Window):
                     self.downloader.download_start(self.downlshutdown)
                 elif choice == 2: #Stop Downloading
                     self.downloader.download_stop()                   
-                elif choice == 3: #Move Item Up
+                elif choice == 3: #Cut item
 
-                    pos = self.getPlaylistPosition()
-                    if pos > 0:
-                        item = self.downloadqueue.list[pos-1]
-                        self.downloadqueue.list[pos-1] = self.downloadqueue.list[pos]
-                        self.downloadqueue.list[pos] = item
-                        self.downloadqueue.save(RootDir + downloads_queue)
-                        self.ParsePlaylist(reload=False) #display download list
-                        self.list.selectItem(pos-1)
-                elif choice == 4: #Move Item Down
+                    pos = self.getPlaylistPosition()                  
+                    self.mediaitem_cutpaste = self.downloadqueue.list[pos]
+                    self.downloadqueue.remove(pos)
+                    self.downloadqueue.save(RootDir + downloads_queue)                
+                    self.ParsePlaylist(reload=False) #display download queue list                                      
+                    
+                elif choice == 4: #Paste item
 
-                    pos = self.getPlaylistPosition()
-                    if pos < (self.list.size())-1:
-                        item = self.downloadqueue.list[pos+1]
-                        self.downloadqueue.list[pos+1] = self.downloadqueue.list[pos]
-                        self.downloadqueue.list[pos] = item
-                        self.downloadqueue.save(RootDir + downloads_queue)
-                        self.ParsePlaylist(reload=False) #display download list
-                        self.list.selectItem(pos+1)                        
+                    pos = self.getPlaylistPosition()  
+                    if self.mediaitem_cutpaste != 0:
+                        self.downloadqueue.insert(self.mediaitem_cutpaste, pos)
+                        self.mediaitem_cutpaste = 0
+                        self.downloadqueue.save(RootDir + downloads_queue)                
+                        self.ParsePlaylist(reload=False) #display favorite list                    
+                    else:
+                        dialog = xbmcgui.Dialog()
+                        dialog.ok("Error", "Nothing to paste.")
+                  
                 elif choice == 5: #Remove
 
                     pos = self.getPlaylistPosition()
@@ -1645,7 +1637,10 @@ class MainWindow(xbmcgui.Window):
                 
                     self.downloader.add_queue(entry)
                         
-                    self.downloader.download_start(self.downlshutdown)
+                    if self.downloader.download_isrunning() == False:
+                        dialog = xbmcgui.Dialog()                 
+                        if dialog.yesno("Message", "Start download now?") == True:
+                            self.downloader.download_start(self.downlshutdown)
               
                 elif self.downloader.state == -1:
                     dialog = xbmcgui.Dialog()
@@ -1703,7 +1698,8 @@ class MainWindow(xbmcgui.Window):
                                 "Set Playlist as Home", \
                                 "View Playlist Source", \
                                 "Clear Browse History", \
-                                "About Navi-X",
+                                "Clear Image Cache", \
+                                "About Navi-X", \
                                 "Cancel"]
             dialog = xbmcgui.Dialog()
             choice = dialog.select("Select", possibleChoices)
@@ -1769,7 +1765,11 @@ class MainWindow(xbmcgui.Window):
                 self.ParsePlaylist(mediaitem=self.mediaitem)
                 dialog = xbmcgui.Dialog()
                 dialog.ok("Message", "Cleared Browse History.")
-            elif choice == 11: #about Navi-X
+            elif choice == 11: #Clear Image Cache
+                self.delFiles(imageCacheDir) #clear the temp cache first
+                dialog = xbmcgui.Dialog()
+                dialog.ok("Message", "Cleared Image Cache.")                
+            elif choice == 12: #about Navi-X
                 self.OpenTextFile('readme.txt')
 
         ######################################################################
@@ -1953,14 +1953,14 @@ class MainWindow(xbmcgui.Window):
                 description = re.sub(r'<[^>]*?>', '', description) 
  
                 try:
-                    f=open(cacheDir + 'description.dat', 'w')
+                    f=open(tempCacheDir + 'description.dat', 'w')
                     f.write(description + '\n')
                     
                     f.close()
                 except IOError:
                     return
             
-                self.OpenTextFile(cacheDir + 'description.dat', mediaitem)
+                self.OpenTextFile(tempCacheDir + 'description.dat', mediaitem)
                 
 
 #win = MainWindow()
