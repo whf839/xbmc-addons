@@ -36,7 +36,7 @@ Log.notice( "PLUGIN::LOADED -> '%s'" % __name__)
 
 
 ITERABLE = 1; PLAYABLE = 2; INPUT_SEARCH = 4
-
+lang = xbmc.getLocalizedString
 
 class WebTV(Plugin):
     
@@ -110,7 +110,7 @@ class WebTV(Plugin):
 
         # View by character
         elif view is nrk.BY_CHAR and not ident:
-            self.category = '%s - %s' % ( self.catbase, 'Velg bokstav' )
+            self.category = '%s - %s' % ( self.catbase, lang(30210) )
             shows = nrk.views.by_char()
             if not shows:
                 return
@@ -118,13 +118,13 @@ class WebTV(Plugin):
 
         # View by theme
         elif view == nrk.BY_THEME and not ident:
-            self.category = '%s - %s' % ( self.catbase, 'Velg Tema' )
+            self.category = '%s - %s' % ( self.catbase, lang(30211) )
             themes = nrk.views.by_theme()
             self.stack.extend(themes)
         
         # View all
         elif view is nrk.VIEW_ALL:
-            self.category = '%s - %s' % ( self.catbase, 'Velg Alle' )
+            self.category = '%s - %s' % ( self.catbase, lang(30212) )
             shows = self.api.get_all_shows()
             if not shows:
                 return
@@ -145,9 +145,9 @@ class WebTV(Plugin):
               view is nrk.TOP_THIS_WEEK):
             
             try:
-                top = {7: 'Denne uke', 31: 'Denne maned', 3600: 'total'}[ident]
+                top = {7: lang(30213), 31: lang(30214), 3600: lang(30215)}[ident]
             except:
-                top = 'siste %d dager' % ident
+                top = lang(30216) % ident
                 
             self.category = '%s - %s' % ( self.catbase, top )
             self.content  = 'tvshows'
@@ -157,7 +157,7 @@ class WebTV(Plugin):
         
         # View live shows
         elif view is nrk.LIVE:
-            self.category = 'Direktesendinger'
+            self.category = lang(30350)
             self.content  = 'episodes'
             shows         = self.api.get_live_shows()
             if not shows: return
@@ -359,7 +359,7 @@ class Main(WebTV):
             
             
             commands = []
-            commands.append(( 'Oppdater', 
+            commands.append(( lang(30300), 
                                   'XBMC.RunPlugin(%s)' % (
                                         Key.build_url(
                                               'program',
@@ -369,7 +369,7 @@ class Main(WebTV):
                                 ))
                                 
             if i.key.type == nrk.SHOW:                
-                commands.append(( 'Legg til i favoritt programmer', 
+                commands.append(( lang(30301), 
                                   'XBMC.RunPlugin(%s)' % (
                                         Key.build_url(
                                               'favorites',
@@ -382,7 +382,7 @@ class Main(WebTV):
                 
             
             elif i.defntion == 'video/mp4':
-                commands.append(( 'Last ned video', 
+                commands.append(( lang(30302), 
                                   'XBMC.RunPlugin(%s)' % (
                                         Key.build_url(
                                               'nogui',

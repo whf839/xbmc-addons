@@ -22,6 +22,7 @@
 import os
 import re
 import sys
+import xbmc
 from utils import Key, Plugin
 from urllib import quote_plus, unquote_plus
 from connection_manager import DataHandle, Session
@@ -84,7 +85,10 @@ region_abbr = {
         NDOS: 'ostfold',         NDOA: 'ostlandssendigen',
         NDOP: 'oppland'
     }
-    
+
+# shortcuts    
+lang = xbmc.getLocalizedString
+
 
 def seconds_to_hms(seconds):
     m, s = divmod(seconds, 60)
@@ -807,11 +811,11 @@ default_playlist_icon = os.path.join(rpath, 'news.png')
 class PlaylistView:
     
     views = {
-            ARCHIVE: ('Arkiv',   'archive-icon.png', ), 
-            RELEVANT: ('Aktuelt', 'news-icon.png', ), 
-            TOP_TOTAL: ('Mest sett totalt', 'stats-icon.png', ), 
-            TOP_THIS_WEEK: ('Mest sett denne uken',   'stats-icon.png', ), 
-            TOP_THIS_MONTH: ('Mest sett denne maande', 'stats-icon.png', ) 
+            ARCHIVE: (lang(30200),   'archive-icon.png', ), 
+            RELEVANT: (lang(30201), 'news-icon.png', ), 
+            TOP_TOTAL: (lang(30202), 'stats-icon.png', ), 
+            TOP_THIS_WEEK: (lang(30203),   'stats-icon.png', ), 
+            TOP_THIS_MONTH: (lang(30204), 'stats-icon.png', ) 
         }
     
     def __init__(self, parent):
@@ -842,7 +846,8 @@ class views:
     
 
     search = MediaObj(
-                title = 'Sok', 
+                #title = 'Sok', 
+                title = lang(30205),
                 defntion = 'folder/perspektiv',
                 isFolder = True,
                 thumbnail = os.path.join(rpath, 'search-icon.png'),
@@ -853,7 +858,8 @@ class views:
             )
     
     archive = MediaObj(
-                title = 'Arkiv', 
+                #title = 'Arkiv', 
+                title = lang(30200),
                 defntion = 'folder/perspektiv',
                 isFolder = True,
                 thumbnail = os.path.join(rpath, 'archive-icon.png'),
@@ -871,7 +877,8 @@ class views:
         items = []
         for c in string.ascii_uppercase:
             item = MediaObj(
-                    title = 'Vis bokstav "%s"' % c,
+                    #title = 'Vis bokstav "%s"' % c,
+                    title = lang(30206) % c,
                     thumbnail = os.path.join(rpath, '%s.png' % c),
                     key = Key(id = c, type = PROGRAM, view=BY_CHAR)
                 )
@@ -888,28 +895,32 @@ class views:
                         type = PLAYLIST, id = parent.id, 
                         view = RELEVANT, arg = parent.arg
                     ),
-                    title = 'Aktuelt',
+                    #title = 'Aktuelt',
+                    title = lang(30201),
                     thumbnail = os.path.join(rpath, 'news-icon.png')
                 ), MediaObj(
                     key = Key(
                         type = PLAYLIST, id = parent.id, 
                         view = TOP_TOTAL, arg = parent.arg
                     ),
-                    title = 'Mest sett totalt', 
+                    #title = 'Mest sett totalt', 
+                    title = lang(30202),
                     thumbnail = os.path.join(rpath, 'stats-icon.png')
                 ), MediaObj(
                     key = Key(
                         type = PLAYLIST, id = parent.id, 
                         view = TOP_THIS_MONTH, arg = parent.arg
                     ),
-                    title = 'Mest sett denne maned', 
+                    #title = 'Mest sett denne maned',
+                    title = lang(30203), 
                     thumbnail = os.path.join(rpath, 'stats-icon.png')
                 ), MediaObj(
                     key = Key(
                         type = PLAYLIST, id = parent.id, 
                         view = TOP_THIS_WEEK, arg = parent.arg
                     ),
-                    title = 'Mest sett denne uken',
+                    #title = 'Mest sett denne uken',
+                    title = lang(30204),
                     thumbnail = os.path.join(rpath, 'stats-icon.png')
                 )
             ]
@@ -919,27 +930,39 @@ class views:
         return [
                 MediaObj(
                     key = Key(id = None, type = PROGRAM, view = BY_CHAR),
-                    title = 'Vis alfabetisk', parent = parent,
+                    #title = 'Vis alfabetisk',
+                    title = lang(30208), 
+                    parent = parent,
                     thumbnail = os.path.join(resource_path, 'char-icon.png')
                 ), MediaObj(
                     key = Key(id = '@',type = PROGRAM, view = VIEW_ALL),
-                    title = 'Vis alle', parent = parent,
+                    #title = 'Vis alle',
+                    title = lang(30209),
+                    parent = parent,
                     thumbnail = os.path.join(resource_path, 'all-icon.png')
                 ), MediaObj(
                     key = Key(type = PROGRAM, view = BY_THEME),
-                    title = 'Vis tema liste', parent = parent,
+                    #title = 'Vis tema liste',
+                    title = lang(30210), 
+                    parent = parent,
                     thumbnail = os.path.join(resource_path, 'theme-icon.png')
                 ), MediaObj(
                     key = Key(type = PROGRAM, id = 3650, view = TOP_TOTAL),
-                    title = 'Mest sett totalt', parent = parent,
+                    #title = 'Mest sett totalt', 
+                    title = lang(30211),
+                    parent = parent,
                     thumbnail = os.path.join(resource_path, 'stats-icon.png')
                 ), MediaObj(
                     key = Key(type = PROGRAM, id = 31, view = TOP_THIS_MONTH),
-                    title = 'Mest sett denne maned', parent = parent,
+                    #title = 'Mest sett denne maned',
+                    title = lang(30212), 
+                    parent = parent,
                     thumbnail = os.path.join(resource_path, 'stats-icon.png')
                 ), MediaObj(
                     key = Key(type = PROGRAM, id = 7, view = TOP_THIS_WEEK),
-                    title = 'Mest sett denne uken', parent = parent,
+                    #title = 'Mest sett denne uken', 
+                    title = lang(30213),
+                    parent = parent,
                     thumbnail = os.path.join(resource_path, 'stats-icon.png')
                 )
             ]
@@ -957,63 +980,78 @@ class views:
     def by_theme(resource_path = rpath):
         return [
                 MediaObj( 
-                    title = 'Barn',
+                    #title = 'Barn',
+                    title = lang(30100),
                     thumbnail = os.path.join(resource_path, 'kids.png'),
                     key = Key(id = 2, type = PROGRAM, view = BY_THEME)
                 ), MediaObj(
-                    title = 'Natur',
+                    #title = 'Natur',
+                    title = lang(30101),
                     thumbnail = os.path.join(resource_path, 'ntur.png'),
                     key = Key(id = 7,type = PROGRAM,view = BY_THEME)
                 ), MediaObj(
-                    title = 'Drama',
+                    #title = 'Drama',
+                    title = lang(30102),
                     thumbnail = os.path.join(resource_path,'drma.png'),
                     key = Key(id = 3, type = PROGRAM, view = BY_THEME)
                 ), MediaObj(
-                    title = 'Sport',
+                    #title = 'Sport',
+                    title = lang(30103),
                     thumbnail = os.path.join(resource_path, 'sprt.png'),
                     key = Key(id = 10, type = PROGRAM, view = BY_THEME)
                 ), MediaObj(
-                    title = 'Fakta',
+                    #title = 'Fakta',
+                    title = lang(30104),
                     thumbnail = os.path.join(resource_path, 'fact.png'),
                     key = Key(id = 4, type = PROGRAM, view = BY_THEME)
                 ), MediaObj(
-                    title = 'Livssyn',
+                    #title = 'Livssyn',
+                    title = lang(30105),
                     thumbnail = os.path.join(resource_path, 'life.png'),
                     key = Key(id = 9, type = PROGRAM, view = BY_THEME)
                 ), MediaObj(
-                    title = 'Mat',
+                    #title = 'Mat',
+                    title = lang(30106),
                     thumbnail = os.path.join(resource_path, 'food.png'),
                     key = Key(id = 6, type = PROGRAM, view = BY_THEME)
                 ), MediaObj(
-                    title = 'Nyheter',
+                    #title = 'Nyheter',
+                    title = lang(30107),
                     thumbnail = os.path.join(resource_path, 'news.png'),
                     key = Key(id = 8,type = PROGRAM, view = BY_THEME)
                 ), MediaObj(
-                    title = 'Samisk',
+                    #title = 'Samisk',
+                    title = lang(30108),
                     thumbnail = os.path.join(resource_path, 'sami.png'),
                     key = Key(id = 19, type = PROGRAM, view = BY_THEME)
                 ), MediaObj(
-                    title = 'Ung',
+                    #title = 'Ung',
+                    title = lang(30109),
                     thumbnail = os.path.join(resource_path, 'teen.png'),
                     key = Key(id = 21, type = PROGRAM, view = BY_THEME)
                 ), MediaObj(
-                    title = 'Tegnspraak',
+                    #title = 'Tegnspraak',
+                    title = lang(30110),
                     thumbnail = os.path.join(resource_path,'sign.png'),
                     key = Key(id = 22, type = PROGRAM, view = BY_THEME)
                 ), MediaObj(
-                    title = 'Underholdning',
+                    #title = 'Underholdning',
+                    title = lang(30111),
                     thumbnail = os.path.join(resource_path,'entn.png'),
                     key = Key(id = 11, type = PROGRAM, view = BY_THEME)
                 ), MediaObj(
-                    title = 'Dokumentar',
+                    #title = 'Dokumentar',
+                    title = lang(30112),
                     thumbnail = os.path.join(resource_path,'docu.png'),
                     key = Key(id = 20, type = PROGRAM, view = BY_THEME)
                 ), MediaObj(
-                    title = 'Kultur',
+                    #title = 'Kultur',
+                    title = lang(30113),
                     thumbnail = os.path.join(resource_path,'cult.png'),
                     key = Key(id = 5, type = PROGRAM, view = BY_THEME)
                 ), MediaObj(
-                    title = REGION,
+                    #title = REGION,
+                    title = lang(30114),
                     thumbnail = os.path.join(resource_path,'rgns.png'),
                     key = Key(id = 13, type = PROGRAM, view = BY_THEME)
                 )
@@ -1023,47 +1061,58 @@ class views:
     def regions(resource_path = rpath):
         return[
                 MediaObj(
-                    title = 'More og Romsdal',
+                    #title = 'More og Romsdal',
+                    title = lang(30150),
                     thumbnail = os.path.join(resource_path, 'ndmr.gif'),
                     key = Key(id = REGION, arg = 'ndmr', type = PLAYLIST)
                 ), MediaObj(
-                    title = 'Hordaland',
+                    #title = 'Hordaland',
+                    title = lang(30151),
                     thumbnail = os.path.join(resource_path, 'ndho.gif'),
                     key = Key(id = REGION, arg = 'ndho', type = PLAYLIST)
                 ), MediaObj(
-                    title = 'Nord-Norge',
+                    #title = 'Nord-Norge',
+                    title = lang(30152),
                     thumbnail = os.path.join(resource_path, 'ndno.gif'),
                     key = Key(id = REGION, arg = 'ndno', type = PLAYLIST)
                 ), MediaObj(
-                    title = 'Rogaland',
+                    #title = 'Rogaland',
+                    title = lang(30153),
                     thumbnail = os.path.join(resource_path, 'ndro.gif'),
                     key = Key(id = REGION, arg = 'ndro', type = PLAYLIST)
                 ), MediaObj(
-                    title = 'Sogn og Fjordane',
+                    #title = 'Sogn og Fjordane',
+                    title = lang(30154),
                     thumbnail = os.path.join(resource_path, 'ndsf.gif'),
                     key = Key(id = REGION, arg = 'ndsf', type = PLAYLIST)
                 ), MediaObj(
-                    title = 'Sorlandet',
+                    #title = 'Sorlandet',
+                    title = lang(30155),
                     thumbnail = os.path.join(resource_path, 'ndsl.gif'),
                     key = Key(id = REGION, args = 'ndsl', type = PLAYLIST)
                 ), MediaObj(
-                    title = 'Trondelag',
+                    #title = 'Trondelag',
+                    title = lang(30156),
                     thumbnail = os.path.join(resource_path, 'ndtl.gif'),
                     key = Key(id = REGION,arg = 'ndtl', type = PLAYLIST)
                 ), MediaObj(
-                    title = 'Ostafjells',
+                    #title = 'Ostafjells',
+                    title = lang(30157),
                     thumbnail = os.path.join(resource_path, 'ndtt.gif'),
                     key = Key(id = REGION, arg = 'ndtt', type = PLAYLIST)
                 ), MediaObj(
-                    title = 'Ostfold',
+                    #title = 'Ostfold',
+                    title = lang(30158),
                     thumbnail = os.path.join(resource_path, 'ndos.gif'),
                     key = Key(id = REGION, arg = 'ndos', type = PLAYLIST)
                 ), MediaObj(
-                    title = 'Ostlandssendingen',
+                    #title = 'Ostlandssendingen',
+                    title = lang(30159),
                     thumbnail = os.path.join(resource_path, 'ndoa.gif'),
                     key = Key(id = REGION, arg = 'ndoa', type = PLAYLIST)
                 ), MediaObj(
-                    title = 'Hedmark og oppland',
+                    #title = 'Hedmark og oppland',
+                    title = lang(30160),
                     thumbnail = os.path.join(resource_path, 'ndop.gif'),
                     key = Key(id = REGION, arg = 'ndop', type = PLAYLIST)
                 )

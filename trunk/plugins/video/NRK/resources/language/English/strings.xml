@@ -32,6 +32,85 @@
   
   <string id="30100">Input search string</string>
 
+  <!-- Themes -->
+  <string id="30101">Barn</string>
+  <string id="30102">Natur</string>
+  <string id="30103">Drama</string>
+  <string id="30104">Sport</string>
+  <string id="30105">Fakta</string>
+  <string id="30106">Livssyn</string>
+  <string id="30107">Mat</string>
+  <string id="30108">Nyheter</string>
+  <string id="30109">Samisk</string>
+  <string id="30110">Ung</string>
+  <string id="30111">Tegnspråk</string>
+  <string id="30112">Underholdning</string>
+  <string id="30113">Dokumentar</string>
+  <string id="30114">kultur</string>
+  <string id="30115">Region</string>
+
+  <!-- Regions -->
+  <string id="30150">Møre og Romsdal</string>
+  <string id="30151">Hordaland</string>
+  <string id="30152">Nord-Norge</string>
+  <string id="30153">Rogalamd</string>
+  <string id="30154">Sogn og Fjordane</string>
+  <string id="30155">Sørlandet</string>
+  <string id="30156">Trøndelag</string>
+  <string id="30157">Østafjells</string>
+  <string id="30158">Østfold</string>
+  <string id="30159">Østlandssendingen</string>
+  <string id="30160">Hedmark og Oppland</string>
+  
+  <!-- other -->
+  <string id="30200">Arkiv</string>
+  <string id="30201">Aktuelt</string>
+  <string id="30202">Mest sett totalt</string>
+  <string id="30203">Mest sett denne uken</string>
+  <string id="30204">Mest sett denne måned</string>
+  <string id="30205">Søk</string>
+  <string id="30206">Vis bokstav %s</string>
+  <string id="30207">Vis alle</string>
+  <string id="30208">Vis alfabetisk</string>
+  <string id="30209">Vis temaliste</string>
+  <string id="30210">Velg bokstav</string>
+  <string id="30211">Velg Tema</string>
+  <string id="30212">Velg alle</string>
+  <string id="30213">Denne uke</string>
+  <string id="30214">Denne måned</string>
+  <string id="30215">Totalt</string>
+  <string id="30216">Siste %d dager</string>
+  
+  <!-- Root menu -->
+  <string id="30250">Program</string>
+  <string id="30251">Direkte</string>
+  <string id="30252">Kanalene</string>
+  <string id="30253">Sport</string>
+  <string id="30254">Nyheter</string>
+  <string id="30255">Distrikt</string>
+  <string id="30256">Natur</string>
+  <string id="30257">NRKBeta</string>
+  <string id="30258">Nettradio</string>
+  <string id="30259">Lyd podcast</string>
+  <string id="30260">Video podcast</string>
+  <string id="30261">Tekst-TV</string>
+  <string id="30262">Favoritt programmer</string>
+
+  <!-- Context Menu -->
+  <string id="30300">Oppdater</string>
+  <string id="30301">Legg til i favoritt programmer</string>
+  <string id="30302">Last ned video</string>
+  <string id="30303">Fjern</string>
+  <string id="30304">Gi nytt navn</string>
+  
+  <!-- Categories -->
+  <string id="30350">Direktesendinger</string>
+  
+  <!-- Favorite Programs -->
+  <string id="30400">Slette fra favoritter</string>
+  <string id="30401">Vil du fjerne %s fra favoritter?</string>
+  <string id="30402">Lagt til i favoritter</string>
+  
   <!-- compatible messages -->
   <string id="30700">Version</string>
   <string id="30701">This version of %s requires an</string>
