@@ -15,6 +15,13 @@ import zipfile
 import shutil
 import sys
 
+# Script constants
+__scriptname__ = "Navi-X"
+__author__ = "rodejo16"
+__url__ = "http://www.navi-x.org/"
+__credits__ = "Rodejo16"
+__version__ = "3.0.2"
+
 sys.path.append(os.path.join(os.getcwd().replace(";",""),'src'))
 
 RootDir = os.getcwd()
