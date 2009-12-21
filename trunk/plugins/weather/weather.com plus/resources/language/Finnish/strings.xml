@@ -1,13 +1,54 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings><!--  1.6.2009 Finnish   -->
+<strings><!--  21.12.2009 Finnish   -->
     <!-- language strings credit -->
-    <string id="32002">mikko70</string>
+    <string id="32000">%s Lisäosa avustaja</string>
+    <string id="32002">Mika Pirinen</string>
+
+    <!-- Alert messages -->
+    <string id="32100">Säähälytys</string>
+
+    <!-- Installation script strings -->
+    <string id="32200">Valitse asennuspolku</string>
+    <string id="32202">Ladataan '%s' kansioon:</string>
+    <string id="32204">Puretaan '%s' kansioon:</string>
+    
+    <string id="32207">Valitse karttapakkaus:</string>
+    <string id="32208">Suuret kartat 30mb (720x486)</string>
+    <string id="32209">Pienet kartat 10mb (256x173)</string>
+    <string id="32210">Suuret</string>
+    <string id="32211">Pienet</string>
+    
+    <string id="32220">'%s' asennettiin kansioon:</string>
+    <string id="32221">'%s':n purku keskeytyi kansioon:</string>
+    <string id="32222">'%s':n lataus keskeytyi kansioon:</string>
+    <string id="32223">'%s':n asennus peruutettiin!</string>
+
+    <string id="32230">Asennus epäonnistui</string>
+    <string id="32231">Asennettu</string>
+
+    <!-- Settings category strings -->
+    <string id="32400">Lisäosat/Pakkaukset</string>
+    <string id="32410">Muita asetuksia</string>
+    <string id="32420">Kartta-/tutka-kategoriat</string>
 
     <!-- Settings strings -->
     <string id="32500">Käännä teksti (Babelfish)</string>
     <string id="32510">Kartta kategoria #1</string>
     <string id="32520">Kartta kategoria #2</string>
     <string id="32530">Kartta kategoria #3</string>
+    <string id="32540">Käyttäjän määrittelemä kartta/tutka tiedosto</string>
+    <string id="32550">Näytä ponannahdusikkuna säähälytyksestä</string>
+    <string id="32551">Pois</string>
+    <string id="32552">10 sekuntia</string>
+    <string id="32553">20 sekuntia</string>
+    <string id="32554">30 sekuntia</string>
+    <string id="32555">45 sekuntia</string>
+    <string id="32556">1 minuutti</string>
+    <string id="32557">2 minuuttia</string>
+    <string id="32558">5 minuuttia</string>
+    <string id="32559">10 minuuttia</string>
+    <string id="32560">- Ilmoita vain uudet varoitukset</string>
+    <string id="32570">Asenna kartta ikonit (10mb-30mb)</string>
 
     <!-- map lists long -->
     <string id="32600">Ei mitään</string>
@@ -74,13 +115,14 @@
     <string id="32661">Terveys ja suojelu (Joitakin säähälytyksiä)</string>
     <string id="32662">Terveys ja suojelu (Ihon suojaus)</string>
     <string id="32663">Terveys ja suojelu (Kuntoilu)</string>
+    <string id="32664">Käyttäjän määrittelemä - (Kartat ja tutkat)</string>
 
     <!-- map lists short -->
     <string id="32800">Ei mitään</string>
     <string id="32801">Paikallinen</string>
     <string id="32802">Alaska</string>
     <string id="32803">Nykyinen[CR]sää</string>
-    <string id="32804">Doppler[CR]tutka</string>
+    <string id="32804">Doppler-[CR]tutka</string>
     <string id="32805">Laajennettu[CR]sääennuste</string>
     <string id="32806">Hawaiji</string>
     <string id="32807">Satelliitti[CR](US)</string>
@@ -137,7 +179,9 @@
     <string id="32858">Maanjäristys[CR]raportit</string>
     <string id="32859">Koti[CR]suunnittelu</string>
     <string id="32860">Koulupäivä</string>
-    <string id="32861">Joitakin sää-[CR]hälytyksiä</string>
-    <string id="32862">IhonCR]suojaus</string>
+    <string id="32861">Sää-[CR]hälytykset</string>
+    <string id="32862">Ihon[CR]suojaus</string>
     <string id="32863">Kuntoilu</string>
+    <string id="32864">Käyttäjän määrittelemä</string>
+
 </strings>
