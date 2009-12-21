@@ -11,7 +11,9 @@ import os
 import xbmc
 import xbmcgui
 
+"""
 from threading import Thread
+"""
 
 import resources.lib.WeatherClient as WeatherClient
 
@@ -25,11 +27,12 @@ class Main:
         self._get_weather_window()
         # get our new WeatherClient
         self._get_client()
-        # get user preferences
-        self._get_settings()
         # if user selected a new map, only need to fetch it
         if ( sys.argv[ 1 ].startswith( "map=" ) ):
-            self._fetch_map( sys.argv[ 1 ][ 4 : ] )
+            # parse sys.argv for params
+            params = dict( arg.split( "=" ) for arg in sys.argv[ 1 ].split( "&" ) )
+            # fetch map (map=%s&title=%s&location=
+            self._fetch_map( params[ "map" ], params[ "title" ], params[ "location" ] )
         else:
             # set plugin name property
             self._set_plugin_name()
@@ -63,24 +66,13 @@ class Main:
             for thread in thread_list:
                thread.join()
             """
+            self._fetch_map_list()
             self._fetch_36_forecast()
+            self._fetch_10day_forecast()
             self._fetch_hourly_forecast()
             self._fetch_weekend_forecast()
-            self._fetch_10day_forecast()
-            self._fetch_map_list()
         # we're finished, exit
         self._exit_script()
-
-    def _get_settings( self ):
-        self.settings[ "maplist1_category" ] = self.WeatherClient.BASE_MAPS[ int( self.Settings.getSetting( "maplist1" ) ) ][ 0 ]
-        self.WEATHER_WINDOW.setProperty( "MapList.1.LongTitle", self._( ( 32600, 32601, 32602, 32603, 32604, 32605, 32606, 32607, 32608, 32609, 32610, 32611, 32612, 32613, 32614, 32615, 32616, 32617, 32618, 32619, 32620, 32621, 32622, 32623, 32624, 32625, 32626, 32627, 32628, 32629, 32630, 32631, 32632, 32633, 32634, 32635, 32636, 32637, 32638, 32639, 32640, 32641, 32642, 32643, 32644, 32645, 32646, 32647, 32648, 32649, 32650, 32651, 32652, 32653, 32654, 32655, 32656, 32657, 32658, 32659, 32660, 32661, 32662, 32663, )[ int( self.Settings.getSetting( "maplist1" ) ) ] ) )
-        self.WEATHER_WINDOW.setProperty( "MapList.1.ShortTitle", self._( ( 32800, 32801, 32802, 32803, 32804, 32805, 32806, 32807, 32808, 32809, 32810, 32811, 32812, 32813, 32814, 32815, 32816, 32817, 32818, 32819, 32820, 32821, 32822, 32823, 32824, 32825, 32826, 32827, 32828, 32829, 32830, 32831, 32832, 32833, 32834, 32835, 32836, 32837, 32838, 32839, 32840, 32841, 32842, 32843, 32844, 32845, 32846, 32847, 32848, 32849, 32850, 32851, 32852, 32853, 32854, 32855, 32856, 32857, 32858, 32859, 32860, 32861, 32862, 32863, )[ int( self.Settings.getSetting( "maplist1" ) ) ] ) )
-        self.settings[ "maplist2_category" ] = self.WeatherClient.BASE_MAPS[ int( self.Settings.getSetting( "maplist2" ) ) ][ 0 ]
-        self.WEATHER_WINDOW.setProperty( "MapList.2.LongTitle", self._( ( 32600, 32601, 32602, 32603, 32604, 32605, 32606, 32607, 32608, 32609, 32610, 32611, 32612, 32613, 32614, 32615, 32616, 32617, 32618, 32619, 32620, 32621, 32622, 32623, 32624, 32625, 32626, 32627, 32628, 32629, 32630, 32631, 32632, 32633, 32634, 32635, 32636, 32637, 32638, 32639, 32640, 32641, 32642, 32643, 32644, 32645, 32646, 32647, 32648, 32649, 32650, 32651, 32652, 32653, 32654, 32655, 32656, 32657, 32658, 32659, 32660, 32661, 32662, 32663, )[ int( self.Settings.getSetting( "maplist2" ) ) ] ) )
-        self.WEATHER_WINDOW.setProperty( "MapList.2.ShortTitle", self._( ( 32800, 32801, 32802, 32803, 32804, 32805, 32806, 32807, 32808, 32809, 32810, 32811, 32812, 32813, 32814, 32815, 32816, 32817, 32818, 32819, 32820, 32821, 32822, 32823, 32824, 32825, 32826, 32827, 32828, 32829, 32830, 32831, 32832, 32833, 32834, 32835, 32836, 32837, 32838, 32839, 32840, 32841, 32842, 32843, 32844, 32845, 32846, 32847, 32848, 32849, 32850, 32851, 32852, 32853, 32854, 32855, 32856, 32857, 32858, 32859, 32860, 32861, 32862, 32863, )[ int( self.Settings.getSetting( "maplist2" ) ) ] ) )
-        self.settings[ "maplist3_category" ] = self.WeatherClient.BASE_MAPS[ int( self.Settings.getSetting( "maplist3" ) ) ][ 0 ]
-        self.WEATHER_WINDOW.setProperty( "MapList.3.LongTitle", self._( ( 32600, 32601, 32602, 32603, 32604, 32605, 32606, 32607, 32608, 32609, 32610, 32611, 32612, 32613, 32614, 32615, 32616, 32617, 32618, 32619, 32620, 32621, 32622, 32623, 32624, 32625, 32626, 32627, 32628, 32629, 32630, 32631, 32632, 32633, 32634, 32635, 32636, 32637, 32638, 32639, 32640, 32641, 32642, 32643, 32644, 32645, 32646, 32647, 32648, 32649, 32650, 32651, 32652, 32653, 32654, 32655, 32656, 32657, 32658, 32659, 32660, 32661, 32662, 32663, )[ int( self.Settings.getSetting( "maplist3" ) ) ] ) )
-        self.WEATHER_WINDOW.setProperty( "MapList.3.ShortTitle", self._( ( 32800, 32801, 32802, 32803, 32804, 32805, 32806, 32807, 32808, 32809, 32810, 32811, 32812, 32813, 32814, 32815, 32816, 32817, 32818, 32819, 32820, 32821, 32822, 32823, 32824, 32825, 32826, 32827, 32828, 32829, 32830, 32831, 32832, 32833, 32834, 32835, 32836, 32837, 32838, 32839, 32840, 32841, 32842, 32843, 32844, 32845, 32846, 32847, 32848, 32849, 32850, 32851, 32852, 32853, 32854, 32855, 32856, 32857, 32858, 32859, 32860, 32861, 32862, 32863, )[ int( self.Settings.getSetting( "maplist3" ) ) ] ) )
 
     def _get_weather_window( self ):
         # grab the weather window
@@ -115,31 +107,32 @@ class Main:
         else:
             self.areacode = sys.argv[ 1 ]
         # set if new location
-        self.new_location = ( xbmc.getInfoLabel( "Skin.String(Weather.AreaCode)" ) != self.areacode )
+        self.new_location = ( xbmc.getInfoLabel( "Window(Weather).Property(Weather.AreaCode)" ) != self.areacode )
         # if new set it
         if ( self.new_location ):
-            xbmc.executebuiltin( "Skin.SetString(Weather.AreaCode,%s" % self.areacode )
+            self.WEATHER_WINDOW.setProperty( "Weather.AreaCode", self.areacode )
         # setup our radar client
         self.WeatherClient = WeatherClient.WeatherClient( self.areacode, self.settings[ "translate" ] )
 
-    def _set_maps_path( self, path=0, maps_path="" ):
+    def _set_maps_path( self, path=0, maps_path="", legend_path="" ):
         # we have three possibilities. loading, default (error) or the actual map path
         if ( path == 0 ):
-            #xbmc.executebuiltin( "Skin.SetString(twc-mapspath,TWC Plus/loading)" )
             self.WEATHER_WINDOW.setProperty( "MapStatus", "loading" )
-            self.WEATHER_WINDOW.setProperty( "MapPath", "weather/loading" )
+            self.WEATHER_WINDOW.setProperty( "MapPath", "weather.com plus/loading" )
+            self.WEATHER_WINDOW.setProperty( "LegendPath", "" )
         elif ( path == 1 ):
             self.WEATHER_WINDOW.setProperty( "MapStatus", "loaded" )
             self.WEATHER_WINDOW.setProperty( "MapPath", maps_path )
-            #xbmc.executebuiltin( "Skin.SetString(twc-mapspath,%s)" % ( maps_path, ) )
+            self.WEATHER_WINDOW.setProperty( "LegendPath", legend_path )
         elif ( path == 2 ):
             self.WEATHER_WINDOW.setProperty( "MapStatus", "error" )
-            self.WEATHER_WINDOW.setProperty( "MapPath", "weather/default" )
-            #xbmc.executebuiltin( "Skin.SetString(twc-mapspath,TWC Plus/default)" )
+            self.WEATHER_WINDOW.setProperty( "MapPath", "weather.com plus/error" )
+            self.WEATHER_WINDOW.setProperty( "LegendPath", "" )
 
     def _clear_properties( self ):
         # alerts
         self.WEATHER_WINDOW.clearProperty( "Alerts" )
+        self.WEATHER_WINDOW.setProperty( "Alerts.Color", "default" )
         # video
         self.WEATHER_WINDOW.clearProperty( "Video" )
         # 36 Hour
@@ -154,66 +147,113 @@ class Main:
         self.WEATHER_WINDOW.clearProperty( "Daily.Heading1" )
         # Hourly
         self.WEATHER_WINDOW.clearProperty( "Hourly.Heading1" )
-        # set map path to loading
-        self._set_maps_path()
-        # clear our maplist properties
-        for count in range( 3 ):
-            # enumerate thru and clear all map list labels and onclicks
-            for count2 in range( 30 ):
-                # these are what the user sees and the action the button performs
-                self.WEATHER_WINDOW.clearProperty( "MapList.%d.MapLabel%d" % ( count + 1, count2 + 1, ) )
-                self.WEATHER_WINDOW.clearProperty( "MapList.%d.MapOnclick%d" % ( count + 1, count2 + 1, ) )
-        
+
+    def _clear_map_list( self, list_id ):
+        # enumerate thru and clear all map list labels, icons and onclicks
+        for count in range( 1, 31 ):
+            # these are what the user sees and the action the button performs
+            self.WEATHER_WINDOW.clearProperty( "MapList.%d.MapLabel.%d" % ( list_id, count, ) )
+            self.WEATHER_WINDOW.clearProperty( "MapList.%d.MapLabel2.%d" % ( list_id, count, ) )
+            self.WEATHER_WINDOW.clearProperty( "MapList.%d.MapIcon.%d" % ( list_id, count, ) )
+            self.WEATHER_WINDOW.clearProperty( "MapList.%d.MapOnclick.%d" % ( list_id, count, ) )
+        # set the default titles
+        self._set_map_list_titles( list_id )
+
+    def _set_map_list_titles( self, list_id, title=None, long_title=None ):
+        # set map list titles for skinners buttons
+        if ( title is None ):
+            # non user defined list
+            title = ( "", self._( 32800 + int( self.Settings.getSetting( "maplist%d" % ( list_id, ) ) ) ), )[ int( self.Settings.getSetting( "maplist%d" % ( list_id, ) ) ) > 0 ]
+            long_title = self._( 32600 + int( self.Settings.getSetting( "maplist%d" % ( list_id, ) ) ) )
+        # now set the titles
+        self.WEATHER_WINDOW.setProperty( "MapList.%d.ShortTitle" % ( list_id, ), title )
+        self.WEATHER_WINDOW.setProperty( "MapList.%d.LongTitle" % ( list_id, ), long_title )
+
     def _fetch_map_list( self ):
         # exit script if user changed locations
         if ( self.areacode != xbmc.getInfoLabel( "Window(Weather).Property(AreaCode)" ) ):
             return
-        # get the users default map
-        default = current_map = xbmc.getInfoLabel( "Skin.String(weather.defaultmap)" )
-        # enumurate thru map lists and fetch map list
-        for maplist_count in range( 1, 4 ):
-            # get the correct category
-            map_category = self.settings[ "maplist%d_category" % ( maplist_count, ) ]
-            # check for users preferemce
-            for count, mapc in enumerate( self.WeatherClient.BASE_MAPS ):
-                # found it, no need to continue
-                if ( mapc[ 0 ] == map_category ):
-                    break
-            # fetch map list
-            maps = self.WeatherClient.fetch_map_list( count )
-            # set a current_map in case one isn't set
-            if ( not current_map ):
-                current_map = maps[ 0 ][ 0 ]
-            # enumerate thru our map list and add map and title and check for default
-            for count, map in enumerate( maps ):
-                # create our label and onclick event
-                self.WEATHER_WINDOW.setProperty( "MapList.%d.MapLabel%d" % ( maplist_count, count + 1, ), map[ 1 ] )
-                self.WEATHER_WINDOW.setProperty( "MapList.%d.MapOnclick%d" % ( maplist_count, count + 1, ), "XBMC.RunScript(%s,map=%s)" % ( sys.argv[ 0 ], map[ 0 ], ) )
-                # if we have a match, set our class variable
-                if ( map[ 1 ] == default ):
-                    current_map = map[ 0 ]
+        # intialize our download variable, we use this so we don't re-download same info
+        map_download = []
+        # enumerate thru and clear our properties if map is different (if user changed setiings), local and user defined list should be downloaded if location changed
+        for count in range( 1, 4 ):
+            # do we need to download this list?
+            map_download += [ ( self.new_location and int( self.Settings.getSetting( "maplist%d" % ( count, ) ) ) == 1 ) or 
+                                            ( self.new_location and int( self.Settings.getSetting( "maplist%d" % ( count, ) ) ) == len( self.WeatherClient.BASE_MAPS ) - 1 ) or 
+                                            ( self.WEATHER_WINDOW.getProperty( "MapList.%d.LongTitle" % ( count, ) ) != self._( 32600 + int( self.Settings.getSetting( "maplist%d" % ( count, ) ) ) ) ) ]
+            # do we need to clear the info?
+            if ( map_download[ count - 1 ] ):
+                self._clear_map_list( count )
+        # we set this here in case we do not need to download new lists
+        current_map = self.WEATHER_WINDOW.getProperty( "Weather.CurrentMapUrl" )
+        current_map_title = self.WEATHER_WINDOW.getProperty( "Weather.CurrentMap" )
+        # only run if any new map lists
+        if ( True in map_download ):
+            # we set our maps path property to loading images while downloading
+            self._set_maps_path()
+            # set default map, we allow skinners to have users set this with a skin string
+            default = ( self.WEATHER_WINDOW.getProperty( "Weather.CurrentMap" ), xbmc.getInfoLabel( "Skin.String(TWC.DefaultMap)" ), )[ xbmc.getCondVisibility( "Skin.HasSetting(TWC.DefaultMapBool)" ) == True and self.WEATHER_WINDOW.getProperty( "Weather.CurrentMap" ) == "" ]
+            # enumurate thru map lists and fetch map list
+            for maplist_count in range( 1, 4 ):
+                # only fetch new list if required
+                if ( not map_download[ maplist_count - 1 ] ):
+                    continue
+                # get the correct category
+                map_category = int( self.Settings.getSetting( "maplist%d" % ( maplist_count, ) ) )
+                # fetch map list
+                category_title, maps = self.WeatherClient.fetch_map_list( map_category, self.Settings.getSetting( "maplist_user_file" ), xbmc.getInfoLabel( "Window(Weather).Property(LocationIndex)" ) )
+                # only run if maps were found
+                if ( maps is None ):
+                    continue
+                # set a current_map in case one isn't set
+                if ( current_map == "" ):
+                    current_map = maps[ 0 ][ 0 ]
+                    current_map_title = maps[ 0 ][ 1 ]
+                # if user defined map list set the new titles
+                if ( category_title is not None ):
+                    self._set_map_list_titles( maplist_count, category_title, category_title )
+                # enumerate thru our map list and add map and title and check for default
+                for count, map in enumerate( maps ):
+                    # create our label, icon and onclick event
+                    self.WEATHER_WINDOW.setProperty( "MapList.%d.MapLabel.%d" % ( maplist_count, count + 1, ), map[ 1 ] )
+                    self.WEATHER_WINDOW.setProperty( "MapList.%d.MapLabel2.%d" % ( maplist_count, count + 1, ), map[ 0 ] )
+                    self.WEATHER_WINDOW.setProperty( "MapList.%d.MapIcon.%d" % ( maplist_count, count + 1, ), map[ 1 ].replace( ":", " -" ).replace( "/", " - " ) + ".jpg" )
+                    self.WEATHER_WINDOW.setProperty( "MapList.%d.MapOnclick.%d" % ( maplist_count, count + 1, ), "XBMC.RunScript(%s,map=%s&title=%s&location=%s)" % ( sys.argv[ 0 ], map[ 0 ], map[ 1 ], str( map[ 2 ] ) ) )
+                    # if we have a match, set our class variable
+                    if ( map[ 1 ] == default ):
+                        current_map = map[ 0 ]
+                        current_map_title = map[ 1 ]
         # fetch the current map
-        self._fetch_map( current_map )
+        self._fetch_map( current_map, current_map_title, xbmc.getInfoLabel( "Window(Weather).Property(LocationIndex)" ) )
 
-    def _fetch_map( self, map ):
+    def _fetch_map( self, map, title, locationindex=None ):
         # exit script if user changed locations
         if ( self.areacode != xbmc.getInfoLabel( "Window(Weather).Property(AreaCode)" ) ):
             return
-        # we set our skin setting to defaultimages while downloading
+        # we set our maps path property to loading images while downloading
         self._set_maps_path()
+        # we set Weather.CurrentMap and Weather.CurrentMapUrl, the skin can handle it when the user selects a new map for immediate update
+        self.WEATHER_WINDOW.setProperty( "Weather.CurrentMap", title )
+        self.WEATHER_WINDOW.setProperty( "Weather.CurrentMapUrl", map )
         # fetch the available map urls
-        maps = self.WeatherClient.fetch_map_urls( map )
+        maps = self.WeatherClient.fetch_map_urls( map, self.Settings.getSetting( "maplist_user_file" ), locationindex )
         # fetch the images
-        maps_path, expires = self.WeatherClient.fetch_images( maps )
+        maps_path, legend_path = self.WeatherClient.fetch_images( maps )
         # hack incase the weather in motion link was bogus
-        if ( expires < 0 and len( maps[ 1 ] ) ):
-            maps_path, expires = self.WeatherClient.fetch_images( ( maps[ 0 ], [], ) )
-        # now set our skin string so multi image will display images 1==success, 2==failure
-        self._set_maps_path( ( maps_path == "" ) + 1, maps_path )
+        if ( maps_path == "" and len( maps[ 1 ] ) ):
+            maps_path, legend_path = self.WeatherClient.fetch_images( ( maps[ 0 ], [], maps[ 2 ], ) )
+        # now set our window properties so multi image will display images 1==success, 2==failure
+        self._set_maps_path( ( maps_path == "" ) + 1, maps_path, legend_path )
 
-    def _set_alerts( self, alerts, alertscolor, alertscount ):
+    def _set_alerts( self, alerts, alertsrss, alertsnotify, alertscolor, alertscount ):
+        # send notification if user preference and there are alerts
+        if ( int( self.Settings.getSetting( "alert_notify" ) ) > 0 and alerts != "" and ( self.Settings.getSetting( "alert_notify_once" ) == "false"
+            or self.WEATHER_WINDOW.getProperty( "Alerts.RSS" ) != alertsrss )
+            ):
+            xbmc.executebuiltin( "XBMC.Notification(%s,\"%s\",%d,weather.com plus/alert-%s.png)" % ( self._( 32100 ), alertsnotify, ( 0, 10, 20, 30, 45, 60, 120, 300, 600, )[ int( self.Settings.getSetting( "alert_notify" ) ) ] * 1000, alertscolor, ) )
         # set any alerts
         self.WEATHER_WINDOW.setProperty( "Alerts", alerts )
+        self.WEATHER_WINDOW.setProperty( "Alerts.RSS", alertsrss )
         self.WEATHER_WINDOW.setProperty( "Alerts.Color", ( "default", alertscolor, )[ alerts != "" ] )
         self.WEATHER_WINDOW.setProperty( "Alerts.Count", ( "", str( alertscount ), )[ alertscount > 1 ] )
         self.WEATHER_WINDOW.setProperty( "Alerts.Label", xbmc.getLocalizedString( 33049 + ( alertscount > 1 ) ) )
@@ -226,9 +266,9 @@ class Main:
         if ( self.areacode != xbmc.getInfoLabel( "Window(Weather).Property(AreaCode)" ) ):
             return
         # fetch 36 hour forecast
-        alerts, alertscolor, alertscount, forecasts, video = self.WeatherClient.fetch_36_forecast( self.WEATHER_WINDOW.getProperty( "Video" ) )
+        alerts, alertsrss, alertsnotify, alertscolor, alertscount, forecasts, video = self.WeatherClient.fetch_36_forecast( self.WEATHER_WINDOW.getProperty( "Video" ) )
         # set any alerts
-        self._set_alerts( alerts, alertscolor, alertscount )
+        self._set_alerts( alerts, alertsrss, alertsnotify, alertscolor, alertscount )
         # set video
         self._set_video( video )
         # enumerate thru and set the info
@@ -243,6 +283,7 @@ class Main:
             self.WEATHER_WINDOW.setProperty( "36Hour.%d.Forecast" % ( day + 1, ), forecast[ 7 ] )
             self.WEATHER_WINDOW.setProperty( "36Hour.%d.DaylightTitle" % ( day + 1, ), forecast[ 8 ].replace( "Sunrise", xbmc.getLocalizedString( 33027 ) ).replace( "Sunset", xbmc.getLocalizedString( 33028 ) ) )
             self.WEATHER_WINDOW.setProperty( "36Hour.%d.DaylightTime" % ( day + 1, ), forecast[ 9 ] )
+            self.WEATHER_WINDOW.setProperty( "36Hour.%d.DaylightType" % ( day + 1, ), ( "sunrise", "sunset", )[ forecast[ 8 ] == "Sunset" ] )
             self.WEATHER_WINDOW.setProperty( "36Hour.%d.Heading" % ( day + 1, ), { "Today": xbmc.getLocalizedString( 33006 ), "Tonight": xbmc.getLocalizedString( 33018 ), "Tomorrow": xbmc.getLocalizedString( 33007 ), "Tomorrow Night": xbmc.getLocalizedString( 33019 ) }[ forecast[ 0 ] ] )
 
     def _fetch_hourly_forecast( self ):
@@ -348,7 +389,7 @@ class Main:
         # end script
         pass
 
-
+"""
 class FetchInfo( Thread ):
     def __init__( self, method ):
         Thread.__init__( self )
@@ -356,3 +397,4 @@ class FetchInfo( Thread ):
 
     def run( self ):
         self.method()
+"""
