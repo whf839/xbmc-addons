@@ -106,6 +106,8 @@ import re, os, time, datetime, traceback
 import shutil
 import zipfile
 import copy
+import htmlentitydefs
+
 #import threading
 
 sys.path.append(os.path.join(os.getcwd().replace(";",""),'src'))
@@ -232,9 +234,10 @@ def ParsePlaylist(mediaitem=CMediaItem() , proxy="CACHING"):
             
         desc=''
         if m.description:
-            desc=m.description
+                #desc=m.description
+                desc=HTMLunescape(m.description)
         
-        item = xbmcgui.ListItem(unicode(m.name+label2, "utf-8" ), iconImage=thumb, thumbnailImage=thumb)
+        item = xbmcgui.ListItem(m.name+label2, iconImage=thumb, thumbnailImage=thumb)
         item.setInfo( type=m.type, infoLabels={ "Title": m.name , "Plot": desc } )
         #hack to play youtube swf
         if m.URL.find('youtube.com/v/')>-1:
@@ -686,5 +689,25 @@ def delFiles(folder):
     except IOError:
         return
         
-                
+def HTMLunescape(text):
+    def fixup(m):
+        text = m.group(0)
+        if text[:2] == "&#":
+            # character reference
+            try:
+                if text[:3] == "&#x":
+                    return chr(int(text[3:-1], 16))
+                else:
+                    return chr(int(text[2:-1]))
+            except ValueError:
+                pass
+        else:
+            # named entity
+            try:
+                text = chr(htmlentitydefs.name2codepoint[text[1:-1]])
+            except KeyError:
+                pass
+        return text # leave as is
+    return re.sub("&#?\w+;", fixup, text)
+    
 ############End of file
