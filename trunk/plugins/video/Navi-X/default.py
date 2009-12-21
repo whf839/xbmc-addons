@@ -1,14 +1,9 @@
 #############################################################################
 #
 # Navi-X Playlist browser
-# v2.7 by rodejo (rodejo16@gmail.com)
+# v3.0 by rodejo (rodejo16@gmail.com)
 #
-# -v2.7   (2009/04/11)
-#
-# Changelog (v2.7)
-# -Added new playlist item called 'processor'. Points to a playlist item processing server.
-# -Youtube fix
-# -Added PLX playlist multiline comment tag (""").
+# -v3.0   (2009/12/21)
 #
 #############################################################################
 
@@ -17,6 +12,13 @@ import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, tracebac
 sys.path.append(os.path.join(os.getcwd().replace(";",""),'src'))
 from libs2 import *
 from navix import *
+
+# Plugin constants
+__scriptname__ = "Navi-X"
+__author__ = "rodejo16"
+__url__ = "http://www.navi-x.org/"
+__credits__ = "Rodejo16"
+__version__ = "3.0.1"
 
 ######################################################################
 # Description: 
