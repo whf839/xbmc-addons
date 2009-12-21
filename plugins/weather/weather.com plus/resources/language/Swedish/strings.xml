@@ -2,14 +2,46 @@
 <!--Language file translated with Team XBMC Translator-->
 <!--Translator: blittan-->
 <!--Email: blittan@xbmc.org-->
-<!--Date of translation: 07/27/2009-->
+<!--Date of translation: 12/21/2009-->
 <!--$Revision$-->
 <strings>
+  <string id="32000">%s Addon Manager</string>
   <string id="32002">blittan</string>
+  <string id="32100">Väderalarm</string>
+  <string id="32200">Bläddra efter installationsmapp</string>
+  <string id="32202">Ladda ner '%s' till:</string>
+  <string id="32204">Packar upp '%s' till:</string>
+  <string id="32207">Välj kartpaket</string>
+  <string id="32208">Stort kartpaket ca 30mb (720x468)</string>
+  <string id="32209">Litet kartpaket ca 10mb (256x173)</string>
+  <string id="32210">Stor</string>
+  <string id="32211">Liten</string>
+  <string id="32220">'%s' fullständigt installerat till:</string>
+  <string id="32221">Ett fel uppstod vid uppackande av '%s' till:</string>
+  <string id="32222">Ett fel uppstod vid nedladdning av '%s' till:</string>
+  <string id="32223">Installation av '%s' avbruten!</string>
+  <string id="32230">Misslyckad installation</string>
+  <string id="32231">Installerat</string>
+  <string id="32400">Tillägg/Paket</string>
+  <string id="32410">Div. alternativ</string>
+  <string id="32420">Kart/radar-kategorier</string>
   <string id="32500">Översätt text (Babelfish)</string>
   <string id="32510">Kategori kartlista #1</string>
   <string id="32520">Kategori kartlista #2</string>
   <string id="32530">Kategori kartlista #3</string>
+  <string id="32540">Användardefinerade kart/radar-filer</string>
+  <string id="32550">Skicka notifieringspopup vid väderalarm</string>
+  <string id="32551">Av</string>
+  <string id="32552">10 sekunder</string>
+  <string id="32553">20 sekunder</string>
+  <string id="32554">30 sekunder</string>
+  <string id="32555">45 sekunder</string>
+  <string id="32556">1 minut</string>
+  <string id="32557">2 minuter</string>
+  <string id="32558">5 minuter</string>
+  <string id="32559">10 minuter</string>
+  <string id="32560">- Notifiera endast på nya alarm</string>
+  <string id="32570">Installera kartpaket (10mb-30mb)</string>
   <string id="32600">Ingen</string>
   <string id="32601">Lokal</string>
   <string id="32602">Väderdetaljer (Alaska)</string>
@@ -74,6 +106,7 @@
   <string id="32661">Hälsa &amp; säkerhet (Svåra vädervarningar)</string>
   <string id="32662">Hälsa &amp; säkerhet (Hudskydd)</string>
   <string id="32663">Hälsa &amp; säkerhet (Fitness)</string>
+  <string id="32664">Användardefinerad - (kartor och radar)</string>
   <string id="32800">Ingen</string>
   <string id="32801">Lokal</string>
   <string id="32802">Alaska</string>
@@ -138,4 +171,5 @@
   <string id="32861">Svåra väder[CR]varningar</string>
   <string id="32862">Hud[CR]skydd</string>
   <string id="32863">Fitness</string>
+  <string id="32864">Användardefinerad</string>
 </strings>
