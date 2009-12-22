@@ -1,7 +1,7 @@
 #############################################################################
 #
 # Navi-X Playlist browser
-# v2.7 by rodejo (rodejo16@gmail.com)
+# v3.0 by rodejo (rodejo16@gmail.com)
 #
 # -v1.01  (2007/04/01) first release
 # -v1.2   (2007/05/10)
@@ -33,67 +33,8 @@
 # -v2.5   (2009/01/24)
 # -v2.6   (2009/03/21)
 # -v2.7   (2009/04/11)
-# -v2.7   (2009/05/01) - Plugin release
-#
-# Changelog (v2.7)
-# -First release Navi-X plugin version
-#
-# Changelog (v2.7)
-# -Added new playlist item called 'processor'. Points to a playlist item processing server.
-# -Youtube fix
-# -Added PLX playlist multiline comment tag (""").
-#
-# Changelog (v2.6)
-# -Added parental control.
-# -Update Apple movie trailer. List shows new releases.
-# -Solved problem with download + shutdown
-#
-# Changelog (v2.5)
-# -Solved a problem in the script/plugin installer.
-# -Added release date attribute for playlist item.
-# -Improved thumb image loader (separate thread).
-# -background downloading support.
-# -Solved minor problems.
-#
-# Changelog (v2.4)
-# -improved Shoutcast playlist loading.
-# -improved PLX loading. Support both LF and CRLF.
-# -Support new media type called 'plugin'. (plugin file needs to be a ZIP file).
-# -Support description= field for every media item in PLX file.
-# -Youtube fix.
-#
-# Changelog (v2.3)
-# -Added new playlist "description=" element.
-# -Youtube parser added playlist support.
-# -Youtube parser fix.
-# -Youtube long video name display.
-# -Improved caching for a better user experience.
-# -Apple movie trailer parser fix.
-# -Other minor improvements.
-#
-# Changelog (v2.2)
-# -Improved RSS reader to support image elements in XML file.
-# -Y-button starts image slide show.
-# -Youtube: Minor bug fixed HTML parser.
-# -Apple movie trailers: Changed the sorting order to "release date".
-# -Stability improvements.
-#
-# Changelog (v2.1)
-# -Added a new type called 'download'. This type can be used to download
-#  any type of file from a webserver to the XBOX (e.g a plugin rar file).
-# -Improved text viewer: Added setting of text viewer background image
-# -Improved RSS parser. Fix some problems and added thumb images.
-# -Improved Youtube: Next page is now added to the existing page.
-# -Minor problems solved.
-# 
-# Changelog (v2.0)
-# - Youtube: Switched to high resolution mode. Also downloaded possible.
-# - Added search history. Remembers last searches.
-# - Updated context menu options (Play... and View...).
-# - Added view mode option in menu: Ascencding/Descencing
-# - Play using menu accessible via Y-button.
-# - New playlist option called 'playmode. Example: 
-#   playmode=autonext #plays all entries in playlist
+# -v2.7   (2009/05/01) 
+# -v3.0.2 (2009/12/21)
 #
 #############################################################################
 
@@ -130,9 +71,6 @@ except: Emulating = False
 # Description: 
 ######################################################################
 def Init():
-
-#    delFiles(cacheDir) #clear the cache first
-
     #Create default DIRs if not existing.
     if not os.path.exists(cacheDir):
         os.makedirs(cacheDir)
@@ -160,7 +98,7 @@ def Init():
 def ParsePlaylist(mediaitem=CMediaItem() , proxy="CACHING"):
     playlist = CPlayList()  
    
-    type=mediaitem.type
+    type = mediaitem.GetType()
     URL=''
    
     #load the playlist
@@ -184,7 +122,7 @@ def ParsePlaylist(mediaitem=CMediaItem() , proxy="CACHING"):
         dialog.ok("Error", "This playlist requires a newer Navi-X version")
     elif result == -2: #error
         dialog = xbmcgui.Dialog()
-        dialog.ok("Error", "The requested file could not be opened.")
+        dialog.ok("Error", "Cannot open file.")
                 
     if result != 0: #failure
         return -1
@@ -201,15 +139,8 @@ def ParsePlaylist(mediaitem=CMediaItem() , proxy="CACHING"):
     for m in playlist.list:
         if m.thumb != 'default':
             thumb = m.thumb            
-##            loader = CFileLoader2()
-##            ext = getFileExtension(m.thumb)
-##            loader.load(m.thumb, cacheDir + "thumb." + ext, timeout=1, proxy="ENABLED", content_type='image')
-##            if loader.state == 0:
-##                thumb = loader.localfile
-##            else:
-##                thumb = getPlEntryThumb(m.type) 
         else:
-            thumb = getPlEntryThumb(m.type)
+            thumb = getPlEntryThumb(m)
 
         label2 = ''
         if m.date != '':
@@ -218,18 +149,19 @@ def ParsePlaylist(mediaitem=CMediaItem() , proxy="CACHING"):
             days_past = (today-entry_date).days
             if days_past <= 10:
                 if days_past <= 0:
-                    label2 = '          NEW today'
+                    label2 = ' [NEW today]'
                 elif days_past == 1:
-                    label2 = '          NEW yesterday'
+                    label2 = ' [NEW yesterday]'
                 else:
-                    label2 = '          NEW ('+ str(days_past) + ' days ago)'
+                    label2 = ' [NEW '+ str(days_past) + ' days ago]'
                         
         folder=False
-        if (m.type == 'playlist') or (m.type == 'rss') or\
-           (m.type == 'rss_flickr_daily') or (m.type == 'html_youtube') or \
-           (m.type == 'xml_applemovie') or (m.type == 'directory') or \
-           (m.type == 'xml_shoutcast') or (m.type == 'search_shoutcast') or \
-           (m.type == 'search_youtube') or (m.type == 'search'):
+        type = m.GetType()
+        if (type == 'playlist') or (type == 'rss') or\
+           (type == 'rss_flickr_daily') or (type == 'html_youtube') or \
+           (type == 'xml_applemovie') or (type == 'directory') or \
+           (type == 'xml_shoutcast') or (type == 'search_shoutcast') or \
+           (type == 'search_youtube') or (type == 'search'):
             folder = True
             
         desc=''
@@ -256,6 +188,7 @@ def ParsePlaylist(mediaitem=CMediaItem() , proxy="CACHING"):
            
         #addSortMethod
         #xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_PLAYLIST_ORDER)
+    #xbmcplugin.endOfDirectory(int(sys.argv[1]))
        
     return 0 #success
 
@@ -264,30 +197,47 @@ def ParsePlaylist(mediaitem=CMediaItem() , proxy="CACHING"):
 # Parameters : type = playlist entry type
 # Return     : thumb image (local) file name
 ######################################################################
-def getPlEntryThumb(type):
-    if type == 'playlist':
-        return ''
-    elif type == 'rss_flickr_daily':
-        return imageDir+'icon_rss.png'
-    elif type == 'xml_applemovie':
-        return ''#imageDir+'icon_playlist.png'
+def getPlEntryThumb(mediaitem):            
+    type = mediaitem.GetType()       
+        
+    #some types are overruled.
+    if type[0:3] == 'rss':
+        type = 'rss' 
+    elif type[0:3] == 'xml':
+        type = 'playlist'
     elif type == 'html_youtube':
-        return ''#imageDir+'icon_playlist.png'
-    elif type == 'search_youtube':
-        return imageDir+'icon_search.png'
-    elif type == 'xml_shoutcast':
-        return ''#imageDir+'icon_playlist.png'
-    elif type == 'search_shoutcast':
-        return imageDir+'icon_search.png'
+        type = 'playlist'
+    elif type[0:6] == 'search':
+        type = 'search'               
     elif type == 'directory':
-        return ''#imageDir+'icon_playlist.png'
-    elif type[0:6] == 'script':
-        return imageDir+'icon_script.png'               
-    elif type[0:6] == 'plugin':
-        return imageDir+'icon_script.png'
+        type = 'playlist'               
+    elif mediaitem.type == 'skin':
+        type = 'script'                
+    
+    #if the icon attribute has been set then use this for the icon.
+    URL=''
+    if mediaitem.icon != 'default':
+        URL = mediaitem.icon
+
+    if URL != '':
+        ext = getFileExtension(URL)
+        loader = CFileLoader2() #file loader
+        loader.load(URL, imageCacheDir + "icon." + ext, timeout=2, proxy="ENABLED", content_type='image')
+        if loader.state == 0:
+            return loader.localfile
             
     return imageDir+'icon_'+str(type)+'.png'
     
+######################################################################
+# Description: Handles the selection of an item in the list.
+######################################################################  
+def getPlaylistPosition(self):
+    pos = self.list.getSelectedPosition()
+        
+    if (self.page > 0):
+        pos = pos + (self.page*page_size) - 1
+            
+    return pos
     
 ######################################################################
 # Description: Handles the selection of an item in the list.
@@ -299,47 +249,22 @@ def getPlEntryThumb(type):
 # Return     : -
 ######################################################################
 def SelectItem(mediaitem=CMediaItem()):
-    type = mediaitem.type
+    type = mediaitem.GetType()
     if type == 'playlist' or type == 'favorite' or type[0:3] == 'rss' or \
        type == 'rss_flickr_daily' or type == 'directory' or \
        type == 'html_youtube' or type == 'xml_shoutcast' or \
        type == 'xml_applemovie':
            
-                result = ParsePlaylist(mediaitem)             
+            result = ParsePlaylist(mediaitem)           
 
     elif type == 'video' or type == 'audio' or type == 'html':
-#these lines are used for debugging only
-#                self.onDownload()
-#                self.state_busy = 0
-#                self.selectBoxMainList()
-#                self.state_busy = 0                
-#                return
-                
-#       if (playlist != 0) and (playlist.playmode == 'autonext'):
-#            size = playlist.size()
-#            if playlist.player == 'mplayer':
-#                MyPlayer = CPlayer(xbmc.PLAYER_CORE_MPLAYER, function=myPlayerChanged)
-#            elif playlist.player == 'dvdplayer':
-#                MyPlayer = CPlayer(xbmc.PLAYER_CORE_DVDPLAYER, function=myPlayerChanged)
-#            else:
-#                MyPlayer = CPlayer(xbmc.PLAYER_CORE_AUTO, function=.myPlayerChanged)                
-#            result = MyPlayer.play(playlist, pos, size-1)
-#        else:
-        if(True):
-#            xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).play(mediaitem.URL)
-#            if mediaitem.player == 'mplayer':
-#                MyPlayer = CPlayer(xbmc.PLAYER_CORE_MPLAYER, function=myPlayerChanged)
-#            elif mediaitem.player == 'dvdplayer':
-#                MyPlayer = CPlayer(xbmc.PLAYER_CORE_DVDPLAYER, function=myPlayerChanged)
-#            else:
-                MyPlayer = CPlayer(xbmc.PLAYER_CORE_AUTO, function=myPlayerChanged)
-                result = MyPlayer.play_URL(mediaitem.URL, mediaitem)      
-#            dialog.close()   
+        MyPlayer = CPlayer(xbmc.PLAYER_CORE_AUTO, function=myPlayerChanged)
+        result = MyPlayer.play_URL(mediaitem.URL, mediaitem)       
             
-                if result != 0:
-                    dialog = xbmcgui.Dialog()
-                    dialog.ok("Error", "Could not open file.")
-                
+        if result != 0:
+            dialog = xbmcgui.Dialog()
+            dialog.ok("Error", "Could not open file.")
+                      
     elif type == 'image':
         viewImage(mediaitem.URL) #single file show
     elif type == 'text':
@@ -353,7 +278,7 @@ def SelectItem(mediaitem=CMediaItem()):
     else:
         dialog = xbmcgui.Dialog()
         dialog.ok("Playlist format error", '"' + type + '"' + " is not a valid type.")
-
+    
 #    
 def Download(url):
         dialog = xbmcgui.Dialog()
@@ -379,15 +304,8 @@ def myPlayerChanged(state):
 # Return     : -
 ######################################################################
 def OpenTextFile(URL='', mediaitem=CMediaItem()):
-    #if (mediaitem.background == 'default') and (self.pl_focus.background != 'default'):
-    #    mediaitem = copy.copy(mediaitem)
-    #    mediaitem.background = self.pl_focus.background
-
-#    pass
-                    
     textwnd = CTextView()
     result = textwnd.OpenDocument(URL, mediaitem)
-#    setInfoText(visible=0) #loading text off            
 
     if result == 0:
         textwnd.doModal()
@@ -480,37 +398,35 @@ def viewImage(iURL=''):
 ######################################################################
 def InstallApp(URL='', mediaitem=CMediaItem()):
     dialog = xbmcgui.Dialog()
-    if mediaitem.type[0:6] == 'script':
-        index=mediaitem.type.find(":")
-        if index != -1:
-            type = mediaitem.type[index+1:]
-        else:
-            type = ''
+            
+    type = mediaitem.GetType(0)
+    attributes = mediaitem.GetType(1)
+            
+    if type == 'script':
         if dialog.yesno("Message", "Install Script?") == False:
             return
-#        self.setInfoText("Installing...")
+
         installer = CInstaller()
         result = installer.InstallScript(URL, mediaitem)
 
-    elif mediaitem.type[0:6] == 'plugin':
-        index=mediaitem.type.find(":")
-        if index != -1:
-            type = mediaitem.type[index+1:] + " "
-        else:
-            type = ''
-        if dialog.yesno("Message", "Install " + type + "Plugin?") == False:
+    elif type == 'plugin':
+        if dialog.yesno("Message", "Install " + attributes + " Plugin?") == False:
             return
-#        self.setInfoText("Installing...")
+        
         installer = CInstaller()
         result = installer.InstallPlugin(URL, mediaitem)
+    elif type == 'skin':
+        if dialog.yesno("Message", "Install Skin?") == False:
+            return
+
+        installer = CInstaller()
+        result = installer.InstallSkin(URL, mediaitem)
     else:
         result = -1 #failure
             
-#    self.setInfoText(visible=0)
-            
     if result == 0:
         dialog.ok(" Installer", "Installation successful.")
-        if type == 'navi-x':
+        if attributes == 'navi-x':
             dialog.ok(" Installer", "Please restart Navi-X.")
     elif result == -1:
         dialog.ok(" Installer", "Installation aborted.")
@@ -558,6 +474,7 @@ def PlaylistSearch(item, append):
     #        self.SearchHistory.pop()
     #    self.onSaveSearchHistory()
     
+    #get the search type:
     index=item.type.find(":")
     if index != -1:
         search_type = item.type[index+1:]
@@ -565,7 +482,7 @@ def PlaylistSearch(item, append):
         search_type = ''
             
     #youtube search
-    if item.type == 'search_youtube' or (search_type == 'html_youtube'):
+    if (item.type == 'search_youtube') or (search_type == 'html_youtube'):
         fn = searchstring.replace(' ','+')
         if item.URL != '':
             URL = item.URL

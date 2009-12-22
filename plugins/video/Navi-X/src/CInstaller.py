@@ -21,21 +21,12 @@ import shutil
 import zipfile
 from settings import *
 from CFileLoader import *
+from CURLLoader import *
+
 from libs2 import *
 
 try: Emulating = xbmcgui.Emulating
 except: Emulating = False
-
-#RootDir = os.getcwd()
-#if RootDir[-1]==';': RootDir=RootDir[0:-1]
-#if RootDir[-1]!='\\': RootDir=RootDir+'\\'
-#imageDir = RootDir + "\\images\\"
-#cacheDir = RootDir + "\\cache\\"
-#imageCacheDir = RootDir + "\\cache\\imageview\\"
-#scriptDir = "Q:\\scripts\\"
-#pluginDir = "Q:\\plugins\\"
-#myDownloadsDir = RootDir + "My Downloads\\"
-#initDir = RootDir + "\\init\\"
 
 ######################################################################
 # Description: Handles installation of scripts and plugins
@@ -54,6 +45,15 @@ class CInstaller(xbmcgui.Window):
         else:
             self.URL = mediaitem.URL
         
+        dialog=xbmcgui.DialogProgress()
+        dialog.create("Installer")
+        dialog.update(33,"Downloading file...")
+        
+        urlopener = CURLLoader()
+        result = urlopener.urlopen(self.URL, mediaitem)
+        if result == 0:
+            self.URL = urlopener.loc_url
+               
         #download the file.
         loader = CFileLoader()
         loader.load(self.URL, cacheDir + 'script.zip')
@@ -61,7 +61,11 @@ class CInstaller(xbmcgui.Window):
             return -2
         filename = loader.localfile
 
+        dialog.update(66,"Installing...")
+
         result = self.unzip_file_into_dir(filename, scriptDir)   
+
+        dialog.close()
 
         return result
                 
@@ -76,27 +80,76 @@ class CInstaller(xbmcgui.Window):
             self.URL = URL
         else:
             self.URL = mediaitem.URL
-               
+        
+        dialog=xbmcgui.DialogProgress()
+        dialog.create("Installer")
+        dialog.update(33,"Downloading file...")        
+        
+        urlopener = CURLLoader()
+        result = urlopener.urlopen(self.URL, mediaitem)
+        if result == 0:
+            self.URL = urlopener.loc_url
+        
+        
         #retrieve the type of plugin
         index=mediaitem.type.find(":")
         if index != -1:
             subdir = mediaitem.type[index+1:] + '\\'
         else:
             subdir = ''
-        
+               
         #download the file.
         loader = CFileLoader()
         loader.load(self.URL, cacheDir + 'plugin.zip', content_type='zip')
-
         if loader.state != 0:
             if loader.state == -2:
                 dialog = xbmcgui.Dialog()
                 dialog.ok(" Installer", "Failed. Not a ZIP file.", "Use the standard Download feature.")
             return -2
         filename = loader.localfile
-             
+        
+        dialog.update(66,"Installing...")
+        
         result = self.unzip_file_into_dir(filename, pluginDir + subdir)    
        
+        dialog.close()
+       
+        return result
+
+    ######################################################################
+    # Description: Handles Installation of a skin ZIP file.
+    # Parameters : URL = URL of the file
+    #              mediaitem=CMediaItem object to load
+    # Return     : -
+    ######################################################################
+    def InstallSkin(self, URL='', mediaitem=CMediaItem()):
+        if URL != '':
+            self.URL = URL
+        else:
+            self.URL = mediaitem.URL
+        
+        dialog=xbmcgui.DialogProgress()
+        dialog.create("Installer")
+        dialog.update(33,"Downloading file...")
+        
+        urlopener = CURLLoader()
+        result = urlopener.urlopen(self.URL, mediaitem)
+        if result == 0:
+            self.URL = urlopener.loc_url
+               
+        #download the file.
+        loader = CFileLoader()
+        loader.load(self.URL, cacheDir + 'skin.zip')
+        if loader.state != 0:
+            return -2
+        filename = loader.localfile
+
+        dialog.update(66,"Installing...")
+
+        result = self.unzip_file_into_dir(filename, skinDir)   
+
+        dialog.close()
+
         return result
 
     ######################################################################

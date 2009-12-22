@@ -41,16 +41,16 @@ class CPlayer(xbmc.Player):
 
         xbmc.Player.__init__(self)
 
-    def onPlayBackStarted(self):
-        self.function(1)
+#    def onPlayBackStarted(self):
+#        self.function(1)
     
-    def onPlayBackEnded(self):
-        self.stopped=True
-        self.function(2)
+#    def onPlayBackEnded(self):
+#        self.stopped=True
+#        self.function(2)
         
-    def onPlayBackStopped(self):
-        self.stopped=True
-        self.function(3)
+#    def onPlayBackStopped(self):
+#        self.stopped=True
+#        self.function(3)
 
     ######################################################################
     # Description: Play the video, audio in the playlist
@@ -128,7 +128,7 @@ class CPlayer(xbmc.Player):
             # result = urlopener.urlopen(URL, mediaitem)
             # if result != 0:
                 # return -1
-            self.pls.add(urlopener.loc_url)
+            self.pls.add(URL)
 
         #SetInfoText("Loading... ")
 

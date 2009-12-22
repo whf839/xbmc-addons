@@ -19,20 +19,6 @@ from settings import *
 try: Emulating = xbmcgui.Emulating
 except: Emulating = False
 
-RootDir = os.getcwd()
-if RootDir[-1]==';': RootDir=RootDir[0:-1]
-if RootDir[-1]!='\\': RootDir=RootDir+'\\'
-imageDir = RootDir + "images\\"
-#cacheDir = RootDir + "cache\\playlists\\"
-cacheDir = RootDir + "cache\\"
-imageCacheDir = RootDir + "cache\\imageview\\"
-scriptDir = "Q:\\scripts\\"
-pluginDir = "Q:\\plugins\\"
-myDownloadsDir = RootDir + "My Downloads\\"
-initDir = RootDir + "init\\"
-myPlaylistsDir = RootDir + "My Playlists\\"
-srcDir = RootDir + "src\\"
-
 ######################################################################
 # Description: Playlist item class. 
 ######################################################################
@@ -79,19 +65,36 @@ class CMediaItem:
         self.background = background #(optional) background image
         
 ######################################################################
+    # Description: Get mediaitem type.
+    # Parameters : field: field to retrieve (type or attributes)
+    # Return     : -
+    ######################################################################
+    def GetType(self, field=0):
+        index = self.type.find(':')
+        if index != -1:
+            if field == 0:
+                value = self.type[:index]
+            elif field == 1:
+                value = self.type[index+1:]
+            else: #invalid field
+                value == ''
+        else:
+            if field == 0:
+                value = self.type
+            elif field == 1:
+                value = ''
+            else: #invalid field
+                value == ''
+
+        return value
+        
+######################################################################
 # Description: Playlist item class. 
 ######################################################################
 class CHistorytem:
     def __init__(self, index=0, mediaitem=CMediaItem()):
         self.index = index
         self.mediaitem = mediaitem
-
-#class CHistorytem2:
-#    def __init__(self, URL='', index=0, type='unknown'):
-#        self.URL = URL        
-#        self.index = index
-#        self.type = type
- 
 
 ######################################################################
 # Description: Get the file extension of a URL
@@ -169,15 +172,6 @@ def get_system_platform():
 # Parameters : URL
 # Return     : string containing the page contents.
 ######################################################################  
-##def get_HTML(url):
-##    headers = { 'User-Agent' : 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.4) Gecko/2008102920 Firefox/3.0.4',
-##                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
-##    req = urllib2.Request(url=url, headers=headers)
-##    response = urllib2.urlopen(req)
-##    link=response.read()
-##    response.close()
-##    return link   
-##
 def get_HTML(url,referer='',cookie=''):
     headers = { 'User-Agent' : 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.4) Gecko/2008102920 Firefox/3.0.4',
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',

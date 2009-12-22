@@ -40,18 +40,70 @@ PAL_16x9 = 7        #(720x576, 16:9, pixels are 512:351)
 PAL60_4x3 = 8       #(720x480, 4:3, pixels are 4320:4739)
 PAL60_16x9 = 9      #(720x480, 16:9, pixels are 5760:4739)
 
+
+#############################################################################
+# directory settings
+#############################################################################
+import os
+RootDir = os.getcwd()
+if RootDir[-1]==';': RootDir=RootDir[0:-1]
+if RootDir[0] == '/':
+    if RootDir[-1] != '/': RootDir = RootDir+'/'
+    myDownloadsDir = RootDir + "My Downloads/"
+    initDir = RootDir + "init/"
+    myPlaylistsDir = RootDir + "My Playlists/"
+    srcDir = RootDir + "src/"
+    imageDir = RootDir + "images/"
+    cacheDir = RootDir + "cache/"
+    imageViewCacheDir = RootDir + "cache/mageview/"
+    imageCacheDir = RootDir + "cache/images/"
+    tempCacheDir = RootDir + "cache/temp/"    
+    SEPARATOR = '/'
+else:
+    if RootDir[-1] != '\\': RootDir = RootDir+'\\'
+    myDownloadsDir = RootDir + "My Downloads\\"
+    initDir = RootDir + "init\\"
+    myPlaylistsDir = RootDir + "My Playlists\\"
+    srcDir = RootDir + "src\\"
+    imageDir = RootDir + "images\\"
+    cacheDir = RootDir + "cache\\"
+    imageViewCacheDir = RootDir + "cache\\imageview\\"
+    imageCacheDir = RootDir + "cache\\images\\"
+    tempCacheDir = RootDir + "cache\\temp\\"    
+    SEPARATOR = '\\'
+
+import xbmc
+version = xbmc.getInfoLabel("System.BuildVersion")[:1]
+
+if version == '9':
+    scriptDir = "special://home/scripts/"
+    pluginDir = "special://home/plugins/"
+    skinDir = "special://home/skin/"
+else: 
+    scriptDir = "Q:\\scripts\\"
+    pluginDir = "Q:\\plugins\\"
+    skinDir = "Q:\\skin\\"
+
+
 ######################################################################
-Version='2' #program version
-SubVersion='7'
+Version='3' #program version
+SubVersion='0.2'
 
 favorite_file='favorites.plx' #the favorite list is also a playlist
 downloads_file='downlmenu.plx' #the downloads list is also a playlist
 downloads_queue='downlqueue.plx'
 downloads_complete='downloads.plx'
 parent_list='blacklist.plx'
+history_list='history.plx'
 plxVersion = '8'
 home_URL_old='http://www.navi-x.nl/playlists/home.plx'
 home_URL='http://www.navi-x.org/playlists/homeplg.plx'
 home_URL_mirror='http://navi-x.googlecode.com/svn/trunk/Playlists/home.plx'
+background_image = 'background.png'
+background_image1 = 'background1.png'
+
+url_open_timeout = 10 #10 seconds
+page_size = 200 #display maximum 100 entries on one page
+history_size = 50 #maximum of entries in the history list
 
 url_open_timeout = 30

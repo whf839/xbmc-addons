@@ -18,24 +18,12 @@ import urllib2
 import re, random, string
 import xbmc, xbmcgui
 import re, os, time, datetime, traceback
-#import Image, ImageFile
 import shutil
 import zipfile
 from settings import *
-from libs2 import *
 
 try: Emulating = xbmcgui.Emulating
 except: Emulating = False
-
-#RootDir = os.getcwd()
-#if RootDir[-1]==';': RootDir=RootDir[0:-1]
-#if RootDir[-1]!='\\': RootDir=RootDir+'\\'
-#imageDir = RootDir + "images\\"
-#cacheDir = RootDir + "cache\\"
-#imageCacheDir = RootDir + "cache\\imageview\\"
-#scriptDir = "Q:\\scripts\\"
-#myDownloadsDir = RootDir + "My Downloads\\"
-#initDir = RootDir + "init\\"
 
 ######################################################################
 # Description: Browse dialog class
@@ -85,6 +73,10 @@ class CDialogBrowse(xbmcgui.WindowDialog):
                        
         if action == ACTION_SELECT_ITEM:
             if self.getFocus() == self.button_ok:
+                if os.path.exists(self.dir) == False:
+                    dialog = xbmcgui.Dialog()
+                    dialog.ok("Error", "Destination directory does not exist")
+                else:
                 self.state = 0 #success
                 self.close() #exit
             if self.getFocus() == self.button_cancel:
@@ -115,6 +107,7 @@ class CDialogBrowse(xbmcgui.WindowDialog):
                     if self.type == 3:
                         if fn[-1] != '\\':
                             fn = fn + '\\'
+                            
                         self.dir = fn
                     else:
                         pos = fn.rfind('\\') #find last '\' in the string

@@ -29,16 +29,6 @@ from libs2 import *
 try: Emulating = xbmcgui.Emulating
 except: Emulating = False
 
-#RootDir = os.getcwd()
-#if RootDir[-1]==';': RootDir=RootDir[0:-1]
-#if RootDir[-1]!='\\': RootDir=RootDir+'\\'
-#imageDir = RootDir + "\\images\\"
-#cacheDir = RootDir + "\\cache\\"
-#imageCacheDir = RootDir + "\\cache\\imageview\\"
-#scriptDir = "Q:\\scripts\\"
-#myDownloadsDir = RootDir + "My Downloads\\"
-#initDir = RootDir + "\\init\\"
-
 ######################################################################
 # Description: See comments in class body
 ######################################################################
@@ -84,6 +74,9 @@ class CDownLoader(threading.Thread):
     
     def download_stop(self):
         self.running = False
+             
+    def download_isrunning(self):
+        return self.running
              
     def kill(self):
         self.killed = True
