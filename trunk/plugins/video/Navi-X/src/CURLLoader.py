@@ -49,8 +49,7 @@ class CURLLoader:
             self.loc_url = URL
               
         #special handling for apple movie trailers
-        #if mediaitem.GetType(field=1) == 'amt': 
-        if self.loc_url.find('http://movies.apple.com') != -1:
+        if (result == 0) and self.loc_url.find('http://movies.apple.com') != -1:
             result = self.geturl_applemovie(self.loc_url)         
         
         return result

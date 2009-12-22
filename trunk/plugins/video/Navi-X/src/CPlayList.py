@@ -881,12 +881,20 @@ class CPlayList:
         self.title = 'Apple Movie Trailers'
         self.description = ''
         self.player = mediaitem.player
+        self.processor = mediaitem.processor        
         self.playmode = 'default'
         self.start_index = 0
         #clear the list
         del self.list[:]
         dates = [] #contains the dates
         
+        sortstring = mediaitem.GetType(field=1)
+        if sortstring != '':
+            sortorder = 'descending'
+        else:
+            sortorder = 'ascending'
+            sortstring = 'releasedate'
+                      
         #get the publication date and add it to the title.
         index = data.find('<records date')
         if index != -1:
@@ -903,6 +911,8 @@ class CPlayList:
                 #create a new entry
                 tmp = CMediaItem() #create new item
                 tmp.type = 'video'
+                tmp.player = self.player
+                tmp.processor = self.processor
             
                 index2 = m.find('</title>')
                 if index2 != -1:
@@ -911,11 +921,11 @@ class CPlayList:
 
                 #fill the release date
                 date = 0
-                index = m.find('<releasedate>')
+                index = m.find('<' + sortstring + '>')
                 if index != -1:
-                    index2 = m.find('</releasedate>')
+                    index2 = m.find('</' + sortstring + '>')
                     if index2 != -1:
-                        value = m[index+13:index2]
+                        value = m[index+len(sortstring)+2:index2]
                         if value != '':
                             date=int(value[2:4]) * 365
                             date = date + int(value[5:7]) * 31
@@ -942,7 +952,7 @@ class CPlayList:
                             value = m[index3:index2]
                             tmp.URL = value
                             
-                #fill the postdate
+                #fill the date
                 index = m.find('<postdate>')
                 if index != -1:
                     index2 = m.find('</postdate>')
@@ -950,14 +960,26 @@ class CPlayList:
                             value = m[index+10:index2]
                             tmp.date = value            
                             
+                #fill the description
+                index = m.find('<description>')
+                if index != -1:
+                    index2 = m.find('</description>')
+                    if index2 != -1:
+                            value = m[index+13:index2]
+                            tmp.description = value 
+                            
                 self.list.append(tmp)
 
         #sort the list according release date
         for i in range(len(dates)-1):
             oldest = i
             for n in range(i, len(dates)):
-                if dates[n] < dates[oldest]:
-                    oldest = n
+                if sortorder == 'ascending':
+                    if dates[n] < dates[oldest]:
+                        oldest = n
+                else:
+                    if dates[n] > dates[oldest]:
+                        oldest = n
             if oldest != i:
                 temp = dates[i]
                 dates[i] = dates[oldest]
