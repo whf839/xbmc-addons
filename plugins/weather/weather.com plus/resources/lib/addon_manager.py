@@ -48,7 +48,7 @@ class Main:
         path = ( "", path, )[ self.message == 32220 ]
         # we add packages filename to value if include`and successful
         if ( include and self.message == 32220 ):
-            value += ": %s" % ( filename, )
+            value += " - %s" % ( filename, )
         # mark package as installed or failed
         Settings.setSetting( "install_%s" % ( setting, ), value )
         Settings.setSetting( "install_%s_path" % ( setting, ), path )

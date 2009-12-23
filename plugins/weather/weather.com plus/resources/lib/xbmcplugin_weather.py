@@ -192,7 +192,8 @@ class Main:
             # we set our maps path property to loading images while downloading
             self._set_maps_path()
             # set default map, we allow skinners to have users set this with a skin string
-            default = ( self.WEATHER_WINDOW.getProperty( "Weather.CurrentMap" ), xbmc.getInfoLabel( "Skin.String(TWC.DefaultMap)" ), )[ xbmc.getCondVisibility( "Skin.HasSetting(TWC.DefaultMapBool)" ) == True and self.WEATHER_WINDOW.getProperty( "Weather.CurrentMap" ) == "" ]
+            # TODO: look at this, seems wrong, when changing locations maps can fail to load.
+            default = ( self.WEATHER_WINDOW.getProperty( "Weather.CurrentMap" ), xbmc.getInfoLabel( "Skin.String(TWC.DefaultMap)" ), )[ xbmc.getInfoLabel( "Skin.String(TWC.DefaultMap)" ) != "" and self.WEATHER_WINDOW.getProperty( "Weather.CurrentMap" ) == "" ]
             # enumurate thru map lists and fetch map list
             for maplist_count in range( 1, 4 ):
                 # only fetch new list if required
