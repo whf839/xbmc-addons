@@ -251,7 +251,7 @@ class Forecast36HourParser:
     def _get_forecast( self, htmlSource ):
         # regex patterns
         pattern_locstate = "var omn_locstate=\"([^\"]+)\""
-        pattern_video_location = ">Watch the ([A-Za-z]+) Forecast<"
+        pattern_video_location = ">Watch the ([A-Za-z ]+) Forecast<"
         pattern_alerts = "alertArray\[[0-9]+\] = new alertObj\('([^']+)','([^']+)','([^']+)'"
         pattern_days = "from=[^\"]+\" class=\"[^\"]+\"><B>([^<]+)</font></B></A></td>"
         pattern_icon = "<img src=\"http://image.weather.com/web/common/wxicons/[0-9]+/([0-9]+)\.gif\?[^\"]+\" alt=\""
@@ -879,6 +879,9 @@ class WeatherClient:
             map_list = []
             # get correct location source
             category_title, titles, locationindex = self._get_user_file( userfile, locationindex )
+            # if user file not found return None
+            if ( category_title is None ):
+                return None, None
             # enumerate thru and create map list
             for count, title in enumerate( titles ):
                 # add title, we use an locationindex for later usage, since there is no html source to parse for images, we use count to know correct map to use
@@ -896,6 +899,9 @@ class WeatherClient:
     def _get_user_file( self, userfile, locationindex ):
         # get user defined file source
         xmlSource = self._fetch_data( userfile )
+        # if no source, then file moved so return
+        if ( xmlSource == "" ):
+            return None, None, None
         # default pattern
         pattern = "<location id=\"%s\" title=\"(.+?)\">(.+?)</location>"
         # get location, if no location for index, use default 1, which is required
@@ -1067,4 +1073,3 @@ class WeatherClient:
             # oops print error message
             print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
 
-    
