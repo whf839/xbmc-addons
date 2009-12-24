@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings>   <!--  28.1.2009 Finnish   -->
+<strings>   <!--  24.12.2009 Finnish   -->
     <string id="30000">Käytä DVD Player-soitinta</string>
     <string id="30001">Lataa ja toista video</string>
     <string id="30002">Latauspolku</string>
@@ -13,5 +13,5 @@
     <string id="30009">wmv-small</string>
     <string id="30010">xvid-large</string>
     <string id="30011">xvid-small</string>
-    <string id="30012">Näytä kaikki jaksot (Käynnistä lisäke uudelleen)</string>
+    <string id="30012">Näytä kaikki jaksot (Käynnistä lisäosa uudelleen)</string>
 </strings>
