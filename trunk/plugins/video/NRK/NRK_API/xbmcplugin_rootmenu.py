@@ -63,7 +63,7 @@ class Main:
      
         self.add('Program',  nrk.PROGRAM,  nrk.PROGRAM,  img='program-icon.png')
         self.add('Direkte',  nrk.PROGRAM,  nrk.LIVE,     img='live-icon.png')
-        self.add('Kanalene', nrk.CHANNELS, nrk.CHANNELS, img='live-icon.png')
+        self.add('Kanalene', nrk.CHANNELS, nrk.CHANNELS, img='channels-icon.png')
             
         self.add('Sport',    nrk.PROGRAM, nrk.PLAYLIST, 'sport',    'sports-icon.png')
         self.add('Nyheter',  nrk.PROGRAM, nrk.PLAYLIST, 'nyheter',  'news-icon.png')

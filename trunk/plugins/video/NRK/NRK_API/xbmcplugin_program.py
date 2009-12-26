@@ -163,6 +163,13 @@ class WebTV(Plugin):
             if not shows: return
             self.stack.extend(shows)
             
+        elif view is nrk.RECOMMENDED:
+            self.category = lang(30217)
+            self.content  = 'tvshows'
+            shows         = self.api.get_recommended_shows()
+            if not shows: return
+            self.stack.extend(shows)
+            
         else:
             theme         = nrk.views.theme_title[ident]
             self.category = '%s - %s' % ( self.catbase, theme )

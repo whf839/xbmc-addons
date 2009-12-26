@@ -51,6 +51,7 @@ TOP_THIS_WEEK  = 'msUke';     VIEW_ALL = 'visalle'
 TOP_TOTAL      = 'msTotalt';  BY_CHAR  = 'letter'
 RELEVANT       = 'aktuelt';   PROGRAM  = 'program'
 LIVE           = 'direkte';   ARCHIVE  = 'arkiv'
+RECOMMENDED    = 'recommended'
 
 #Playlists
 SPORT = 'sport';  NEWS = 'nyheter';  SUPER = 'super'
@@ -315,6 +316,16 @@ class Api:
         path = extract.current_path(data)
         print 'Current path: %s' % path.encode('ascii', 'replace')
         return path
+ 
+    
+    def get_recommended_shows(self):    
+        url   = uri.subpath()
+        heads = uri.cookieheader; heads.update(uri.baseheaders)
+        print heads
+        data  = self.dman.get_data(url, headers=heads)
+        print '______________len data', len(data) 
+        return extract.recommended(data)
+        
         
         
         
@@ -480,7 +491,7 @@ class uri:
 						'nb-NO; rv:1.9.0.11) Gecko/2009060215 ' +
 						'Firefox/3.0.11'),
 		'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
-		'Accept-Encoding': 'gzip,deflate',
+		#'Accept-Encoding': 'gzip,deflate',
 		'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
 	}
     
@@ -506,7 +517,15 @@ class regex:
                     <a.+?>(?P<title>.*?)</.+?             #title  idx: 4
                     <a.+?>(?P<plot>.*?)<                  #desc   idx: 5
                 """
-                
+    
+    recommended   = r"""(?sx)
+                    <div\sclass="intro-element\sintro-element-small">.*?
+                    <a\shref="/nett-tv/(?P<type>klipp)/(?P<id>.*?)".*?
+                    title="(?P<plot>.*?)">.*?<img\ssrc="(?P<image>.*?)".*?/>.*?
+                    </a>.*?<div\sclass="intro-element-content">
+                    <h2><a\shref="/nett-tv/klipp/.*?".*?>(?P<title>.*?)</a></h2>
+                    """
+    
     show_clip_xml = r"""(?sx)
                     <mediadefinition>.*?
                     <title>(?P<title>.*?)</title>.*?       #title idx: 0
@@ -597,6 +616,23 @@ class extract:
             item.key.type = m.group('type').encode('ascii', 'ignore')
             if ext:
                 item = ext(item)
+            istack.append(item)
+        return istack
+    # - EOM -
+    
+    
+    @staticmethod
+    def recommended(data):
+        istack = []
+        for m in re.finditer(regex.recommended, data):	
+            item = MediaObj()
+            item.plot = m.group('plot')
+            item.title = m.group('title')
+            item.thumbnail = m.group('image').encode('ascii', 'ignore')
+            #State identifiers
+            item.key = Key()
+            item.key.id = int(m.group('id'))
+            item.key.type = m.group('type').encode('ascii', 'ignore')
             istack.append(item)
         return istack
     # - EOM -
@@ -912,7 +948,7 @@ class views:
                         view = TOP_THIS_MONTH, arg = parent.arg
                     ),
                     #title = 'Mest sett denne maned',
-                    title = lang(30203), 
+                    title = lang(30204), 
                     thumbnail = os.path.join(rpath, 'stats-icon.png')
                 ), MediaObj(
                     key = Key(
@@ -920,7 +956,7 @@ class views:
                         view = TOP_THIS_WEEK, arg = parent.arg
                     ),
                     #title = 'Mest sett denne uken',
-                    title = lang(30204),
+                    title = lang(30203),
                     thumbnail = os.path.join(rpath, 'stats-icon.png')
                 )
             ]
@@ -937,33 +973,39 @@ class views:
                 ), MediaObj(
                     key = Key(id = '@',type = PROGRAM, view = VIEW_ALL),
                     #title = 'Vis alle',
-                    title = lang(30209),
+                    title = lang(30207),
                     parent = parent,
                     thumbnail = os.path.join(resource_path, 'all-icon.png')
                 ), MediaObj(
                     key = Key(type = PROGRAM, view = BY_THEME),
                     #title = 'Vis tema liste',
-                    title = lang(30210), 
+                    title = lang(30209), 
                     parent = parent,
                     thumbnail = os.path.join(resource_path, 'theme-icon.png')
                 ), MediaObj(
                     key = Key(type = PROGRAM, id = 3650, view = TOP_TOTAL),
                     #title = 'Mest sett totalt', 
-                    title = lang(30211),
+                    title = lang(30202),
                     parent = parent,
                     thumbnail = os.path.join(resource_path, 'stats-icon.png')
                 ), MediaObj(
                     key = Key(type = PROGRAM, id = 31, view = TOP_THIS_MONTH),
                     #title = 'Mest sett denne maned',
-                    title = lang(30212), 
+                    title = lang(30204), 
                     parent = parent,
                     thumbnail = os.path.join(resource_path, 'stats-icon.png')
                 ), MediaObj(
                     key = Key(type = PROGRAM, id = 7, view = TOP_THIS_WEEK),
                     #title = 'Mest sett denne uken', 
-                    title = lang(30213),
+                    title = lang(30203),
                     parent = parent,
                     thumbnail = os.path.join(resource_path, 'stats-icon.png')
+                ), MediaObj(
+                    key = Key(type = PROGRAM, view = RECOMMENDED),
+                    #title = 'Anbefalte programmer', 
+                    title = lang(30217),
+                    parent = parent,
+                    thumbnail = os.path.join(resource_path, 'favorites.png')
                 )
             ]
     
