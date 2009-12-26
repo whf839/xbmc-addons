@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="webradio-stylesheet.xsl"?>
 <!--This document contains hyperlinks and information about NRK web radio broadcasts-->
 <radio>
@@ -296,6 +296,15 @@
       <bitrate>172</bitrate>
       <format>ogg</format>
       <link>http://media.hiof.no/streams/m3u/nrk-alltid-klassisk-172.ogg.m3u</link>
+    </stream>
+  </channel>
+  <channel id="nrksuper">
+    <title>NRK SUPER</title>
+    <logo>nrk_super.png</logo>
+    <stream>
+      <bitrate>128</bitrate>
+      <format>wma</format>
+      <link>http://media.hiof.no/streams/m3u/nrk-super-128.m3u</link>
     </stream>
   </channel>
 </radio>
