@@ -71,7 +71,7 @@ class Main:
         #self.add('Barn',     nrk.PROGRAM, nrk.PLAYLIST, 'super',    'children-icon.png')
         self.add('Natur',    nrk.PROGRAM, nrk.PLAYLIST, 'natur',    'nature-icon.png')
       
-        self.add('NRKBeta',           'nrkbeta',  'feed',     img='nrkbeta.jpg')
+        self.add('NRKBeta',           'nrkbeta',  'feed',     img='nrkbeta.png')
         self.add('NRK Nettradio',     'webradio', 'webradio', img='speaker-icon.png')
         self.add('NRK Video Podcast', 'podcast',  'video',    img='video-podcast.png')
         self.add('NRK Lyd Podcast',   'podcast',  'sound',    img='audio-podcast.png')
