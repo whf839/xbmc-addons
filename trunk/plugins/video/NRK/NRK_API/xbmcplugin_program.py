@@ -142,8 +142,20 @@ class WebTV(Plugin):
         # View top total    
         elif (view is nrk.TOP_TOTAL      or 
               view is nrk.TOP_THIS_MONTH or 
-              view is nrk.TOP_THIS_WEEK):
+              view is nrk.TOP_THIS_WEEK  or 
+              view is nrk.TOP_BY_INPUT):
             
+            if ident == 0:
+                input = keyboard(heading=lang(30101))
+                try:
+                    input = int(input)
+                except:
+                    raise PluginError(lang(30102), lang(30102))
+                else:
+                    if not input > 0 and not input < 9999:
+                        raise PluginError(lang(30102), lang(30102))  
+                    else:
+                        ident = input
             try:
                 top = {7: lang(30213), 31: lang(30214), 3600: lang(30215)}[ident]
             except:

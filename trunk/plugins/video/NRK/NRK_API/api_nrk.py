@@ -23,7 +23,7 @@ import os
 import re
 import sys
 import xbmc
-from utils import Key, Plugin
+from utils import Key, Plugin, decode_htmlentities
 from urllib import quote_plus, unquote_plus
 from connection_manager import DataHandle, Session
 
@@ -52,6 +52,7 @@ TOP_TOTAL      = 'msTotalt';  BY_CHAR  = 'letter'
 RELEVANT       = 'aktuelt';   PROGRAM  = 'program'
 LIVE           = 'direkte';   ARCHIVE  = 'arkiv'
 RECOMMENDED    = 'recommended'
+TOP_BY_INPUT   = 'topbyinput' 
 
 #Playlists
 SPORT = 'sport';  NEWS = 'nyheter';  SUPER = 'super'
@@ -321,9 +322,7 @@ class Api:
     def get_recommended_shows(self):    
         url   = uri.subpath()
         heads = uri.cookieheader; heads.update(uri.baseheaders)
-        print heads
         data  = self.dman.get_data(url, headers=heads)
-        print '______________len data', len(data) 
         return extract.recommended(data)
         
         
@@ -626,8 +625,9 @@ class extract:
         istack = []
         for m in re.finditer(regex.recommended, data):	
             item = MediaObj()
-            item.plot = m.group('plot')
-            item.title = m.group('title')
+            plot = m.group('plot').decode('iso-8859-1')
+            item.plot =  decode_htmlentities( plot ) 
+            item.title =  m.group('title') 
             item.thumbnail = m.group('image').encode('ascii', 'ignore')
             #State identifiers
             item.key = Key()
@@ -1000,6 +1000,12 @@ class views:
                     title = lang(30203),
                     parent = parent,
                     thumbnail = os.path.join(resource_path, 'stats-icon.png')
+                ), MediaObj(
+                    key = Key(type = PROGRAM, id = 0, view = TOP_BY_INPUT),
+                    #title = 'Mest sett siste X dager', 
+                    title = lang(30218),
+                    parent = parent,
+                    thumbnail = os.path.join(resource_path, 'input.png')
                 ), MediaObj(
                     key = Key(type = PROGRAM, view = RECOMMENDED),
                     #title = 'Anbefalte programmer', 

@@ -31,7 +31,9 @@
   <string id="30030">Download folder</string>
   
   <string id="30100">Input search string</string>
-
+  <string id="30101">Input number of days to search</string>
+  <string id="30102">Invalid search string</string>
+  
   <!-- Themes -->
   <string id="30101">Barn</string>
   <string id="30102">Natur</string>
@@ -81,6 +83,7 @@
   <string id="30215">Totalt</string>
   <string id="30216">Siste %d dager</string>
   <string id="30217">Anbefalte programmer</string>
+  <string id="30218">Mest sett siste X dager</string>
   
   <!-- Root menu -->
   <string id="30250">Program</string>
