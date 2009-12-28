@@ -106,7 +106,6 @@ def _localize_unit( value, unit="temp" ):
             hour = int( value.split( ":" )[ 0 ] )
             hour += ( 12 * ( value.split( " " )[ 1 ].lower() == "pm" and int( value.split( ":" )[ 0 ] ) != 12 ) )
             hour -= ( 12 * ( value.split( " " )[ 1 ].lower() == "am" and int( value.split( ":" )[ 0 ] ) == 12 ) )
-            
             time = "%d:%s" % ( hour, value.split( " " )[ 0 ].split( ":" )[ 1 ], )
         if ( id.split( " " )[ -1 ] == "xx" ):
             time = "%s %s" % ( time, value.split( " " )[ 1 ], ) 
@@ -320,6 +319,7 @@ class ForecastHourlyParser:
     def _get_forecast( self, htmlSource ):
         # regex patterns
         pattern_headings = "<div class=\"hbhTD[^\"]+\"><div title=\"[^>]+>([^<]+)</div></div>"
+        pattern_date = "<div class=\"hbhDateHeader\">([^<]+)</div>"
         pattern_info = "<div class=\"hbhTDTime[^>]+><div>([^<]+)</div></div>.*\s\
 [^<]+<div class=\"hbhTDConditionIcon\"><div><img src=\"http://i.imwx.com/web/common/wxicons/[0-9]+/(gray/)?([0-9]+).gif\"[^>]+></div></div>.*\s\
 [^<]+<div class=\"hbhTDCondition\"><div><b>([^<]+)</b><br>([^<]+)</div></div>.*\s\
@@ -338,6 +338,8 @@ class ForecastHourlyParser:
         """
         # fetch info
         info = re.findall( pattern_info, htmlSource )
+        # fetch dates
+        dates = re.findall( pattern_date, htmlSource )
         # enumerate thru and create heading and forecast
         if ( len( info ) ):
             # we convert wind direction to full text
@@ -378,12 +380,17 @@ class ForecastHourlyParser:
                 # split text into it's original list
                 wind = text.split( "|||||" )[ 0 ].split( "|" )
                 brief = text.split( "|||||" )[ 1 ].split( "|" )
+            # counter for date
+            date_counter = 0
             # create our forecast list
             for count, item in enumerate( info ):
                 # make icon path
                 iconpath = "/".join( [ "special://temp", "weather", "128x128", item[ 2 ] + ".png" ] )
+                # do we need to increment date_counter
+                if ( item[ 0 ] == "12 am" and count > 0 ):
+                    date_counter += 1
                 # add result to our class variable
-                self.forecast += [ ( _localize_unit( item[ 0 ], "time" ), iconpath, _localize_unit( item[ 3 ] ), brief[ count ], _localize_unit( item[ 5 ] ), item[ 6 ].replace( "%", "" ), item[ 7 ].replace( "%", "" ), wind[ count ], _localize_unit( item[ 9 ], "speed" ), item[ 8 ].split( " " )[ -1 ] ) ]
+                self.forecast += [ ( _localize_unit( item[ 0 ], "time" ), dates[ date_counter ].split( ", " )[ 1 ], iconpath, _localize_unit( item[ 3 ] ), brief[ count ], _localize_unit( item[ 5 ] ), item[ 6 ].replace( "%", "" ), item[ 7 ].replace( "%", "" ), wind[ count ], _localize_unit( item[ 9 ], "speed" ), item[ 8 ].split( " " )[ -1 ] ) ]
 
 
 class ForecastWeekendParser:
