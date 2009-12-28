@@ -24,14 +24,14 @@ class Main:
         # get watched list
         self._get_watched()
         # fetch all trailers recursively
-        self._fetch_trailers( [ self.settings[ "trailer_path" ] ] )
+        self._fetch_trailers( [ self.settings[ "trailer_folder" ] ] )
         # get a random number of trailers
         self._shuffle_trailers()
         # save watched list
         self._save_watched()
         # return results
         return self.trailers
-        
+
     def _fetch_trailers( self, paths ):
         # reset folders list
         folders = []
@@ -44,7 +44,7 @@ class Main:
                 # remove <li> from item
                 entry = entry.replace( "<li>", "" )
                 # if folder add to our folder list to recursively fetch slides
-                if ( entry.endswith( "/" ) ):
+                if ( entry.endswith( "/" ) or entry.endswith( "\\" ) ):
                     folders += [ entry ]
                 # does this entry match our pattern "-trailer." and is a video file
                 elif ( "-trailer." in entry and os.path.splitext( entry )[ 1 ] in xbmc.getSupportedMedia( "video" ) and ( self.movie != os.path.splitext( os.path.basename( entry ).replace( "-trailer", "" ) )[ 0 ] ) ):
@@ -62,7 +62,7 @@ class Main:
         # now create our final playlist
         for trailer in self.tmp_trailers:
             # user preference to skip watch trailers
-            if ( self.settings[ "unwatched_only" ] and xbmc.getCacheThumbName( trailer ) in self.watched ):
+            if ( self.settings[ "trailer_newest_only" ] and xbmc.getCacheThumbName( trailer ) in self.watched ):
                 continue
             # add id to watched file TODO: maybe don't add if not user preference
             self.watched += [ xbmc.getCacheThumbName( trailer ) ]
@@ -71,7 +71,7 @@ class Main:
             # increment counter
             count += 1
             # if we have enough exit
-            if ( count == self.settings[ "number_trailers" ] ):
+            if ( count == self.settings[ "trailer_count" ] ):
                 break
 
     def _set_trailer_info( self, trailer ):

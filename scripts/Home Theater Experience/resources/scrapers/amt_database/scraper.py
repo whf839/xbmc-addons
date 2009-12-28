@@ -29,7 +29,7 @@ class Main:
 
     def clear_watched( self ):
         # make db connection
-        records = Records( amt_db_path=self.settings[ "amt_db_path" ] )
+        records = Records( amt_db_path=self.settings[ "trailer_amt_db_file" ] )
         # clear watched sql
         sql ="UPDATE movies SET times_watched=0, last_watched=''"
         # update the record with our new values
@@ -42,7 +42,7 @@ class Main:
             #  initialize our trailer list
             trailers = []
             # make db connection
-            records = Records( amt_db_path=self.settings[ "amt_db_path" ] )
+            records = Records( amt_db_path=self.settings[ "trailer_amt_db_file" ] )
             # select only trailers with valid trailer urls sql
             sql = """
                         SELECT movies.*, studios.studio, genres.genre  
@@ -63,19 +63,19 @@ class Main:
             # mpaa ratings
             mpaa_ratings = { "G": 0, "PG": 1, "PG-13": 2, "R": 3, "NC-17": 4 }
             # set the proper mpaa rating user preference
-            self.mpaa = ( self.settings[ "trailer_rating" ], self.mpaa, )[ self.settings[ "limit_query" ] ]
+            self.mpaa = ( self.settings[ "trailer_rating" ], self.mpaa, )[ self.settings[ "trailer_limit_query" ] ]
             # rating query
             rating_sql = ( "", "AND (%s)" % " ".join( [ "rating='%s' OR" % rating for rating, index in mpaa_ratings.items() if index <= mpaa_ratings.get( self.mpaa, -1 ) ] )[ : -3 ], )[ mpaa_ratings.has_key( self.mpaa ) ]
             # HD only query, only for amt db source
-            hd_sql = ( "", "AND (movies.trailer_urls LIKE '%720p.mov%' OR movies.trailer_urls LIKE '%1080p.mov%')", )[ self.settings[ "amt_hd_only" ] and ( self.settings[ "trailer_quality" ] > 1 ) ]
+            hd_sql = ( "", "AND (movies.trailer_urls LIKE '%720p.mov%' OR movies.trailer_urls LIKE '%1080p.mov%')", )[ self.settings[ "trailer_hd_only" ] and ( self.settings[ "trailer_quality" ] > 1 ) ]
             # Only unwatched query, only for amt db source
-            watched_sql = ( "", "AND movies.times_watched=0", )[ self.settings[ "unwatched_only" ] ]
+            watched_sql = ( "", "AND movies.times_watched=0", )[ self.settings[ "trailer_unwatched_only" ] ]
             # genre query, only for amt db source
-            genre_sql = ( "", "AND genres.genre='Newest'", )[ self.settings[ "amt_newest_only" ] and not self.settings[ "limit_query" ] ]
+            genre_sql = ( "", "AND genres.genre='Newest'", )[ self.settings[ "trailer_newest_only" ] and not self.settings[ "trailer_limit_query" ] ]
             genres = self.genre.replace( "Sci-Fi", "Science Fiction" ).replace( "Action", "Action and ADV" ).replace( "Adventure", "ACT and Adventure" ).replace( "ACT",  "Action" ).replace( "ADV",  "Adventure" ).split( " / " )
-            genre_sql = ( genre_sql, "AND (%s)" % " ".join( [ "genres.genre='%s' OR" % genre for genre in genres ] )[ : -3 ], )[ self.settings[ "limit_query" ] ]
+            genre_sql = ( genre_sql, "AND (%s)" % " ".join( [ "genres.genre='%s' OR" % genre for genre in genres ] )[ : -3 ], )[ self.settings[ "trailer_limit_query" ] ]
             # fetch our trailers
-            result = records.fetch( sql % ( hd_sql, rating_sql, genre_sql, watched_sql, self.settings[ "number_trailers" ], ) )
+            result = records.fetch( sql % ( hd_sql, rating_sql, genre_sql, watched_sql, self.settings[ "trailer_count" ], ) )
             # close db connection
             records.close()
             # enumerate thru and set the needed info (TODO: maybe search for all genres)
@@ -110,7 +110,7 @@ class Main:
         # set initial counter
         count = 0
         # make sure trailer set has HD if user preference
-        while "720p.mov" not in repr( trailer_urls[ count ] ) and self.settings[ "amt_hd_only" ] and count < len( trailer_urls ) - 1:
+        while "720p.mov" not in repr( trailer_urls[ count ] ) and self.settings[ "trailer_hd_only" ] and count < len( trailer_urls ) - 1:
             count += 1
         # set trailer choices
         trailers = trailer_urls[ count ]
@@ -140,7 +140,7 @@ class Main:
     def _mark_watched( self, idMovie ):
         try:
             # our database object
-            records = Records( amt_db_path=self.settings[ "amt_db_path" ] )
+            records = Records( amt_db_path=self.settings[ "trailer_amt_db_file" ] )
             # needed sql commands
             fetch_sql = "SELECT times_watched FROM movies WHERE idMovie=?;"
             update_sql = "UPDATE movies SET times_watched=?, last_watched=? WHERE idMovie=?;"

@@ -27,10 +27,10 @@ class _Parser:
         Parses an xml document for videos
     """
 
-    def __init__( self, xmlSource, settings, mpaa, genre, watched ):
-        self.settings = settings
+    def __init__( self, xmlSource, mpaa, genre, settings, watched ):
         self.mpaa = mpaa
         self.genre = genre.replace( "Sci-Fi", "Science Fiction" ).replace( "Action", "Action and ADV" ).replace( "Adventure", "ACT and Adventure" ).replace( "ACT",  "Action" ).replace( "ADV",  "Adventure" ).split( " / " )
+        self.settings = settings
         self.watched = watched
         self.trailers = []
         # get our regions format
@@ -43,9 +43,9 @@ class _Parser:
             # counter to limit results
             count = 0
             # mpaa ratings
-            mpaa_ratings = { "G": 0, "PG": 1, "PG-13": 2, "R": 3, "NC-17": 4, "--": 5 }
+            mpaa_ratings = { "G": 0, "PG": 1, "PG-13": 2, "R": 3, "NC-17": 4, "Not yet rated": 5 }
             # set the proper mpaa rating user preference
-            self.mpaa = ( self.settings[ "trailer_rating" ], self.mpaa, )[ self.settings[ "limit_query" ] ]
+            self.mpaa = ( self.settings[ "trailer_rating" ], self.mpaa, )[ self.settings[ "trailer_limit_query" ] ]
             # encoding
             encoding = re.findall( "<\?xml version=\"[^\"]*\" encoding=\"([^\"]*)\"\?>", xmlSource )[ 0 ]
             # gather all video records <movieinfo>
@@ -55,7 +55,7 @@ class _Parser:
             # enumerate thru the movies list and gather info
             for id, movie in movies:
                 # user preference to skip watch trailers
-                if ( self.settings[ "unwatched_only" ] and id in self.watched ):
+                if ( self.settings[ "trailer_unwatched_only" ] and id in self.watched ):
                     continue
                 # find info
                 info = re.findall( "<info>(.*?)</info>", movie )
@@ -69,7 +69,7 @@ class _Parser:
                 if ( genre ):
                     genres = [ genre for genre in re.findall( "<name>(.*?)</name>", genre[ 0 ] ) ]
                 genre = " / ".join( genres )
-                if ( not set( genres ).intersection( set( self.genre ) ) and self.settings[ "limit_query" ] ):
+                if ( not set( genres ).intersection( set( self.genre ) ) and self.settings[ "trailer_limit_query" ] ):
                     continue
                 # add id to watched file TODO: maybe don't add if not user preference
                 self.watched += [ id ]
@@ -116,7 +116,7 @@ class _Parser:
                 # increment counter
                 count += 1
                 # if we have enough exit
-                if ( count == self.settings[ "number_trailers" ] ):
+                if ( count == self.settings[ "trailer_count" ] ):
                     break
         except:
             # oops print error message
@@ -205,7 +205,7 @@ class Main:
         except:
             watched = []
         # Parse xmlSource for videos
-        parser = _Parser( xmlSource, self.settings, self.mpaa, self.genre, watched )
+        parser = _Parser( xmlSource, self.mpaa, self.genre, self.settings, watched )
         # saved watched file
         ok = self._save_xml_source( repr( parser.watched ), base_path )
         # return result

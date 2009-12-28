@@ -12,6 +12,8 @@ _ = xbmc.Language( scriptPath=os.getcwd() ).getLocalizedString
 
 
 class Trivia( xbmcgui.WindowXML ):
+    # base paths
+    BASE_CURRENT_SOURCE_PATH = os.path.join( xbmc.translatePath( "special://profile/" ), "script_data", os.path.basename( os.getcwd() ) )
     # special action codes
     ACTION_NEXT_SLIDE = ( 2, 3, 7, )
     ACTION_PREV_SLIDE = ( 1, 4, )
@@ -23,133 +25,188 @@ class Trivia( xbmcgui.WindowXML ):
         kwargs[ "dialog" ].update( -1, _( 32510 ) )
         self.settings = kwargs[ "settings" ]
         self.playlist = kwargs[ "playlist" ]
-        # get current screensaver
-        self.screensaver = xbmc.executehttpapi( "GetGUISetting(3;screensaver.mode)" ).replace( "<li>", "" )
-        # turn screensaver off
-        xbmc.executehttpapi( "SetGUISetting(3,screensaver.mode,None)" )
         # initialize our class variable
         self._init_variables()
-        # get the slides
-        self._get_slides( [ self.settings[ "trivia_path" ] ] )
-        # shuffle and format playlist
-        self._shuffle_slides()
-        # start our trvia quiz timer
-        self._get_global_timer( self.settings[ "trivia_total_time" ] * 60, self._exit_trivia )
+        # turn screensaver off
+        xbmc.executehttpapi( "SetGUISetting(3,screensaver.mode,None)" )
+        try:
+            # fetch the slides
+            self._fetch_slides()
+        except:
+            import traceback
+            traceback.print_exc()
         # close dialog
         kwargs[ "dialog" ].close()
+        #display slideshow
+        self.doModal()
 
     def onInit( self ):
-        # start slideshow
-        self._next_slide( 0 )
-        # start music
-        self._start_music()
+        self._show_intro_outro( "intro" )
 
     def _init_variables( self ):
         self.global_timer = None
         self.slide_timer = None
         self.exiting = False
-        self.current_volume = None
+        # get current screensaver
+        self.screensaver = xbmc.executehttpapi( "GetGUISetting(3;screensaver.mode)" ).replace( "<li>", "" )
+        # get the current volume
+        self.current_volume = int( xbmc.executehttpapi( "GetVolume" ).replace( "<li>", "" ) )
+        # our complete shuffled list of slides
         self.slide_playlist = []
         self.tmp_slides = []
         self.image_count = 0
 
-    def _start_music( self ):
+    def _fetch_slides( self ):
+        # get watched list
+        self._get_watched()
+        # get the slides
+        self._get_slides( [ self.settings[ "trivia_folder" ] ] )
+        # shuffle and format playlist
+        self._shuffle_slides()
+        # start our trvia slideshow timer
+        self._get_global_timer( self.settings[ "trivia_total_time" ] * 60, self._exit_trivia )
+
+    def _start_slideshow_music( self ):
         # did user set this preference
-        if ( self.settings[ "trivia_music" ] ):
-            # get the current volume
-            self.current_volume = int( xbmc.executehttpapi( "GetVolume" ).replace( "<li>", "" ) )
+        if ( self.settings[ "trivia_music_file" ] ):
             # calculate the new volume
             volume = self.current_volume * ( float( self.settings[ "trivia_music_volume" ] ) / 100 )
             # set the volume percent of current volume
             xbmc.executebuiltin( "XBMC.SetVolume(%d)" % ( volume, ) )
             # play music
-            xbmc.Player().play( self.settings[ "trivia_music" ] )
+            xbmc.Player().play( self.settings[ "trivia_music_file" ] )
 
     def _get_slides( self, paths ):
         # reset folders list
         folders = []
         # enumerate thru paths and fetch slides recursively
         for path in paths:
-            # initialize type variables
-            questions = []
-            clues = []
-            answers = []
             # get the directory listing
             entries = xbmc.executehttpapi( "GetDirectory(%s)" % ( path, ) ).split( "\n" )
             # sort in case
             entries.sort()
-            # read slides.xml if available
-            slidesxml_exists = ( xbmc.executehttpapi( "FileExists(%sslides.xml)" % ( path, ) ) == "<li>True" )
-            if ( slidesxml_exists ):
-                # fetch data
-                xml_data = binascii.a2b_base64( xbmc.executehttpapi( "FileDownload(%sslides.xml,bare)" % ( path, ) ) )
-                # read formats
-                question_format = re.findall( "<question format=\"([^\"]+)\" />", xml_data )[ 0 ]
-                clue_format = re.findall( "<clue format=\"([^\"]+)\" />", xml_data )[ 0 ]
-                answer_format = re.findall( "<answer format=\"([^\"]+)\" />", xml_data )[ 0 ]
-            # enumerate through our entries list and separate question, clue, answer
+            # get a slides.xml if it exists
+            slidesxml_exists, question_format, clue_format, answer_format = self._get_slides_xml( path )
+            # initialize these to True so we add a new list item to start
+            question = clue = answer = True
+            # enumerate through our entries list and combine question, clue, answer
             for entry in entries:
                 # remove <li> from item
                 entry = entry.replace( "<li>", "" )
                 # if folder add to our folder list to recursively fetch slides
-                if ( entry.endswith( "/" ) ):
+                if ( entry.endswith( "/" ) or entry.endswith( "\\" ) ):
                     folders += [ entry.replace( "<li>", "" ) ]
                 # sliders.xml was included, so check it
                 elif ( slidesxml_exists ):
                     # question
                     if ( re.search( question_format, os.path.basename( entry ), re.IGNORECASE ) ):
-                        questions += [ entry ]
+                        if ( question ):
+                            self.tmp_slides += [ [ "", "", "" ] ]
+                            clue = answer = False
+                        self.tmp_slides[ -1 ][ 0 ] = entry
                     # clue
                     elif ( re.search( clue_format, os.path.basename( entry ), re.IGNORECASE ) ):
-                        clues += [ entry ]
+                        if ( clue ):
+                            self.tmp_slides += [ [ "", "", "" ] ]
+                            question = answer = False
+                        self.tmp_slides[ -1 ][ 1 ] = entry
                     # answer
                     elif ( re.search( answer_format, os.path.basename( entry ), re.IGNORECASE ) ):
-                        answers += [ entry ]
+                        if ( answer ):
+                            self.tmp_slides += [ [ "", "", "" ] ]
+                            question = clue = False
+                        self.tmp_slides[ -1 ][ 2 ] = entry
                 # add the file as a question TODO: maybe check for valid picture format?
                 elif ( entry and os.path.splitext( entry )[ 1 ] in xbmc.getSupportedMedia( "picture" ) ):
-                    questions += [ entry ]
-            # group the appropriate slides into their own list and order them question, clue, answer
-            for count, question in enumerate( questions ):
-                # reset our list
-                slide = []
-                # add question (regular slides will be added to questions)
-                slide += [ question ]
-                # only add clue if it's not blank
-                if ( len( clues ) > count ):
-                    slide += [ clues[ count ] ]
-                # only add answer if it's not blank
-                if ( len( answers ) > count ):
-                    slide += [ answers[ count ] ]
-                # add our slide group
-                self.tmp_slides += [ slide ]
+                    self.tmp_slides += [ [ "", "", entry ] ]
         # if there are folders call again (we want recursive)
         if ( folders ):
             self._get_slides( folders )
+
+    def _get_slides_xml( self, path ):
+        # read slides.xml if available
+        slidesxml_exists = ( "True" in xbmc.executehttpapi( "FileExists(%sslides.xml)" % ( path, ) ) )
+        # if none exists return false
+        if ( not slidesxml_exists ):
+            return False, "", "", ""
+        # fetch data, with hack for change in xbmc so older revisions still work
+        xml_data = binascii.a2b_base64( xbmc.executehttpapi( "FileDownload(%sslides.xml,bare)" % ( path, ) ).split("\r\n\r\n")[ -1 ] )
+        # read formats
+        question_format = re.findall( "<question format=\"([^\"]+)\" />", xml_data )[ 0 ]
+        clue_format = re.findall( "<clue format=\"([^\"]+)\" />", xml_data )[ 0 ]
+        answer_format = re.findall( "<answer format=\"([^\"]+)\" />", xml_data )[ 0 ]
+        # return results
+        return True, question_format, clue_format, answer_format
 
     def _shuffle_slides( self ):
         # randomize the groups and create our play list
         shuffle( self.tmp_slides )
         # now create our final playlist
-        for slide in self.tmp_slides:
-            self.slide_playlist += slide
+        print "-----------------------------------------"
+        for slides in self.tmp_slides:
+            if ( not self.settings[ "trivia_unwatched_only" ] or ( slides[ 0 ] and xbmc.getCacheThumbName( slides[ 0 ] ) not in self.watched ) or
+                  ( slides[ 1 ] and xbmc.getCacheThumbName( slides[ 1 ] ) not in self.watched ) or
+                  ( slides[ 2 ] and xbmc.getCacheThumbName( slides[ 2 ] ) not in self.watched ) ):
+                for slide in slides:
+                    if ( slide ):
+                        self.slide_playlist += [ slide ]
+                print "included - %s, %s, %s" % ( os.path.basename( slides[ 0 ] ), os.path.basename( slides[ 1 ] ), os.path.basename( slides[ 2 ] ), )
+            else:
+                print "----------------------------------------------------"
+                print "skipped - %s, %s, %s" % ( os.path.basename( slides[ 0 ] ), os.path.basename( slides[ 1 ] ), os.path.basename( slides[ 2 ] ), )
+                print "----------------------------------------------------"
+        print
+        print "total slides selected: %d" % len( self.slide_playlist )
+        print
 
     def _next_slide( self, slide=1 ):
+        # cancel timer if it's running
+        if ( self.slide_timer is not None ):
+            self.slide_timer.cancel()
         # increment/decrement count
         self.image_count += slide
-        # if no more slides, exit
-        if ( self.image_count > len( self.slide_playlist ) ):
-            self._exit_trivia()
         # check for invalid count, TODO: make sure you don't want to rest timer
-        elif ( self.image_count < 0 ):
+        if ( self.image_count < 0 ):
             self.image_count = 0
+        # if no more slides, exit
+        if ( self.image_count > len( self.slide_playlist ) -1 ):
+            self._exit_trivia()
         else:
-            # cancel timer if it's running
-            if ( self.slide_timer is not None ):
-                self.slide_timer.cancel()
+            # add id to watched file TODO: maybe don't add if not user preference
+            self.watched += [ xbmc.getCacheThumbName( self.slide_playlist[ self.image_count ] ) ]
             # set the property the image control uses
             xbmcgui.Window( xbmcgui.getCurrentWindowId() ).setProperty( "Slide", self.slide_playlist[ self.image_count ] )
             # start slide timer
             self._get_slide_timer()
+
+    def _get_watched( self ):
+        try:
+            # set base watched file path
+            base_path = os.path.join( self.BASE_CURRENT_SOURCE_PATH, "trivia_watched.txt" )
+            # open path
+            usock = open( base_path, "r" )
+            # read source
+            self.watched = eval( usock.read() )
+            # close socket
+            usock.close()
+        except:
+            self.watched = []
+
+    def _save_watched( self ):
+        try:
+            # base path to watched file
+            base_path = os.path.join( self.BASE_CURRENT_SOURCE_PATH, "trivia_watched.txt" )
+            # if the path to the source file does not exist create it
+            if ( not os.path.isdir( os.path.dirname( base_path ) ) ):
+                os.makedirs( os.path.dirname( base_path ) )
+            # open source path for writing
+            file_object = open( base_path, "w" )
+            # write xmlSource
+            file_object.write( repr( self.watched ) )
+            # close file object
+            file_object.close()
+        except:
+            pass
 
     def _get_slide_timer( self ):
         self.slide_timer = threading.Timer( self.settings[ "trivia_slide_time" ], self._next_slide,() )
@@ -166,22 +223,35 @@ class Trivia( xbmcgui.WindowXML ):
         self._cancel_timers()
         # set the volume back to original
         xbmc.executebuiltin( "XBMC.SetVolume(%d)" % ( self.current_volume, ) )
+        # save watched slides
+        self._save_watched()
         # show an end image
-        self._show_end_image()
+        self._show_intro_outro( "outro" )
 
-    def _show_end_image( self ):
+    def _show_intro_outro( self, type="intro" ):
+        if ( type == "outro" ):
+            self._play_video_playlist()
+        else:
+            # start slideshow
+            self._next_slide( 0 )
+            # start music
+            self._start_slideshow_music()
+        """
         # set the end of trivia slide show image
-        if ( self.settings[ "trivia_end_image" ] ):
-            xbmcgui.Window( xbmcgui.getCurrentWindowId() ).setProperty( "Slide", self.settings[ "trivia_end_image" ] )
+        if ( self.settings[ "trivia_outro_file" ] == "" ):
+            self._play_video_playlist()
+        else:
+            xbmcgui.Window( xbmcgui.getCurrentWindowId() ).setProperty( "Slide", self.settings[ "trivia_outro_file" ] )
             # set a default timeout
             time = self.settings[ "trivia_slide_time" ]
             # play end of slideshow music
-            if ( self.settings[ "trivia_end_music" ] ):
-                xbmc.Player().play( self.settings[ "trivia_end_music" ] )
+            if ( self.settings[ "trivia_outro_file" ] ):
+                xbmc.Player().play( self.settings[ "trivia_outro_file" ] )
                 # set time based on how long the song is
                 time = xbmc.Player( xbmc.PLAYLIST_MUSIC ).getTotalTime()
             # start a timer to play video playlist
             self._get_global_timer( time, self._play_video_playlist )
+            """
 
     def _play_video_playlist( self ):
         # set this to -1 as True and False are taken
@@ -199,8 +269,10 @@ class Trivia( xbmcgui.WindowXML ):
         # cancel all timers
         if ( self.slide_timer is not None ):
             self.slide_timer.cancel()
+            self.slide_timer = None
         if ( self.global_timer is not None ):
             self.global_timer.cancel()
+            self.global_timer = None
 
     def onClick( self, controlId ):
         pass
