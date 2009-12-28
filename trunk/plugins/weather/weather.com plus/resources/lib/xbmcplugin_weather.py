@@ -292,26 +292,39 @@ class Main:
         if ( self.areacode != xbmc.getInfoLabel( "Window(Weather).Property(AreaCode)" ) ):
             return
         # enumerate thru and clear all hourly times
-        for count in range( 28 ):
-            # clear all hourly times as some locals do not have all 27
-            self.WEATHER_WINDOW.clearProperty( "Hourly.%d.Time" % ( count + 1, ) )
+        for count in range( 1, 28 ):
+            # clear all hourly times as some locals do not have all of them
+            self.WEATHER_WINDOW.clearProperty( "Hourly.%d.Time" % ( count, ) )
         # fetch hourly forecast
         forecasts = self.WeatherClient.fetch_hourly_forecast()
+        # date dictionary
+        date_dict = { "January": xbmc.getLocalizedString( 51 ), "February": xbmc.getLocalizedString( 52 ), "March": xbmc.getLocalizedString( 53 ), "April": xbmc.getLocalizedString( 54 ), "May": xbmc.getLocalizedString( 55 ), "June": xbmc.getLocalizedString( 56 ), "July": xbmc.getLocalizedString( 57 ), "August": xbmc.getLocalizedString( 58 ), "September": xbmc.getLocalizedString( 59 ), "October": xbmc.getLocalizedString( 60 ), "November": xbmc.getLocalizedString( 61 ), "December": xbmc.getLocalizedString( 62 ) }
+        # initialize count variable
+        count = 0
         # enumerate thru and set the info
-        for count, forecast in enumerate( forecasts ):
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Time" % ( count + 1, ), forecast[ 0 ] )
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.OutlookIcon" % ( count + 1, ), forecast[ 1 ] )
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.FanartCode" % ( count + 1, ), os.path.splitext( os.path.basename( forecast[ 1 ] ) )[ 0 ] )
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Temperature" % ( count + 1, ), forecast[ 2 ] )
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Outlook" % ( count + 1, ), forecast[ 3 ] )
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.FeelsLike" % ( count + 1, ), forecast[ 4 ] )
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Precipitation" % ( count + 1, ), forecast[ 5 ] )
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Humidity" % ( count + 1, ), forecast[ 6 ] )
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.WindDirection" % ( count + 1, ), forecast[ 7 ] )
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.WindSpeed" % ( count + 1, ), forecast[ 8 ] )
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.ShortWindDirection" % ( count + 1, ), forecast[ 9 ] )
+        for forecast in forecasts:
+            # do we need to skip this time
+            if ( ( ":15" in forecast[ 0 ] or ":45" in forecast[ 0 ] ) and int( self.Settings.getSetting( "hourly_steps") ) > 0 ):
+                continue
+            if ( ":30" in forecast[ 0 ] and int( self.Settings.getSetting( "hourly_steps") ) > 1 ):
+                continue
+            # we want this one, increment counter
+            count += 1
+            # set properties
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Time" % ( count, ), forecast[ 0 ] )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Date" % ( count, ), "%s %s" % ( date_dict[ forecast[ 1 ].split( " " )[ 0 ] ], forecast[ 1 ].split( " " )[ 1 ], ) )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.OutlookIcon" % ( count, ), forecast[ 2 ] )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.FanartCode" % ( count, ), os.path.splitext( os.path.basename( forecast[ 2 ] ) )[ 0 ] )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Temperature" % ( count, ), forecast[ 3 ] )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Outlook" % ( count, ), forecast[ 4 ] )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.FeelsLike" % ( count, ), forecast[ 5 ] )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Precipitation" % ( count, ), forecast[ 6 ] )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Humidity" % ( count, ), forecast[ 7 ] )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.WindDirection" % ( count, ), forecast[ 8 ] )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.WindSpeed" % ( count, ), forecast[ 9 ] )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.ShortWindDirection" % ( count, ), forecast[ 10 ] )
         # set our headings
-        self.WEATHER_WINDOW.setProperty( "Hourly.Heading1",xbmc.getLocalizedString( 555 ) )
+        self.WEATHER_WINDOW.setProperty( "Hourly.Heading1", xbmc.getLocalizedString( 555 ) )
         self.WEATHER_WINDOW.setProperty( "Hourly.Heading2", xbmc.getLocalizedString( 33020 ) )
         self.WEATHER_WINDOW.setProperty( "Hourly.Heading3", xbmc.getLocalizedString( 401 ) )
         self.WEATHER_WINDOW.setProperty( "Hourly.Heading4", xbmc.getLocalizedString( 33024 ) )
@@ -362,8 +375,8 @@ class Main:
         self.WEATHER_WINDOW.clearProperty( "Daily.10.ShortDay" )
         self.WEATHER_WINDOW.clearProperty( "Daily.10.LongDay" )
         # localized long and short day dictionary
-        shortdayDict = { "Mon": xbmc.getLocalizedString( 41 ), "Tue": xbmc.getLocalizedString( 42 ), "Wed": xbmc.getLocalizedString( 43 ), "Thu": xbmc.getLocalizedString( 44 ), "Fri": xbmc.getLocalizedString( 45 ), "Sat": xbmc.getLocalizedString( 46 ), "Sun": xbmc.getLocalizedString( 47 ), "Today": xbmc.getLocalizedString( 33006 ),"Tonight": xbmc.getLocalizedString( 33018 ) }
-        longdayDict = { "Mon": xbmc.getLocalizedString( 11 ), "Tue": xbmc.getLocalizedString( 12 ), "Wed": xbmc.getLocalizedString( 13 ), "Thu": xbmc.getLocalizedString( 14 ), "Fri": xbmc.getLocalizedString( 15 ), "Sat": xbmc.getLocalizedString( 16 ), "Sun": xbmc.getLocalizedString( 17 ), "Today": xbmc.getLocalizedString( 33006 ),"Tonight": xbmc.getLocalizedString( 33018 ) }
+        shortdayDict = { "Mon": xbmc.getLocalizedString( 41 ), "Tue": xbmc.getLocalizedString( 42 ), "Wed": xbmc.getLocalizedString( 43 ), "Thu": xbmc.getLocalizedString( 44 ), "Fri": xbmc.getLocalizedString( 45 ), "Sat": xbmc.getLocalizedString( 46 ), "Sun": xbmc.getLocalizedString( 47 ), "Today": xbmc.getLocalizedString( 33006 ), "Tonight": xbmc.getLocalizedString( 33018 ) }
+        longdayDict = { "Mon": xbmc.getLocalizedString( 11 ), "Tue": xbmc.getLocalizedString( 12 ), "Wed": xbmc.getLocalizedString( 13 ), "Thu": xbmc.getLocalizedString( 14 ), "Fri": xbmc.getLocalizedString( 15 ), "Sat": xbmc.getLocalizedString( 16 ), "Sun": xbmc.getLocalizedString( 17 ), "Today": xbmc.getLocalizedString( 33006 ), "Tonight": xbmc.getLocalizedString( 33018 ) }
         # enumerate thru and set the info
         for count, forecast in enumerate( forecasts ):
             self.WEATHER_WINDOW.setProperty( "Daily.%d.LongDay" % ( count + 1, ), longdayDict[ forecast[ 0 ] ] )

@@ -30,6 +30,7 @@
     <string id="32400">Addons/Packages</string>
     <string id="32410">Misc Options</string>
     <string id="32420">Map/Radar categories</string>
+    <string id="32430">Forecast options</string>
 
     <!-- Settings strings -->
     <string id="32500">Translate text (Babelfish)</string>
@@ -49,6 +50,10 @@
     <string id="32559">10 minutes</string>
     <string id="32560">- Only notify on new alerts</string>
     <string id="32570">Install map icon pack (10mb-30mb)</string>
+    <string id="32580">Show hourly forecast as</string>
+    <string id="32581">15 minutes</string>
+    <string id="32582">30 minutes</string>
+    <string id="32583">1 hour</string>
 
     <!-- map lists long -->
     <string id="32600">None</string>
