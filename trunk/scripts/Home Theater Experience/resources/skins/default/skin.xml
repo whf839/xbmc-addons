@@ -8,6 +8,8 @@
   
   <credits>
     <skinname>default</skinname>
+    <default>PAL</default>
+    <defaultwide>PAL</defaultwide>
     <name>nuka1195</name>
   </credits>
 </skin>
