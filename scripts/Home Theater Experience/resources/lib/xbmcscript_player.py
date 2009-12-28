@@ -40,16 +40,20 @@ class Main:
 
     def __init__( self ):
         # if an arg was passed check it for ClearWatchedTrivia or ClearWatchedTrailers
+        import traceback
         try:
             if ( sys.argv[ 1 ] == "ClearWatchedTrivia" or sys.argv[ 1 ] == "ClearWatchedTrailers" ):
                 self._clear_watched_items( sys.argv[ 1 ] )
         except:
-            import traceback
-            traceback.print_exc()
-            # create the playlist
-            self._create_playlist()
-            # play the trivia slide show
-            self._play_trivia()
+            try:
+                #import traceback
+                #traceback.print_exc()
+                # create the playlist
+                mpaa = self._create_playlist()
+                # play the trivia slide show
+                self._play_trivia( mpaa=mpaa )
+            except:
+                traceback.print_exc()
 
     def _clear_watched_items( self, clear_type ):
         # initialize base_path
@@ -64,7 +68,7 @@ class Main:
             if ( settings[ "trailer_scraper" ] == "amt_database" ):
                 # get the correct scraper
                 exec "from resources.scrapers.%s import scraper as scraper" % ( settings[ "trailer_scraper" ], )
-                Scraper = scraper.Main( settings=self.settings )
+                Scraper = scraper.Main( settings=settings )
                 # update trailers
                 Scraper.clear_watched()
             else:
@@ -94,9 +98,8 @@ class Main:
         print "Genre: %s" % genre
         print "MPAA: %s" % mpaa
         print "Audio: %s" % audio
-        print "Audio path: %s" % xbmc.translatePath( _S_( "audio_videos_folder" ) ) + ( "DTS", "Dolby", )[ audio == "ac3" ] + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ]
+        print "Audio path: %s" % xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "ac3": "Dolby" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ]
         print
-        
         # get Dolby/DTS videos
         self._get_special_items(    playlist=self.playlist,
                                                 items=1,
@@ -118,24 +121,41 @@ class Main:
                                                 genre=_L_( 32601 ),
                                                 index=0
                                             )
-        # TODO: find a way to only include if trailers were returned? or maybe not?
+        # get trailers
+        trailers = self._get_trailers(  items=( 0, 1, 2, 3, 4, 5, 10, )[ int( _S_( "trailer_count" ) ) ],
+                                                   mpaa=mpaa,
+                                                   genre=genre,
+                                                   movie=movie
+                                                )
+        ####print "T", trailers
         # get coming attractions outro videos
         self._get_special_items(    playlist=self.playlist,
-                                                items=( 0, 1, 1, 2, 3, 4, 5, )[ int( _S_( "cav_outro" ) ) ], 
+                                                items=( 0, 1, 1, 2, 3, 4, 5, )[ int( _S_( "cav_outro" ) ) ] * ( len( trailers ) > 0 ), 
                                                 path=( xbmc.translatePath( _S_( "cav_outro_file" ) ), xbmc.translatePath( _S_( "cav_outro_folder" ) ), )[ int( _S_( "cav_outro" ) ) > 1 ],
                                                 genre=_L_( 32608 ),
                                                 index=0
                                             )
-        # get trailers
-        ok = self._get_trailers(      items=( 0, 1, 2, 3, 4, 5, 10, )[ int( _S_( "trailer_count" ) ) ],
-                                                mpaa=mpaa,
-                                                genre=genre,
-                                                movie=movie
-                                                # we don't need playlist or index since we use _get_trailers() not _get_special_items()
-                                            )
+        # enumerate through our list of trailers and add them to our playlist
+        for trailer in trailers:
+            # get trailers
+            self._get_special_items(    playlist=self.playlist,
+                                                    items=1,
+                                                    path=trailer[ 2 ],
+                                                    genre=trailer[ 9 ] or _L_( 32605 ),
+                                                    title=trailer[ 1 ],
+                                                    thumbnail=trailer[ 3 ],
+                                                    plot=trailer[ 4 ],
+                                                    runtime=trailer[ 5 ],
+                                                    mpaa=trailer[ 6 ],
+                                                    release_date=trailer[ 7 ],
+                                                    studio=trailer[ 8 ] or _L_( 32604 ),
+                                                    writer=trailer[ 10 ],
+                                                    director=trailer[ 11 ],
+                                                    index=0
+                                                )
         # get coming attractions intro videos
         self._get_special_items(    playlist=self.playlist,
-                                                items=( 0, 1, 1, 2, 3, 4, 5, )[ int( _S_( "cav_intro" ) ) ] * ok, 
+                                                items=( 0, 1, 1, 2, 3, 4, 5, )[ int( _S_( "cav_intro" ) ) ] * ( len( trailers ) > 0 ), 
                                                 path=( xbmc.translatePath( _S_( "cav_intro_file" ) ), xbmc.translatePath( _S_( "cav_intro_folder" ) ), )[ int( _S_( "cav_intro" ) ) > 1 ],
                                                 genre=_L_( 32600 ),
                                                 index=0
@@ -159,6 +179,7 @@ class Main:
                                                 path=( xbmc.translatePath( _S_( "mte_outro_file" ) ), xbmc.translatePath( _S_( "mte_outro_folder" ) ), )[ int( _S_( "mte_outro" ) ) > 1 ],
                                                 genre=_L_( 32607 ),
                                             )
+        return mpaa
 
     def _get_queued_video_info( self ):
         try:
@@ -189,12 +210,15 @@ class Main:
         # return results
         return mpaa, audio, genre, movie
 
-    def _get_special_items( self, playlist, items, path, genre, index=-1, media_type="video" ):
+    def _get_special_items(   self, playlist, items, path, genre, title="", thumbnail=None, plot="",
+                                                runtime="", mpaa="", release_date="0 0 0", studio="", writer="",
+                                                director="", index=-1, media_type="video"
+                                            ):
         # return if not user preference
         if ( not items ):
             return
         # if path is a file check if file exists
-        if ( os.path.splitext( path )[ 1 ] and not ( xbmc.executehttpapi( "FileExists(%s)" % ( path, ) ) == "<li>True" ) ):
+        if ( os.path.splitext( path )[ 1 ] and not path.startswith( "http://" ) and not ( xbmc.executehttpapi( "FileExists(%s)" % ( path, ) ) == "<li>True" ) ):
             return
         # set default paths list
         self.tmp_paths = [ path ]
@@ -209,9 +233,20 @@ class Main:
             # set our path
             path = self.tmp_paths[ count ]
             # format a title (we don't want the ugly extension)
-            title = os.path.splitext( os.path.basename( path ) )[ 0 ]
+            title = title or os.path.splitext( os.path.basename( path ) )[ 0 ]
             # create the listitem and fill the infolabels
-            listitem = self._get_listitem( title=title, url=path, genre=genre )
+            listitem = self._get_listitem( title=title,
+                                                        url=path,
+                                                        thumbnail=thumbnail,
+                                                        plot=plot,
+                                                        runtime=runtime,
+                                                        mpaa=mpaa,
+                                                        release_date=release_date,
+                                                        studio=studio or _L_( 32604 ),
+                                                        genre=genre or _L_( 32605 ),
+                                                        writer=writer,
+                                                        director=director
+                                                    )
             # add our video/picture to the playlist or list
             if ( isinstance( playlist, list ) ):
                 playlist += [ ( path, listitem, ) ]
@@ -244,11 +279,10 @@ class Main:
     def _get_trailers( self, items, mpaa, genre, movie ):
         # return if not user preference
         if ( not items ):
-            return items
+            return []
+        ###print "I",items
         # update dialog
         pDialog.update( -1, _L_( 32500 ) )
-        # initialize ok to false
-        ok = False
         # trailer settings, grab them here so we don't need another _S_() object
         settings = { "trailer_amt_db_file":  xbmc.translatePath( _S_( "trailer_amt_db_file" ) ),
                             "trailer_folder":  xbmc.translatePath( _S_( "trailer_folder" ) ),
@@ -267,28 +301,8 @@ class Main:
         Scraper = scraper.Main( mpaa, genre, settings, movie )
         # fetch trailers
         trailers = Scraper.fetch_trailers()
-        # enumerate through our list of trailers and add them to our playlist
-        for trailer in trailers:
-            # create the listitem and fill the infolabels
-            listitem = self._get_listitem( title=trailer[ 1 ],
-                                                        url=trailer[ 2 ],
-                                                        thumbnail=trailer[ 3 ],
-                                                        plot=trailer[ 4 ],
-                                                        runtime=trailer[ 5 ],
-                                                        mpaa=trailer[ 6 ],
-                                                        release_date=trailer[ 7 ],
-                                                        studio=trailer[ 8 ] or _L_( 32604 ),
-                                                        genre=trailer[ 9 ] or _L_( 32605 ),
-                                                        writer=trailer[ 10 ],
-                                                        director=trailer[ 11 ] )
-            # we have trailers
-            if ( trailer[ 2 ] ):
-                # used to show coming attractions video
-                ok = True
-                # add our item to the playlist
-                self.playlist.add( trailer[ 2 ], listitem, index=0 )
         # return results
-        return ok
+        return trailers
 
     def _get_listitem( self, title="", url="", thumbnail=None, plot="", runtime="", mpaa="", release_date="0 0 0", studio=_L_( 32604 ), genre="", writer="", director=""):
         # check for a valid thumbnail
@@ -310,8 +324,10 @@ class Main:
         return listitem
 
     def _get_thumbnail( self, url ):
+        print url
         # if the cached thumbnail does not exist create the thumbnail based on filepath.tbn
         filename = xbmc.getCacheThumbName( url )
+        print filename
         thumbnail = os.path.join( self.BASE_CACHE_PATH, filename[ 0 ], filename )
         # if cached thumb does not exist return empty
         if ( not os.path.isfile( thumbnail ) ):
@@ -320,7 +336,7 @@ class Main:
         # return result
         return thumbnail
 
-    def _play_trivia( self ):
+    def _play_trivia( self, mpaa ):
         # if user cancelled dialog return
         if ( pDialog.iscanceled() ):
             pDialog.close()
@@ -356,9 +372,12 @@ class Main:
                                 "trivia_music_volume": int( _S_( "trivia_music_volume" ).replace( "%", "" ) ),
                                 "trivia_unwatched_only": _S_( "trivia_unwatched_only" ) == "true"
                             }
+            # set the proper mpaa rating user preference
+            mpaa = (  _S_( "trivia_rating" ), mpaa, )[ _S_( "trivia_limit_query" ) == "true" ]
+            print "MPAA", mpaa
             # import trivia module and execute the gui
             from resources.lib.xbmcscript_trivia import Trivia as Trivia
-            ui = Trivia( "script-HTExperience-trivia.xml", os.getcwd(), "default", False, settings=settings, playlist=self.playlist, dialog=pDialog )
+            ui = Trivia( "script-HTExperience-trivia.xml", os.getcwd(), "default", False, settings=settings, playlist=self.playlist, dialog=pDialog, mpaa=mpaa )
             #ui.doModal()
             del ui
             # we need to activate the video window

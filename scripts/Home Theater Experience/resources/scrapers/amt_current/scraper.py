@@ -43,7 +43,7 @@ class _Parser:
             # counter to limit results
             count = 0
             # mpaa ratings
-            mpaa_ratings = { "G": 0, "PG": 1, "PG-13": 2, "R": 3, "NC-17": 4, "Not yet rated": 5 }
+            mpaa_ratings = { "G": 0, "PG": 1, "PG-13": 2, "R": 3, "NC-17": 4, "--": 5, "Not yet rated": -1 }
             # set the proper mpaa rating user preference
             self.mpaa = ( self.settings[ "trailer_rating" ], self.mpaa, )[ self.settings[ "trailer_limit_query" ] ]
             # encoding
