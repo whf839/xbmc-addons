@@ -24,15 +24,28 @@
 			<width>590</width>
 			<visible>true</visible>
             <animation effect="slide" start="-540,0" time="700">WindowOpen</animation>
-            
-            <control type="image" id="30">
+
+            <control type="image" id="301">
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>540</width>
                 <height>576</height>
+                <texture></texture>
+                <info>Skin.String(bgimg)</info>
+                <!--colorkey>0x00</colorkey-->
+                <!--colordiffuse>0x00000000</colordiffuse-->
+                <visible>true</visible>
+            </control>
+            
+            <control type="image" id="30">
+                <posx>10</posx>
+                <posy>10</posy>
+                <width>520</width>
+                <height>556</height>
                 <texture>testimage_small.png</texture>  
                 <!--colorkey>0x00</colorkey-->
                 <!--colordiffuse>0x00000000</colordiffuse-->
+                <visible>true</visible>
             </control>
             <!--control type="image">
                 <posx>540</posx>
@@ -77,6 +90,7 @@
             <aligny>center</aligny>
             <textcolor>white</textcolor>
             <label>???</label>
+            <info>Skin.String(ttv-page)</info>
             <font>special13</font>
         </control>
             

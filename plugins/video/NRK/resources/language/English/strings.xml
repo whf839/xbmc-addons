@@ -29,6 +29,7 @@
 	<string id="30025">24 hours</string>
   
   <string id="30030">Download folder</string>
+  <string id="30031">Run once</string>
   
   <string id="30100">Input search string</string>
   <string id="30101">Input number of days to search</string>
@@ -121,4 +122,10 @@
   <string id="30702">XBMC revision of %s or greater to run.</string>
   <string id="30703">Please update your XBMC.</string>
   
+  <!-- teletext -->
+  <string id="30800">Innenriks</string>
+  <string id="30801">Utenriks</string>
+  <string id="30802">Sport</string>
+  <string id="30803">Været</string>
+  <string id="30804">Sideoversikt</string>
 </strings>
