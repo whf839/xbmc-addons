@@ -749,95 +749,65 @@ class TTV:
 
    
 
-REMOTE_0 = 58
-REMOTE_1 = 59
-REMOTE_2 = 60
-REMOTE_3 = 61
-REMOTE_4 = 62
-REMOTE_5 = 63 
-REMOTE_6 = 64
-REMOTE_7 = 65
-REMOTE_8 = 66
-REMOTE_9 = 67
+# Action Identificator constants
+REMOTE_0 = 58;   REMOTE_1 = 59
+REMOTE_2 = 60;   REMOTE_3 = 61
+REMOTE_4 = 62;   REMOTE_5 = 63
+REMOTE_6 = 64;   REMOTE_7 = 65
+REMOTE_8 = 66;   REMOTE_9 = 67
+
+EXIT_CODES = (9, 10, 216, 257, 275, 216, )
+
+LOADING_IMG = Plugin.image('ttv_loading.png')
+ERROR_IMG   = Plugin.image('ttv_notfound.png')
+
+
+xbmc.executebuiltin("Skin.SetString(ttv-image, %s)" % LOADING_IMG )
+
         
 if not DEBUG:
     class TTVDlg(xbmcgui.WindowXMLDialog):
         """ Show skinned Dialog with our information """
         
         XML = "teletext.xml"
-        EXIT_CODES = (9, 10, 216, 257, 275, 216, 61506, 61467,)
 
         
-        CTRLDSP = 15
-        
         def __init__( self, *args, **kwargs):
-        
-           
-            key = Key(sys.argv[2])
-            if key.page:
-                page = key.page
-            else:
-                page = 100
-            print page
+            if Key(sys.argv[2]).page: page = key.page
+            else: page = 100
                 
             self.action = None
             self.buttons = {}
             self.ttv = TTV(cache=True)
             self.ttv.page = page
             self.ttv.savepath = Plugin.get_cachepath()
+            
             bg = self.ttv.create_background()
             xbmc.executebuiltin("Skin.SetString(bgimg, %s)" %bg)      
-            self.image = Plugin.image('ttv_loading.png')
-            self.pagenumber = '---'
-            self.int_pg_ref = ''
+
+            self.image = LOADING_IMG
+            self.pref = ''
+            
             
         def onInit(self):
             self.image = self.ttv.get_page(page = self.ttv.page)
             self.rebuild()
-
                 
-                
-        def rebuild(self):
-            if not self.image:
-                if self.ttv.status == 904:
-                    self.image = Plugin.image('ttv_notfound.png')
-            self.getControl(30).setImage(self.image)
-            #self.getControl(15).setLabel(str(self.ttv.page))
-            xbmc.executebuiltin("Skin.SetString(ttv-page, %s)" % self.ttv.page) 
                 
         def onClick(self, controlId):
-            print 'click'
-            if controlId in (20,21,22,23):
-                self.image = Plugin.image('ttv_loading.png')
+            if controlId in (20, 21, 22, 23):
+                self.image = LOADING_IMG
                 self.rebuild()
-                if controlId == 20:
-                    self.image = self.ttv.page_up()
-                elif controlId == 21:
-                    self.image = self.ttv.page_down()
-                elif controlId == 23:
-                    self.image = self.ttv.next_page()
-                elif controlId == 22:
-                    self.image = self.ttv.prev_page()
-                else:
-                    self.action = None
+                if controlId == 20: self.image = self.ttv.page_up()
+                elif controlId == 21: self.image = self.ttv.page_down()
+                elif controlId == 23: self.image = self.ttv.next_page()
+                elif controlId == 22: self.image = self.ttv.prev_page()
                 
+                self.update_pageno(self.ttv.page)
                 self.rebuild()
                 
             elif controlId in range(500,511):
-                numb = controlId - 500
-                if len(self.int_pg_ref) == 3: 
-                    self.int_pg_ref = ''
-                self.int_pg_ref += str(numb)
-                txt = self.int_pg_ref + '-'*(3 - len(self.int_pg_ref))
-                self.getControl(15).setLabel(txt)
-                
-                if len(self.int_pg_ref) == 3:
-                
-                    self.image = Plugin.image('ttv_loading.png')
-                    self.rebuild()
-                    
-                    self.image = self.ttv.get_page( int(self.int_pg_ref) )
-                    self.rebuild()
+                self.update_pageno(  str( controlId - 500 ) )
                     
             else:
                 print controlId
@@ -853,18 +823,59 @@ if not DEBUG:
                 actionID   =  action.getId()
             except: 
                 return
-              
-            if (actionID in self.EXIT_CODES 
-            or buttonCode in self.EXIT_CODES):
+
+            if actionID == REMOTE_0: no = '0'
+            elif actionID == REMOTE_1: no = '1'
+            elif actionID == REMOTE_2: no = '2'
+            elif actionID == REMOTE_3: no = '3'
+            elif actionID == REMOTE_4: no = '4'
+            elif actionID == REMOTE_5: no = '5'
+            elif actionID == REMOTE_6: no = '6'
+            elif actionID == REMOTE_7: no = '7'
+            elif actionID == REMOTE_8: no = '8'
+            elif actionID == REMOTE_9: no = '9'
+
+            if actionID >= REMOTE_0 and actionID <= REMOTE_9:
+                self.update_pageno( no )
+                
+                
+            if (actionID in EXIT_CODES or buttonCode in EXIT_CODES):
                 self.close()
             
                 
 
+        def rebuild(self):
+            if not self.image:
+                if self.ttv.status == 904:
+                    self.image = ERROR_IMG
+            xbmc.executebuiltin("Skin.SetString(ttv-image, %s)" % self.image)
+            xbmc.executebuiltin("Skin.SetString(ttv-page, %s)" % self.ttv.page)
+            
+            
+        def update_pageno(self, no):
+            if len(self.pref) == 3:
+                self.pref = ''
+
+            no = str( no )
+            
+            if no == '0':
+                if len( self.pref ) == 0:
+                    return
                 
-        def ask(self, image):
-            self.image = image
-            self.doModal()
-            return self.action
+            self.pref += str( no )
+            self.set_pageno_label()
+
+            if len(self.pref) == 3:
+                self.image = LOADING_IMG
+                self.rebuild()
+
+                self.image = self.ttv.get_page( int(self.pref) )
+                self.rebuild()
+
+
+        def set_pageno_label(self):
+            txt = self.pref + '-'*(3 - len(self.pref))
+            xbmc.executebuiltin("Skin.SetString(ttv-page, %s)" % txt)
             
         
         def open(self):

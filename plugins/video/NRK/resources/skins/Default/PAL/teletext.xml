@@ -42,7 +42,8 @@
                 <posy>10</posy>
                 <width>520</width>
                 <height>556</height>
-                <texture>testimage_small.png</texture>  
+                <texture></texture>  
+                <info>Skin.String(ttv-image)</info>
                 <!--colorkey>0x00</colorkey-->
                 <!--colordiffuse>0x00000000</colordiffuse-->
                 <visible>true</visible>
@@ -100,7 +101,7 @@
             <posx>500</posx>
             <posy>140</posy>
             <width>160</width>
-            <height>280</height>
+            <height>280</height>  
             <texture border="20,10,10,30">dialog-panel.png</texture>
         </control>
         
