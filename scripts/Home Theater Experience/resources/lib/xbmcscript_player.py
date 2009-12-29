@@ -103,7 +103,7 @@ class Main:
         # get Dolby/DTS videos
         self._get_special_items(    playlist=self.playlist,
                                                 items=1,
-                                                path=xbmc.translatePath( _S_( "audio_videos_folder" ) ) + ( "DTS", "Dolby", )[ audio == "ac3" ] + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ],
+                                                path=xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "ac3": "Dolby" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ],
                                                 genre=_L_( 32606 ),
                                                 index=0
                                             )
