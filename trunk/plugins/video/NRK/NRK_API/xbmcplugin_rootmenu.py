@@ -28,7 +28,7 @@ from xbmcgui import ListItem
 from xbmcplugin import addDirectoryItem, endOfDirectory, getSetting
 
 xbmc.log( "PLUGIN::LOADED -> '%s'" % __name__, xbmc.LOGNOTICE )
-
+lang = xbmc.getLocalizedString
 FAV_PATH = os.path.join(
                 xbmc.translatePath("special://profile/"), 
                 "plugin_data", 
@@ -43,13 +43,15 @@ class Main:
     
     
     
-    def add(self, label, prefix, type, id=None, img='', icon='', isdir=True):
+    def add(self, label, prefix, type, id=None, img='', icon='', isdir=True, commands=None):
     
         if img != '':
             img = os.path.join(self.rpath, img)
             
         url = Key.build_url(prefix, type=type, id=id)
         li  = ListItem(label, iconImage=icon, thumbnailImage=img)
+        if commands:
+            li.addContextMenuItems( commands, True )
         ok  = addDirectoryItem(self.hndl, url=url, listitem=li, isFolder=isdir)
         
         return ok
@@ -75,7 +77,24 @@ class Main:
         self.add('NRK Nettradio',     'webradio', 'webradio', img='speaker-icon.png')
         self.add('NRK Video Podcast', 'podcast',  'video',    img='video-podcast.png')
         self.add('NRK Lyd Podcast',   'podcast',  'sound',    img='audio-podcast.png')
-        self.add('NRK Tekst TV',      'teletext', 'teletext', img='ttv-icon.png', isdir=False)
+        
+        commands = []
+        commands.append(( lang(30800), 
+                        'XBMC.RunPlugin(%s)' % ( Key.build_url('teletext', page=101)), 
+                        ))
+        commands.append(( lang(30801), 
+                        'XBMC.RunPlugin(%s)' % ( Key.build_url('teletext', page=131)), 
+                        ))
+        commands.append(( lang(30802), 
+                        'XBMC.RunPlugin(%s)' % ( Key.build_url('teletext', page=200)), 
+                        ))
+        commands.append(( lang(30803), 
+                        'XBMC.RunPlugin(%s)' % ( Key.build_url('teletext', page=300)), 
+                        ))
+        commands.append(( lang(30804), 
+                        'XBMC.RunPlugin(%s)' % ( Key.build_url('teletext', page=590)), 
+                        ))
+        self.add('NRK Tekst TV',      'teletext', 'teletext', img='ttv-icon.png', isdir=False, commands=commands)
         
         if os.path.isfile(FAV_PATH):
           self.add('Favoritt Program', 'favorites', 'favorites', img='favorites.png')

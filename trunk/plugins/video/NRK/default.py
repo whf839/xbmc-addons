@@ -13,10 +13,18 @@ from NRK_API.utils import PluginError, PluginScriptError
 #plugin constants
 __plugin__         = "NRK"
 __author__         = "VictorV"
-__version__        = "0.9.4"
+__version__        = "0.9.5"
 __XBMC_Revision__  = "21735"
 
 
+def run_once():
+    import xbmcplugin
+    runonce = xbmcplugin.getSetting('runonce') == 'true'
+    if runonce == True:
+        xbmcplugin.openSettings(url=sys.argv[0])
+        xbmcplugin.setSetting('runonce', 'True')
+    
+    
 def _check_compatible():
     #spam plugin statistics to log
     msg = "PLUGIN::INIT -> '%s: version %s'" % (__plugin__, __version__,)
@@ -57,6 +65,7 @@ if (__name__ == "__main__"):
 
     if (not sys.argv[2]):
         ok = _check_compatible()
+        run_once()
         if (ok):
             from NRK_API import xbmcplugin_rootmenu as plugin
             

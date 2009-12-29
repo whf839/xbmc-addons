@@ -17,6 +17,8 @@
   
   <setting type="sep" />
   
-  <setting id="download_path" type="folder" source="files" option="writeable" label="30030" default="" />
+  <setting id="runonce" type="bool" label="30031" default="true" />
 
+  <setting type="sep" />
+  <setting id="fetch_path"        type="bool"  label="30002"  default="false" />
 </settings>

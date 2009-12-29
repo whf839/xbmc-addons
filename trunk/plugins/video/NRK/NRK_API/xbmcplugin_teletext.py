@@ -47,7 +47,7 @@ Log.out( "Module: %s Dated: %s loaded!" % ( __name__, __date__ ) )
 
 #Color Palette for teletext
 pal = ( 
-        (  0,   0,   0, 128),  (191,  56,   8), 
+        (  0,   0,   0,   0),  (191,  56,   8), 
         (152, 199,  30     ),  (255, 204,   4),
         (  5,  86, 133     ),  (255,   0, 255),
         (167, 219, 231     ),  (255, 255, 255),
@@ -519,17 +519,19 @@ class TTV:
     
     w    =   8; h    = 14
     cols =  39; rows = 24
-    page = 100; sub  =  1
+    sub  =  1
     subs =   1
+    bg_alpha = 200
     
     header = 'NRK Tekst tv laster..'
     
     
-    def __init__(self, cache=False):
+    def __init__(self, cache=False, page=100):
         self.conn = connection_manager.DataHandle()
         self.savepath = os.path.join(os.getcwd(), 'ttv_images')
         self.status = 900
         self.cache = cache
+        self.page = page
         
         
     def get_url(self):
@@ -591,7 +593,7 @@ class TTV:
         savefile    = self.get_savefile()
         
         if connection_manager.Cache.has_cache(savefile, 10) and self.cache:
-            return sf
+            return savefile
             
         url  = self.get_url()
         data = self.conn.get_data(url)
@@ -640,6 +642,38 @@ class TTV:
         self.parser.parse(data)
    
    
+    def create_background(self):
+        file = os.path.join( self.savepath, 'bg_%d.png' % ( self.bg_alpha ) )
+        print 'background file: %s' % file
+        if connection_manager.Cache.has_cache(file):
+            print 'use cached background'
+            return file
+            
+        w = self.w * self.cols
+        h = self.h * self.rows
+        r, g, b, NA = pal[0]
+        a = self.bg_alpha
+        rgba = ( r, g, b, a)
+        img = ImageRGB( w, h, True, rgba )
+        
+        import png
+        
+        bg = image.BLACK 
+        bd = 8
+            
+        if os.path.isdir(os.path.dirname(file)) == False:
+            os.makedirs(os.path.dirname(file))
+        
+        fh  = open(file, 'wb')
+        save_img = png.Writer(w, h, alpha=True, bitdepth=bd, background=bg)
+        save_img.write_array(fh, img.array)
+        fh.close()
+        
+        del img
+        
+        return file
+        
+        
     def paintHexFonts(self, y, fonts, offset=2):
         
         r = self.rows - offset
@@ -713,8 +747,18 @@ class TTV:
         
         return file
 
+   
 
-        
+REMOTE_0 = 58
+REMOTE_1 = 59
+REMOTE_2 = 60
+REMOTE_3 = 61
+REMOTE_4 = 62
+REMOTE_5 = 63 
+REMOTE_6 = 64
+REMOTE_7 = 65
+REMOTE_8 = 66
+REMOTE_9 = 67
         
 if not DEBUG:
     class TTVDlg(xbmcgui.WindowXMLDialog):
@@ -723,19 +767,32 @@ if not DEBUG:
         XML = "teletext.xml"
         EXIT_CODES = (9, 10, 216, 257, 275, 216, 61506, 61467,)
 
+        
         CTRLDSP = 15
         
         def __init__( self, *args, **kwargs):
+        
+           
+            key = Key(sys.argv[2])
+            if key.page:
+                page = key.page
+            else:
+                page = 100
+            print page
+                
             self.action = None
             self.buttons = {}
             self.ttv = TTV(cache=True)
+            self.ttv.page = page
             self.ttv.savepath = Plugin.get_cachepath()
+            bg = self.ttv.create_background()
+            xbmc.executebuiltin("Skin.SetString(bgimg, %s)" %bg)      
             self.image = Plugin.image('ttv_loading.png')
-            self.pagenumber = '???'
+            self.pagenumber = '---'
             self.int_pg_ref = ''
             
         def onInit(self):
-            self.image = self.ttv.get_page()
+            self.image = self.ttv.get_page(page = self.ttv.page)
             self.rebuild()
 
                 
@@ -745,8 +802,8 @@ if not DEBUG:
                 if self.ttv.status == 904:
                     self.image = Plugin.image('ttv_notfound.png')
             self.getControl(30).setImage(self.image)
-            self.getControl(15).setLabel(str(self.ttv.page))
-            
+            #self.getControl(15).setLabel(str(self.ttv.page))
+            xbmc.executebuiltin("Skin.SetString(ttv-page, %s)" % self.ttv.page) 
                 
         def onClick(self, controlId):
             print 'click'
@@ -771,7 +828,7 @@ if not DEBUG:
                 if len(self.int_pg_ref) == 3: 
                     self.int_pg_ref = ''
                 self.int_pg_ref += str(numb)
-                txt = self.int_pg_ref + '?'*(3 - len(self.int_pg_ref))
+                txt = self.int_pg_ref + '-'*(3 - len(self.int_pg_ref))
                 self.getControl(15).setLabel(txt)
                 
                 if len(self.int_pg_ref) == 3:
@@ -796,10 +853,11 @@ if not DEBUG:
                 actionID   =  action.getId()
             except: 
                 return
-                
+              
             if (actionID in self.EXIT_CODES 
             or buttonCode in self.EXIT_CODES):
                 self.close()
+            
                 
 
                 

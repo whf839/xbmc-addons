@@ -95,10 +95,14 @@ def open_from_disk(fp, mode='r'):
 class Cache:
     
     @staticmethod
-    def has_cache(path, cache_time, timeformat='m'):
+    def has_cache(path, cache_time=None, timeformat='m'):
         if not os.path.isfile(path):
             print 'CACHE:: No file found'
-            return   
+            return
+        
+        if not cache_time:
+            return True
+               
         cache_time = int(cache_time)
         if timeformat == 'm': time_exp = (24* cache_time * 60)
         else: time_exp = (cache_time * 60)   
