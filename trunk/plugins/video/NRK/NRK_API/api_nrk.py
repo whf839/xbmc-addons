@@ -53,6 +53,7 @@ RELEVANT       = 'aktuelt';   PROGRAM  = 'program'
 LIVE           = 'direkte';   ARCHIVE  = 'arkiv'
 RECOMMENDED    = 'recommended'
 TOP_BY_INPUT   = 'topbyinput' 
+ARTICLES       = 'articles'
 
 #Playlists
 SPORT = 'sport';  NEWS = 'nyheter';  SUPER = 'super'
@@ -324,7 +325,12 @@ class Api:
         heads = uri.cookieheader; heads.update(uri.baseheaders)
         data  = self.dman.get_data(url, headers=heads)
         return extract.recommended(data)
-        
+    
+    def get_articles(self):    
+        url   = uri.subpath()
+        heads = uri.cookieheader; heads.update(uri.baseheaders)
+        data  = self.dman.get_data(url, headers=heads)
+        return extract.articles(data)    
         
         
         
@@ -525,6 +531,13 @@ class regex:
                     <h2><a\shref="/nett-tv/klipp/.*?".*?>(?P<title>.*?)</a></h2>
                     """
     
+    articles      = r"""(?sx)
+                    <div\sclass="intro-element">.*?
+                    <div.*?>.*?<a.*?>.*?<img.*?src="(?P<image>.*?)".*?>.*?
+                    <h2>.*?<a.*?href="(?P<url>.*?)".*?>(?P<title>.*?)</a>.*?
+                    <a.*?>(?P<plot>.*?)</a>
+                    """
+                    
     show_clip_xml = r"""(?sx)
                     <mediadefinition>.*?
                     <title>(?P<title>.*?)</title>.*?       #title idx: 0
@@ -622,6 +635,24 @@ class extract:
     
     @staticmethod
     def recommended(data):
+        istack = []
+        for m in re.finditer(regex.recommended, data):	
+            item = MediaObj()
+            plot = m.group('plot').decode('iso-8859-1')
+            item.plot =  decode_htmlentities( plot ) 
+            item.title =  m.group('title') 
+            item.thumbnail = m.group('image').encode('ascii', 'ignore')
+            #State identifiers
+            item.key = Key()
+            item.key.id = int(m.group('id'))
+            item.key.type = m.group('type').encode('ascii', 'ignore')
+            istack.append(item)
+        return istack
+    # - EOM -
+    
+    
+    @staticmethod
+    def articles(data):
         istack = []
         for m in re.finditer(regex.recommended, data):	
             item = MediaObj()
@@ -1012,6 +1043,12 @@ class views:
                     title = lang(30217),
                     parent = parent,
                     thumbnail = os.path.join(resource_path, 'favorites.png')
+                ), MediaObj(
+                    key = Key(type = PROGRAM, view = ARTICLES),
+                    #title = 'Artikler', 
+                    title = lang(30219),
+                    parent = parent,
+                    thumbnail = os.path.join(resource_path, 'article.png')
                 )
             ]
     
