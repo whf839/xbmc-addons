@@ -318,14 +318,16 @@ class ForecastHourlyParser:
 
     def _get_forecast( self, htmlSource ):
         # regex patterns
-        pattern_headings = "<div class=\"hbhTD[^\"]+\"><div title=\"[^>]+>([^<]+)</div></div>"
+        #pattern_headings = "<div class=\"hbhTD[^\"]+\"><div title=\"[^>]+>([^<]+)</div></div>"
         pattern_date = "<div class=\"hbhDateHeader\">([^<]+)</div>"
-        pattern_info = "<div class=\"hbhTDTime[^>]+><div>([^<]+)</div></div>.*\s\
-[^<]+<div class=\"hbhTDConditionIcon\"><div><img src=\"http://i.imwx.com/web/common/wxicons/[0-9]+/(gray/)?([0-9]+).gif\"[^>]+></div></div>.*\s\
-[^<]+<div class=\"hbhTDCondition\"><div><b>([^<]+)</b><br>([^<]+)</div></div>.*\s\
-[^<]+<div class=\"hbhTDFeels\"><div>([^<]*)</div></div>.*\s\
-[^<]+<div class=\"hbhTDPrecip\"><div>([^<]*)</div></div>.*\s\
-[^<]+<div class=\"hbhTDHumidity\"><div>([^<]*)</div></div>.*\s\
+        pattern_sunrise = "<img src=\"http://i.imwx.com/web/local/hourbyhour/icon_sunrise.gif\"[^>]+>([^<]+)"
+        pattern_sunset = "<img src=\"http://i.imwx.com/web/local/hourbyhour/icon_sunset.gif\"[^>]+>([^<]+)"
+        pattern_info = "<div class=\"hbhTDTime[^>]+><div>([^<]+)</div></div>\
+[^<]+<div class=\"hbhTDConditionIcon\"><div><img src=\"http://i.imwx.com/web/common/wxicons/[0-9]+/(gray/)?([0-9]+).gif\"[^>]+></div></div>\
+[^<]+<div class=\"hbhTDCondition\"><div><b>([^<]+)</b><br>([^<]+)</div></div>\
+[^<]+<div class=\"hbhTDFeels\"><div>([^<]*)</div></div>\
+[^<]+<div class=\"hbhTDPrecip\"><div>([^<]*)</div></div>\
+[^<]+<div class=\"hbhTDHumidity\"><div>([^<]*)</div></div>\
 [^<]+<div class=\"hbhTDWind\"><div>([^<]*)<br>([^<]*)</div></div>"
         """
         pattern_time = "<div class=\"hbhTDTime[^>]+><div>([^<]+)</div>"
@@ -340,6 +342,12 @@ class ForecastHourlyParser:
         info = re.findall( pattern_info, htmlSource )
         # fetch dates
         dates = re.findall( pattern_date, htmlSource )
+        # hack for times when weather.com, does not display date
+        dates += [ ", " ]
+        # fetch sunrise
+        sunrises = re.findall( pattern_sunrise, htmlSource )
+        # fetch sunset
+        sunsets = re.findall( pattern_sunset, htmlSource )
         # enumerate thru and create heading and forecast
         if ( len( info ) ):
             # we convert wind direction to full text
@@ -389,8 +397,34 @@ class ForecastHourlyParser:
                 # do we need to increment date_counter
                 if ( item[ 0 ] == "12 am" and count > 0 ):
                     date_counter += 1
+                # does sunrise/sunset fit in this period
+                sunrise = ""
+                sunset = ""
+                period = _localize_unit( item[ 0 ], "time" )
+                # sunrise
+                if ( sunrises ):
+                    # set to a high number, we use this for checking next time period
+                    period2 = "99"
+                    if ( count < len( info ) - 1 ):
+                        period2 = _localize_unit( info[ count + 1 ][ 0 ], "time" )
+                    # get the localized sunrise time
+                    sunrise_check = _localize_unit( sunrises[ 0 ].strip().split( "Sunrise" )[ 1 ].strip(), "time" )
+                    # if in the correct time range, set our variable
+                    if ( sunrise_check.split( ":" )[ 0 ] == period.split( ":" )[ 0 ] and sunrise_check.split( ":" )[ 1 ] >= period.split( ":" )[ 1 ] and ( sunrise_check.split( ":" )[ 1 ] < period2.split( ":" )[ 1 ] or sunrise_check.split( ":" )[ 0 ] < period2.split( ":" )[ 0 ] ) ):
+                        sunrise = sunrise_check
+                # sunset
+                if ( sunsets ):
+                    # set to a high number, we use this for checking next time period
+                    period2 = "99"
+                    if ( count < len( info ) - 1 ):
+                        period2 = _localize_unit( info[ count + 1 ][ 0 ], "time" )
+                    # get the localized sunset time
+                    sunset_check = _localize_unit( sunsets[ 0 ].strip().split( "Sunset" )[ 1 ].strip(), "time" )
+                    # if in the correct time range, set our variable
+                    if ( sunset_check.split( ":" )[ 0 ] == period.split( ":" )[ 0 ] and sunset_check.split( ":" )[ 1 ] >= period.split( ":" )[ 1 ] and ( sunset_check.split( ":" )[ 1 ] < period2.split( ":" )[ 1 ] or sunset_check.split( ":" )[ 0 ] < period2.split( ":" )[ 0 ] ) ):
+                        sunset = sunset_check
                 # add result to our class variable
-                self.forecast += [ ( _localize_unit( item[ 0 ], "time" ), dates[ date_counter ].split( ", " )[ 1 ], iconpath, _localize_unit( item[ 3 ] ), brief[ count ], _localize_unit( item[ 5 ] ), item[ 6 ].replace( "%", "" ), item[ 7 ].replace( "%", "" ), wind[ count ], _localize_unit( item[ 9 ], "speed" ), item[ 8 ].split( " " )[ -1 ] ) ]
+                self.forecast += [ ( period, dates[ date_counter ].split( ", " )[ -1 ], iconpath, _localize_unit( item[ 3 ] ), brief[ count ], _localize_unit( item[ 5 ] ), item[ 6 ].replace( "%", "" ), item[ 7 ].replace( "%", "" ), wind[ count ], _localize_unit( item[ 9 ], "speed" ), item[ 8 ].split( " " )[ -1 ], sunrise, sunset, ) ]
 
 
 class ForecastWeekendParser:
