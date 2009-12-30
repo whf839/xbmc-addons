@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
     <string id="30300">OpenSubtitles_OSD</string>
     <string id="30301"></string>
@@ -43,10 +43,10 @@
     <string id="502">Kielen valinta</string>
     <string id="503">Valitse oletuskieli</string>
     <string id="504">Valitse tekstityskansio</string>
-    <string id="505">Valitse suositeltu palvelu</string>
+    <string id="505">Valitse ensisijainen palvelu</string>
     <string id="506">Haluatko määrittää uudet asetukset?</string>
-    <string id="601">Merkillä</string>
-    <string id="602">toimivampi</string>
+    <string id="601">Merkitty-</string>
+    <string id="602">on toimiva</string>
     <string id="610">Hae osoitteesta </string>
     <string id="611">Hae osoitteesta Sublight.si</string>
     <string id="612">Syötä hakuteksti manuaalisesti</string>
@@ -61,8 +61,8 @@
     <string id="653">Yhteys epäonnistui</string>
     <string id="654">Virhe tekstitysten purkamisessa</string>
     <string id="741">Tekstityksiä ei löydetty</string>
-    <string id="742"> tekstitystä löydetty</string>
-    <string id="744"> tekstitystä löydetty kohteelle </string>
+    <string id="742">kpl löydettiin</string>
+    <string id="744">kpl löydettiin kohteelle[CR]</string>
     
       <!-- 
    * Languages
@@ -71,13 +71,14 @@
   <string id="30101">Ensisijainen kieli</string>
   <string id="30102">Toissijainen kieli</string>
   <string id="30103">Valitse palvelut</string>
-  <string id="30104">Podnapisi.net Käyttäjätunnus</string>
-  <string id="30105">Podnapisi.net Salasana</string>
+  <string id="30104">Podnapisi.net käyttäjätunnus</string>
+  <string id="30105">Podnapisi.net salasana</string>
   <string id="30106">Tekstitysten latauskansio</string>
   <string id="30107">Elokuvakansio</string>
   <string id="30108">Valitse vaihtoehtoinen kansio</string>
   <string id="30109">Hakuteksti</string>
   <string id="30110">Syötä hakuteksti manuaalisesti</string>
+  <string id="30111">Kolmas kieli</string>
     
     
     <!-- Optional  -->
