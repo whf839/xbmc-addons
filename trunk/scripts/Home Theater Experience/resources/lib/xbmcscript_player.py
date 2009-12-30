@@ -98,18 +98,22 @@ class Main:
         print "Genre: %s" % genre
         print "MPAA: %s" % mpaa
         print "Audio: %s" % audio
-        print "Audio path: %s" % xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "ac3": "Dolby" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ]
+        if ( _S_( "audio_videos_folder" ) ):
+            print "Audio path: %s" % xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "ac3": "Dolby" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ]
         print
+        # TODO: try to get a local thumb for special videos?
         # get Dolby/DTS videos
-        self._get_special_items(    playlist=self.playlist,
-                                                items=1,
-                                                path=xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "ac3": "Dolby" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ],
-                                                genre=_L_( 32606 ),
-                                                index=0
-                                            )
+        if ( _S_( "audio_videos_folder" ) ):
+            self._get_special_items(    playlist=self.playlist,
+                                                    items=1 * ( _S_( "audio_videos_folder" ) != "" ),
+                                                    path=xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "ac3": "Dolby" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ],
+                                                    genre=_L_( 32606 ),
+                                                    ##thumbnail=xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "ac3": "Dolby" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ] + "folder.jpg",
+                                                    index=0
+                                                )
         # get rating video
         self._get_special_items(    playlist=self.playlist,
-                                                items=1, 
+                                                items=1 * ( _S_( "rating_videos_folder" ) != "" ), 
                                                 path=xbmc.translatePath( _S_( "rating_videos_folder" ) ) + mpaa + ".avi",
                                                 genre=_L_( 32603 ),
                                                 index=0
@@ -127,7 +131,6 @@ class Main:
                                                    genre=genre,
                                                    movie=movie
                                                 )
-        ####print "T", trailers
         # get coming attractions outro videos
         self._get_special_items(    playlist=self.playlist,
                                                 items=( 0, 1, 1, 2, 3, 4, 5, )[ int( _S_( "cav_outro" ) ) ] * ( len( trailers ) > 0 ), 
@@ -280,7 +283,6 @@ class Main:
         # return if not user preference
         if ( not items ):
             return []
-        ###print "I",items
         # update dialog
         pDialog.update( -1, _L_( 32500 ) )
         # trailer settings, grab them here so we don't need another _S_() object
@@ -306,8 +308,7 @@ class Main:
 
     def _get_listitem( self, title="", url="", thumbnail=None, plot="", runtime="", mpaa="", release_date="0 0 0", studio=_L_( 32604 ), genre="", writer="", director=""):
         # check for a valid thumbnail
-        if ( thumbnail is None ):
-            thumbnail = self._get_thumbnail( url )
+        thumbnail = self._get_thumbnail( ( thumbnail, url, )[ thumbnail is None ] )
         # set the default icon
         icon = "DefaultVideo.png"
         # only need to add label, icon and thumbnail, setInfo() and addSortMethod() takes care of label2
@@ -327,12 +328,14 @@ class Main:
         print url
         # if the cached thumbnail does not exist create the thumbnail based on filepath.tbn
         filename = xbmc.getCacheThumbName( url )
-        print filename
         thumbnail = os.path.join( self.BASE_CACHE_PATH, filename[ 0 ], filename )
-        # if cached thumb does not exist return empty
+        print filename
+        # if cached thumb does not exist try auto generated
         if ( not os.path.isfile( thumbnail ) ):
-            # set empty string
-            thumbnail = ""
+            thumbnail = os.path.join( self.BASE_CACHE_PATH, filename[ 0 ], "auto-" + filename )
+        # if cached thumb does not exist set default
+        if ( not os.path.isfile( thumbnail ) ):
+            thumbnail = "DefaultVideo.png"
         # return result
         return thumbnail
 
