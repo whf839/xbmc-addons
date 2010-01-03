@@ -88,16 +88,16 @@ def _localize_unit( value, unit="temp" ):
     if ( not value or value.startswith( "N/A" ) ):
         return value
     # time conversion
-    if ( unit == "time" ):
+    if ( unit == "time" or unit == "time24" ):
         # format time properly
         if ( ":" not in value ):
             value = ":00 ".join( value.split( " " ) )
         # set default time
         time = value
         # set our default temp unit
-        id = "h:mm:ss xx"
+        id = ( "H:mm", "h:mm:ss xx", )[ unit == "time" ]
         # if we're debugging xbmc module is not available
-        if ( not DEBUG ):
+        if ( not DEBUG and unit == "time" ):
             id = xbmc.getRegion( id="time" )
         if ( id == "h:mm:ss xx" ):
             return time
@@ -322,6 +322,9 @@ class ForecastHourlyParser:
         pattern_date = "<div class=\"hbhDateHeader\">([^<]+)</div>"
         pattern_sunrise = "<img src=\"http://i.imwx.com/web/local/hourbyhour/icon_sunrise.gif\"[^>]+>([^<]+)"
         pattern_sunset = "<img src=\"http://i.imwx.com/web/local/hourbyhour/icon_sunset.gif\"[^>]+>([^<]+)"
+        # use this to grab only 1 hour details
+        #pattern_info = "<div class=\"hbhTDTime\"><div>([^<]+)</div></div>\
+        # use this to grab the 15 minutes details
         pattern_info = "<div class=\"hbhTDTime[^>]+><div>([^<]+)</div></div>\
 [^<]+<div class=\"hbhTDConditionIcon\"><div><img src=\"http://i.imwx.com/web/common/wxicons/[0-9]+/(gray/)?([0-9]+).gif\"[^>]+></div></div>\
 [^<]+<div class=\"hbhTDCondition\"><div><b>([^<]+)</b><br>([^<]+)</div></div>\
@@ -400,31 +403,31 @@ class ForecastHourlyParser:
                 # does sunrise/sunset fit in this period
                 sunrise = ""
                 sunset = ""
-                period = _localize_unit( item[ 0 ], "time" )
+                # we want 24 hour as the math is easier
+                period = _localize_unit( item[ 0 ], "time24" )
+                # set to a high number, we use this for checking next time period
+                period2 = "99:00"
+                if ( count < len( info ) - 2 ):
+                    period2 = _localize_unit( info[ count + 1 ][ 0 ], "time24" )
+                    period2 = ( period2, "24:%s" % ( period2.split( ":" )[ 1 ], ), )[ period2.split( ":" )[ 0 ] == "0" ]
                 # sunrise
                 if ( sunrises ):
-                    # set to a high number, we use this for checking next time period
-                    period2 = "99"
-                    if ( count < len( info ) - 1 ):
-                        period2 = _localize_unit( info[ count + 1 ][ 0 ], "time" )
-                    # get the localized sunrise time
-                    sunrise_check = _localize_unit( sunrises[ 0 ].strip().split( "Sunrise" )[ 1 ].strip(), "time" )
+                    # get the 24 hour sunrise time
+                    sunrise_check = _localize_unit( sunrises[ 0 ].strip().split( "Sunrise" )[ 1 ].strip(), "time24" )
                     # if in the correct time range, set our variable
-                    if ( sunrise_check.split( ":" )[ 0 ] == period.split( ":" )[ 0 ] and sunrise_check.split( ":" )[ 1 ] >= period.split( ":" )[ 1 ] and ( sunrise_check.split( ":" )[ 1 ] < period2.split( ":" )[ 1 ] or sunrise_check.split( ":" )[ 0 ] < period2.split( ":" )[ 0 ] ) ):
-                        sunrise = sunrise_check
+                    if ( sunrise_check.split( ":" )[ 0 ] == period.split( ":" )[ 0 ] and sunrise_check.split( ":" )[ 1 ] >= period.split( ":" )[ 1 ] and 
+                        ( sunrise_check.split( ":" )[ 1 ] < period2.split( ":" )[ 1 ] or sunrise_check.split( ":" )[ 0 ] < period2.split( ":" )[ 0 ] ) ):
+                        sunrise = _localize_unit( sunrises[ 0 ].strip().split( "Sunrise" )[ 1 ].strip(), "time" )
                 # sunset
                 if ( sunsets ):
-                    # set to a high number, we use this for checking next time period
-                    period2 = "99"
-                    if ( count < len( info ) - 1 ):
-                        period2 = _localize_unit( info[ count + 1 ][ 0 ], "time" )
-                    # get the localized sunset time
-                    sunset_check = _localize_unit( sunsets[ 0 ].strip().split( "Sunset" )[ 1 ].strip(), "time" )
+                    # get the 24 hour sunset time
+                    sunset_check = _localize_unit( sunsets[ 0 ].strip().split( "Sunset" )[ 1 ].strip(), "time24" )
                     # if in the correct time range, set our variable
-                    if ( sunset_check.split( ":" )[ 0 ] == period.split( ":" )[ 0 ] and sunset_check.split( ":" )[ 1 ] >= period.split( ":" )[ 1 ] and ( sunset_check.split( ":" )[ 1 ] < period2.split( ":" )[ 1 ] or sunset_check.split( ":" )[ 0 ] < period2.split( ":" )[ 0 ] ) ):
-                        sunset = sunset_check
+                    if ( sunset_check.split( ":" )[ 0 ] == period.split( ":" )[ 0 ] and sunset_check.split( ":" )[ 1 ] >= period.split( ":" )[ 1 ] and 
+                        ( sunset_check.split( ":" )[ 1 ] < period2.split( ":" )[ 1 ] or sunset_check.split( ":" )[ 0 ] < period2.split( ":" )[ 0 ] ) ):
+                        sunset = _localize_unit( sunsets[ 0 ].strip().split( "Sunset" )[ 1 ].strip(), "time" )
                 # add result to our class variable
-                self.forecast += [ ( period, dates[ date_counter ].split( ", " )[ -1 ], iconpath, _localize_unit( item[ 3 ] ), brief[ count ], _localize_unit( item[ 5 ] ), item[ 6 ].replace( "%", "" ), item[ 7 ].replace( "%", "" ), wind[ count ], _localize_unit( item[ 9 ], "speed" ), item[ 8 ].split( " " )[ -1 ], sunrise, sunset, ) ]
+                self.forecast += [ ( _localize_unit( item[ 0 ], "time" ), dates[ date_counter ].split( ", " )[ -1 ], iconpath, _localize_unit( item[ 3 ] ), brief[ count ], _localize_unit( item[ 5 ] ), item[ 6 ].replace( "%", "" ), item[ 7 ].replace( "%", "" ), wind[ count ], _localize_unit( item[ 9 ], "speed" ), item[ 8 ].split( " " )[ -1 ], sunrise, sunset, ) ]
 
 
 class ForecastWeekendParser:
