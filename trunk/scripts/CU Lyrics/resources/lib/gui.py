@@ -6,7 +6,6 @@ import xbmcgui
 import unicodedata
 import urllib
 from utilities import *
-import time
 __settings__ = xbmc.Settings( path=os.getcwd() )
 
 try:
@@ -56,7 +55,6 @@ class GUI( xbmcgui.WindowXMLDialog ):
         self.song = None
         self.controlId = -1
         self.allow_exception = False
-        self.time = 0
 
 
     def show_control( self, controlId ):
@@ -185,36 +183,14 @@ class GUI( xbmcgui.WindowXMLDialog ):
             if ( __settings__.getSetting( "save_lyrics" ) == "true" and save ): success = self.save_lyrics_to_file( lyrics )
         self.show_control( 100 + ( int(__settings__.getSetting( "smooth_scrolling" ) == "true") * 10 ) )
         
-        delay = int(__settings__.getSetting( "scrool_delay" ))
-        if delay == 0: sec_delay = 3
-        if delay == 1: sec_delay = 6
-        if delay == 2: sec_delay = 9
-
-        import threading
-        thread = threading.Thread(target=self.get_next_song, args=())
-        thread.start()
-       
-
-        while True:
-	        
-	        if (len(self.getControl( 110 ).getListItem(self.getControl( 110 ).getSelectedPosition()).getLabel()) > 0) :
-	   	    	for i in range(sec_delay) : xbmc.sleep(1000)
-	   	    	if not xbmc.getCondVisibility('Player.Paused'): self.getControl( 110 ).selectItem(self.getControl( 110 ).getSelectedPosition() + 1)
-	        else:
-	   	    	if not xbmc.getCondVisibility('Player.Paused'): self.getControl( 110 ).selectItem(self.getControl( 110 ).getSelectedPosition() + 1)	
-
-        	
-    def get_next_song( self ):        	
         next_artist = xbmc.getInfoLabel( "MusicPlayer.offset(1).Artist" )
         next_song = xbmc.getInfoLabel( "MusicPlayer.offset(1).Title" )
         print "Next Artist: " + next_artist
         print "Next Song: " + next_song
         if ( next_song and  next_artist ):
         	self.get_lyrics( next_artist, next_song, False )
-        	return "Done"
         else:
-        	print "Missing Artist or Song name in ID3 tag for next track"
-        	return "Error"	
+        	print "Missing Artist or Song name in ID3 tag for next track"	
         
 
         
