@@ -273,7 +273,9 @@ class Forecast36HourParser:
         self.alerts = []
         self.video_location = []
         self.translate = translate
-        self._get_forecast( htmlSource )
+        # only need to parse source if there is source
+        if ( htmlSource ):
+            self._get_forecast( htmlSource )
 
     def _get_forecast( self, htmlSource ):
         # regex patterns
@@ -355,7 +357,9 @@ class ForecastHourlyParser:
     def __init__( self, htmlSource, translate ):
         self.forecast = []
         self.translate = translate
-        self._get_forecast( htmlSource )
+        # only need to parse source if there is source
+        if ( htmlSource ):
+            self._get_forecast( htmlSource )
 
     def _get_forecast( self, htmlSource ):
         # regex patterns
@@ -475,7 +479,9 @@ class ForecastWeekendParser:
     def __init__( self, htmlSource, translate ):
         self.forecast = []
         self.translate = translate
-        self._get_forecast( htmlSource )
+        # only need to parse source if there is source
+        if ( htmlSource ):
+            self._get_forecast( htmlSource )
 
     def _get_forecast( self, htmlSource ):
         # regex patterns
@@ -633,7 +639,9 @@ class Forecast10DayParser:
     def __init__( self, htmlSource, translate ):
         self.forecast = []
         self.translate = translate
-        self._get_forecast( htmlSource )
+        # only need to parse source if there is source
+        if ( htmlSource ):
+            self._get_forecast( htmlSource )
 
     def _get_forecast( self, htmlSource ):
         # regex patterns
@@ -1124,7 +1132,7 @@ class WeatherClient:
                 print "Trying url %s one more time" % base_url
                 time.sleep( 3 )
                 # try one more time
-                self._fetch_data( base_url, refreshtime, filename, animated, subfolder, False )
+                return self._fetch_data( base_url, refreshtime, filename, animated, subfolder, False )
             else:
                 # we've already retried, return ""
                 return ""
