@@ -68,8 +68,8 @@ class Main:
             """
             self._fetch_map_list()
             self._fetch_36_forecast()
-            self._fetch_10day_forecast()
             self._fetch_hourly_forecast()
+            self._fetch_10day_forecast()
             self._fetch_weekend_forecast()
         # we're finished, exit
         self._exit_script()
@@ -130,23 +130,14 @@ class Main:
             self.WEATHER_WINDOW.setProperty( "LegendPath", "" )
 
     def _clear_properties( self ):
-        # alerts
+        # clear properties used for visibilty
         self.WEATHER_WINDOW.clearProperty( "Alerts" )
         self.WEATHER_WINDOW.setProperty( "Alerts.Color", "default" )
-        # video
         self.WEATHER_WINDOW.clearProperty( "Video" )
-        # 36 Hour
-        self.WEATHER_WINDOW.clearProperty( "36Hour.1.Heading" )
-        self.WEATHER_WINDOW.clearProperty( "36Hour.2.Heading" )
-        self.WEATHER_WINDOW.clearProperty( "36Hour.3.Heading" )
-        # Weekend
-        self.WEATHER_WINDOW.clearProperty( "Weekend.1.Date" )
-        self.WEATHER_WINDOW.clearProperty( "Weekend.2.Date" )
-        self.WEATHER_WINDOW.clearProperty( "Weekend.3.Date" )
-        # 10-Day
-        self.WEATHER_WINDOW.clearProperty( "Daily.Heading1" )
-        # Hourly
-        self.WEATHER_WINDOW.clearProperty( "Hourly.Heading1" )
+        self.WEATHER_WINDOW.clearProperty( "36Hour.IsFetched" )
+        self.WEATHER_WINDOW.clearProperty( "Weekend.IsFetched" )
+        self.WEATHER_WINDOW.clearProperty( "Daily.IsFetched" )
+        self.WEATHER_WINDOW.clearProperty( "Hourly.IsFetched" )
 
     def _clear_map_list( self, list_id ):
         # enumerate thru and clear all map list labels, icons and onclicks
@@ -262,16 +253,30 @@ class Main:
     def _set_video( self, video_url ):
         self.WEATHER_WINDOW.setProperty( "Video", video_url )
 
+    def _set_extra_current_info( self, extras ):
+        if ( extras ):
+            self.WEATHER_WINDOW.setProperty( "Current.Pressure", extras[ 0 ] )
+            self.WEATHER_WINDOW.setProperty( "Current.Visibility", "%s %s" % ( extras[ 1 ].split( " " )[ 0 ], { "mile": self._( 32300 ), "miles": self._( 32301 ), "kilometer": self._( 32302 ), "kilometers": self._( 32303 ) }[ extras[ 1 ].split( " " )[ 1 ] ], ) )
+            self.WEATHER_WINDOW.setProperty( "Current.Sunrise", extras[ 2 ] )
+            self.WEATHER_WINDOW.setProperty( "Current.Sunset", extras[ 3 ] )
+        else:
+            self.WEATHER_WINDOW.clearProperty( "Current.Pressure" )
+            self.WEATHER_WINDOW.clearProperty( "Current.Visibility" )
+            self.WEATHER_WINDOW.clearProperty( "Current.Sunrise" )
+            self.WEATHER_WINDOW.clearProperty( "Current.Sunset" )
+
     def _fetch_36_forecast( self, showView=True ):
         # exit script if user changed locations
         if ( self.areacode != xbmc.getInfoLabel( "Window(Weather).Property(AreaCode)" ) ):
             return
         # fetch 36 hour forecast
-        alerts, alertsrss, alertsnotify, alertscolor, alertscount, forecasts, video = self.WeatherClient.fetch_36_forecast( self.WEATHER_WINDOW.getProperty( "Video" ) )
+        alerts, alertsrss, alertsnotify, alertscolor, alertscount, forecasts, extras, video = self.WeatherClient.fetch_36_forecast( self.WEATHER_WINDOW.getProperty( "Video" ) )
         # set any alerts
         self._set_alerts( alerts, alertsrss, alertsnotify, alertscolor, alertscount )
         # set video
         self._set_video( video )
+        # set extra info
+        self._set_extra_current_info( extras )
         # enumerate thru and set the info
         for day, forecast in enumerate( forecasts ):
             self.WEATHER_WINDOW.setProperty( "36Hour.%d.OutlookIcon" % ( day + 1, ), forecast[ 1 ] )
@@ -286,6 +291,8 @@ class Main:
             self.WEATHER_WINDOW.setProperty( "36Hour.%d.DaylightTime" % ( day + 1, ), forecast[ 9 ] )
             self.WEATHER_WINDOW.setProperty( "36Hour.%d.DaylightType" % ( day + 1, ), ( "sunrise", "sunset", )[ forecast[ 8 ] == "Sunset" ] )
             self.WEATHER_WINDOW.setProperty( "36Hour.%d.Heading" % ( day + 1, ), { "Today": xbmc.getLocalizedString( 33006 ), "Tonight": xbmc.getLocalizedString( 33018 ), "Tomorrow": xbmc.getLocalizedString( 33007 ), "Tomorrow Night": xbmc.getLocalizedString( 33019 ) }[ forecast[ 0 ] ] )
+        # use this to hide info until fully fetched
+        self.WEATHER_WINDOW.setProperty( "36Hour.IsFetched", "true" )
 
     def _fetch_hourly_forecast( self ):
         # exit script if user changed locations
@@ -296,45 +303,30 @@ class Main:
         # localized long and short date dictionary
         longdate_dict = { "January": xbmc.getLocalizedString( 21 ), "February": xbmc.getLocalizedString( 22 ), "March": xbmc.getLocalizedString( 23 ), "April": xbmc.getLocalizedString( 24 ), "May": xbmc.getLocalizedString( 25 ), "June": xbmc.getLocalizedString( 26 ), "July": xbmc.getLocalizedString( 27 ), "August": xbmc.getLocalizedString( 28 ), "September": xbmc.getLocalizedString( 29 ), "October": xbmc.getLocalizedString( 30 ), "November": xbmc.getLocalizedString( 31 ), "December": xbmc.getLocalizedString( 32 ) }
         shortdate_dict = { "January": xbmc.getLocalizedString( 51 ), "February": xbmc.getLocalizedString( 52 ), "March": xbmc.getLocalizedString( 53 ), "April": xbmc.getLocalizedString( 54 ), "May": xbmc.getLocalizedString( 55 ), "June": xbmc.getLocalizedString( 56 ), "July": xbmc.getLocalizedString( 57 ), "August": xbmc.getLocalizedString( 58 ), "September": xbmc.getLocalizedString( 59 ), "October": xbmc.getLocalizedString( 60 ), "November": xbmc.getLocalizedString( 61 ), "December": xbmc.getLocalizedString( 62 ) }
-        # initialize count variable
-        count = 0
         # enumerate thru and set the info
-        for forecast in forecasts:
-            # do we need to skip this time
-            if ( ( ":15" in forecast[ 0 ] or ":45" in forecast[ 0 ] ) and int( self.Settings.getSetting( "hourly_steps") ) > 0 ):
-                continue
-            if ( ":30" in forecast[ 0 ] and int( self.Settings.getSetting( "hourly_steps") ) > 1 ):
-                continue
-            # we want this one, increment counter
-            count += 1
+        for count, forecast in enumerate( forecasts ):
             # set properties
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Time" % ( count, ), forecast[ 0 ] )
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.LongDate" % ( count, ), "%s %s" % ( longdate_dict.get( forecast[ 1 ].split( " " )[ 0 ], "" ), forecast[ 1 ].split( " " )[ -1 ], ) )
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.ShortDate" % ( count, ), "%s %s" % ( shortdate_dict.get( forecast[ 1 ].split( " " )[ 0 ], "" ), forecast[ 1 ].split( " " )[ -1 ], ) )
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.OutlookIcon" % ( count, ), forecast[ 2 ] )
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.FanartCode" % ( count, ), os.path.splitext( os.path.basename( forecast[ 2 ] ) )[ 0 ] )
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Temperature" % ( count, ), forecast[ 3 ] )
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Outlook" % ( count, ), forecast[ 4 ] )
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.FeelsLike" % ( count, ), forecast[ 5 ] )
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Precipitation" % ( count, ), forecast[ 6 ] )
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Humidity" % ( count, ), forecast[ 7 ] )
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.WindDirection" % ( count, ), forecast[ 8 ] )
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.WindSpeed" % ( count, ), forecast[ 9 ] )
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.ShortWindDirection" % ( count, ), forecast[ 10 ] )
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Sunrise" % ( count, ), forecast[ 11 ] )
-            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Sunset" % ( count, ), forecast[ 12 ] )
-                # enumerate thru and clear all hourly times
-        for count in range( len( forecasts ), 28 ):
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Time" % ( count + 1, ), forecast[ 0 ] )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.LongDate" % ( count + 1, ), "%s %s" % ( longdate_dict.get( forecast[ 1 ].split( " " )[ 0 ], "" ), forecast[ 1 ].split( " " )[ -1 ], ) )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.ShortDate" % ( count + 1, ), "%s %s" % ( shortdate_dict.get( forecast[ 1 ].split( " " )[ 0 ], "" ), forecast[ 1 ].split( " " )[ -1 ], ) )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.OutlookIcon" % ( count + 1, ), forecast[ 2 ] )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.FanartCode" % ( count + 1, ), os.path.splitext( os.path.basename( forecast[ 2 ] ) )[ 0 ] )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Temperature" % ( count + 1, ), forecast[ 3 ] )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Outlook" % ( count + 1, ), forecast[ 4 ] )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.FeelsLike" % ( count + 1, ), forecast[ 5 ] )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Precipitation" % ( count + 1, ), forecast[ 6 ] )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Humidity" % ( count + 1, ), forecast[ 7 ] )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.WindDirection" % ( count + 1, ), forecast[ 8 ] )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.WindSpeed" % ( count + 1, ), forecast[ 9 ] )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.ShortWindDirection" % ( count + 1, ), forecast[ 10 ] )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Sunrise" % ( count + 1, ), forecast[ 11 ] )
+            self.WEATHER_WINDOW.setProperty( "Hourly.%d.Sunset" % ( count + 1, ), forecast[ 12 ] )
+        # enumerate thru and clear all hourly times
+        for count in range( len( forecasts ), 12 ):
             # clear any remaining hourly times as some locals do not have all of them
             self.WEATHER_WINDOW.clearProperty( "Hourly.%d.Time" % ( count + 1, ) )
-        # set our headings
-        self.WEATHER_WINDOW.setProperty( "Hourly.Heading1", xbmc.getLocalizedString( 555 ) )
-        self.WEATHER_WINDOW.setProperty( "Hourly.Heading2", xbmc.getLocalizedString( 33020 ) )
-        self.WEATHER_WINDOW.setProperty( "Hourly.Heading3", xbmc.getLocalizedString( 401 ) )
-        self.WEATHER_WINDOW.setProperty( "Hourly.Heading4", xbmc.getLocalizedString( 33024 ) )
-        self.WEATHER_WINDOW.setProperty( "Hourly.Heading5", xbmc.getLocalizedString( 33022 ) )
-        self.WEATHER_WINDOW.setProperty( "Hourly.Heading6", xbmc.getLocalizedString( 406 ) )
-        self.WEATHER_WINDOW.setProperty( "Hourly.Heading7", xbmc.getLocalizedString( 404 ) )
+        # use this to hide info until fully fetched
+        self.WEATHER_WINDOW.setProperty( "Hourly.IsFetched", "true" )
 
     def _fetch_weekend_forecast( self ):
         # exit script if user changed locations
@@ -368,6 +360,8 @@ class Main:
             self.WEATHER_WINDOW.setProperty( "Weekend.%d.DepartureLowColor" % ( day + 1, ), ( "low", "high", "default", )[ ( len( forecast[ 34 ] ) and forecast[ 34 ][ 0 ] == "+" ) + ( forecast[ 34 ] == "+0" ) ] )
             # do this last so skin's visibilty works better
             self.WEATHER_WINDOW.setProperty( "Weekend.%d.Date" % ( day + 1, ), forecast[ 1 ] )
+        # use this to hide info until fully fetched
+        self.WEATHER_WINDOW.setProperty( "Weekend.IsFetched", "true" )
 
     def _fetch_10day_forecast( self ):
         # exit script if user changed locations
@@ -400,13 +394,8 @@ class Main:
         for count in range( len( forecasts ), 10 ):
             self.WEATHER_WINDOW.clearProperty( "Daily.%d.ShortDay" % ( count + 1, ) )
             self.WEATHER_WINDOW.clearProperty( "Daily.%d.LongDay" % ( count + 1, ) )
-        # set our heading properties
-        self.WEATHER_WINDOW.setProperty( "Daily.Heading1", xbmc.getLocalizedString( 552 ) )
-        self.WEATHER_WINDOW.setProperty( "Daily.Heading2", xbmc.getLocalizedString( 33020 ) )
-        self.WEATHER_WINDOW.setProperty( "Daily.Heading3", xbmc.getLocalizedString( 393 ) )
-        self.WEATHER_WINDOW.setProperty( "Daily.Heading4", xbmc.getLocalizedString( 391 ) )
-        self.WEATHER_WINDOW.setProperty( "Daily.Heading5", xbmc.getLocalizedString( 33022 ) )
-        self.WEATHER_WINDOW.setProperty( "Daily.Heading6", xbmc.getLocalizedString( 404 ) )
+        # use this to hide info until fully fetched
+        self.WEATHER_WINDOW.setProperty( "Daily.IsFetched", "true" )
 
     def _exit_script( self ):
         # end script

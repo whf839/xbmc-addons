@@ -3,7 +3,6 @@
     <location id="1" title="Favorite Maps">
         <maps>
             <map title="Doppler Radar 100 Mile">
-                <legend_url></legend_url>
                 <image_url>http://image.weather.com/looper/archive/us_dtw_metroradar_plus_usen/1L.jpg</image_url>
                 <image_url>http://image.weather.com/looper/archive/us_dtw_metroradar_plus_usen/2L.jpg</image_url>
                 <image_url>http://image.weather.com/looper/archive/us_dtw_metroradar_plus_usen/3L.jpg</image_url>
@@ -11,23 +10,15 @@
                 <image_url>http://image.weather.com/looper/archive/us_dtw_metroradar_plus_usen/5L.jpg</image_url>
             </map>
             <map title="Doppler Radar 300 Mile">
-                <legend_url></legend_url>
-                <image_url>http://image.weather.com/looper/archive/us_dtw_ultraradar_plus_usen/1L.jpg</image_url>
-                <image_url>http://image.weather.com/looper/archive/us_dtw_ultraradar_plus_usen/2L.jpg</image_url>
-                <image_url>http://image.weather.com/looper/archive/us_dtw_ultraradar_plus_usen/3L.jpg</image_url>
-                <image_url>http://image.weather.com/looper/archive/us_dtw_ultraradar_plus_usen/4L.jpg</image_url>
-                <image_url>http://image.weather.com/looper/archive/us_dtw_ultraradar_plus_usen/5L.jpg</image_url>
+                <map_url>Doppler_Radar_300_Mile:DTW</map_url>
             </map>
             <map title="Doppler Radar 600 Mile">
-                <legend_url></legend_url>
-                <image_url>http://image.weather.com/looper/archive/us_dtw_closeradar_plus_usen/1L.jpg</image_url>
-                <image_url>http://image.weather.com/looper/archive/us_dtw_closeradar_plus_usen/2L.jpg</image_url>
-                <image_url>http://image.weather.com/looper/archive/us_dtw_closeradar_plus_usen/3L.jpg</image_url>
-                <image_url>http://image.weather.com/looper/archive/us_dtw_closeradar_plus_usen/4L.jpg</image_url>
-                <image_url>http://image.weather.com/looper/archive/us_dtw_closeradar_plus_usen/5L.jpg</image_url>
+                <map_url>Doppler_Radar_600_Mile:DTW</map_url>
             </map>
 -       </maps>
     </location>
+
+
     <location id="2" title="My Weather Maps">
         <maps>
             <map title="AccuWeather State Enhanced Infrared">
@@ -40,6 +31,8 @@
             </map>
         </maps>
     </location>
+
+
     <location id="3" title="My Favorites">
         <maps>
             <map title="Doppler Radar 100 Mile">
