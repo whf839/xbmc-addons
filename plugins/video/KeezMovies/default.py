@@ -6,8 +6,8 @@ from BeautifulSoup import BeautifulSoup, SoupStrainer
 #.nF0
 __plugin__  = "KeezMovies"
 __author__  = "pajretX"
-__date__    = "26 August 2009"
-__version__ = "1.62"
+__date__    = "06 January 2010"
+__version__ = "1.63"
 
 
 base='http://www.keezmovies.com'
@@ -19,7 +19,7 @@ def Main():
 	addDir('Most Recent','http://www.keezmovies.com/videos?o=mr&offset=0',2,'')
 	addDir('Most Viewed','http://www.keezmovies.com/videos?o=mv&offset=0',2,'')
 	addDir('Top Rated','http://www.keezmovies.com/videos?o=tr&offset=0',2 ,'')
-	addDir('Longest videos','http://www.keezmovies.com/videos?o=lg&offset=0',6,'')
+	addDir('Longest videos','http://www.keezmovies.com/videos?o=lg&offset=0',2,'')
 	addDir('Categories','http://www.keezmovies.com/video-categories',1,'')
 #	addDir('Pornstars','http://www.keezmovies.com/pornstar-list?page=1',3,'')
 	addDir('Search','sss',7,'')
@@ -35,43 +35,26 @@ def CATEGORIES(url):
 	v1 = beautifulSoup.findAll( "ul", { "class" : "topcatslist" } )
 	cats=re.compile('href="(.+?)".+?">(.+?)</a>').findall(str(v1))
 	for WURL,NAME in cats:
-		addDir(NAME,base + WURL + '&offset=0',2,'')	
+		addDir(NAME,base + WURL + '?offset=0',2,'')	
 
 
-# 2
+# 2 http://www.keezmovies.com/videos?o=mv&offset=36
 def LISTA(url):
-	adres=re.compile('(.+?)offset').findall(url)[0]
-	numerek=re.compile('offset=(\d+)').findall(url)[0]
-	nastepna=str(int(numerek[0]) + 36)
-	warunek=re.compile('c=').findall(url)
-	if warunek != []:
-		adress=adres + '&offset=' + str(nastepna)
-	else:
-		adress=adres + '?offset=' + str(nastepna)		
+	adres=re.compile('(.+?)offset.+?').findall(url)[0]
+	numerek=re.compile('.+?offset=(\d+)').findall(url)[0]
+	nastepna=str(int(numerek) + 36)
+#	warunek=re.compile('categories/').findall(url)
+#	if warunek != []:
+#		adress=adres + '?offset=' + str(nastepna)
+#	else:
+#		adress=adres + '&offset=' + str(nastepna)		
+        adress=adres + 'offset=' + str(nastepna)
 	addDir('Next Page',adress,2,'')
 	getData = urllib2.Request(url)
 	response = urllib2.urlopen(getData)
 	link=response.read()
 	response.close
 	soupStrainer  = SoupStrainer ( "div", { "class" : "block" } )
-	b = BeautifulSoup( link, soupStrainer )
-	b=str(b).replace('\t','').replace('\n','')
-	blah=re.compile('<img src="http://(.+?).jpg.+?".+?alt="(.+?)".+?<h5 class="title"><a href="(.+?)"').findall(b,re.DOTALL)[:36]
-	for SCURL,WNAME,WURL in blah:
-		WNAME=WNAME.replace('&amp;','&').replace('!','')
-		addDir1(WNAME,base + WURL,3,'http://'+SCURL+'.jpg')
-# 6
-def LISTA1(url): 
-	getData = urllib2.Request(url)
-	response = urllib2.urlopen(getData)
-	link=response.read()
-	response.close
-	numerek=re.compile('offset=(\d+)').findall(url)[0]
-	nastepna=str(int(numerek) + 24)
-	adres=re.compile('(.+?)offset=\d+').findall(url)[0]
-	addDir('Next Page',url +'&offset=' +nastepna,2,'')
-	soupStrainer  = SoupStrainer ( "div", { "class" : "block" } )
-#nastepna_strona
 	b = BeautifulSoup( link, soupStrainer )
 	b=str(b).replace('\t','').replace('\n','')
 	blah=re.compile('<img src="http://(.+?).jpg.+?".+?alt="(.+?)".+?<h5 class="title"><a href="(.+?)"').findall(b,re.DOTALL)[:36]
@@ -233,10 +216,6 @@ elif mode==2:
 elif mode==3:
 	print ""
 	cedzak(url,name)
-
-elif mode==6:
-	print ""+url
-	LISTA1(url)
 
 elif mode==7:
 	print ""+url
