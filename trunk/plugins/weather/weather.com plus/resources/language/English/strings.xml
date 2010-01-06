@@ -26,6 +26,12 @@
     <string id="32230">Failed install</string>
     <string id="32231">Installed</string>
 
+    <!-- Misc strings -->
+    <string id="32300">Mile</string>
+    <string id="32301">Miles</string>
+    <string id="32302">Kilometer</string>
+    <string id="32303">Kilometers</string>
+
     <!-- Settings category strings -->
     <string id="32400">Addons/Packages</string>
     <string id="32410">Misc Options</string>
@@ -50,10 +56,6 @@
     <string id="32559">10 minutes</string>
     <string id="32560">- Only notify on new alerts</string>
     <string id="32570">Install map icon pack (10mb-30mb)</string>
-    <string id="32580">Show hourly forecast as</string>
-    <string id="32581">15 minutes</string>
-    <string id="32582">30 minutes</string>
-    <string id="32583">1 hour</string>
 
     <!-- map lists long -->
     <string id="32600">None</string>

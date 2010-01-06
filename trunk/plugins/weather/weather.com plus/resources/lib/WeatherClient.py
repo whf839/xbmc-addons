@@ -30,7 +30,7 @@ def _translate_text( text, translate ):
         # request url
         request = urllib2.Request( url, urlencode( data ) )
         # add a faked header, we use ie 8.0. it gives correct results for regex
-        request.add_header( 'User-Agent', 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727)' )
+        request.add_header( "User-Agent", "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727)" )
         # open requested url
         usock = urllib2.urlopen( request )
         # read htmlSource
@@ -82,8 +82,10 @@ def _normalize_outlook( outlook ):
     return outlook
 
 def _localize_unit( value, unit="temp" ):
+    # grab the specifier
+    value_specifier = value.split( " " )[ -1 ]
     # replace any invalid characters
-    value = value.replace( chr(176), "" ).replace( "&deg;", "" ).replace( "F", "" )
+    value = value.replace( chr(176), "" ).replace( "&deg;", "" ).replace( "mph", "" ).replace( "miles", "" ).replace( "mile", "" ).replace( "in.", "" ).replace( "F", "" ).replace( "AM", "" ).replace( "PM", "" ).replace( "am", "" ).replace( "pm", "" ).strip()
     # do not convert invalid values
     if ( not value or value.startswith( "N/A" ) ):
         return value
@@ -91,7 +93,7 @@ def _localize_unit( value, unit="temp" ):
     if ( unit == "time" or unit == "time24" ):
         # format time properly
         if ( ":" not in value ):
-            value = ":00 ".join( value.split( " " ) )
+            value += ":00"
         # set default time
         time = value
         # set our default temp unit
@@ -99,20 +101,20 @@ def _localize_unit( value, unit="temp" ):
         # if we're debugging xbmc module is not available
         if ( not DEBUG and unit == "time" ):
             id = xbmc.getRegion( id="time" )
-        if ( id == "h:mm:ss xx" ):
-            return time
         # 24 hour ?
         if ( id.startswith( "H" ) ):
             hour = int( value.split( ":" )[ 0 ] )
-            hour += ( 12 * ( value.split( " " )[ 1 ].lower() == "pm" and int( value.split( ":" )[ 0 ] ) != 12 ) )
-            hour -= ( 12 * ( value.split( " " )[ 1 ].lower() == "am" and int( value.split( ":" )[ 0 ] ) == 12 ) )
-            time = "%d:%s" % ( hour, value.split( " " )[ 0 ].split( ":" )[ 1 ], )
-        if ( id.split( " " )[ -1 ] == "xx" ):
-            time = "%s %s" % ( time, value.split( " " )[ 1 ], ) 
+            hour += ( 12 * ( value_specifier == "PM" and int( value.split( ":" )[ 0 ] ) != 12 ) )
+            hour -= ( 12 * ( value_specifier == "AM" and int( value.split( ":" )[ 0 ] ) == 12 ) )
+            time = "%d:%s" % ( hour, value.split( ":" )[ 1 ], )
+        # add am/pm if used
+        if ( id.endswith( "xx" ) ):
+            time = "%s %s" % ( time, value_specifier, ) 
+        # return localized time
         return time
     else:
-        # we need an float
-        value = float( value.replace( chr(176), "" ).replace( "&deg;", "" ).replace( "F", "" ).replace( "mph", "" ).replace( "in.", "" ) )
+        # we need a float
+        value = float( value )
         # temp conversion
         if ( unit == "temp" or  unit == "tempdiff" ):
             # set our default temp unit
@@ -129,10 +131,8 @@ def _localize_unit( value, unit="temp" ):
                 else:
                     # convert to celcius
                     value = round( ( value - 32 ) * ( float( 5 ) / 9 ) )
-            # get our sign, only + is needed for tempdiff
-            sign = ( "", "+", )[ value >= 0 and unit == "tempdiff" ]
             # return localized temp
-            return sign + str( int( value ) )
+            return "%s%d" % ( ( "", "+", )[ value >= 0 and unit == "tempdiff" ], value )
         # speed conversion
         elif ( unit == "speed" ):
             # set our default temp unit
@@ -152,19 +152,46 @@ def _localize_unit( value, unit="temp" ):
             elif ( id == "yard/s" ):
                 value = round( value * 0.4883 )
             # return localized speed
-            return "%d %s" % ( int( value ), id, )
-        # length conversion
-        elif ( unit == "length" ):
-            # set our default length unit
+            return "%d %s" % ( value, id, )
+        # depth conversion
+        elif ( unit == "depth" ):
+            # set our default depth unit
             id = "in."
             # if we're debugging xbmc module is not available
             if ( not DEBUG ):
-                id = ( "in.", "cm", )[ xbmc.getRegion( id="tempunit" )[ -1 ] == "C" ]
-            # calculate the localized length
-            if ( id == "cm" ):
+                id = ( "in.", "cm.", )[ xbmc.getRegion( id="tempunit" )[ -1 ] == "C" ]
+            # calculate the localized depth
+            if ( id == "cm." ):
                 value = float( value * 2.54 )
-            # return localized length
-            return "%.2f%s" % ( value, id, )
+            # return localized depth
+            return "%.2f %s" % ( value, id, )
+        # pressure conversion
+        elif ( unit == "pressure" ):
+            # set our default pressure unit
+            id = "in."
+            # if we're debugging xbmc module is not available
+            if ( not DEBUG ):
+                id = ( "in.", "mb.", )[ xbmc.getRegion( id="tempunit" )[ -1 ] == "C" ]
+            # calculate the localized pressure
+            if ( id == "mb." ):
+                value = float( value * 33.8637526 )
+            # return localized pressure
+            return "%.2f %s" % ( value, id, )
+        # distance conversion
+        elif ( unit == "distance" ):
+            # set our default distance unit
+            id = "mile"
+            # if we're debugging xbmc module is not available
+            if ( not DEBUG ):
+                id = ( "kilometer", "mile", )[ xbmc.getRegion( id="speedunit" ) == "mph" ]
+            # calculate the localized distance
+            if ( id == "kilometer" ):
+                value = float( value * 1.609344 )
+            # pluralize for values != 1
+            if ( value != 1.0 ):
+                id += "s"
+            # return localized distance
+            return "%.1f %s" % ( value, id, )
 
 
 class WeatherAlert:
@@ -242,6 +269,7 @@ class WeatherAlert:
 class Forecast36HourParser:
     def __init__( self, htmlSource, translate=None ):
         self.forecast = []
+        self.extras = []
         self.alerts = []
         self.video_location = []
         self.translate = translate
@@ -260,33 +288,46 @@ class Forecast36HourParser:
         pattern_precip_amount = "<TD valign=\"[^\"]+\" width=\"[^\"]+\" class=\"[^\"]+\" align=\"[^\"]+\">([0-9]+[^<]+)</td>"
         pattern_outlook = "<DIV STYLE=\"padding:5px 5px 5px 0px;\">([^\n|^<]*)"
         pattern_daylight = "<TD valign=\"[^\"]+\" align=\"[^\"]+\" class=\"[^\"]+\">([^<]+)</TD>"
-        try:
-            # fetch state
-            locstate = re.findall( pattern_locstate, htmlSource )[ 0 ].lower()
-            # fetch video location
-            self.video_location = ( re.findall( pattern_video_location, htmlSource )[ 0 ].lower().replace( " ", "" ), locstate, )
-        except:
-            pass
-        # fetch alerts
-        self.alerts = re.findall( pattern_alerts, htmlSource )
+        pattern_extra_info = "<div class=\"crow\"><div class=\"crowli\">Pressure:</div><div class=\"crowval\">([^<]+)<[^<]+<IMG SRC=\"http://image.weather.com/web/common/icons/([^\"]+)\"></div></div>.*?\
+.+?\
+[^<]+<div class=\"crow\"><div class=\"crowli\">Visibility:</div><div class=\"crowval\">([^<]+)</div></div>\
+[^<]+<div class=\"crow\"><div class=\"crowli\">Sunrise:</div><div class=\"crowval\">([^<]+)</div></div>\
+[^<]+<div class=\"crow\"><div class=\"crowli\">Sunset:</div><div class=\"crowval\">([^<]+)</div></div>"
         # fetch days
         days = re.findall( pattern_days, htmlSource )
-        # fetch icon
-        icon = re.findall( pattern_icon, htmlSource )
-        # fetch brief description
-        brief = re.findall( pattern_forecast_brief, htmlSource )
-        # fetch temperature
-        temperature = re.findall( pattern_temp, htmlSource )
-        # fetch precip title
-        precip_title = re.findall( pattern_precip_title, htmlSource )
-        # fetch precip title
-        precip_amount = re.findall( pattern_precip_amount, htmlSource )
-        # fetch forecasts
-        outlook = re.findall( pattern_outlook, htmlSource )
-        # fetch daylight
-        daylight = re.findall( pattern_daylight, htmlSource )
         # enumerate thru and combine the day with it's forecast
         if ( len( days ) ):
+            try:
+                # fetch state
+                locstate = re.findall( pattern_locstate, htmlSource )[ 0 ].lower()
+                # fetch video location
+                self.video_location = ( re.findall( pattern_video_location, htmlSource )[ 0 ].lower().replace( " ", "" ), locstate, )
+            except:
+                pass
+            # fetch alerts
+            self.alerts = re.findall( pattern_alerts, htmlSource )
+            # fetch icon
+            icon = re.findall( pattern_icon, htmlSource )
+            # fetch brief description
+            brief = re.findall( pattern_forecast_brief, htmlSource )
+            # fetch temperature
+            temperature = re.findall( pattern_temp, htmlSource )
+            # fetch precip title
+            precip_title = re.findall( pattern_precip_title, htmlSource )
+            # fetch precip title
+            precip_amount = re.findall( pattern_precip_amount, htmlSource )
+            # fetch forecasts
+            outlook = re.findall( pattern_outlook, htmlSource )
+            # fetch daylight
+            daylight = re.findall( pattern_daylight, htmlSource )
+            # fetch extra info
+            extras = re.findall( pattern_extra_info, htmlSource, re.DOTALL )
+            # localize our extra info
+            if ( extras ):
+                self.extras += [ u"%s %s" % ( _localize_unit( extras[ 0 ][ 0 ].replace( "&nbsp;", " " ), "pressure" ), { "up_pressure.gif": u"\u2191", "down_pressure.gif": u"\u2193", "steady_pressure.gif": u"\u2192" }[ extras[ 0 ][ 1 ] ], ) ]
+                self.extras += [ _localize_unit( extras[ 0 ][ 2 ], "distance" ) ]
+                self.extras += [ _localize_unit( extras[ 0 ][ 3 ], "time" ) ]
+                self.extras += [ _localize_unit( extras[ 0 ][ 4 ], "time" ) ]
             # convert outlook wind/temp values
             outlook = _normalize_outlook( outlook )
             # translate brief and outlook if user preference
@@ -322,10 +363,10 @@ class ForecastHourlyParser:
         pattern_date = "<div class=\"hbhDateHeader\">([^<]+)</div>"
         pattern_sunrise = "<img src=\"http://i.imwx.com/web/local/hourbyhour/icon_sunrise.gif\"[^>]+>([^<]+)"
         pattern_sunset = "<img src=\"http://i.imwx.com/web/local/hourbyhour/icon_sunset.gif\"[^>]+>([^<]+)"
-        # use this to grab only 1 hour details
-        #pattern_info = "<div class=\"hbhTDTime\"><div>([^<]+)</div></div>\
         # use this to grab the 15 minutes details
-        pattern_info = "<div class=\"hbhTDTime[^>]+><div>([^<]+)</div></div>\
+        # pattern_info = "<div class=\"hbhTDTime[^>]+><div>([^<]+)</div></div>\
+        # use this to grab only 1 hour details
+        pattern_info = "<div class=\"hbhTDTime\"><div>([^<]+)</div></div>\
 [^<]+<div class=\"hbhTDConditionIcon\"><div><img src=\"http://i.imwx.com/web/common/wxicons/[0-9]+/(gray/)?([0-9]+).gif\"[^>]+></div></div>\
 [^<]+<div class=\"hbhTDCondition\"><div><b>([^<]+)</b><br>([^<]+)</div></div>\
 [^<]+<div class=\"hbhTDFeels\"><div>([^<]*)</div></div>\
@@ -415,16 +456,16 @@ class ForecastHourlyParser:
                     # get the 24 hour sunrise time
                     sunrise_check = _localize_unit( sunrises[ 0 ].strip().split( "Sunrise" )[ 1 ].strip(), "time24" )
                     # if in the correct time range, set our variable
-                    if ( sunrise_check.split( ":" )[ 0 ] == period.split( ":" )[ 0 ] and sunrise_check.split( ":" )[ 1 ] >= period.split( ":" )[ 1 ] and 
-                        ( sunrise_check.split( ":" )[ 1 ] < period2.split( ":" )[ 1 ] or sunrise_check.split( ":" )[ 0 ] < period2.split( ":" )[ 0 ] ) ):
+                    if ( int( sunrise_check.split( ":" )[ 0 ] ) == int( period.split( ":" )[ 0 ] ) and int( sunrise_check.split( ":" )[ 1 ] ) >= int( period.split( ":" )[ 1 ] ) and 
+                        ( int( sunrise_check.split( ":" )[ 1 ] ) < int( period2.split( ":" )[ 1 ] ) or int( sunrise_check.split( ":" )[ 0 ] ) < int( period2.split( ":" )[ 0 ] ) ) ):
                         sunrise = _localize_unit( sunrises[ 0 ].strip().split( "Sunrise" )[ 1 ].strip(), "time" )
                 # sunset
                 if ( sunsets ):
                     # get the 24 hour sunset time
                     sunset_check = _localize_unit( sunsets[ 0 ].strip().split( "Sunset" )[ 1 ].strip(), "time24" )
                     # if in the correct time range, set our variable
-                    if ( sunset_check.split( ":" )[ 0 ] == period.split( ":" )[ 0 ] and sunset_check.split( ":" )[ 1 ] >= period.split( ":" )[ 1 ] and 
-                        ( sunset_check.split( ":" )[ 1 ] < period2.split( ":" )[ 1 ] or sunset_check.split( ":" )[ 0 ] < period2.split( ":" )[ 0 ] ) ):
+                    if ( int( sunset_check.split( ":" )[ 0 ] ) == int( period.split( ":" )[ 0 ] ) and int( sunset_check.split( ":" )[ 1 ] ) >= int( period.split( ":" )[ 1 ] ) and 
+                        ( int( sunset_check.split( ":" )[ 1 ] ) < int( period2.split( ":" )[ 1 ] ) or int( sunset_check.split( ":" )[ 0 ] ) < int( period2.split( ":" )[ 0 ] ) ) ):
                         sunset = _localize_unit( sunsets[ 0 ].strip().split( "Sunset" )[ 1 ].strip(), "time" )
                 # add result to our class variable
                 self.forecast += [ ( _localize_unit( item[ 0 ], "time" ), dates[ date_counter ].split( ", " )[ -1 ], iconpath, _localize_unit( item[ 3 ] ), brief[ count ], _localize_unit( item[ 5 ] ), item[ 6 ].replace( "%", "" ), item[ 7 ].replace( "%", "" ), wind[ count ], _localize_unit( item[ 9 ], "speed" ), item[ 8 ].split( " " )[ -1 ], sunrise, sunset, ) ]
@@ -582,7 +623,7 @@ class ForecastWeekendParser:
                 lows[ count ][ 0 ], _localize_unit( lows[ count ][ 1 ] ), precips[ count * 2 ], precips[ count * 2 + 1 ].replace( "%", "" ).replace( "<B>", "" ).replace( "</B>", "" ),
                 winds[ count ][ 0 ], winds[ count ][ 1 ], uvs[ count ][ 0 ], uvs[ count ][ 1 ],
                 humids[ count ][ 0 ], humids[ count ][ 1 ].replace( "%", "" ), daylights[ count * 2 ][ 0 ], _localize_unit( daylights[ count * 2 ][ 1 ], "time" ), daylights[ count * 2 + 1 ][ 0 ],
-                _localize_unit( daylights[ count * 2 + 1 ][ 1 ], "time" ), outlooks[ count ], observeds[ count ], pasts[ count * 3 + 2 ].split( "&nbsp;" )[ 0 ], _localize_unit( pasts[ count * 3 + 2 ].split( "&nbsp;" )[ 1 ], "length" ),
+                _localize_unit( daylights[ count * 2 + 1 ][ 1 ], "time" ), outlooks[ count ], observeds[ count ], pasts[ count * 3 + 2 ].split( "&nbsp;" )[ 0 ], _localize_unit( pasts[ count * 3 + 2 ].split( "&nbsp;" )[ 1 ], "depth" ),
                 avgs[ count * 4 ][ 0 ], _localize_unit( avgs[ count * 4 ][ 1 ] ), avgs[ count * 4 + 1 ][ 0 ], _localize_unit( avgs[ count * 4 + 1 ][ 1 ] ),
                 avgs[ count * 4 + 2 ][ 0 ], _localize_unit( avgs[ count * 4 + 2 ][ 1 ] ), avgs[ count * 4 + 3 ][ 0 ], _localize_unit( avgs[ count * 4 + 3 ][ 1 ] ),
                 alert.strip(), _localize_unit( departures[ count * 2 ], "tempdiff" ), _localize_unit( departures[ count * 2 + 1 ], "tempdiff" ), ) ]
@@ -705,11 +746,11 @@ class WeatherClient:
     BASE_FORECAST_URL = "http://www.weather.com/outlook/travel/businesstraveler/%s/%s?bypassredirect=true%s"
     BASE_VIDEO_URL = "http://v.imwx.com/multimedia/video/wxflash/%s.flv"
     BASE_MAPS = (
-                                # Main local maps (includes some regional maps)
+                                # Main local maps (includes some regional maps) #0
                                 ( "", "", ),
-                                # Main local maps (includes some regional maps)
+                                # Main local maps (includes some regional maps) #1
                                 ( "Local", "/outlook/travel/businesstraveler/%s/%s?bypassredirect=true%s", ),
-                                # weather details
+                                # weather details #2
                                 ( "Weather Details (Alaska)", "/maps/geography/alaskaus/index_large.html", ),
                                 ( "Weather Details (Current Weather)", "/maps/maptype/currentweatherusnational/index_large.html", ),
                                 ( "Weather Details (Doppler Radar)", "/maps/maptype/dopplerradarusnational/index_large.html", ),
@@ -743,7 +784,7 @@ class WeatherClient:
                                 ( "Weather Details (World - Pacific)", "/maps/geography/pacific/index_large.html", ),
                                 ( "Weather Details (World - Polar)", "/maps/geography/polar/index_large.html", ),
                                 ( "Weather Details (World - South America)", "/maps/geography/southamerica/index_large.html", ),
-                                # activity
+                                # activity #35
                                 ( "Outdoor Activity (Lawn and Garden)", "/maps/activity/garden/index_large.html", ),
                                 ( "Outdoor Activity (Aviation)", "/maps/activity/aviation/index_large.html", ),
                                 ( "Outdoor Activity (Boat & Beach)", "/maps/activity/boatbeach/index_large.html", ),
@@ -763,7 +804,7 @@ class WeatherClient:
                                 ( "Outdoor Activity (Weddings - Fall)", "/maps/activity/weddings/fall/index_large.html", ),
                                 ( "Outdoor Activity (Weddings - Winter)", "/maps/activity/weddings/winter/index_large.html", ),
                                 ( "Outdoor Activity (Holidays)", "/maps/activity/holidays/index_large.html", ),
-                                # health and safety
+                                # health and safety #54
                                 ( "Health & Safety (Aches & Pains)", "/maps/activity/achesandpains/index_large.html", ),
                                 ( "Health & Safety (Air Quality)", "/maps/activity/airquality/index_large.html", ),
                                 ( "Health & Safety (Allergies)", "/maps/activity/allergies/index_large.html", ),
@@ -774,7 +815,7 @@ class WeatherClient:
                                 ( "Health & Safety (Severe Weather Alerts)", "/maps/maptype/severeusnational/index_large.html", ),
                                 ( "Health & Safety (Skin Protection)", "/maps/activity/skinprotection/index_large.html", ),
                                 ( "Health & Safety (Fitness)", "/maps/activity/fitness/index_large.html", ),
-                                # user defined
+                                # user defined #64
                                 ( "User Defined - (Maps & Radars)", "*", ),
                             )
 
@@ -811,7 +852,7 @@ class WeatherClient:
         # create video url
         video = self._create_video( parser.video_location, video )
         # return forecast
-        return alerts, alertsrss, alertsnotify, alertscolor, len( parser.alerts), parser.forecast, video
+        return alerts, alertsrss, alertsnotify, alertscolor, len( parser.alerts), parser.forecast, parser.extras, video
 
     def _fetch_alerts( self, urls ):
         alerts = ""
@@ -869,7 +910,7 @@ class WeatherClient:
                         # request url
                         request = urllib2.Request( url )
                         # add a faked header
-                        request.add_header( 'User-Agent', 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727)' )
+                        request.add_header( "User-Agent", "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727)" )
                         # open requested url
                         usock = urllib2.urlopen( request )
                         # close socket
@@ -933,7 +974,7 @@ class WeatherClient:
             # return results
             return category_title, map_list
         else:
-            # fetch source
+            # fetch source, only refresh once a week
             htmlSource = self._fetch_data( url, 60 * 24 * 7, subfolder="maps" )
             # parse source for map list
             parser = MaplistParser( htmlSource )
@@ -971,28 +1012,32 @@ class WeatherClient:
             # check if map is within the index range
             if ( map >= len( titles ) ):
                 map = 0
-            # get a legend if it is separate from inages
-            legend = re.findall( "<legend_url>([^<]*)</legend_url>", titles[ map ][ 1 ] )[ 0 ]
             # grab all image urls
             urls = re.findall( "<image_url>([^<]+)</image_url>", titles[ map ][ 1 ] )
-            # only set multi image list if more than one
-            urls2 = ( [], urls, )[ len( urls ) > 1 ]
-            # create our maps list
-            maps = ( [ urls[ -1 ] ], urls2, legend, )
-            # return results
-            return maps
+            # if image urls return results
+            if ( urls ):
+                # only set multi image list if more than one
+                urls2 = ( [], urls, )[ len( urls ) > 1 ]
+                # get a legend if it is separate from inages
+                try:
+                    legend = re.findall( "<legend_url>([^<]*)</legend_url>", titles[ map ][ 1 ] )[ 0 ]
+                except:
+                    legend = ""
+                # return results
+                return ( [ urls[ -1 ] ], urls2, legend, )
+            # no image urls, find map urls
+            map = re.findall( "<map_url>([^<]+)</map_url>", titles[ map ][ 1 ] )[ 0 ]
+        # set url
+        if ( map.endswith( ".html" ) ):
+            url = self.BASE_URL + map
         else:
-            # set url
-            if ( map.endswith( ".html" ) ):
-                url = self.BASE_URL + map
-            else:
-                url = self.BASE_FORECAST_URL % ( "map", self.code, "&mapdest=%s" % ( map, ), )
-            # fetch source
-            htmlSource = self._fetch_data( url, subfolder="maps" )
-            # parse source for static map and create animated map list if available
-            parser = MapParser( htmlSource )
-            # return maps
-            return parser.maps
+            url = self.BASE_FORECAST_URL % ( "map", self.code, "&mapdest=%s" % ( map, ), )
+        # fetch source
+        htmlSource = self._fetch_data( url, subfolder="maps" )
+        # parse source for static map and create animated map list if available
+        parser = MapParser( htmlSource )
+        # return maps
+        return parser.maps
 
     def fetch_images( self, map ):
         # are there multiple images?
@@ -1018,7 +1063,7 @@ class WeatherClient:
         # we return path to images or empty string if an error occured
         return base_path_maps, legend_path
 
-    def _fetch_data( self, base_url, refreshtime=0, filename=None, animated=False, subfolder="forecasts" ):
+    def _fetch_data( self, base_url, refreshtime=0, filename=None, animated=False, subfolder="forecasts", retry=True ):
         try:
             # set proper base path
             if ( not base_url.startswith( "http://" ) ):
@@ -1047,7 +1092,7 @@ class WeatherClient:
                 # request base url
                 request = urllib2.Request( base_url )
                 # add a faked header
-                request.add_header( 'User-Agent', 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727)' )
+                request.add_header( "User-Agent", "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727)" )
                 # open requested url
                 usock = urllib2.urlopen( request )
                 # get expiration
@@ -1070,12 +1115,24 @@ class WeatherClient:
                 self._save_data( str( expires ), base_refresh_path )
             if ( base_refresh_path ):
                 data = os.path.dirname( base_path )
+            # return results
+            return data
+        except urllib2.HTTPError, e:
+            # if error 503 and this is the first try, recall function after sleeping, otherwise return ""
+            if ( e.code == 503 and retry ):
+                # TODO: this is so rare, but try and determine if 3 seconds is enogh
+                print "Trying url %s one more time" % base_url
+                time.sleep( 3 )
+                # try one more time
+                self._fetch_data( base_url, refreshtime, filename, animated, subfolder, False )
+            else:
+                # we've already retried, return ""
+                return ""
         except:
             # oops print error message
             print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
-            data = ""
-        # return results
-        return data
+            # some unknown error, return ""
+            return ""
 
     def _get_expiration_date( self, base_path, base_refresh_path, refreshtime ):
         try:
