@@ -2,11 +2,11 @@ import sys, os
 import urllib, cgi, struct, time
 import xbmc, xbmcgui, xbmcplugin
 
-# Script constants
-__scriptname__ = "reLive"
-__author__     = 'BuZz [buzz@exotica.org.uk]'
-__svn_url__    = "https://svn.exotica.org.uk/exotica/xbmc/trunk/relive"
-__version__    = "2010-01-06"
+# plugin constants
+__plugin__     = "reLive"
+__author__     = 'BuZz [buzz@exotica.org.uk] / http://www.exotica.org.uk'
+__svn_url__    = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/music/relive"
+__version__    = "2010-01-07"
 
 RELIVE_STATIONS = 'http://stations.re-live.se/getstations/'
 
@@ -25,6 +25,10 @@ def get_params(defaults):
   return new_params
 
 def show_stations():
+  livestreams = os.path.join(os.getcwd(), 'livestreams')
+
+  li = xbmcgui.ListItem( 'Live Streams' )
+  ok = xbmcplugin.addDirectoryItem(handle, livestreams, listitem = li, isFolder = True)
 
   response = urllib.urlopen(RELIVE_STATIONS)
   pack_len, pack_type, prot_ver, num_stations = struct.unpack('<HBBL', response.read(8))
