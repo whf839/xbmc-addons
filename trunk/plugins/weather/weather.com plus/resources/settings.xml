@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
     <setting type="lsep" label="32410" />
-    <setting id="alert_notify" type="enum" lvalues="32551|32552|32553|32554|32555|32556|32557|32558|32559" label="32550" default="3" />
-    <setting id="alert_notify_once" type="bool" enable="gt(-1,0)" label="32560" default="false" />
+    <setting id="alert_notify_type" type="enum" lvalues="32551|32552|32553|32554" label="32550" default="1" />
+    <setting id="alert_notify_time" type="enum" enable="gt(-1,0)" lvalues="32581|32582|32583|32584|32585|32586|32587|32588" label="32580" default="2" />
+    <setting id="alert_notify_once" type="bool" enable="gt(-2,0)" label="32560" default="false" />
     <setting id="translate" type="bool" label="32500" default="true" />
     <setting id="maplist_user_file" type="files" mask=".udm" label="32540" default="" />
     <setting type="lsep" label="32420" />
