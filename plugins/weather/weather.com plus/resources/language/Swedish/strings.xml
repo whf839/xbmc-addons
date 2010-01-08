@@ -2,7 +2,7 @@
 <!--Language file translated with Team XBMC Translator-->
 <!--Translator: blittan-->
 <!--Email: blittan@xbmc.org-->
-<!--Date of translation: 01/07/2010-->
+<!--Date of translation: 01/08/2010-->
 <!--$Revision$-->
 <strings>
   <string id="32000">%s Addon Manager</string>
@@ -40,13 +40,17 @@
   <string id="32552">10 sekunder</string>
   <string id="32553">20 sekunder</string>
   <string id="32554">30 sekunder</string>
-  <string id="32555">45 sekunder</string>
-  <string id="32556">1 minut</string>
-  <string id="32557">2 minuter</string>
-  <string id="32558">5 minuter</string>
-  <string id="32559">10 minuter</string>
   <string id="32560">- Notifiera endast på nya alarm</string>
   <string id="32570">Installera kartpaket (10mb-30mb)</string>
+  <string id="32580">- Visa notifiering för</string>
+  <string id="32581">10 sekunder</string>
+  <string id="32582">20 sekunder</string>
+  <string id="32583">30 sekunder</string>
+  <string id="32584">45 sekunder</string>
+  <string id="32585">1 minut</string>
+  <string id="32586">2 minuter</string>
+  <string id="32587">5 minuter</string>
+  <string id="32588">10 minuter</string>
   <string id="32600">Ingen</string>
   <string id="32601">Lokal</string>
   <string id="32602">Väderdetaljer (Alaska)</string>
