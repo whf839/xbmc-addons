@@ -44,18 +44,22 @@
     <string id="32520">Map List #2 category</string>
     <string id="32530">Map List #3 category</string>
     <string id="32540">User defined maps/radars file</string>
-    <string id="32550">Send popup notification on weather alert</string>
+    <string id="32550">Weather alerts notification</string>
     <string id="32551">Off</string>
-    <string id="32552">10 seconds</string>
-    <string id="32553">20 seconds</string>
-    <string id="32554">30 seconds</string>
-    <string id="32555">45 seconds</string>
-    <string id="32556">1 minute</string>
-    <string id="32557">2 minutes</string>
-    <string id="32558">5 minutes</string>
-    <string id="32559">10 minutes</string>
+    <string id="32552">All alerts</string>
+    <string id="32553">Red alerts only</string>
+    <string id="32554">Red or orange alerts</string>
     <string id="32560">- Only notify on new alerts</string>
     <string id="32570">Install map icon pack (10mb-30mb)</string>
+    <string id="32580">- Display notification for</string>
+    <string id="32581">10 seconds</string>
+    <string id="32582">20 seconds</string>
+    <string id="32583">30 seconds</string>
+    <string id="32584">45 seconds</string>
+    <string id="32585">1 minute</string>
+    <string id="32586">2 minutes</string>
+    <string id="32587">5 minutes</string>
+    <string id="32588">10 minutes</string>
 
     <!-- map lists long -->
     <string id="32600">None</string>

@@ -239,10 +239,12 @@ class Main:
 
     def _set_alerts( self, alerts, alertsrss, alertsnotify, alertscolor, alertscount ):
         # send notification if user preference and there are alerts
-        if ( int( self.Settings.getSetting( "alert_notify" ) ) > 0 and alerts != "" and ( self.Settings.getSetting( "alert_notify_once" ) == "false"
-            or self.WEATHER_WINDOW.getProperty( "Alerts.RSS" ) != alertsrss )
+        if ( alerts != "" and ( int( self.Settings.getSetting( "alert_notify_type" ) ) == 1 or 
+            ( alertscolor == "red" and int( self.Settings.getSetting( "alert_notify_type" ) ) > 1 ) or 
+            ( alertscolor == "orange" and int( self.Settings.getSetting( "alert_notify_type" ) ) == 3 ) ) and
+            ( self.Settings.getSetting( "alert_notify_once" ) == "false" or self.WEATHER_WINDOW.getProperty( "Alerts.RSS" ) != alertsrss )
             ):
-            xbmc.executebuiltin( "XBMC.Notification(%s,\"%s\",%d,weather.com plus/alert-%s.png)" % ( self._( 32100 ), alertsnotify, ( 0, 10, 20, 30, 45, 60, 120, 300, 600, )[ int( self.Settings.getSetting( "alert_notify" ) ) ] * 1000, alertscolor, ) )
+            xbmc.executebuiltin( "XBMC.Notification(%s,\"%s\",%d,weather.com plus/alert-%s.png)" % ( self._( 32100 ), alertsnotify, ( 10, 20, 30, 45, 60, 120, 300, 600, )[ int( self.Settings.getSetting( "alert_notify_time" ) ) ] * 1000, alertscolor, ) )
         # set any alerts
         self.WEATHER_WINDOW.setProperty( "Alerts", alerts )
         self.WEATHER_WINDOW.setProperty( "Alerts.RSS", alertsrss )

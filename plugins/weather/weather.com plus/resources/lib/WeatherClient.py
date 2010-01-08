@@ -376,7 +376,7 @@ class ForecastHourlyParser:
 [^<]+<div class=\"hbhTDFeels\"><div>([^<]*)</div></div>\
 [^<]+<div class=\"hbhTDPrecip\"><div>([^<]*)</div></div>\
 [^<]+<div class=\"hbhTDHumidity\"><div>([^<]*)</div></div>\
-[^<]+<div class=\"hbhTDWind\"><div>([^<]*)<br>([^<]*)</div></div>"
+[^<]+<div class=\"hbhTDWind\"><div>([^<]*)(<br>)?([^<]*)</div></div>"
         """
         pattern_time = "<div class=\"hbhTDTime[^>]+><div>([^<]+)</div>"
         pattern_icon = "<div class=\"hbhTDConditionIcon\"><div><img src=\"http://i.imwx.com/web/common/wxicons/[0-9]+/(gray/)?([0-9]+).gif\""
@@ -472,7 +472,7 @@ class ForecastHourlyParser:
                         ( int( sunset_check.split( ":" )[ 1 ] ) < int( period2.split( ":" )[ 1 ] ) or int( sunset_check.split( ":" )[ 0 ] ) < int( period2.split( ":" )[ 0 ] ) ) ):
                         sunset = _localize_unit( sunsets[ 0 ].strip().split( "Sunset" )[ 1 ].strip(), "time" )
                 # add result to our class variable
-                self.forecast += [ ( _localize_unit( item[ 0 ], "time" ), dates[ date_counter ].split( ", " )[ -1 ], iconpath, _localize_unit( item[ 3 ] ), brief[ count ], _localize_unit( item[ 5 ] ), item[ 6 ].replace( "%", "" ), item[ 7 ].replace( "%", "" ), wind[ count ], _localize_unit( item[ 9 ], "speed" ), item[ 8 ].split( " " )[ -1 ], sunrise, sunset, ) ]
+                self.forecast += [ ( _localize_unit( item[ 0 ], "time" ), dates[ date_counter ].split( ", " )[ -1 ], iconpath, _localize_unit( item[ 3 ] ), brief[ count ], _localize_unit( item[ 5 ] ), item[ 6 ].replace( "%", "" ), item[ 7 ].replace( "%", "" ), wind[ count ], _localize_unit( item[ 10 ], "speed" ), item[ 8 ].split( " " )[ -1 ], sunrise, sunset, ) ]
 
 
 class ForecastWeekendParser:
@@ -833,7 +833,7 @@ class WeatherClient:
         BASE_SOURCE_PATH = os.path.join( os.getcwd(), "source" )
     else:
         BASE_MAPS_PATH = xbmc.translatePath( "/".join( [ "special://temp", os.path.basename( os.getcwd() ), "maps" ] ) )
-        BASE_SOURCE_PATH = xbmc.translatePath( "/".join( [ "special://profile", "plugin_data", "weather", os.path.basename( os.getcwd() ), "source" ] ) )
+        BASE_SOURCE_PATH = xbmc.translatePath( "/".join( [ "special://profile", "script_data", os.path.basename( os.getcwd() ), "source" ] ) )
 
     def __init__( self, code=None, translate=None ):
         # only check for compatibility if not debugging
@@ -919,6 +919,8 @@ class WeatherClient:
                         request = urllib2.Request( url )
                         # add a faked header
                         request.add_header( "User-Agent", "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727)" )
+                        #request.add_header( "Connection", "Keep-Alive" )
+                        #request.add_header( "Accept-Encoding", "gzip, deflate" )
                         # open requested url
                         usock = urllib2.urlopen( request )
                         # close socket
@@ -1101,6 +1103,8 @@ class WeatherClient:
                 request = urllib2.Request( base_url )
                 # add a faked header
                 request.add_header( "User-Agent", "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727)" )
+                #request.add_header( "Connection", "Keep-Alive" )
+                #request.add_header( "Accept-Encoding", "gzip, deflate" )
                 # open requested url
                 usock = urllib2.urlopen( request )
                 # get expiration
@@ -1129,12 +1133,13 @@ class WeatherClient:
             # if error 503 and this is the first try, recall function after sleeping, otherwise return ""
             if ( e.code == 503 and retry ):
                 # TODO: this is so rare, but try and determine if 3 seconds is enogh
-                print "Trying url %s one more time" % base_url
+                print "Trying url %s one more time." % base_url
                 time.sleep( 3 )
                 # try one more time
                 return self._fetch_data( base_url, refreshtime, filename, animated, subfolder, False )
             else:
                 # we've already retried, return ""
+                print "Second error 503 for %s, increase sleep time." % base_url
                 return ""
         except:
             # oops print error message
