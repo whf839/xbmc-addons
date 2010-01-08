@@ -44,9 +44,12 @@ class Main:
         try:
             if ( sys.argv[ 1 ] == "ClearWatchedTrivia" or sys.argv[ 1 ] == "ClearWatchedTrailers" ):
                 self._clear_watched_items( sys.argv[ 1 ] )
+            elif ( sys.argv[ 1 ] == "ViewChangelog" ):
+                self._view_changelog()
+            elif ( sys.argv[ 1 ] == "ViewReadme" ):
+                self._view_readme()
         except:
             try:
-                #import traceback
                 #traceback.print_exc()
                 # create the playlist
                 mpaa = self._create_playlist()
@@ -56,33 +59,32 @@ class Main:
                 traceback.print_exc()
 
     def _clear_watched_items( self, clear_type ):
+        xbmc.log( "_clear_watched_items( %s )", ( clear_type, ), xbmc.LOGNOTICE )
         # initialize base_path
-        base_path = None
+        base_paths = []
         # clear trivia or trailers
         if ( clear_type == "ClearWatchedTrailers" ):
             # trailer settings, grab them here so we don't need another _S_() object
-            settings = { "trailer_amt_db_file":  xbmc.translatePath( _S_( "trailer_amt_db_file" ) ),
-                                "trailer_scraper": ( "amt_database", "amt_current", "local", )[ int( _S_( "trailer_scraper" ) ) ]
-                            }
+            settings = { "trailer_amt_db_file":  xbmc.translatePath( _S_( "trailer_amt_db_file" ) ) }
             # handle AMT db special
-            if ( settings[ "trailer_scraper" ] == "amt_database" ):
-                # get the correct scraper
-                exec "from resources.scrapers.%s import scraper as scraper" % ( settings[ "trailer_scraper" ], )
-                Scraper = scraper.Main( settings=settings )
-                # update trailers
-                Scraper.clear_watched()
-            else:
-                # set base watched file path
-                base_path = os.path.join( self.BASE_CURRENT_SOURCE_PATH, settings[ "trailer_scraper" ] + "_watched.txt" )
+            from resources.scrapers.amt_database import scraper as scraper
+            Scraper = scraper.Main( settings=settings )
+            # update trailers
+            Scraper.clear_watched()
+            # set base watched file path
+            base_paths += [ os.path.join( self.BASE_CURRENT_SOURCE_PATH, "amt_current_watched.txt" ) ]
+            base_paths += [ os.path.join( self.BASE_CURRENT_SOURCE_PATH, "local_watched.txt" ) ]
         else:
             # set base watched file path
-            base_path = os.path.join( self.BASE_CURRENT_SOURCE_PATH, "trivia_watched.txt" )
+            base_paths = [ os.path.join( self.BASE_CURRENT_SOURCE_PATH, "trivia_watched.txt" ) ]
         try:
             # set proper message
             message = ( 32531, 32541, )[ sys.argv[ 1 ] == "ClearWatchedTrailers" ]
-            # remove file
-            if ( base_path is not None and os.path.isfile( base_path ) ):
-                os.remove( base_path )
+            # remove watched status file(s)
+            for base_path in base_paths:
+                # remove file if it exists
+                if ( os.path.isfile( base_path ) ):
+                    os.remove( base_path )
         except:
             # set proper message
             message = ( 32532, 32542, )[ sys.argv[ 1 ] == "ClearWatchedTrailers" ]
@@ -91,16 +93,15 @@ class Main:
         # inform user of result
         ok = xbmcgui.Dialog().ok( _L_( 32000 ), _L_( message ) )
 
+    def _view_changelog( self ):
+        xbmc.log( "_view_changelog()", xbmc.LOGNOTICE )
+
+    def _view_readme( self ):
+        xbmc.log( "_view_readme()", xbmc.LOGNOTICE )
+
     def _create_playlist( self ):
         # get the queued video info
         mpaa, audio, genre, movie = self._get_queued_video_info()
-        print "Movie: %s" % movie
-        print "Genre: %s" % genre
-        print "MPAA: %s" % mpaa
-        print "Audio: %s" % audio
-        if ( _S_( "audio_videos_folder" ) ):
-            print "Audio path: %s" % xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "ac3": "Dolby" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ]
-        print
         # TODO: try to get a local thumb for special videos?
         # get Dolby/DTS videos
         if ( _S_( "audio_videos_folder" ) ):
@@ -186,11 +187,13 @@ class Main:
 
     def _get_queued_video_info( self ):
         try:
+            xbmc.log( "_get_queued_video_info()", xbmc.LOGNOTICE )
             # clear then queue the currently selected video
             xbmc.executebuiltin( "Playlist.Clear" )
             xbmc.executebuiltin( "Action(Queue,%d)" % ( xbmcgui.getCurrentWindowId() - 10000, ) )
+            xbmc.log( "Action(Queue,%d)" % ( xbmcgui.getCurrentWindowId() - 10000, ), xbmc.LOGNOTICE )
             # we need to sleep so the video gets queued properly
-            xbmc.sleep( 200 )
+            xbmc.sleep( 300 )
             # create a video playlist
             self.playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
             # get movie name
@@ -203,13 +206,25 @@ class Main:
             # TODO: verify the first is the best audio
             # setup the sql, we limit to 1 record as there can be multiple entries in streamdetails
             sql = "SELECT movie.c12, movie.c14, streamdetails.strAudioCodec FROM movie, streamdetails WHERE movie.idFile=streamdetails.idFile AND streamdetails.iStreamType=1 AND c00='%s' LIMIT 1" % ( movie_title.replace( "'", "''", ), )
+            xbmc.log( "SQL: %s" % ( sql, ), xbmc.LOGNOTICE )
             # query database for info dummy is needed as there are two </field> formatters
             mpaa, genre, audio, dummy = xbmc.executehttpapi( "QueryVideoDatabase(%s)" % quote_plus( sql ), ).split( "</field>" )
+            # TODO: add a check and new sql for videos queued from files mode, or try an nfo
             # calculate rating
             mpaa = mpaa.split( " " )[ 1 - ( len( mpaa.split( " " ) ) == 1 ) ]
             mpaa = ( mpaa, "NR", )[ mpaa not in ( "G", "PG", "PG-13", "R", "NC-17", "Unrated", ) ]
         except:
             mpaa = audio = genre = movie = ""
+        # spew queued video info to log
+        xbmc.log( "-" * 70, xbmc.LOGNOTICE )
+        xbmc.log( "Title: %s" % ( movie_title, ), xbmc.LOGNOTICE )
+        xbmc.log( "Path: %s" % ( movie, ), xbmc.LOGNOTICE )
+        xbmc.log( "Genre: %s" % ( genre, ), xbmc.LOGNOTICE )
+        xbmc.log( "MPAA: %s" % ( mpaa, ), xbmc.LOGNOTICE )
+        xbmc.log( "Audio: %s" % ( audio, ), xbmc.LOGNOTICE )
+        if ( _S_( "audio_videos_folder" ) ):
+            xbmc.log( "- Folder: %s" % ( xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "ac3": "Dolby" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ], ), xbmc.LOGNOTICE )
+        xbmc.log( "-" * 70, xbmc.LOGNOTICE )
         # return results
         return mpaa, audio, genre, movie
 
