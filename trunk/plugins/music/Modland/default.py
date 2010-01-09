@@ -12,8 +12,13 @@ MODLAND_URL = 'http://www.exotica.org.uk/mediawiki/extensions/ExoticASearch/Modl
 #MODLAND_URL = 'http://exotica.travelmate/mediawiki/extensions/ExoticASearch/Modland_xbmc.php'
 
 handle = int(sys.argv[1])
-rev_re = re.compile(' r(\d+)') 
-xbmc_rev = int(rev_re.search(xbmc.getInfoLabel( "System.BuildVersion" )).group(1))
+
+# try and get xbmc revision
+rev_re = re.compile('r(\d+)')
+try:
+  xbmc_rev = int(rev_re.search(xbmc.getInfoLabel( "System.BuildVersion" )).group(1))
+except:
+  xbmc_rev = 0
 
 def get_params(defaults):
   new_params = defaults
