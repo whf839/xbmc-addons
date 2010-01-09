@@ -104,9 +104,9 @@ class WebTV(Plugin):
         #Manage the different views and glue this shit together
         if not ident and not view:
             #Just throw the search in here for now
-            self.stack.append(nrk.views.search)
-            views = nrk.views.program(self.state)
-            self.stack.extend(views)
+            self.stack.append( nrk.views.search )
+            views = nrk.views.program( self.state )
+            self.stack.extend( views )
 
         # View by character
         elif view is nrk.BY_CHAR and not ident:
@@ -120,7 +120,7 @@ class WebTV(Plugin):
         elif view == nrk.BY_THEME and not ident:
             self.category = '%s - %s' % ( self.catbase, lang(30211) )
             themes = nrk.views.by_theme()
-            self.stack.extend(themes)
+            self.stack.extend( themes )
         
         # View all
         elif view is nrk.VIEW_ALL:
@@ -128,7 +128,7 @@ class WebTV(Plugin):
             shows = self.api.get_all_shows()
             if not shows:
                 return
-            self.stack.extend(shows)
+            self.stack.extend( shows )
         
         # View by character    
         elif view is nrk.BY_CHAR:
@@ -137,7 +137,7 @@ class WebTV(Plugin):
             shows = self.api.get_shows_by_character(ident)
             if not shows:
                 return
-            self.stack.extend(shows)
+            self.stack.extend( shows )
         
         # View top total    
         elif (view is nrk.TOP_TOTAL      or 
@@ -146,14 +146,14 @@ class WebTV(Plugin):
               view is nrk.TOP_BY_INPUT):
             
             if ident == 0:
-                input = keyboard(heading=lang(30101))
+                input = keyboard(heading=lang(30501))
                 try:
-                    input = int(input)
+                    input = int( input )
                 except:
-                    raise PluginError(lang(30102), lang(30102))
+                    raise PluginError(lang(30502), lang(30502))
                 else:
                     if not input > 0 and not input < 9999:
-                        raise PluginError(lang(30102), lang(30102))  
+                        raise PluginError(lang(30502), lang(30502))  
                     else:
                         ident = input
             try:
@@ -203,7 +203,7 @@ class WebTV(Plugin):
     def _handle_search(self):
 
         if not self.state.arg:
-            self.state.arg = keyboard('', 30100)
+            self.state.arg = keyboard('', 30500)
             if not self.state.arg:
                 return
                 
@@ -497,7 +497,8 @@ class Main(WebTV):
         if len(self.stack) == 1 and self.settings['transparency']:
             # Got only one item, so if transparent folder is enabled in
             # settings, do transparent..
-            if ( (self.stack[0].key.type == nrk.SHOW_CLIP) and self.settings('transparent_media') == False ):
+            if ( (self.stack[0].key.type == nrk.SHOW_CLIP) and 
+                  self.settings('transparent_media') == False ):
                 return True
                  
             Log.debug('PLUGIN::SPAM -> Create transparent transparency')
@@ -589,6 +590,9 @@ class Main(WebTV):
 # - End Of Class   
 
       
+
+
+
       
 def keyboard(default="", heading="", hidden=False ):
     """ shows a keyboard and returns a value """
