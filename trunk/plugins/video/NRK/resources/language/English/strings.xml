@@ -30,26 +30,27 @@
   
   <string id="30030">Download folder</string>
   <string id="30031">Run once</string>
-  
-  <string id="30100">Input search string</string>
-  <string id="30101">Input number of days to search</string>
-  <string id="30102">Invalid search string</string>
+
+  <!-- Misc. -->  
+  <string id="30500">Input search string</string>
+  <string id="30501">Input number of days to search</string>
+  <string id="30502">Invalid search string</string>
   
   <!-- Themes -->
-  <string id="30101">Barn</string>
-  <string id="30102">Natur</string>
+  <string id="30101">Children</string>
+  <string id="30102">Nature</string>
   <string id="30103">Drama</string>
-  <string id="30104">Sport</string>
-  <string id="30105">Fakta</string>
-  <string id="30106">Livssyn</string>
-  <string id="30107">Mat</string>
-  <string id="30108">Nyheter</string>
-  <string id="30109">Samisk</string>
-  <string id="30110">Ung</string>
-  <string id="30111">Tegnspråk</string>
-  <string id="30112">Underholdning</string>
-  <string id="30113">Dokumentar</string>
-  <string id="30114">kultur</string>
+  <string id="30104">Sports</string>
+  <string id="30105">Facts</string>
+  <string id="30106">Lifestyle</string>
+  <string id="30107">Food</string>
+  <string id="30108">News</string>
+  <string id="30109">Sami</string>
+  <string id="30110">Teen</string>
+  <string id="30111">Sign language</string>
+  <string id="30112">Entertainment</string>
+  <string id="30113">Documentary</string>
+  <string id="30114">Culture</string>
   <string id="30115">Region</string>
 
   <!-- Regions -->
@@ -66,8 +67,8 @@
   <string id="30160">Hedmark og Oppland</string>
   
   <!-- other -->
-  <string id="30200">Arkiv</string>
-  <string id="30201">Aktuelt</string>
+  <string id="30200">Archive</string>
+  <string id="30201">relevant</string>
   <string id="30202">Mest sett totalt</string>
   <string id="30203">Mest sett denne uken</string>
   <string id="30204">Mest sett denne måned</string>
