@@ -2,11 +2,11 @@
 __scriptname__ = "NBA.com Videos"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/NBA.com%20Videos"
-__date__ = '2009-10-22'
-__version__ = "1.0.4"
+__date__ = '01-09-2010'
+__version__ = "1.0.5"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
-HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.8) Gecko/2009032609 Firefox/3.0.8'
+HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1.7) Gecko/20091221 Firefox/3.5.7'
 THUMBNAIL_PATH = os.path.join(os.getcwd().replace( ";", "" ),'resources','media')
 
 def open_url(url):
@@ -34,116 +34,114 @@ def _check_for_update():
 			ok = dia.ok("NBA.com Videos", 'Updates are available on both SVN Repo or XBMC Zone\n\n'+'Current Version: '+__version__+'\n'+'Update Version: '+newVersion)
 
 def showRoot():
-		url="http://www.nba.com/.element/ssi/auto/1.1/aps/video/videoplayer/games1.html"
-		li=xbmcgui.ListItem("1. Highlights")
-		u=sys.argv[0]+"?mode=6&url="+urllib.quote_plus(url)+"&cat="+urllib.quote_plus('Highlights')
-		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
-		#
-		url="http://www.nba.com/.element/ssi/auto/1.1/aps/video/videoplayer/channels/top_plays1.html"
-		li=xbmcgui.ListItem("2. Top Plays")
-		u=sys.argv[0]+"?mode=6&url="+urllib.quote_plus(url)+"&cat="+urllib.quote_plus('Top Plays')
-		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
-		#
-		url="http://www.nba.com/.element/ssi/auto/1.1/aps/video/videoplayer/general1.html"
-		li=xbmcgui.ListItem("3. Most Recent")
-		u=sys.argv[0]+"?mode=6&url="+urllib.quote_plus(url)+"&cat="+urllib.quote_plus('Most Recent')
-		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
-		#
-		url="http://www.nba.com/.element/ssi/auto/1.1/aps/video/videoplayer/channels/nba_tv1.html"
-		li=xbmcgui.ListItem("4. NBA TV")
-		u=sys.argv[0]+"?mode=6&url="+urllib.quote_plus(url)+"&cat="+urllib.quote_plus('NBA TV')
-		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
-		#
-		url="http://www.nba.com/.element/ssi/auto/1.1/aps/video/videoplayer/channels/tnt_overtime1.html"
-		li=xbmcgui.ListItem("5. TNT OT")
-		u=sys.argv[0]+"?mode=6&url="+urllib.quote_plus(url)+"&cat="+urllib.quote_plus('TNT OT')
-		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
-		#
-		# url="http://www.nba.com/.element/ssi/sect/1.1/video/featured.html"
-		# li=xbmcgui.ListItem("6. Special Features")
-		# u=sys.argv[0]+"?mode=6&url="+urllib.quote_plus(url)
-		# xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
-		#
-		li=xbmcgui.ListItem("6. Teams")
-		u=sys.argv[0]+"?mode=5"
-		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+	data=[
+			('All Videos','channels%2F*|games%2F*|flip_video_diaries',''),
+			('Highlights','games%2F*',''),
+			('Top Plays','channels%2Ftop_plays',''),
+			('Editor\'s Picks','','&editor_pick=yes'),
+			('NBA TV','channels%2Fnba_tv',''),
+			('TNT OT','channels%2Ftnt_overtime',''),
+			('Barkley Zone','channels%2Fbarkley_zone','')
+			]
+	count=1
+	for name,section,extra in data:
+		item=xbmcgui.ListItem(str(count)+'. '+name)
+		if 'Editor\'s Picks' == name:
+			url='http://searchapp.nba.com/nba-search/query.jsp?type=advvideo&season=0910'+extra+'&npp=15'	
+		else:
+			url='http://searchapp.nba.com/nba-search/query.jsp?type=advvideo&section='+section+'&season=0910'+extra+'&npp=15'
+		u=sys.argv[0]+"?mode=1&url="+urllib.quote_plus(url)+"&cat="+urllib.quote_plus(name)+"&save="+urllib.quote_plus(url)
+		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,item,True)
+		count=count+1
+	item=xbmcgui.ListItem(str(count)+'. Featured')
+	u=sys.argv[0]+"?mode=2&url="+urllib.quote_plus(url)+"&cat="+urllib.quote_plus('Featured')+"&save="+urllib.quote_plus(url)
+	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,item,True)
+	item=xbmcgui.ListItem(str(count+1)+'. Teams')
+	u=sys.argv[0]+"?mode=5&url="+urllib.quote_plus(url)+"&cat="+urllib.quote_plus('Teams')+"&save="+urllib.quote_plus(url)
+	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,item,True)
 
-def showTeams():
-		li=xbmcgui.ListItem("Team Highlights")
-		u=sys.argv[0]+"?mode=1"
-		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
-		li2=xbmcgui.ListItem("Team Originals")
-		u2=sys.argv[0]+"?mode=4"
-		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u2,li2,True)
+def get_data(url,page,cat,save):
+	saveurl=url
+	url=url+'&start='+str(1+(15*(page-1)))
+	print url
+	data=[
+			('Most Recent','recent'),
+			('Most Watched','view'),
+			('Most Commented','comment'),
+			('Highest Rated','rating')
+			]
+	for name,sort in data:
+		item=xbmcgui.ListItem(name)
+		urlsort=save+'&sort='+sort+'&start=5'
+		u=sys.argv[0]+"?mode=1&url="+urllib.quote_plus(urlsort)+"&cat="+urllib.quote_plus(cat+' / '+name)+"&save="+urllib.quote_plus(save)
+		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,item,True)
+	data=open_url(url)
+	link=re.compile(',"url":"(.+?)","alt_url"').findall(data)
+	titles=re.compile('"title":"(.+?)"').findall(data)
+	thumb=re.compile('"thumbnail":{"url":"(.+?)"').findall(data)
+	info=re.compile('"excerpt":"(.*?)"}}}').findall(data)
+	count=0
+	for title in titles:
+		if len(info[count]) == 0:
+			plot=''
+		else:
+			plot=' - '+info[count]
+		url='http://nba.com'+link[count].replace('/index.html','')+'.xml'
+		item=xbmcgui.ListItem(str(count+1+((page-1)*15))+'. '+title+plot, iconImage=thumb[count], thumbnailImage=thumb[count])
+		item.setInfo( type="Video", infoLabels={ "Title": title, "Plot": info[count] } )
+		u=sys.argv[0]+"?mode=3&url="+urllib.quote_plus(url)+"&name="+urllib.quote_plus(title)
+		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,item)
+		count=count+1
+	item=xbmcgui.ListItem("Next Page",iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'next.png'))
+	u=sys.argv[0]+"?mode=1&url="+urllib.quote_plus(saveurl)+"&page="+str(int(page)+1)+"&cat="+urllib.quote_plus(cat)+"&save="+urllib.quote_plus(save)
+	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,item,True)
 
-def showList2(url,page,cat):
-	thisurl=url
-	url=url.replace('1.html','')
-	req = urllib2.Request(url+str(int(page))+'.html')
-	req.add_header('User-Agent', HEADER)
-	f=urllib2.urlopen(req)
-	a=f.read()
-	f.close()
-	img=re.compile('<img src="(.+?)"><div ').findall(a)
-	vidname=re.compile('<a href="javascript:changePlaylist\(\'(.+?)\'\);">(.+?)</a>\n').findall(a)
-	disc=re.compile('<p(.+?)/p>').findall(a)
-	x=0
-	for thumb in img:
-		info=disc[x]
-		info=info.replace('<','')
-		info=info.replace('>','')
-		name = str(int(x+1+((page-1)*15)))+'. '+vidname[x][1]+' - '+info
-		url=vidname[x][0]
-		url=url.replace('/video/','')
-		url=url.replace('.json','')
-		url = 'http://nba.cdn.turner.com/nba/big/' + url + '_nba_576x324.flv'
-		li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
-		li.setInfo( type="Video", infoLabels={ "Title": vidname[x][1], "Plot": info } )
-		u=sys.argv[0]+"?mode=9&name="+urllib.quote_plus(vidname[x][1])+"&url="+urllib.quote_plus(vidname[x][0])+"&plot="+urllib.quote_plus('')+"&cat="+urllib.quote_plus(cat)
-		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
-		x=x+1
-	li=xbmcgui.ListItem("Next Page",iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'next.png'))
-	u=sys.argv[0]+"?mode=6&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(thisurl)+"&page="+str(int(page)+1)+"&cat="+urllib.quote_plus(cat)
-	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
-
-def showList3(url):
-	req = urllib2.Request(url)
-	req.add_header('User-Agent', HEADER)
-	f=urllib2.urlopen(req)
-	a=f.read()
-	f.close()
-	link=re.compile('<li><a href="#(.+?)">(.+?)</a></li>').findall(a)
-	x=0
-	for url,title in link:
-		name = str(int(x+1))+'. '+title
-		url='http://www.nba.com/.element/ssi/sect/1.1/video/'+url+'.html'
-		li=xbmcgui.ListItem(name)
-		u=sys.argv[0]+"?mode=6&url="+urllib.quote_plus(url)
-		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
-		x=x+1
+def get_video_info(url,page,name):
+	data=open_url(url)
+	title=re.compile('<headline>(<!\[CDATA\[)?(.*?)(\]\]>)?</headline>').findall(data)
+	plot=re.compile('<description>(<!\[CDATA\[)?(.*?)(\]\]>)?</description>').findall(data)
+	url=re.compile('<file(.*?)type="large"(.*?)>(.+?)</file>').findall(data)
+	length=re.compile('<length(.*?)>((.+?)</length>)?').findall(data)
+	section=re.compile('<sectionName(.*?)>(.+?)</sectionName>', re.DOTALL).findall(data)
+	playVideo('http://nba.cdn.turner.com/nba/big'+url[0][2], title[0][1], plot[0][1], section[0][1].capitalize())
 		
-def showCategories():
-		nba=['bos', 'njn', 'nyk', 'phi', 'tor', 'chi', 'cle', 'det', 'ind', 'mil', 'atl', 'cha', 'mia', 'orl', 'was', 'dal', 'hou', 'mem', 'noh', 'sas', 'den', 'min', 'por', 'okc', 'uth', 'gsw', 'lac', 'lal', 'pho', 'sac']
-		teams=['Boston Celtics', 'New Jersey Nets', 'New York Knicks', 'Philadelphia 76ers', 'Toronto Raptors', 'Chicago Bulls', 'Cleveland Cavaliers', 'Detroit Pistons', 'Indiana Pacers', 'Milwaukee Bucks', 'Atlanta Hawks', 'Charlotte Bobcats', 'Miami Heat', 'Orlando Magic', 'Washington Wizards', 'Dallas Mavericks', 'Houston Rockets', 'Memphis Grizzlies', 'New Orleans Hornets', 'San Antonio Spurs','Denver Nuggets', 'Minnesota Timberwolves', 'Portland Trail Blazers', 'Oklahoma City Thunder', 'Utah Jazz', 'Golden State Warriors', 'Los Angeles Clippers', 'Los Angeles Lakers', 'Phoenix Suns', 'Sacramento Kings' ]         
-		x=0
-		url="http://www.nba.com/.element/ssi/sect/1.1/video/teams.html"
-		req = urllib2.Request(url)
-		req.add_header('User-Agent', HEADER)
-		f=urllib2.urlopen(req)
-		a=f.read()
-		f.close()
-		p=re.compile('<td><a href="#" onclick="nbaVideo\.showTeamSection\(\'(.+?)\'\);return false"><img src="(.+?)"/><p>(.+?)</p></a></td')
-		match=p.findall(a)
-		for team,thumb,name in match:
-			url = 'http://www.nba.com/.element/ssi/auto/1.1/aps/video/videoplayer/teams/'+team+'/'+team+'.league1.html'
-			# name=teams[x]
-			# if (nba[x] == 'noh'):
-				# nba[x] = 'nor'
-			# thumb = 'http://assets.espn.go.com/i/teamlogos/nba/lrg/trans/'+nba[x]+'.gif'
-			li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
-			u=sys.argv[0]+"?mode=8&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
-			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
-			x=x+1
+def get_feature(url,page,cat):
+	data=[
+			('Award Nominees','channels%2Faward_nominees'),
+			('Play of the Day','channels%2Fplay_of_the_day'),
+			('Flip Diaries','flip_video_diaries'),
+			('Originals','channels%2Foriginals')
+			]
+	count=1
+	for name,section in data:
+		item=xbmcgui.ListItem(str(count)+'. '+name)
+		url='http://searchapp.nba.com/nba-search/query.jsp?type=advvideo&section='+section+'&season=0910&npp=15'
+		u=sys.argv[0]+"?mode=1&url="+urllib.quote_plus(url)+"&cat="+urllib.quote_plus(name)+"&save="+urllib.quote_plus(url)
+		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,item,True)
+		count=count+1
+
+def showTeams(url,page,cat,save):
+	nick=url
+	team=cat
+	data=[
+			('All Videos','teams%2F'+nick+'%7Cgames%2F*%7Cchannels%2F*','','&team='+team.replace(' ','%20')),
+			('Team Originals','teams%2F'+nick,'&team_category=Team%20Originals',''),
+			('Team Highlights','games%2F*%7Cchannels%2F*','','&team='+team.replace(' ','%20'))
+			]
+	for name,section,category,extra in data:
+		item=xbmcgui.ListItem(name)
+		url='http://searchapp.nba.com/nba-search/query.jsp?type=advvideo&section='+section+'&season=0910&npp=15'+category+extra
+		u=sys.argv[0]+"?mode=1&url="+urllib.quote_plus(url)+"&cat="+urllib.quote_plus(name)+"&save="+urllib.quote_plus(url)
+		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,item,True)
+		
+def showCategories(url,cat,save):
+	url='http://www.nba.com/video/'
+	data=open_url(url)
+	teams=re.compile('onclick="nbaVideo\.changeTeamSection\(\'teams/(.+?)\',( )?\'All Videos\'\); \$\(\'nbaVidSltBg\'\)\.hide\(\);( )?return false;" href="#">(.+?)</a></li>').findall(data)
+	for nick,space1,space2,team in teams:
+		li=xbmcgui.ListItem(team)
+		u=sys.argv[0]+"?mode=4&name="+urllib.quote_plus(team)+"&url="+urllib.quote_plus(nick)+"&cat="+urllib.quote_plus(team)+"&save="+urllib.quote_plus(save)
+		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
 def showCategories2():
 		nba=['bos', 'njn', 'nyk', 'phi', 'tor', 'chi', 'cle', 'det', 'ind', 'mil', 'atl', 'cha', 'mia', 'orl', 'was', 'dal', 'hou', 'mem', 'noh', 'sas', 'den', 'min', 'por', 'okc', 'uth', 'gsw', 'lac', 'lal', 'pho', 'sac']
@@ -197,21 +195,7 @@ def TeamO(url,page,name):
 	u=sys.argv[0]+"?mode=8&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(saveurl)+"&page="+str(int(page)+1)
 	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
-def get_video_info(url,page,name):
-	url='http://www.nba.com'+url+'.xml'
-	print url
-	data=open_url(url)
-	title=re.compile('<headline>(<!\[CDATA\[)?(.*?)(\]\]>)?</headline>').findall(data)
-	plot=re.compile('<description>(<!\[CDATA\[)?(.*?)(\]\]>)?</description>').findall(data)
-	url=re.compile('<file(.*?)type="large"(.*?)>(.+?)</file>').findall(data)
-	length=re.compile('<length(.*?)>((.+?)</length>)?').findall(data)
-	section=re.compile('<sectionName(.*?)>(.+?)</sectionName>', re.DOTALL).findall(data)
-	print title[0][1]
-	print plot[0][1]
-	print url[0][2]
-	#print length[0][2]
-	print section[0][1].capitalize()
-	playVideo('http://nba.cdn.turner.com/nba/big'+url[0][2], title[0][1], plot[0][1], section[0][1].capitalize())
+
 
 def showList(url,page):
 		thisurl=url
@@ -340,20 +324,24 @@ try:
         cat=urllib.unquote_plus(params["cat"])
 except:
 		pass
+try:
+        save=urllib.unquote_plus(params["save"])
+except:
+		pass
 
 if mode==None:
 	_check_for_update()
 	showRoot()
 elif mode==1:
-	showCategories()
+	get_data(url,page,cat,save)
 elif mode==2:
-	showList(url,page)
+	get_feature(url,page,cat)
 elif mode==3:
-	playVideo(url, name, plot, cat)
+	get_video_info(url,page,name)
 elif mode==4:
-	showCategories2()
+	showTeams(url,page,cat,save)
 elif mode==5:
-	showTeams()
+	showCategories(url,cat,save)
 elif mode==6:
 	showList2(url,page,cat)
 elif mode==7:
