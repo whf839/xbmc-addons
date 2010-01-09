@@ -1,5 +1,5 @@
 import sys
-import urllib, cgi, xml.dom.minidom
+import urllib, cgi, re, xml.dom.minidom
 import xbmc, xbmcgui, xbmcplugin
 
 # plugin constants
@@ -12,6 +12,8 @@ MODLAND_URL = 'http://www.exotica.org.uk/mediawiki/extensions/ExoticASearch/Modl
 #MODLAND_URL = 'http://exotica.travelmate/mediawiki/extensions/ExoticASearch/Modland_xbmc.php'
 
 handle = int(sys.argv[1])
+rev_re = re.compile(' r(\d+)') 
+xbmc_rev = int(rev_re.search(xbmc.getInfoLabel( "System.BuildVersion" )).group(1))
 
 def get_params(defaults):
   new_params = defaults
@@ -55,9 +57,16 @@ def get_results(search):
 
     li = xbmcgui.ListItem( label )
     li.setInfo( type = 'music', infoLabels = { 'title': label, 'genre': format, 'artist': artist } )
-    url = sys.argv[0] + '?'
-    url += urllib.urlencode( { 'mode': 'play', 'title': title, 'artist': artist, 'genre': format, 'url': stream_url } )
-    ok = xbmcplugin.addDirectoryItem(handle, url = url, listitem = li, isFolder = False, totalItems = count)
+
+    # revision 26603 adds my patch with support for ogg mime types for paplayer so we can pass
+    # the url directly, otherwise we pass back to the plugin and force an alternative player
+    if xbmc_rev >= 26603:
+      url = stream_url
+    else:
+      url = sys.argv[0] + '?'
+      url += urllib.urlencode( { 'mode': 'play', 'title': title, 'artist': artist, 'genre': format, 'url': stream_url } )
+
+    ok = xbmcplugin.addDirectoryItem(handle, url, listitem = li, isFolder = False, totalItems = count)
 
   xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_TITLE)
   xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_ARTIST)
