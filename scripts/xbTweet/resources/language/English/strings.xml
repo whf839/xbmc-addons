@@ -6,9 +6,9 @@
   <string id="30003">Version %s of xbTweet is available</string>
   <string id="30004">Please check xbmcblog.com for more information</string>
   <string id="30005">Please approve xbTweet on the following screen.</string>
-  <string id="30006">Please set Twitter account credentials\r\nin the scrip't settings.</string>
-  <string id="30007">xbTweet failed to authenticate you.\r\nPlease check the script's settings</string>
-  <string id="30008">xbTweet failed to authenticate you.\r\nPlease approve xbTweet on the following screen.</string>
+  <string id="30006">Please set Twitter account credentials[CR]in the script's settings.</string>
+  <string id="30007">xbTweet failed to authenticate you.[CR]Please check the script's settings</string>
+  <string id="30008">xbTweet failed to authenticate you.[CR]Please approve xbTweet on the following screen.</string>
   <string id="30009">Welcome to xbTweet</string>
   <string id="30010">xbTweet</string>
   <string id="30011">General Settings</string>
