@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
-  <string id="30000">Ange Twitter PIN-koden</string>
+  <string id="30000">Ange PIN-kod från Twitter</string>
   <string id="30001">Skriv Tweet</string>
   <string id="30002">xbTweet v%s</string>
   <string id="30003">Version %s av xbTweet är tillgänglig</string>
