@@ -6,7 +6,7 @@ import xbmc, xbmcgui, xbmcplugin
 __plugin__     = "reLive"
 __author__     = 'BuZz [buzz@exotica.org.uk] / http://www.exotica.org.uk'
 __svn_url__    = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/music/relive"
-__version__    = "2010-01-07"
+__version__    = "0.5"
 
 RELIVE_STATIONS = 'http://stations.re-live.se/getstations/'
 
@@ -122,7 +122,6 @@ def play_stream(url, title, info):
   listitem.setInfo ( 'music', info )
   player = xbmc.Player(xbmc.PLAYER_CORE_MPLAYER)
   player.play(url, listitem)
-
 
 params = get_params( { 'mode': 'stations', 'station': '' } )
 mode = params['mode']
