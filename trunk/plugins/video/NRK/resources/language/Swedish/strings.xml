@@ -2,7 +2,7 @@
 <!--Language file translated with Team XBMC Translator-->
 <!--Translator: blittan-->
 <!--Email: blittan@xbmc.org-->
-<!--Date of translation: 01/09/2010-->
+<!--Date of translation: 01/10/2010-->
 <!--$Revision$-->
 <strings>
   <string id="30000">Använd buffert</string>
@@ -53,9 +53,9 @@
   <string id="30160">Hedmark og Oppland</string>
   <string id="30200">Arkiv</string>
   <string id="30201">Aktuellt</string>
-  <string id="30202">Mest visade totalt</string>
-  <string id="30203">Mest visade denna vecka</string>
-  <string id="30204">Mest visade denna månad</string>
+  <string id="30202">Populärast totalt</string>
+  <string id="30203">Popuärast denna vecka</string>
+  <string id="30204">Populärast denna månad</string>
   <string id="30205">Sök</string>
   <string id="30206">Visa bokstav %s</string>
   <string id="30207">Visa alla</string>
@@ -68,12 +68,12 @@
   <string id="30214">Denna månad</string>
   <string id="30215">Totalt</string>
   <string id="30216">Sista %d dagar</string>
-  <string id="30217">Rekommenderade program</string>
-  <string id="30218">Mest sedda sista X dagarna</string>
+  <string id="30217">Rekommenderade serier</string>
+  <string id="30218">Populärast sista X dagarna</string>
   <string id="30219">Artiklar</string>
   <string id="30250">Program</string>
   <string id="30251">Direkt</string>
-  <string id="30252">Kanalerna</string>
+  <string id="30252">Kanaler</string>
   <string id="30253">Sport</string>
   <string id="30254">Nyheter</string>
   <string id="30255">Distrikt</string>
@@ -83,11 +83,11 @@
   <string id="30259">Ljudpodcast</string>
   <string id="30260">Videopodcast</string>
   <string id="30261">Text-TV</string>
-  <string id="30262">Favoritprogram</string>
-  <string id="30300">Uppdaterar</string>
-  <string id="30301">Lägg till i favoritprogram</string>
+  <string id="30262">Favoritserier</string>
+  <string id="30300">Uppdatera</string>
+  <string id="30301">Lägg till i favoritserier</string>
   <string id="30302">Ladda ner video</string>
-  <string id="30303">Flytta</string>
+  <string id="30303">Ta bort</string>
   <string id="30304">Döp om</string>
   <string id="30350">Direktsändningar</string>
   <string id="30400">Ta bort från favoriter</string>
