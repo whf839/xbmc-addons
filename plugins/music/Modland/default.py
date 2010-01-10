@@ -6,7 +6,7 @@ import xbmc, xbmcgui, xbmcplugin
 __plugin__     = "Modland"
 __author__     = 'BuZz [buzz@exotica.org.uk] / http://www.exotica.org.uk'
 __svn_url__    = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/music/modland"
-__version__    = "2010-01-09"
+__version__    = "0.5"
 
 MODLAND_URL = 'http://www.exotica.org.uk/mediawiki/extensions/ExoticASearch/Modland_xbmc.php'
 #MODLAND_URL = 'http://exotica.travelmate/mediawiki/extensions/ExoticASearch/Modland_xbmc.php'
