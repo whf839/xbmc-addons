@@ -115,11 +115,13 @@ class Main:
         
         if self.verbose:
             print 'added %d feed entries' % feedcount
-            print 'success: %s' % repr(ok)
+            print 'success: %s' % repr(feedcount > 0)
         
         #Tell end of directory listing
-        self.eod( self.hndl, ok, False, False ) 
-            
+        if feedcount > 0:
+            self.eod( self.hndl, ok, False, False ) 
+        else:
+             exec "xbmcgui.Dialog().ok('No podcasts received from NRK.no', '')"
     
     def get_casts(self, xml_filename):
         
