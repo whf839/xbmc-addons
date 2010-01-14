@@ -1,5 +1,4 @@
 #
-#
 #   NRK plugin for XBMC Media center
 #
 # Copyright (C) 2009 Victor Vikene  contact: z0py3r@hotmail.com
@@ -39,12 +38,14 @@ FAV_PATH = os.path.join(
 
 class Main:
     
+    # Default path for images
     rpath = os.path.join(os.getcwd(), 'resources', 'images')
     
     
-    
+    # Function for adding main menu entries that is to displayed to the user
     def add(self, label, prefix, type, id=None, img='', icon='', isdir=True, commands=None):
     
+        # Make full path for where to look for specified image
         if img != '':
             img = os.path.join(self.rpath, img)
             
@@ -57,26 +58,27 @@ class Main:
         return ok
         
         
-        
+    # This initialization function builds the main menu. 
+    # Order, text and icons for main menu entries are given here.
     def __init__(self):
     
         self.hndl = int(sys.argv[1])
      
      
-        self.add('Program',  nrk.PROGRAM,  nrk.PROGRAM,  img='program-icon.png')
-        self.add('Direkte',  nrk.PROGRAM,  nrk.LIVE,     img='live-icon.png')
-        self.add('Kanalene', nrk.CHANNELS, nrk.CHANNELS, img='channels-icon.png')
+        self.add(lang(30250),  nrk.PROGRAM,  nrk.PROGRAM,  img='program-icon.png')
+        self.add(lang(30251),  nrk.PROGRAM,  nrk.LIVE,     img='live-icon.png')
+        self.add(lang(30252),  nrk.CHANNELS, nrk.CHANNELS, img='channels-icon.png')
             
-        self.add('Sport',    nrk.PROGRAM, nrk.PLAYLIST, 'sport',    'sports-icon.png')
-        self.add('Nyheter',  nrk.PROGRAM, nrk.PLAYLIST, 'nyheter',  'news-icon.png')
-        self.add('Distrikt', nrk.PROGRAM, nrk.PLAYLIST, 'distrikt', 'regions-icon.png')
-        #self.add('Barn',     nrk.PROGRAM, nrk.PLAYLIST, 'super',    'children-icon.png')
-        self.add('Natur',    nrk.PROGRAM, nrk.PLAYLIST, 'natur',    'nature-icon.png')
+        self.add(lang(30253),   nrk.PROGRAM,  nrk.PLAYLIST, 'sport',    'sports-icon.png')
+        self.add(lang(30254),  nrk.PROGRAM,  nrk.PLAYLIST, 'nyheter',  'news-icon.png')
+        self.add(lang(30255),  nrk.PROGRAM,  nrk.PLAYLIST, 'distrikt', 'regions-icon.png')
+        #self.add('Barn',       nrk.PROGRAM,     nrk.PLAYLIST, 'super',    'children-icon.png')
+        self.add(lang(30256),  nrk.PROGRAM,  nrk.PLAYLIST, 'natur',    'nature-icon.png')
       
-        self.add('NRKBeta',           'nrkbeta',  'feed',     img='nrkbeta.png')
-        self.add('NRK Nettradio',     'webradio', 'webradio', img='speaker-icon.png')
-        self.add('NRK Video Podcast', 'podcast',  'video',    img='video-podcast.png')
-        self.add('NRK Lyd Podcast',   'podcast',  'sound',    img='audio-podcast.png')
+        self.add(lang(30257),  'nrkbeta',    'feed',     img='nrkbeta.png')
+        self.add(lang(30258),  'webradio',   'webradio', img='speaker-icon.png')
+        self.add(lang(30260),  'podcast',    'video',    img='video-podcast.png')
+        self.add(lang(30259),  'podcast',    'sound',    img='audio-podcast.png')
         
         commands = []
         commands.append(( lang(30800), 
@@ -94,9 +96,10 @@ class Main:
         commands.append(( lang(30804), 
                         'XBMC.RunPlugin(%s)' % ( Key.build_url('teletext', page=590)), 
                         ))
-        self.add('NRK Tekst TV',      'teletext', 'teletext', img='ttv-icon.png', isdir=False, commands=commands)
+        self.add( lang(30261),      'teletext', 'teletext', img='ttv-icon.png', isdir=False, commands=commands)
         
+        # Only add the entry for Favourites if the xml file containing favourites exists already.
         if os.path.isfile(FAV_PATH):
-          self.add('Favoritt Program', 'favorites', 'favorites', img='favorites.png')
+          self.add(lang(30262), 'favorites', 'favorites', img='favorites.png')
           
         endOfDirectory(self.hndl)
