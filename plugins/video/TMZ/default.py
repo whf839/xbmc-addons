@@ -3,12 +3,12 @@ __scriptname__ = "TMZ"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/TMZ"
-__date__ = '2009-08-06'
-__version__ = "1.0"
+__date__ = '01-17-2010'
+__version__ = "1.1"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 from urllib import urlretrieve, urlcleanup
-HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1.1) Gecko/20090715 Firefox/3.5.1'
+HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1.7) Gecko/20091221 Firefox/3.5.7'
 
 def _check_for_update():
 	print "TMZ v"+__version__
@@ -31,28 +31,33 @@ def showRoot():
 	u=sys.argv[0]+"?mode=1&url="+urllib.quote_plus(url)+"&name="+urllib.quote_plus('Most Recent')
 	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 	#
-	url="http://metaframe.digitalsmiths.tv/v1/tmzcompany/playlists/tmzontv?format=xml"
-	li=xbmcgui.ListItem("2. TMZ on TV")
-	u=sys.argv[0]+"?mode=1&url="+urllib.quote_plus(url)+"&name="+urllib.quote_plus('TMZ on TV')
-	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
-	#
-	url="http://metaframe.digitalsmiths.tv/v1/tmzcompany/playlists/fullepisode?format=xml"
-	li=xbmcgui.ListItem("3. Full Episode")
-	u=sys.argv[0]+"?mode=1&url="+urllib.quote_plus(url)+"&name="+urllib.quote_plus('Full Episode')
-	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
-	#
-	url="http://metaframe.digitalsmiths.tv/v1/tmzcompany/playlists/mostpopular?format=xml"
-	li=xbmcgui.ListItem("4. Most Popular")
-	u=sys.argv[0]+"?mode=1&url="+urllib.quote_plus(url)+"&name="+urllib.quote_plus('Most Popular')
-	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
-	#
 	url="http://metaframe.digitalsmiths.tv/v1/tmzcompany/playlists/highestrated?format=xml"
-	li=xbmcgui.ListItem("5. Highest Rated")
+	li=xbmcgui.ListItem("2. Top Rated")
 	u=sys.argv[0]+"?mode=1&url="+urllib.quote_plus(url)+"&name="+urllib.quote_plus('Highest Rated')
 	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 	#
+	url="http://metaframe.digitalsmiths.tv/v1/tmzcompany/playlists/mostpopular?format=xml"
+	li=xbmcgui.ListItem("3. Most Watched")
+	u=sys.argv[0]+"?mode=1&url="+urllib.quote_plus(url)+"&name="+urllib.quote_plus('Most Popular')
+	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+	#
+	url="http://metaframe.digitalsmiths.tv/v1/tmzcompany/playlists/tmzontv?format=xml"
+	li=xbmcgui.ListItem("4. TMZ on TV")
+	u=sys.argv[0]+"?mode=1&url="+urllib.quote_plus(url)+"&name="+urllib.quote_plus('TMZ on TV')
+	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+	#
+	url="http://metaframe.digitalsmiths.tv/v1/tmzcompany/playlists/sponsoredvideo2?format=xml"
+	li=xbmcgui.ListItem("5. TMZ Live")
+	u=sys.argv[0]+"?mode=1&url="+urllib.quote_plus(url)+"&name="+urllib.quote_plus('TMZ Live')
+	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+	#
+	url="http://metaframe.digitalsmiths.tv/v1/tmzcompany/playlists/fullepisode?format=xml"
+	li=xbmcgui.ListItem("6. Full Episodes")
+	u=sys.argv[0]+"?mode=1&url="+urllib.quote_plus(url)+"&name="+urllib.quote_plus('Full Episodes')
+	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+	#
 	url="http://metaframe.digitalsmiths.tv/v1/tmzcompany/playlists/tmzbadges?format=xml"
-	li=xbmcgui.ListItem("6. TMZ Badges")
+	li=xbmcgui.ListItem("7. TMZ Badges")
 	u=sys.argv[0]+"?mode=1&url="+urllib.quote_plus(url)+"&name="+urllib.quote_plus('TMZ Badges')
 	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 
