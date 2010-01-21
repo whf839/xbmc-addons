@@ -12,4 +12,6 @@
 	<string id="30021">Poista X-päivää vanhemmat pienoiskuvakkeet [0=ei käytössä]</string>
 	<string id="30025">Tekstitykset</string>
 	<string id="30050">Yhteyden odotusaika (sekuntia) [0=ei käytössä]</string>
+	<string id="30060">Näyttö-valintaikkuna, kun peli painetaan</string>
+	<string id="30070">Tehostettu Debug output</string>
 </strings>

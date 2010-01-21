@@ -16,4 +16,6 @@
   <string id="30021">Ta bort miniatyrer äldre än X dagar (0=inaktiverad)</string>
   <string id="30025">Undertexter</string>
   <string id="30050">Tidsgräns för socket (sekunder) (0=inaktiverad)</string>
+  <string id="30060">Display dialog när Play trycks</string>
+  <string id="30070">Enhanced Debug output</string>
 </strings>
