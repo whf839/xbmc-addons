@@ -1,4 +1,4 @@
-import sys
+import sys, os
 import urllib, cgi, re, xml.dom.minidom
 import xbmc, xbmcgui, xbmcplugin
 
@@ -6,12 +6,10 @@ import xbmc, xbmcgui, xbmcplugin
 __plugin__     = "Modland"
 __author__     = 'BuZz [buzz@exotica.org.uk] / http://www.exotica.org.uk'
 __svn_url__    = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/music/modland"
-__version__    = "0.5"
+__version__    = "0.6"
 
 MODLAND_URL = 'http://www.exotica.org.uk/mediawiki/extensions/ExoticASearch/Modland_xbmc.php'
 #MODLAND_URL = 'http://exotica.travelmate/mediawiki/extensions/ExoticASearch/Modland_xbmc.php'
-
-handle = int(sys.argv[1])
 
 # try and get xbmc revision
 rev_re = re.compile('r(\d+)')
@@ -19,6 +17,25 @@ try:
   xbmc_rev = int(rev_re.search(xbmc.getInfoLabel( "System.BuildVersion" )).group(1))
 except:
   xbmc_rev = 0
+
+PLUGIN_DATA = xbmc.translatePath('special://masterprofile/plugin_data/' + __plugin__ )
+SEARCH_FILE = os.path.join(PLUGIN_DATA, 'search.txt')
+
+if not os.path.isdir(PLUGIN_DATA):
+  try:
+    os.makedirs(PLUGIN_DATA)
+  except IOError, e:
+    xbmc.log("Unable to make plugin folder: %s" % PLUGIN_DATA, xbmc.LOGERROR)
+    raise
+
+if not os.path.isfile(SEARCH_FILE):
+  try:
+    open(SEARCH_FILE, 'wb').close() 
+  except IOError, e:
+    xbmc.log("Unable to open search file: %s" % PLUGIN_DATA, xbmc.LOGERROR)
+    raise
+
+handle = int(sys.argv[1])
 
 def get_params(defaults):
   new_params = defaults
@@ -29,9 +46,19 @@ def get_params(defaults):
 
 def show_options():
   url =  sys.argv[0] + '?' + urllib.urlencode( { 'mode': 'search' } )
-  li = xbmcgui.ListItem( label = 'Search for game/demo music on Modland')
+  li = xbmcgui.ListItem('Search for game/demo music on Modland')
   ok = xbmcplugin.addDirectoryItem(handle, url, listitem = li, isFolder = True)
-  xbmcplugin.endOfDirectory(handle, succeeded = True)
+
+  # get list of saved searches
+  search_list = load_list(SEARCH_FILE)
+  for search in search_list:
+    li = xbmcgui.ListItem(search)
+    url = sys.argv[0] + '?' + urllib.urlencode( { 'mode': 'search', 'search': search } )
+    cmd = "XBMC.RunPlugin(%s?mode=deletesearch&search=%s)" % (sys.argv[0], urllib.quote_plus(search) )
+    li.addContextMenuItems( [ ('Delete saved search', cmd) ] )
+    ok = xbmcplugin.addDirectoryItem(handle, url, listitem = li, isFolder = True)
+
+  xbmcplugin.endOfDirectory(handle, succeeded = True, updateListing = False, cacheToDisc = False )
 
 def get_search():
   kb = xbmc.Keyboard('', 'Enter search string')
@@ -39,6 +66,9 @@ def get_search():
   if not kb.isConfirmed():
     return None
   search = kb.getText()
+  search_list = load_list(SEARCH_FILE)
+  search_list.append(search)
+  save_list(SEARCH_FILE, search_list)
   return search
 
 def get_results(search):
@@ -84,14 +114,45 @@ def play_stream(url, title, info):
   player = xbmc.Player(xbmc.PLAYER_CORE_MPLAYER)
   player.play(url, listitem)
 
-params = get_params( { 'mode': None } )
+# load a list from a file, removing any duplicates and stripped wihtespace/linefeeds
+def load_list(file):
+  li = open(file, 'rb').readlines()
+  # remove duplicates
+  li = list(set(li))
+  # remove whitespace
+  li = ([x.strip() for x in li])
+  # and sort
+  li.sort()
+  return li
+
+# save a list to a file
+def save_list(file, li):
+  file = open(file, 'wb')
+  for item in li:
+    if item:
+      file.write(item + "\n")
+  file.close()
+
+params = get_params( { 'mode': None, 'search': None } )
 mode = params["mode"]
+search = params["search"]
 
 if mode == None:
   show_options()
-  
+
+elif mode == 'deletesearch':
+  search_list = load_list(SEARCH_FILE)
+  search_list.remove(search)
+  save_list(SEARCH_FILE, search_list)
+  xbmc.executebuiltin("Container.Refresh")
+
 elif mode == 'search':
-  search = get_search()
+
+  if search == None:
+    search = get_search()
+  else:
+    search = params["search"]
+
   if search != None and len(search) >= 3:
     get_results(search)
   else:
