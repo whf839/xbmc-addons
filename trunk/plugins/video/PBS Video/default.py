@@ -3,8 +3,8 @@ __scriptname__ = "PBS Video"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/PBS%20Video"
-__date__ = '2009-08-23'
-__version__ = "1.3"
+__date__ = '01-25-10'
+__version__ = "1.3.1"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 from urllib import urlretrieve, urlcleanup
@@ -53,7 +53,7 @@ def showList(url, name):
 		a=f.read()
 		f.close()
 		p=re.compile('<p class="info">\n                \n                <a href="http://video.pbs.org/video/(.+?)" class="title" title="(.+?)">(.+?)</a>\n')
-		q=re.compile('<span class="list">(.+?)</span>')
+		q=re.compile('<span class="list">(.*?)</span>')
 		r=re.compile('<img src="(.+?)" alt="(.+?)" />')
 		info=p.findall(a)
 		disc=q.findall(a)
