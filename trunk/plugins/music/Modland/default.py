@@ -1,25 +1,25 @@
 import sys, os
-import urllib, cgi, re, xml.dom.minidom
+import urllib, cgi, re, htmlentitydefs, xml.dom.minidom
 import xbmc, xbmcgui, xbmcplugin
 
 # plugin constants
 __plugin__     = "Modland"
-__author__     = 'BuZz [buzz@exotica.org.uk] / http://www.exotica.org.uk'
+__author__     = "BuZz [buzz@exotica.org.uk] / http://www.exotica.org.uk"
 __svn_url__    = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/music/modland"
-__version__    = "0.6"
+__version__    = "0.7"
 
-MODLAND_URL = 'http://www.exotica.org.uk/mediawiki/extensions/ExoticASearch/Modland_xbmc.php'
+MODLAND_URL = "http://www.exotica.org.uk/mediawiki/extensions/ExoticASearch/Modland_xbmc.php"
 #MODLAND_URL = 'http://exotica.travelmate/mediawiki/extensions/ExoticASearch/Modland_xbmc.php'
 
 # try and get xbmc revision
 rev_re = re.compile('r(\d+)')
 try:
-  xbmc_rev = int(rev_re.search(xbmc.getInfoLabel( "System.BuildVersion" )).group(1))
+  xbmc_rev = int(rev_re.search(xbmc.getInfoLabel( 'System.BuildVersion' )).group(1))
 except:
   xbmc_rev = 0
 
-PLUGIN_DATA = xbmc.translatePath('special://masterprofile/plugin_data/' + __plugin__ )
-SEARCH_FILE = os.path.join(PLUGIN_DATA, 'search.txt')
+PLUGIN_DATA = xbmc.translatePath("special://masterprofile/plugin_data/" + __plugin__ )
+SEARCH_FILE = os.path.join(PLUGIN_DATA, "search.txt")
 
 if not os.path.isdir(PLUGIN_DATA):
   try:
@@ -32,7 +32,7 @@ if not os.path.isfile(SEARCH_FILE):
   try:
     open(SEARCH_FILE, 'wb').close() 
   except IOError, e:
-    xbmc.log("Unable to open search file: %s" % PLUGIN_DATA, xbmc.LOGERROR)
+    xbmc.log("Unable to open search file: %s" % SEARCH_FILE, xbmc.LOGERROR)
     raise
 
 handle = int(sys.argv[1])
@@ -45,23 +45,23 @@ def get_params(defaults):
   return new_params
 
 def show_options():
-  url =  sys.argv[0] + '?' + urllib.urlencode( { 'mode': 'search' } )
-  li = xbmcgui.ListItem('Search for game/demo music on Modland')
+  url =  sys.argv[0] + '?' + urllib.urlencode( { 'mode': "search" } )
+  li = xbmcgui.ListItem("Search for game/demo music on Modland")
   ok = xbmcplugin.addDirectoryItem(handle, url, listitem = li, isFolder = True)
 
   # get list of saved searches
   search_list = load_list(SEARCH_FILE)
   for search in search_list:
     li = xbmcgui.ListItem(search)
-    url = sys.argv[0] + '?' + urllib.urlencode( { 'mode': 'search', 'search': search } )
+    url = sys.argv[0] + '?' + urllib.urlencode( { 'mode': "search", 'search': search } )
     cmd = "XBMC.RunPlugin(%s?mode=deletesearch&search=%s)" % (sys.argv[0], urllib.quote_plus(search) )
-    li.addContextMenuItems( [ ('Delete saved search', cmd) ] )
+    li.addContextMenuItems( [ ("Delete saved search", cmd) ] )
     ok = xbmcplugin.addDirectoryItem(handle, url, listitem = li, isFolder = True)
 
   xbmcplugin.endOfDirectory(handle, succeeded = True, updateListing = False, cacheToDisc = False )
 
 def get_search():
-  kb = xbmc.Keyboard('', 'Enter search string')
+  kb = xbmc.Keyboard("", "Enter search string")
   kb.doModal()
   if not kb.isConfirmed():
     return None
@@ -80,18 +80,23 @@ def get_results(search):
   response.close
 
   dom = xml.dom.minidom.parseString(resultsxml)
-  items = dom.getElementsByTagName("item")
+  items = dom.getElementsByTagName('item')
   count = items.length
   for item in items:
-    title = item.getElementsByTagName("title")[0].firstChild.data
-    artist = item.getElementsByTagName("author")[0].firstChild.data
-    format = item.getElementsByTagName("format")[0].firstChild.data
-    stream_url = item.getElementsByTagName("url")[0].firstChild.data
+    title = item.getElementsByTagName('title')[0].firstChild.data
+    artist = item.getElementsByTagName('author')[0].firstChild.data
+    format = item.getElementsByTagName('format')[0].firstChild.data
+    if item.getElementsByTagName('collect')[0].firstChild == None:
+      collect = ''
+    else:
+      collect = item.getElementsByTagName('collect')[0].firstChild.data
+    
+    stream_url = item.getElementsByTagName('url')[0].firstChild.data
     
     label = title + ' - ' + artist + ' - ' + format
 
     li = xbmcgui.ListItem( label )
-    li.setInfo( type = 'music', infoLabels = { 'title': label, 'genre': format, 'artist': artist } )
+    li.setInfo( type = 'music', infoLabels = { 'title': label, 'genre': format, 'artist': artist, 'album': collect } )
 
     # revision 26603 adds my patch with support for ogg mime types for paplayer so we can pass
     # the url directly, otherwise we pass back to the plugin and force an alternative player
@@ -99,13 +104,14 @@ def get_results(search):
       url = stream_url
     else:
       url = sys.argv[0] + '?'
-      url += urllib.urlencode( { 'mode': 'play', 'title': title, 'artist': artist, 'genre': format, 'url': stream_url } )
+      url += urllib.urlencode( { 'mode': 'play', 'title': title, 'artist': artist, 'genre': format, 'album': collection, 'url': stream_url } )
 
     ok = xbmcplugin.addDirectoryItem(handle, url, listitem = li, isFolder = False, totalItems = count)
 
   xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_TITLE)
   xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_ARTIST)
   xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_GENRE)
+  xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_ALBUM)
   xbmcplugin.endOfDirectory(handle = handle, succeeded = True)
 
 def play_stream(url, title, info):
@@ -134,8 +140,8 @@ def save_list(file, li):
   file.close()
 
 params = get_params( { 'mode': None, 'search': None } )
-mode = params["mode"]
-search = params["search"]
+mode = params['mode']
+search = params['search']
 
 if mode == None:
   show_options()
@@ -144,14 +150,14 @@ elif mode == 'deletesearch':
   search_list = load_list(SEARCH_FILE)
   search_list.remove(search)
   save_list(SEARCH_FILE, search_list)
-  xbmc.executebuiltin("Container.Refresh")
+  xbmc.executebuiltin('Container.Refresh')
 
 elif mode == 'search':
 
   if search == None:
     search = get_search()
   else:
-    search = params["search"]
+    search = params['search']
 
   if search != None and len(search) >= 3:
     get_results(search)
@@ -162,7 +168,8 @@ elif mode == 'play':
   title = urllib.unquote_plus(params['title'])
   artist = urllib.unquote_plus(params['artist'])
   genre = urllib.unquote_plus(params['genre'])
+  album = urllib.unquote_plus(params['album'])
   url = urllib.unquote_plus(params['url'])
 
-  info = { 'title': title, 'artist': artist, 'genre': genre }
+  info = { 'title': title, 'artist': artist, 'genre': genre, 'album': album }
   play_stream(url, title, info)
