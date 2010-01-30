@@ -421,6 +421,7 @@ class CPlayList:
                                 value = m[index2+10:index3-3]
                             else:
                                 value = m[index2+1:index3]
+                            value = value.replace('\n'," '")                              
                             tmp.name = tmp.name + value
                                              
                 #get the description.
@@ -430,6 +431,7 @@ class CPlayList:
                     index2 = m.find('</content:encoded>')
                     if index2 != -1:
                         value = m[index1+17:index2]
+                        #value = value.replace('&#39;',"\'")   
                         tmp.description = value
                         index3 = tmp.description.find('<![CDATA[')
                         if index3 != -1:
@@ -438,6 +440,7 @@ class CPlayList:
                     index2 = m.find('</description>')
                     if index2 != -1:
                         value = m[index+13:index2]
+                        #value = value.replace('&#39;',"\'")   
                         tmp.description = value
                         index3 = tmp.description.find('<![CDATA[')
                         if index3 != -1:
@@ -774,7 +777,7 @@ class CPlayList:
         self.version = plxVersion
         self.background = mediaitem.background
 #        self.logo = 'none'
-        self.logo = "images\shoutcast.jpg"
+        self.logo = imageDir + "shoutcast.png"
         self.title = 'Shoutcast' + ' - ' + mediaitem.name
         self.description = ''
         self.player = mediaitem.player
