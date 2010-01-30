@@ -20,7 +20,7 @@ __scriptname__ = "Navi-X"
 __author__ = "rodejo16"
 __url__ = "http://www.navi-x.org/"
 __credits__ = "Rodejo16"
-__version__ = "3.0.2"
+__version__ = "3.1"
 
 sys.path.append(os.path.join(os.getcwd().replace(";",""),'src'))
 
@@ -180,7 +180,8 @@ if (version != version_default) and (newversion != version_default) and \
 #Start Navi-X
 #############################################################################
 import navix
-win = navix.MainWindow()
+#win = navix.MainWindow()
+win = navix.MainWindow("skin.xml", os.getcwd())
 win.doModal()
 del win
 
