@@ -28,7 +28,7 @@ __author__ = 'BigBellyBilly [BigBellyBilly@gmail.com]'
 __url__ = "http://code.google.com/p/xbmc-scripting/"
 __svn_url__ = "http://xbmc-scripting.googlecode.com/svn/trunk/T3CH%20Upgrader"
 __date__ = '26-09-2009'
-__version__ = "1.9.5"
+__version__ = "1.9.6"
 __svn_revision__ = "$Revision$"
 __XBMC_Revision__ = "19001"
 xbmc.log( "[%s]: v%s  Dated: %s svn %s" % (__scriptname__, __version__, __date__, __svn_revision__), xbmc.LOGNOTICE)
@@ -700,8 +700,8 @@ class Main:
 			# ensure remote filename doesnt exceed xbox filesystem local filename length limit
 			if url and ( not self.isT3CHbuilder or len(self.archive_name) > 42):
 				# use shortened save filename
-				name, ext = os.path.splitext(self.archive_name)				# T3CH and Nigthly both are rars, find just to be safe
-				archive_name = "%s%s" % (self.short_build_name, ext)		# eg SVN_20090617.rar or T3CH_20090617.rar
+				name, ext = os.path.splitext(self.archive_name)				# split file to find archive type
+				archive_name = "%s%s" % (self.short_build_name, ext)		# make new fn using found ext. eg SVN_20090617.zip
 				log("renamed saving archive_name from %s to %s" % (self.archive_name, archive_name))
 			else:
 				archive_name = self.archive_name							# use existing local archive filename
@@ -875,7 +875,8 @@ class Main:
 		if matches:
 			rev = matches.group(1)
 			buildDate = matches.group(2)
-			fn = "XBMC_XBOX_%s.rar" % rev
+#			fn = "XBMC_XBOX_%s.rar" % rev
+			fn = "XBMC_XBOX_%s.zip" % rev		# changed to zip format on 30/01/2010
 			url = self.URL_NIGHTLY_ARCHIVE + fn
 		else:
 			dialogOK(__language__( 0 ), "Archive build information not found!", url)
