@@ -6,9 +6,9 @@ import urllib2, urllib, re
 # plugin constants
 __plugin__ = "Tube 8"
 __author__ = "The BIT Jockey"
-__url__ = "http://www.tube8.com/"
+__url__ = 'http://code.google.com/p/xbmc-addons/'
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Tube8"
-__version__ = "1.4.1"
+__version__ = "1.4.2"
 __svn_revision__ = "$Revision$"
 __XBMC_Revision__ = "19457"
 
@@ -90,17 +90,25 @@ def showListCommon(localpath, handle, pageUrl):
 		a=f.read()
 		f.close()
 		
-		videosRE = '<img .+? class="videoThumbs".+?src="(.+?)".+?<h2><a href="(.+?)" title="(.+?)">.+?</a></h2>.*?<span.*?>(([0-9]{2}:)?[0-9]{2}:[0-9]{2})</span>'
-		videoPattern = re.compile(videosRE, re.DOTALL)
+		thumbRE = '<img .+? class="videoThumbs".+?src="(.+?)".+?'
+		videosRE = '<h2><a href="(.+?)" title="(.+?)">.+?</a></h2>'
+		lenghtRE = '<div class="video-right-text float-right"><strong>(([0-9]{2}:)?[0-9]{2}:[0-9]{2})</strong></div>'
+		
+		thumbPattern,videoPattern,lenghtPattern = re.compile(thumbRE), re.compile(videosRE), re.compile(lenghtRE)
 #		videosRE = '<img width="160" height="120" .+?src="(.+?)" /></a>\n\t\t\t\t\t<h2><a href="(.+?)" title="(.+?)">'
 #		videoPattern = re.compile(videosRE)
 		
-		match=videoPattern.findall(a)
-		for thumb, url, name, duration,_ in match:
+		matchThumb=thumbPattern.findall(a)
+		matchVid=videoPattern.findall(a)
+		matchlengh=lenghtPattern.findall(a)
+		n = 0
+		for url, name in matchVid:
+			thumb, duration = matchThumb[n], matchlengh[n][0]
 			li=xbmcgui.ListItem(name,name,thumb,thumb)
 			li.setInfo( type="Video", infoLabels={ "Title": name, "Duration": duration  } )
 			u=localpath+"?mode=3&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
 			xbmcplugin.addDirectoryItem(handle,u,li, False, NB_ITEM_PAGE)
+			n=n+1
 
 def playVideo(localpath, handle, url):
 		f=urllib2.urlopen(url)
@@ -146,19 +154,14 @@ def search_videos(localpath, handle):
 	print "Searching URL: " + searchUrl
 	showSearchList(localpath, handle, searchUrl, 1)
 
-if __name__ == "__main__":
+def run():
+			
 	params=get_params(sys.argv)
 	mode=None
-	name=None
 	url=None
 	page=1
-	search = False
 	try:
 		url=urllib.unquote_plus(params["url"])
-	except:
-		pass
-	try:
-		name=urllib.unquote_plus(params["name"])
 	except:
 		pass
 	try:
@@ -167,10 +170,6 @@ if __name__ == "__main__":
 		pass
 	try:
 		page=int(params["page"])
-	except:
-		pass
-	try:
-		search=bool(params["search"])
 	except:
 		pass
 	
@@ -186,3 +185,11 @@ if __name__ == "__main__":
 		playVideo(sys.argv[0], int(sys.argv[1]), url)
 	elif mode==4:
 		search_videos(sys.argv[0], int(sys.argv[1]))
+
+if __name__ == "__main__":
+	if len(sys.argv[2]) < 2:
+		dialog = xbmcgui.Dialog()
+		if dialog.yesno(xbmc.getLocalizedString(30061), xbmc.getLocalizedString(30062), xbmc.getLocalizedString(30063), xbmc.getLocalizedString(30064), xbmc.getLocalizedString(30065), xbmc.getLocalizedString(30066)):
+			run()
+	else:
+		run()
