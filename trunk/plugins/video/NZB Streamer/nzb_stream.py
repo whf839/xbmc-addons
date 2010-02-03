@@ -65,7 +65,7 @@ class multipart_file:
         self.total_parts = len(nzb_file.segments)
         self.total_bytes = 0 # read from first part
         self.finished = False
-        self.finished_parts = 0
+        self.finished_parts = None
         self.finished_bytes = 0
         self.finished_event = threading.Event()
 
@@ -94,7 +94,7 @@ def nzb_stream_update(current_task,       # string
 # If a progress_update call returns something other than None, the stream will abort
 '''
 class nzb_stream:
-    def __init__(self, server, port, username, password, num_threads, nzb_url, nzb_directory, par2exe_directory, progress_update = None):
+    def __init__(self, server, port, username, password, num_threads, nzb_url, nzb_directory, par2exe_directory, common_prefix = "", progress_update = None):
         self.server = server
         self.port = port
         self.username = username
@@ -104,7 +104,7 @@ class nzb_stream:
         self.par2exe_directory = par2exe_directory
         self.progress_update = progress_update
 
-        self.common_prefix = ""
+        self.common_prefix = common_prefix
         self.rar_filepath = None
         self.sorted_filenames = list()
         self.downloaded_files = dict()
@@ -119,13 +119,35 @@ class nzb_stream:
         # this allows the consumer to cancel during the task
 
         nzb_string = ""
+        nzb_files = None
+        nzb_filepath = ""
         try:
-            if self._update_progress("Downloading NZB", STATUS_INITIALIZING, os.path.basename(nzb_url)): return
-            urllib.urlopen(nzb_url)
-            nzb_string = string.join(urllib.urlopen(nzb_url).readlines(), "")
-            if self._update_progress("Downloading NZB", STATUS_INITIALIZING, os.path.basename(nzb_url)): return
+            title = self.common_prefix
+            if title == "":
+                if nzb_url[:7] == "file://" and os.path.exists(urllib.url2pathname(nzb_url)):
+                    nzb_filepath = urllib.url2pathname(nzb_url)
+                title = "NZB"
+            else:
+                parts = title.split('.')
+                if len(parts) > 1:
+                    ext = parts[-1].lower()
+                    if ext == "par2" or ext == "nzb" or ext == "nfo":
+                        title = '.'.join(parts[:-1])
+            if nzb_filepath == "":
+                nzb_filepath = os.path.join(nzb_directory, title) + ".nzb"
+            print "NZB filepath: " + nzb_filepath
+            if os.path.exists(nzb_filepath) and os.path.isfile(nzb_filepath):
+                nzb_file = open(nzb_filepath, "r")
+                nzb_string = string.join(nzb_file.readlines(), "")
+                nzb_file.close()
+                #nzb_filepath = possible_nzb_filepath
+            else:
+                if self._update_progress("Downloading " + title, STATUS_INITIALIZING, os.path.basename(nzb_url)): return
+                urllib.urlopen(nzb_url)
+                nzb_string = string.join(urllib.urlopen(nzb_url).readlines(), "")
+                if self._update_progress("Downloading " + title, STATUS_INITIALIZING, os.path.basename(nzb_url)): return
 
-            if self._update_progress("Parsing NZB", STATUS_INITIALIZING, os.path.basename(nzb_url)): return
+            if self._update_progress("Parsing " + title, STATUS_INITIALIZING, os.path.basename(nzb_url)): return
             nzb_files = nzb_parser.parse(nzb_string)
             sort_nzb_rar_files(nzb_files)
 
@@ -134,17 +156,27 @@ class nzb_stream:
                 filename = filename.encode('utf8').lower()
                 self.sorted_filenames.append(filename)
 
-            self.common_prefix = os.path.commonprefix(self.sorted_filenames).rstrip(". ")
+            # a common prefix from the file list is preferred
+            better_common_prefix = os.path.commonprefix(self.sorted_filenames).rstrip(". ")
+            if better_common_prefix != "":
+                self.common_prefix = better_common_prefix
+
             if self.common_prefix == "":
                 self.common_prefix = self.sorted_filenames[0]
-            elif os.path.splitext(self.common_prefix)[1] == ".nzb":
-                self.common_prefix = os.path.splitext(self.common_prefix)[0]
-            print self.common_prefix
+
+            parts = self.common_prefix.split('.')
+            print parts
+            if len(parts) > 1:
+                ext = parts[-1].lower()
+                if ext == "par2" or ext == "nzb" or ext == "nfo":
+                    self.common_prefix = '.'.join(parts[:-1])
+
+            print "Common prefix: " + self.common_prefix
 
             self.download_directory = os.path.join(nzb_directory, self.common_prefix)
             self.status_filepath = os.path.join(self.download_directory, self.common_prefix + ".status")
 
-            if self._update_progress("Parsing NZB", STATUS_INITIALIZING, os.path.basename(nzb_url)): return
+            if self._update_progress("Parsing " + title, STATUS_INITIALIZING, os.path.basename(nzb_url)): return
 
             # make sure the download directory exists
             try: os.makedirs(self.download_directory)
@@ -152,15 +184,17 @@ class nzb_stream:
 
             nzb_filepath = os.path.join(nzb_directory, self.common_prefix + ".nzb" )
             nzb_filepath = nzb_filepath.encode('utf8')
-            print nzb_filepath
+            #print nzb_filepath
             #if os.path.exists(nzb_filepath) and os.path.isdir(nzb_filepath):
             #    shutil.rmtree(nzb_filepath) # remove the directory containing the nzb; it is rewritten below
-            nzb = open(nzb_filepath, "w+b")
-            nzb.write(nzb_string)
-            nzb.close()
+            if not os.path.exists(nzb_filepath) or os.path.getsize(nzb_filepath) != len(nzb_string):
+                nzb = open(nzb_filepath, "w+b")
+                nzb.write(nzb_string)
+                nzb.close()
 
             # run par2 if we already have the .par2 file
             par2_file = os.path.join(self.download_directory, self.common_prefix + ".par2")
+            print "PAR2 file: " + par2_file
             par2_targets = None
             if os.path.exists(par2_file):
                 if self._update_progress("Verifying with PAR2", STATUS_INITIALIZING, os.path.basename(par2_file)): return
@@ -173,48 +207,46 @@ class nzb_stream:
             nested_nzbs = list()
 
             for nzb_file in nzb_files:
-                filename = sre.search("\"(.*?)\"", nzb_file.subject.lower()).group(1)
-                filename = filename.encode('utf8')
-                filepath = os.path.join(self.download_directory, filename)
-                filepath = filepath.encode('utf8')
+                nzb_file.filename = sre.search("\"(.*?)\"", nzb_file.subject.lower()).group(1)
+                nzb_file.filename = nzb_file.filename.encode('utf8')
+                nzb_file.filepath = os.path.join(self.download_directory, nzb_file.filename)
+                nzb_file.filepath = nzb_file.filepath.encode('utf8')
 
-                if self._update_progress("Queueing file", STATUS_INITIALIZING, filename): return
-
-                print filepath
+                #print filepath
                 # create an empty file if it doesn't exist
-                if not os.path.exists(filepath):
-                    open(filepath, "w+b").close()
+                if not os.path.exists(nzb_file.filepath):
+                    open(nzb_file.filepath, "w+b").close()
 
                 if not self.rar_filepath:
-                    rar_match = sre.search("(.+?)\.part(\d+).rar", filename)
+                    rar_match = sre.search("(.+?)\.part(\d+).rar", nzb_file.filename)
                     if rar_match and int(rar_match.group(2)) == 1:
-                        self.rar_filepath = filepath
-                        self.rar_filename = os.path.basename(filepath)
+                        self.rar_filepath = nzb_file.filepath
+                        self.rar_filename = os.path.basename(nzb_file.filepath)
                     else:
-                        rar_match = sre.search("(.+?)\.rar", filename)
+                        rar_match = sre.search("(.+?)\.rar", nzb_file.filename)
                         if rar_match:
-                            self.rar_filepath = filepath
-                            self.rar_filename = os.path.basename(filepath)
+                            self.rar_filepath = nzb_file.filepath
+                            self.rar_filename = os.path.basename(nzb_file.filepath)
                     if self.rar_filepath:
                         print "First RAR file is " + self.rar_filename
 
-                if os.path.splitext(filepath)[1] == ".nzb":
-                    nested_nzbs.append(filepath)
+                if os.path.splitext(nzb_file.filepath)[1] == ".nzb":
+                    nested_nzbs.append(nzb_file.filepath)
 
-                self.downloaded_files[filename] = multipart_file(filename, filepath, nzb_file)
+                self.downloaded_files[nzb_file.filename] = multipart_file(nzb_file.filename, nzb_file.filepath, nzb_file)
+
+                nzb_file.finished = False
 
                 # skip non-PAR2 files if par2 validated it
-                if par2_targets and par2_targets.has_key(filename) and par2_targets[filename] == "found":
-                    print "PAR2 verified " + filename + ": skipping"
+                if par2_targets and par2_targets.has_key(nzb_file.filename) and par2_targets[nzb_file.filename] == "found":
+                    print "PAR2 verified " + nzb_file.filename + ": skipping"
                     self.finished_files += 1
-                    self.downloaded_files[filename].finished = True
+                    self.downloaded_files[nzb_file.filename].finished = True
+                    nzb_file.finished = True
                     continue
-                print "PAR2 didn't verify " + filename + ": queueing for download"
 
                 # sort segments in ascending order by article number
                 nzb_file.segments.sort(key=lambda obj: obj.number)
-                for nzb_segment in nzb_file.segments:
-                    self.download_queue.put([filename, nzb_file, nzb_segment], timeout=1)
 
             # if no RAR file and no nested NZBs, abort
             if not self.rar_filepath:
@@ -222,10 +254,27 @@ class nzb_stream:
                     raise Exception("nothing to do: NZB did not have a RAR file or any nested NZBs")
                 self.rar_filepath = self.rar_filename = ""
 
+            # check if first RAR is already finished
             if par2_targets and par2_targets.has_key(self.rar_filename) and par2_targets[self.rar_filename] == "found":
                 if self._update_progress("First RAR is ready.", STATUS_READY, self.rar_filepath): return
 
             if self._update_progress("Starting " + `self.num_threads` + " download threads", STATUS_INITIALIZING): return
+
+            # queue first segment of each file to get each file's total size
+            #for nzb_file in nzb_files:
+                # skip non-PAR2 files if par2 validated it
+                #if nzb_file.finished: continue
+                #self.download_queue.put([nzb_file.filename, nzb_file, nzb_file.segments[0]], timeout=1)
+
+            # queue the rest of the segments in order
+            for nzb_file in nzb_files:
+
+                # skip non-PAR2 files if par2 validated it
+                if nzb_file.finished: continue
+
+                if self._update_progress("Queueing file", STATUS_INITIALIZING, nzb_file.filename): return
+                for nzb_segment in nzb_file.segments[0:]:
+                    self.download_queue.put([nzb_file.filename, nzb_file, nzb_segment], timeout=1)
 
             # start download threads
             for i in range(self.num_threads):
@@ -249,6 +298,7 @@ class nzb_stream:
                                urllib.pathname2url(nested_nzb_filepath),
                                nzb_directory,
                                par2exe_directory,
+                               "",
                                self.progress_update)
 
         except:
@@ -272,18 +322,20 @@ class nzb_stream:
 
     def _verify_with_par2(self, par2_file):
         try:
-            if not os.path.exists(self.status_filepath):
-                cmd = '"' + os.path.join(self.par2exe_directory, 'par2.exe') + '"'
-                args = ' v -q "' + par2_file + '"'
-                print cmd, args, self.status_filepath
-                cmd = '"' + cmd + args + ' > "' + self.status_filepath + '""'
-                cmd.encode('utf8')
-                os.system(cmd)
+           # if not os.path.exists(self.status_filepath):
+            cmd = '"' + os.path.join(self.par2exe_directory, 'par2.exe') + '"'
+            args = ' v -q "' + par2_file + '"'
+            print cmd, args, self.status_filepath
+            cmd = '"' + cmd + args + ' > "' + self.status_filepath + '""'
+            cmd.encode('utf8')
+            os.system(cmd)
             #print par2exe.readlines()
             #from subprocess import *
             #par2exe = Popen(["c:/temp/par2.exe"], stdout=PIPE, stderr=STDOUT, stdin=PIPE)
             #par2exe.wait()
-            lines =  open(self.status_filepath).readlines()
+            status_file = open(self.status_filepath)
+            lines = status_file.readlines()
+            status_file.close()
             par2_targets = dict()
             for line in lines:
                 # Target: "foo.rar" - found.
@@ -446,9 +498,6 @@ class nzb_stream:
                     print "Warning: decoded part number " + `part_number` + " reports file size different from first part."
 
                 current_file = filename
-                if current_status == STATUS_READY:
-                    current_file = self.rar_filepath
-
                 if self._update_progress(downloaded_file.name + ":" + `nzb_segment.number`, current_status, current_file,
                                          self.finished_files, len(self.sorted_filenames),
                                          downloaded_file.finished_bytes, downloaded_file.total_bytes):
@@ -456,25 +505,38 @@ class nzb_stream:
 
                 # open the file's stream if it's not yet open
                 if downloaded_file.stream == None:
-                    print "Opening stream for " + filename
-                    downloaded_file.stream = open(downloaded_file.path, "w+b")
+                    #print "Opening stream for " + filename
+                    downloaded_file.stream = open(downloaded_file.path, "r+b")
 
-                    # allocate entire file size at once
-                    downloaded_file.stream.seek(downloaded_file.total_bytes-1)
-                    downloaded_file.stream.write('\0')
+                    # allocate entire file size at once (for XBMC RAR play stability)
+                    if os.path.getsize(downloaded_file.path) == 0:
+                        downloaded_file.stream.seek(downloaded_file.total_bytes-1)
+                        downloaded_file.stream.write('\0')
 
                 # write decoded bytes to the open stream
                 downloaded_file.stream.seek(part_begin-1) # part_begin is 1-based, seek offsets are 0-based
                 downloaded_file.stream.write(decoded_segment)
+                downloaded_file.stream.close()
+                downloaded_file.stream = None
+
                 #print "Decoded " + filename + " : " + `part_number`
 
-                # if file has all parts, close its stream and trigger the finished event
-                downloaded_file.finished_parts += 1
-                downloaded_file.finished_bytes += len(decoded_segment)
+                if downloaded_file.finished_bytes == 0:
+                    downloaded_file.finished_parts = dict()
+                    for i in range(1, downloaded_file.total_parts+1):
+                        downloaded_file.finished_parts[i] = False
 
-                if downloaded_file.finished_parts == downloaded_file.total_parts:
+                # if file has all parts, close its stream and trigger the finished event
+                #downloaded_file.finished_parts += 1
+                downloaded_file.finished_bytes += len(decoded_segment)
+                downloaded_file.finished_parts[part_number] = True
+
+                if downloaded_file.finished_bytes == downloaded_file.total_bytes:
                     print "File " + downloaded_file.name + " is finished."
-                    downloaded_file.stream.close()
+
+                    if downloaded_file.stream:
+                        downloaded_file.stream.close()
+                        downloaded_file.stream = None
 
                     self.finished_files += 1
                     downloaded_file.finished = True
@@ -484,13 +546,23 @@ class nzb_stream:
                     try: os.remove(self.status_filepath)
                     except: pass
 
-                    # check after finishing a file if rar_filepath is finished
-                    # if so, change status to READY
-                    if downloaded_file.name == self.rar_filename and current_status != STATUS_BROKEN:
-                        current_status = STATUS_READY
-
                     if self.finished_files == len(self.sorted_filenames):
                         break
+
+                    # check after finishing a file if rar_filepath is finished
+                    # if so, change status to READY
+                    if downloaded_file.name == self.rar_filename and \
+                       current_status != STATUS_BROKEN and \
+                       downloaded_file.finished_parts[1] and \
+                       downloaded_file.finished_parts[2] and \
+                       downloaded_file.finished_parts[3]:
+                        current_status = STATUS_READY
+                        current_file = self.rar_filepath
+
+                        if self._update_progress(downloaded_file.name + ":" + `nzb_segment.number`, current_status, current_file,
+                                                 self.finished_files, len(self.sorted_filenames),
+                                                 downloaded_file.finished_bytes, downloaded_file.total_bytes):
+                         return
 
         except Exception, ex:
             traceback.print_exc()

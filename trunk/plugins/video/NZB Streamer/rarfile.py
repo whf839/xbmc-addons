@@ -109,7 +109,9 @@ RAR_OS_UNIX  = 3
 def is_rarfile(fn):
     '''Check quickly whether file is rar archive.'''
     try:
-        buf = open(fn, "rb").read(len(RAR_ID))
+        f = open(fn, "rb")
+        buf = f.read(len(RAR_ID))
+        f.close()
         return buf == RAR_ID
     except:
         return False
