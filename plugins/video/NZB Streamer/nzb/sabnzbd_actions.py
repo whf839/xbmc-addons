@@ -32,7 +32,11 @@ class SABnzbdActions:
 
             movie_name = None
             for filename in rar_file.namelist():
-                if filename.endswith(".avi") or filename.endswith(".mkv") or filename.endswith(".mpg"):
+                if filename.endswith(".avi") or \
+                   filename.endswith(".mkv") or \
+                   filename.endswith(".mpg") or \
+                   filename.endswith(".ts") or \
+                   filename.endswith(".wmv"):
                     movie_name = filename
                     break
 
@@ -238,41 +242,54 @@ class SABnzbdActions:
             # decide whether to add it as a url, or a newzbin messageid
             newzbin_url = self.RE_NEWZBIN_URL.search(urllib.unquote(url).lower())
             if url and (url.isdigit() or len(url)==5):
-                type = 'addid'
-                value = url
+                type = 'nzb_msgid'
+                nzb_source = url
             elif newzbin_url:
-                type = 'addid'
-                value = newzbin_url.group(1)
+                type = 'nzb_msgid'
+                nzb_source = newzbin_url.group(1)
             else:
-                type = 'addurl'
-                value = url
-                nzb_url = urllib.unquote(url)
+                type = 'nzb_url'
+                nzb_source = urllib.unquote(url)
 
-                # Grab the newsgroup server settings
-                server = xbmcplugin.getSetting("server")
-                port = int(xbmcplugin.getSetting("port"))
-                username = xbmcplugin.getSetting("username")
-                password = xbmcplugin.getSetting("password")
-                num_threads = range(1, 21)[int(xbmcplugin.getSetting("num_threads"))]
+            self.progress_dialog = xbmcgui.DialogProgress()
+            self.progress_dialog.create("NZB Streamer")
+            self.progress_dialog_closed_by_user = False
+            self.progress_status = nzb_stream.STATUS_INITIALIZING
 
-                self.progress_dialog = xbmcgui.DialogProgress()
-                self.progress_dialog.create("NZB Streamer")
-                self.progress_dialog_closed_by_user = False
-                self.progress_status = nzb_stream.STATUS_INITIALIZING
+            if type == "nzb_msgid":
+                import newzbin
+                username_newzbin = xbmcplugin.getSetting("username_newzbin")
+                password_newzbin = xbmcplugin.getSetting("password_newzbin")
 
-                title = title.replace("%20"," ")
-                title = title.replace('\'S','\'s').replace('Iii','III').replace('Ii','II')
-                title_quoted_match = re.search("\"(.+?)\"", title)
-                if title_quoted_match:
-                    title = title_quoted_match.group(1)
+                if self.nzb_stream_update("Downloading " + title, self.progress_status, title, 0, 0, 0, 0): return
+                newname, nzb_data, nzb_category, more_info = newzbin._grabnzb(nzb_source, username_newzbin, password_newzbin)
+                if self.nzb_stream_update("Downloading " + title, self.progress_status, title, 0, 0, 0, 0): return
 
-                print server, port, username, num_threads
-                #print nzb_url
-                #nzb_url = 'file:///C|/Users/Matt%20Chambers/AppData/Roaming/XBMC/userdata/script_data/NZB/exp-fringex264-s01e10.nzb'
-                #nzb_url = 'file:///D|/Personal/Downloads/exp-fringex264-s01e10.nzb'
-                nzb_directory = os.path.join(xbmc.translatePath("special://profile/"), "plugin_data", "Video", os.path.basename(os.getcwd()))
-                par2_directory = os.path.join(xbmc.translatePath("special://home/"), "plugins", "Video", os.path.basename(os.getcwd()), "par2")
-                nzb_stream.nzb_stream(server, port, username, password, num_threads, nzb_url, nzb_directory, par2_directory, title, self.nzb_stream_update)
+                if newname and not newname.isdigit():
+                    nzb_source = nzb_data
+                else:
+                    raise Exception("error downloading NZB from Newzbin")
+
+            # Grab the newsgroup server settings
+            server = xbmcplugin.getSetting("server")
+            port = int(xbmcplugin.getSetting("port"))
+            username = xbmcplugin.getSetting("username")
+            password = xbmcplugin.getSetting("password")
+            num_threads = range(1, 21)[int(xbmcplugin.getSetting("num_threads"))]
+
+            title = title.replace("%20"," ")
+            title = title.replace('\'S','\'s').replace('Iii','III').replace('Ii','II')
+            title_quoted_match = re.search("\"(.+?)\"", title)
+            if title_quoted_match:
+                title = title_quoted_match.group(1)
+
+            print server, port, username, num_threads
+            #print nzb_url
+            #nzb_url = 'file:///C|/Users/Matt%20Chambers/AppData/Roaming/XBMC/userdata/script_data/NZB/exp-fringex264-s01e10.nzb'
+            #nzb_url = 'file:///D|/Personal/Downloads/exp-fringex264-s01e10.nzb'
+            nzb_directory = os.path.join(xbmc.translatePath("special://profile/"), "plugin_data", "Video", os.path.basename(os.getcwd()))
+            par2_directory = os.path.join(xbmc.translatePath("special://home/"), "plugins", "Video", os.path.basename(os.getcwd()), "par2")
+            nzb_stream.nzb_stream(server, port, username, password, num_threads, nzb_source, nzb_directory, par2_directory, title, self.nzb_stream_update)
 
         except:
             print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )

@@ -94,7 +94,7 @@ def nzb_stream_update(current_task,       # string
 # If a progress_update call returns something other than None, the stream will abort
 '''
 class nzb_stream:
-    def __init__(self, server, port, username, password, num_threads, nzb_url, nzb_directory, par2exe_directory, common_prefix = "", progress_update = None):
+    def __init__(self, server, port, username, password, num_threads, nzb_source, nzb_directory, par2exe_directory, common_prefix = "", progress_update = None):
         self.server = server
         self.port = port
         self.username = username
@@ -124,8 +124,8 @@ class nzb_stream:
         try:
             title = self.common_prefix
             if title == "":
-                if nzb_url[:7] == "file://" and os.path.exists(urllib.url2pathname(nzb_url)):
-                    nzb_filepath = urllib.url2pathname(nzb_url)
+                if nzb_source[:7] == "file://" and os.path.exists(urllib.url2pathname(nzb_source)):
+                    nzb_filepath = urllib.url2pathname(nzb_source)
                 title = "NZB"
             else:
                 parts = title.split('.')
@@ -133,21 +133,27 @@ class nzb_stream:
                     ext = parts[-1].lower()
                     if ext == "par2" or ext == "nzb" or ext == "nfo":
                         title = '.'.join(parts[:-1])
+
             if nzb_filepath == "":
                 nzb_filepath = os.path.join(nzb_directory, title) + ".nzb"
+
             print "NZB filepath: " + nzb_filepath
-            if os.path.exists(nzb_filepath) and os.path.isfile(nzb_filepath):
+
+            if nzb_source.startswith("<?xml"):
+                nzb_string = nzb_source
+            elif os.path.exists(nzb_filepath) and os.path.isfile(nzb_filepath):
                 nzb_file = open(nzb_filepath, "r")
                 nzb_string = string.join(nzb_file.readlines(), "")
                 nzb_file.close()
                 #nzb_filepath = possible_nzb_filepath
             else:
+                nzb_url = nzb_source
                 if self._update_progress("Downloading " + title, STATUS_INITIALIZING, os.path.basename(nzb_url)): return
                 urllib.urlopen(nzb_url)
                 nzb_string = string.join(urllib.urlopen(nzb_url).readlines(), "")
                 if self._update_progress("Downloading " + title, STATUS_INITIALIZING, os.path.basename(nzb_url)): return
 
-            if self._update_progress("Parsing " + title, STATUS_INITIALIZING, os.path.basename(nzb_url)): return
+            if self._update_progress("Parsing " + title, STATUS_INITIALIZING, title): return
             nzb_files = nzb_parser.parse(nzb_string)
             sort_nzb_rar_files(nzb_files)
 
@@ -176,7 +182,7 @@ class nzb_stream:
             self.download_directory = os.path.join(nzb_directory, self.common_prefix)
             self.status_filepath = os.path.join(self.download_directory, self.common_prefix + ".status")
 
-            if self._update_progress("Parsing " + title, STATUS_INITIALIZING, os.path.basename(nzb_url)): return
+            if self._update_progress("Parsing " + title, STATUS_INITIALIZING, title): return
 
             # make sure the download directory exists
             try: os.makedirs(self.download_directory)
