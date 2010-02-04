@@ -41,7 +41,7 @@ class SABnzbdActions:
                     break
 
             if movie_name != None:
-                video_url = urllib.quote(rar_filepath).replace("-", "%2d").replace(".", "%2e")
+                video_url = urllib.quote(rar_filepath).replace("-", "%2d").replace(".", "%2e").replace("/", "%2f")
                 video_url = "rar://" + video_url + "/" + movie_name
                 print video_url
                 #time.sleep(5) # give player time to start
