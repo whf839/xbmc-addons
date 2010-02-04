@@ -14,7 +14,7 @@ __author__ = "Frontend: switch; Backend: Matt Chambers"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://code.google.com/p/xbmc-addons/source/browse/trunk#trunk/plugins/video/NZB Streamer"
 __credits__ = "Team XBMC"
-__version__ = "0.3"
+__version__ = "0.3.1"
 
 
 if ( __name__ == "__main__" ):
