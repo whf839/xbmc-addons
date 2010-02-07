@@ -27,8 +27,8 @@ __scriptname__ = "T3CH Upgrader"
 __author__ = 'BigBellyBilly [BigBellyBilly@gmail.com]'
 __url__ = "http://code.google.com/p/xbmc-scripting/"
 __svn_url__ = "http://xbmc-scripting.googlecode.com/svn/trunk/T3CH%20Upgrader"
-__date__ = '26-09-2009'
-__version__ = "1.9.6"
+__date__ = '07-02-2010'
+__version__ = "1.9.6a"
 __svn_revision__ = "$Revision$"
 __XBMC_Revision__ = "19001"
 xbmc.log( "[%s]: v%s  Dated: %s svn %s" % (__scriptname__, __version__, __date__, __svn_revision__), xbmc.LOGNOTICE)
@@ -53,6 +53,7 @@ EXIT_SCRIPT = ( 9, 10, 247, 275, 61467, )
 CANCEL_DIALOG = EXIT_SCRIPT + ( 216, 257, 61448, )
 TEXTBOX_XML_FILENAME = "DialogScriptInfo.xml"       # xbmc skin supplied textbox viewer
 
+#############################################################################################################
 def log(msg, loglevel=xbmc.LOGDEBUG):
 	try:
 		xbmc.log("[%s]: %s" % (__scriptname__, msg), loglevel)
@@ -341,7 +342,7 @@ class Main:
 				archive_name, found_build_date, found_build_date_secs, short_build_name = filenameInfo
 
 				if curr_build_date_secs >= found_build_date_secs:							# No new build
-					log("Build is older than current. Found: %s Current: %s" % (found_build_date, curr_build_date))
+					log("Build isnt newer than current. Found: %s Current: %s" % (found_build_date, curr_build_date))
 					archive_name = ''
 					short_build_name = ''
 					if self.settings[self.SETTING_NOTIFY_NOT_NEW]:							# notify of Not New
@@ -721,6 +722,9 @@ class Main:
 				driveSpaceRequiredMb = 180		# DL & unpack, install hdd space
 			else:
 				driveSpaceRequiredMb = 120		# local archive unpack, install
+			# No RAM check for ZIPs
+			if archive_name.endswith("zip"):
+				ramCheck = False
 
 			if not downloadOnly and not self._check_free_mem(driveSpaceRequiredMb, ramCheck):
 				log("< _process() success=False")
@@ -736,7 +740,7 @@ class Main:
 			else:
 				have_file = fileExist(archive_file)
 
-			log( "OK to continue using archive file? %s" % have_file)
+			log( "have_file=%s" % have_file)
 			if downloadOnly:
 				success = True
 			elif have_file:
@@ -987,18 +991,20 @@ class Main:
 			else:
 				log("ZIP filetype... fsize=%s" % fsize)
 				# unpack ZIP, then rename to reqd short path name
-				success, installed_path = unzip(self.settings[ self.SETTING_UNRAR_PATH ], file_name, self.isSilent, __language__(504))
-				if success:
-					if os.path.isdir(extract_path):
-						removeTree(extract_path)
+				success, installed_path = unzip(extract_path, file_name, self.isSilent, __language__(504))
+#				if success and os.path.isdir(extract_path):
+#					removeTree(extract_path)
 
-					for retry in range(3):
-						try:
-							time.sleep(2)
-							os.rename(installed_path, extract_path)
-							log("ZIP install: renamed %s to %s" % (installed_path, extract_path))
-							break
-						except: pass
+#					for retry in range(3):
+#						try:
+#							log("count: %d rename %s to %s" % (retry, installed_path, extract_path))
+#							time.sleep(2)
+#							os.chmod(installed_path, 0777)
+#							os.rename(installed_path, extract_path)
+#							log("rename done")
+#							break
+#						except:
+#							log("Error renaming installed zip path " + str(sys.exc_info()[ 1 ]))
 
 		except:
 			handleException("_extract()")
@@ -1006,21 +1012,22 @@ class Main:
 
 		if success:
 			success = self._check_extract(extract_path)
-			dialogProgress.close()
-			if not success:
-				# remove partial extract
-				removeTree(extract_path)
-				dialogOK( __language__( 0 ), __language__( 312 ), extract_path )
 
 		dialogProgress.close()
+		if not success:
+			# remove partial extract
+			removeTree(extract_path)
+			dialogOK( __language__( 0 ), __language__( 312 ), extract_path )
+
 		log( "< _extract() success=%s" % success )
 		return success
 
 	######################################################################################
-	def _check_dir_exists(self, dir, max_retrys=5):
+	def _check_dir_exists(self, dir):
 		log("> _check_dir_exists() " + dir)
 		exists = False
 
+		max_retrys = 5
 		for count in range(max_retrys):
 			if os.path.isdir(dir):
 				exists = True
@@ -1068,7 +1075,7 @@ class Main:
 						log("%s %s" % (p, isPath))
 						if not isPath:
 							break
-					log("checkCount=%d isPath=%s isFile=%s" % (count,isPath,isFile))
+					log("count=%d isPath=%s isFile=%s" % (count,isPath,isFile))
 
 					if isFile and isPath:
 						success = True
@@ -1083,8 +1090,8 @@ class Main:
 					time.sleep(2)
 
 				# all paths exist, rename out of a subdir if necessary
-				expectedPath = os.path.join(extract_path, 'XBMC')
-				if success and check_base_path and check_base_path != expectedPath:
+				if success:
+					expectedPath = os.path.join(extract_path, 'XBMC')	# eg e:\apps\SVN_20100104\XBMC
 					success = self._extractionRename(check_base_path, expectedPath)
 		dialogProgress.close()
 		log( "< _check_extract() success=%s" % success )
@@ -1092,28 +1099,27 @@ class Main:
 
 	######################################################################################
 	def _extractionRename(self, currPath, expectedPath):
-		""" Check if installation is within a further sub-folder, then move to expected folder """
-		log("> _extractionRename() currPath=" + currPath)
+		""" Installation is within a further sub-folder, move to expected folder """
+		log("> _extractionRename() currPath=%s  expectedPath=%s" % (currPath, expectedPath))
 		ok = False
 
 		if currPath == expectedPath:
-			log("extraction root path as expected")
+			log("extraction root path is as expected")
 			ok = True
 		else:
 			max_retrys = 5
 			for count in range(max_retrys):
 				try:
-					log("count: %d  renaming %s to %s" % (count, currPath, expectedPath))
-					time.sleep(1)
+					log("count: %d  renaming" % count)
 					os.chmod(currPath, 0777)
 					os.rename(currPath, expectedPath)
-					log("rename done")
 					break
 				except:
 					print str(sys.exc_info()[ 1 ])
 					percent = int( (count * 100.0) / max_retrys )
 					msg1 = "%s (%d/%d)" % ("Renaming folder ... :", count, max_retrys)
 					dialogProgress.update( percent, msg1, currPath, expectedPath)
+					time.sleep(1)
 
 			try:
 				# after rename, remove unwanted path
@@ -1140,24 +1146,27 @@ class Main:
 		# check if our expected installation root is inside an unwanted folder
 
 		base_path = ""
-		base_pathXBMC = os.path.join(extract_path, 'XBMC')
-		base_pathBUILD = os.path.join(extract_path, 'BUILD')
+		base_pathXBMC = os.path.join(extract_path, 'XBMC')		# from T3CH
+		base_pathBUILD = os.path.join(extract_path, 'BUILD')	# from Nightly
 		if os.path.isdir(base_pathXBMC):
 			base_path = base_pathXBMC
 		elif os.path.isdir(base_pathBUILD):
 			base_path = base_pathBUILD
 		else:
+			# check additional sub-floder in extraction path root
+			# eg E:\apps\SN_2010104\somename\BUILD  - the somename is an unwanted exra subfolder
 			for entry in os.listdir(extract_path):
 				if entry in ('.','..'): continue
 
-				base_pathXBMC = os.path.join(extract_path, entry, "XBMC")
-				base_pathBUILD = os.path.join(extract_path, entry, "BUILD")
-				if os.path.isdir(base_pathXBMC):
-					base_path = base_pathXBMC
-				elif os.path.isdir(base_pathBUILD):
-					base_path = base_pathBUILD
-				if base_path:
+				subPath = os.path.join(extract_path, entry, "XBMC")
+				if os.path.isdir(subPath):
+					base_path = subPath
 					break
+				else:
+					subPath = os.path.join(extract_path, entry, "BUILD")
+					if os.path.isdir(subPath):
+						base_path = subPath
+						break
 
 		log( "< _get_extraction_root() base_path=" + base_path)
 		return base_path
@@ -2127,6 +2136,11 @@ def unzip(extract_path, filename, silent=False, msg=""):
 	namelist = zip.namelist()
 	max_files = len(namelist)
 	log("max_files=%s" % max_files)
+	log("namelist[0]=%s" % namelist[0])
+
+	# determine file size to be unpack using chunking, by free RAM
+	unpackRAMLimit = xbmc.getFreeMem()-5
+	log("freeRAM=%d unpackRAMLimit=%d" % (xbmc.getFreeMem(), unpackRAMLimit))
 
 	for file_count, entry in enumerate(namelist):
 		info = infos[file_count]
@@ -2140,31 +2154,48 @@ def unzip(extract_path, filename, silent=False, msg=""):
 				break
 
 		filePath = os.path.join(extract_path, entry)
+		fileUnpackSize = (info.file_size + info.compress_size) / 1024 / 1024
+
 		if filePath[-1] in ('/','\\'):
+			# FOLDER
 			if not os.path.isdir(filePath):
+				log("make dir " + filePath)
 				os.makedirs(filePath)
-		elif (info.file_size + info.compress_size) > 25000000:
-			log( "LARGE FILE: f sz=%s  c sz=%s  reqd sz=%s %s" % (info.file_size, info.compress_size, (info.file_size + info.compress_size), entry ))
-			outfile=file(filePath, 'wb')
-			fp=zip.readfile(entry)
-			fread=fp.read
-			ftell=fp.tell
-			owrite=outfile.write
-			size=info.file_size
-
-			# write out in chunks
-			while ftell() < size:
-				hunk=fread(4096)
-				owrite(hunk)
-
-			outfile.flush()
-			outfile.close()
 		else:
-			file(filePath, 'wb').write(zip.read(entry))
+			# FILE
+			# make any missing dirs
+			dir = os.path.dirname(filePath)
+			if not os.path.isdir(dir):
+				log("make dir " + dir)
+				os.makedirs(dir)
+
+#			log("fileUnpackSize=%dMB freeRAM=%d" % (fileUnpackSize, xbmc.getFreeMem()))
+			if (fileUnpackSize >= unpackRAMLimit):
+				log( "Chunk unpack: f_sz=%d c_sz=%d fileUnpackSize=%dMB %s" %
+					(info.file_size, info.compress_size, fileUnpackSize, entry ))
+				outfile=file(filePath, 'wb')
+				fp=zip.readfile(entry)
+				fread=fp.read
+				ftell=fp.tell
+				owrite=outfile.write
+				size=info.file_size
+
+				# write out in chunks
+				while ftell() < size:
+					hunk=fread(4096)
+					owrite(hunk)
+
+				outfile.flush()
+				outfile.close()
+			else:
+				file(filePath, 'wb').write(zip.read(entry))
 
 	if not cancelled:
 		success = True
-		installed_path = os.path.join(extract_path, namelist[0][0:-1])
+		dir = os.path.dirname(namelist[0])
+		installed_path = os.path.join(extract_path, dir)
+		if installed_path[-1] in ('\\','/'):
+			installed_path = installed_path[:-1]
 	
 	zip.close()
 	del zip
