@@ -27,8 +27,8 @@ __scriptname__ = "T3CH Upgrader"
 __author__ = 'BigBellyBilly [BigBellyBilly@gmail.com]'
 __url__ = "http://code.google.com/p/xbmc-scripting/"
 __svn_url__ = "http://xbmc-scripting.googlecode.com/svn/trunk/T3CH%20Upgrader"
-__date__ = '07-02-2010'
-__version__ = "1.9.6a"
+__date__ = '08-02-2010'
+__version__ = "1.9.6b"
 __svn_revision__ = "$Revision$"
 __XBMC_Revision__ = "19001"
 xbmc.log( "[%s]: v%s  Dated: %s svn %s" % (__scriptname__, __version__, __date__, __svn_revision__), xbmc.LOGNOTICE)
@@ -992,20 +992,6 @@ class Main:
 				log("ZIP filetype... fsize=%s" % fsize)
 				# unpack ZIP, then rename to reqd short path name
 				success, installed_path = unzip(extract_path, file_name, self.isSilent, __language__(504))
-#				if success and os.path.isdir(extract_path):
-#					removeTree(extract_path)
-
-#					for retry in range(3):
-#						try:
-#							log("count: %d rename %s to %s" % (retry, installed_path, extract_path))
-#							time.sleep(2)
-#							os.chmod(installed_path, 0777)
-#							os.rename(installed_path, extract_path)
-#							log("rename done")
-#							break
-#						except:
-#							log("Error renaming installed zip path " + str(sys.exc_info()[ 1 ]))
-
 		except:
 			handleException("_extract()")
 			success = False
@@ -2139,63 +2125,66 @@ def unzip(extract_path, filename, silent=False, msg=""):
 	log("namelist[0]=%s" % namelist[0])
 
 	# determine file size to be unpack using chunking, by free RAM
-	unpackRAMLimit = xbmc.getFreeMem()-5
+	unpackRAMLimit = xbmc.getFreeMem() /2
 	log("freeRAM=%d unpackRAMLimit=%d" % (xbmc.getFreeMem(), unpackRAMLimit))
 
-	for file_count, entry in enumerate(namelist):
-		info = infos[file_count]
+	try:
+		for file_count, entry in enumerate(namelist):
+			info = infos[file_count]
 
-		if not silent:
-			percent = int( (file_count * 100.0) / max_files )
-			root, name = os.path.split(entry)
-			dialogProgress.update( percent, msg, root, name)
-			if ( dialogProgress.iscanceled() ):
-				cancelled = True
-				break
+			if not silent:
+				percent = int( (file_count * 100.0) / max_files )
+				root, name = os.path.split(entry)
+				dialogProgress.update( percent, msg, root, name)
+				if ( dialogProgress.iscanceled() ):
+					cancelled = True
+					break
 
-		filePath = os.path.join(extract_path, entry)
-		fileUnpackSize = (info.file_size + info.compress_size) / 1024 / 1024
+			filePath = os.path.join(extract_path, entry)
+			fileUnpackSize = (info.file_size + info.compress_size) / 1024 / 1024
 
-		if filePath[-1] in ('/','\\'):
-			# FOLDER
-			if not os.path.isdir(filePath):
-				log("make dir " + filePath)
-				os.makedirs(filePath)
-		else:
-			# FILE
-			# make any missing dirs
-			dir = os.path.dirname(filePath)
-			if not os.path.isdir(dir):
-				log("make dir " + dir)
-				os.makedirs(dir)
-
-#			log("fileUnpackSize=%dMB freeRAM=%d" % (fileUnpackSize, xbmc.getFreeMem()))
-			if (fileUnpackSize >= unpackRAMLimit):
-				log( "Chunk unpack: f_sz=%d c_sz=%d fileUnpackSize=%dMB %s" %
-					(info.file_size, info.compress_size, fileUnpackSize, entry ))
-				outfile=file(filePath, 'wb')
-				fp=zip.readfile(entry)
-				fread=fp.read
-				ftell=fp.tell
-				owrite=outfile.write
-				size=info.file_size
-
-				# write out in chunks
-				while ftell() < size:
-					hunk=fread(4096)
-					owrite(hunk)
-
-				outfile.flush()
-				outfile.close()
+			if filePath[-1] in ('/','\\'):
+				# FOLDER
+				if not os.path.isdir(filePath):
+					log("make dir " + filePath)
+					os.makedirs(filePath)
 			else:
-				file(filePath, 'wb').write(zip.read(entry))
+				# FILE
+				# make any missing dirs
+				dir = os.path.dirname(filePath)
+				if not os.path.isdir(dir):
+					log("make dir " + dir)
+					os.makedirs(dir)
 
-	if not cancelled:
-		success = True
-		dir = os.path.dirname(namelist[0])
-		installed_path = os.path.join(extract_path, dir)
-		if installed_path[-1] in ('\\','/'):
-			installed_path = installed_path[:-1]
+	#			log("fileUnpackSize=%dMB freeRAM=%d" % (fileUnpackSize, xbmc.getFreeMem()))
+				if (fileUnpackSize >= unpackRAMLimit):
+					log( "Chunk unpack: f_sz=%d c_sz=%d fileUnpackSize=%dMB %s" %
+						(info.file_size, info.compress_size, fileUnpackSize, entry ))
+					outfile=file(filePath, 'wb')
+					fp=zip.readfile(entry)
+					fread=fp.read
+					ftell=fp.tell
+					owrite=outfile.write
+					size=info.file_size
+
+					# write out in chunks
+					while ftell() < size:
+						hunk=fread(4096)
+						owrite(hunk)
+
+					outfile.flush()
+					outfile.close()
+				else:
+					file(filePath, 'wb').write(zip.read(entry))
+	except:
+		handleException("Unzip() Free RAM", "Retry using lower screen resolution")
+	else:
+		if not cancelled:
+			success = True
+			dir = os.path.dirname(namelist[0])
+			installed_path = os.path.join(extract_path, dir)
+			if installed_path[-1] in ('\\','/'):
+				installed_path = installed_path[:-1]
 	
 	zip.close()
 	del zip
