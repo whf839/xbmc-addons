@@ -1,5 +1,8 @@
 T3CH Upgrader Changelog:
 ========================
+v1.9.6b 08/02/2010
+ Change: Lowered free RAM limit that decides when unzip should use chunk unpacking.
+ Change: Added better exception trap in unzip
 v1.9.6a 07/02/2010
  Fix: unzip
  Change: Removed RAM check prompt for ZIPs
