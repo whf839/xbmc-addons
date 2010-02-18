@@ -565,6 +565,11 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
 
     def file_download(self, url, dest):
+    
+		if self.service == "Podnapisi":
+			pod_url_parse = urllib.urlopen(url).read()
+			url = "http://www.podnapisi.net/ppodnapisi/download/i/%s" % (pod_url_parse.split("/ppodnapisi/download/i/")[1].split('" title="')[0])
+			print "Podnapisi Download URL: %s" % (url)	
 		if self.debug : LOG( LOG_INFO, "Link download " + url )
 		req = Request(url)
 		f = urlopen(req)
