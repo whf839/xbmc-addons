@@ -838,6 +838,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 								xbmc.Player().setSubtitles(file_path)
 							except:
 								import xbmcgui
+								dialog = xbmcgui.Dialog()
 								selected = dialog.yesno("OpenSubtitles_OSD", "You can't save subtitle to Selected destination", "Please choose different Subtitle folder under Script Settings.", "Would you like to adjust the settings now?" )
 								if selected == 1:
 									__settings__.openSettings()								
