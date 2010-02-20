@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!--Translator: Özgür BASKIN (queeup)-->
+<!--Email: ozgur.baskin@gmail.com-->
+<!--Date of translation: 20/02/2010-->
+<!--Based on English strings revision 1464-->
+<strings>
+    <!-- settings labels -->
+    <string id="30000">Fragman kalitesi</string>
+    <string id="30001">Standart</string>
+    <string id="30002">480p</string>
+    <string id="30003">720p</string>
+    <string id="30004">1080p</string>
+    <string id="30010">Büyük poster kullan</string>
+    <string id="30020">Fragmanlar için MPAA limiti</string>
+    <string id="30030">Oynatma modu</string>
+    <string id="30031">Akış</string>
+    <string id="30032">İndir</string>
+    <string id="30033">İndir ve Kaydet</string>
+    <string id="30040">- Kaydetme klasörü</string>
+    <string id="30050">Posta Kodu veya Şehir</string>
+    <string id="30060">Seans scraper</string>
+    <string id="30070">Film listesi için gün belirleyin</string>
+    <string id="30071">Bugün</string>
+    <string id="30072">Yarın</string>
+    <string id="30073">3. Gün</string>
+    <string id="30074">4. Gün</string>
+    <string id="30075">5. Gün</string>
+    <string id="30076">6. Gün</string>
+    <string id="30077">7. Gün</string>
+    <string id="30078">8. Gün</string>
+    <string id="30080">- Kaydedilen dosya için film başlığını kullan</string>
+    <string id="30090">Fanart resmi</string>
+    <string id="30100">- 1. fanart rengi (AARRGGBB)</string>
+    <string id="30110">- 2. fanart rengi (AARRGGBB)</string>
+    <string id="30120">- 3. fanart rengi (AARRGGBB)</string>
+    <string id="30130">- Her zaman kaydedilmiş fragmanları oynat</string>
+    <string id="30140">- Kaydedilen fragmanlara '-trailer' ekle</string>
+
+    <!-- plugin buttons -->
+    <string id="30201">Ara...</string>
+    <string id="30202">Ayarlar</string>
+
+    <!-- messages -->
+    <string id="30500">Karşıdan Yükleniyor: %s</string>
+    <string id="30501">Kaydediliyor: %s</string>
+    <string id="30502">Hedef: %s</string>
+    <string id="30503">Kopyalanıyor: %s</string>
+
+    <!-- showtimes -->
+    <string id="30600">Seans bulunamadı!</string>
+    <string id="30601">Seanslar bulunuyor, lütfen bekleyin...</string>
+    <string id="30602">Tarih</string>
+    <string id="30603">Yer</string>
+
+    <!-- compatible messages -->
+    <string id="30700">sürüm</string>
+    <string id="30701">This version of %s requires an</string>
+    <string id="30702">XBMC revision of %s or greater to run.</string>
+    <string id="30703">Lütfen XBMC'yi güncelleyin.</string>
+
+    <!-- PluginCategory infolabel -->
+    <string id="30800">Standart videolar</string>
+    <string id="30801">480p videolar</string>
+    <string id="30802">720p videolar</string>
+    <string id="30803">1080p videolar</string>
+
+    <!-- context menu labels -->
+    <string id="30900">Sinema Seansları</string>
+    <string id="30910">İndir ve Fragmanı Oynat</string>
+    <string id="30920">Fragmanı Oynat</string>
+    <string id="30930">Film Bilgisi</string>
+</strings>
