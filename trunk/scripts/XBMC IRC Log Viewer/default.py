@@ -4,7 +4,7 @@ __author__ = "nuka1195"
 __url__ = ""
 __svn_url__ = ""
 __credits__ = "Team XBMC/TSlayer"
-__version__ = "1.0"
+__version__ = "1.1"
 __svn_revision__ = 0
 
 #main imports
@@ -37,6 +37,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
     CONTROL_BUTTON_LINUX = 401
     CONTROL_BUTTON_SCRIPTING = 402
     CONTROL_BUTTON_XBMC = 403
+    CONTROL_BUTTON_PVR = 404
     CONTROL_RADIOBUTTON_FILTER = 500
     CONTROL_BUTTON_HIGHLIGHT = 501
 
@@ -202,6 +203,9 @@ class GUI( xbmcgui.WindowXMLDialog ):
         elif ( controlId == self.CONTROL_BUTTON_XBMC ):
             self.domain = ( "logs", "/", )
             self._get_log_list( "#xbmc" )
+        elif ( controlId == self.CONTROL_BUTTON_PVR ):
+            self.domain = ( "", "/xbmc-pvr/", )
+            self._get_log_list( "#xbmc-pvr" )
         elif ( controlId == self.CONTROL_RADIOBUTTON_FILTER ):
             self._get_selection( self.url, self.date, self.selected, True )
         elif ( controlId == self.CONTROL_BUTTON_HIGHLIGHT ):
