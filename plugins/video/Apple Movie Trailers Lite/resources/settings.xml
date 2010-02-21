@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
-    <setting label="30300" type="csep" />
+    <!--setting label="30300" type="csep" /-->
     <setting label="30320" type="lsep" />
     <setting label="30100" type="enum" id="trailer_quality" default="0" lvalues="30101|30102|30103|30104" />
     <setting label="30240" type="bool" id="trailer_hd_only" default="false" enable="gt(-1,1)" />
@@ -15,12 +15,12 @@
     <setting label="30220" type="bool" id="create_nfo" default="true" enable="eq(-4,2) + !eq(-3,)" />
     <setting label="30250" type="bool" id="copy_thumb" default="true" enable="eq(-5,2) + !eq(-4,)" />
     <setting label="30200" type="bool" id="play_existing" default="true" enable="eq(-6,2) + !eq(-5,)" />
-    <setting label="30301" type="csep" />
+    <!--setting label="30301" type="csep" /-->
     <setting label="30321" type="lsep" />
     <setting label="30150" type="text" id="local" default="90210" />
     <setting label="30160" type="fileenum" id="scraper" default="Google" mask="/" values="/resources/scrapers/" enable="!eq(-1,)" />
     <setting label="30170" type="enum" id="day" default="0" lvalues="30171|30172|30173|30174|30175|30176|30177|30178" enable="!eq(-2,)" />
-    <setting label="30302" type="csep" />
+    <!--setting label="30302" type="csep" /-->
     <setting label="30322" type="lsep" />
     <setting label="30190" type="pictures" id="fanart_image" default="" source="auto" />
 </settings>
