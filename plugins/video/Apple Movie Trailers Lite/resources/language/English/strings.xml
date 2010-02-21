@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
     <!-- settings labels -->
-    <string id="30100">Preferred trailer quality</string>
+    <string id="30100">Preferred trailer resolution</string>
     <string id="30101">Standard</string>
     <string id="30102">480p</string>
     <string id="30103">720p</string>
@@ -13,9 +13,9 @@
     <string id="30132">Download</string>
     <string id="30133">Download &amp; Save</string>
     <string id="30140">- Save folder</string>
-    <string id="30150">Zipcode/Post Code or City, State</string>
-    <string id="30160">Showtimes scraper</string>
-    <string id="30170">Day to list movies for</string>
+    <string id="30150">Zip/Post Code or City, State</string>
+    <string id="30160">Scraper</string>
+    <string id="30170">- Day to list movies for</string>
     <string id="30171">Today</string>
     <string id="30172">Tomorrow</string>
     <string id="30173">Day 3</string>
@@ -34,13 +34,16 @@
     <string id="30250">- Copy thumb with saved trailer</string>
 
     <!-- category & label separators -->
-    <string id="30300">Preferences</string>
+    <string id="30300">General</string>
     <string id="30301">Showtimes</string>
     <string id="30302">Skinning</string>
     
-    <string id="30320">Trailer Preferences</string>
-    <string id="30321">Showtimes Scraper</string>
+    <string id="30320">Resolution</string>
+    <string id="30321">Location</string>
     <string id="30322">Fanart Preferences</string>
+    <string id="30323">Rating Limit</string>
+    <string id="30324">Playback</string>
+    <string id="30325">Scraper</string>
 
     <!-- mpaa ratings -->
     <string id="30400">G</string>
