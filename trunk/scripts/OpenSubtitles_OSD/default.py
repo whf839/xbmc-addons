@@ -8,12 +8,12 @@ __author__ = "Amet"
 __url__ = "http://code.google.com/p/opensubtitles-osd/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/scripts/OpenSubtitles_OSD"
 __credits__ = ""
-__version__ = "1.48"
+__version__ = "1.49"
 __XBMC_Revision__ = "22240"
 
 ### ------ thanks to hentar for adding the third language option ----- ###
 
-BASE_RESOURCE_PATH = os.path.join( os.getcwd(), 'resources', 'lib' )
+BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib' ) )
 
 sys.path.append (BASE_RESOURCE_PATH)
 
@@ -76,12 +76,7 @@ else:
 	skin = "Aeon"
    if ( skin1.find( "confluence" ) > -1 ):
 	skin = "confluence"	
-  
-   try: xbox = xbmc.getInfoLabel( "system.xboxversion" )
-   except: xbox = ""
-   if xbox != "":
-     skin = skin.ljust(13)
-
+   
    if __settings__.getSetting( "debug" ) == "true":	
    		print "OpenSubtitles_OSD version [" +  __version__ +"]"
    		print "Skin Folder: [ " + skin1 +" ]"
@@ -93,8 +88,8 @@ else:
 
 ###-------------------Extract Media files -----------------------------------################
    
-   mediafolder = os.path.join("special://home/scripts/", __scriptname__ ,"resources","skins" , "Default" , "media" )
-   zip_file = os.path.join("special://home/scripts/", __scriptname__ ,"resources","lib" , "media.zip" )
+   mediafolder = os.path.join(xbmc.translatePath("special://home/scripts/"), __scriptname__ ,"resources","skins" , "Default" , "media" )
+   zip_file = os.path.join(xbmc.translatePath("special://home/scripts/"), __scriptname__ ,"resources","lib" , "media.zip" )
    if os.path.exists(zip_file):
 		if os.path.exists(mediafolder):
 			import shutil
@@ -173,13 +168,13 @@ else:
 			sub_folder = os.path.dirname( sub_folder )
 			
 		if not path and not rar:
-			sub_folder = __settings__.getSetting( "subfolderpath" )
+			sub_folder = xbmc.translatePath(__settings__.getSetting( "subfolderpath" ))
 			if len(sub_folder) < 1 :
 				sub_folder = os.path.dirname( movieFullPath )
 				
 		
 		if path and not rar:
-			sub_folder = __settings__.getSetting( "subfolderpath" )
+			sub_folder = xbmc.translatePath(__settings__.getSetting( "subfolderpath" ))
 			if not access or sub_folder.find("smb://") > -1:
 				if temp:
 					import xbmcgui
@@ -195,8 +190,8 @@ else:
 	
 		if not xbmc.getCondVisibility('Player.Paused') : xbmc.Player().pause() #Pause if not paused
 		
-		try:	ui = gui.GUI( "script-OpenSubtitles_OSD-"+ skin +".xml" , os.getcwd(), "Default")
-		except: ui = gui.GUI( "script-OpenSubtitles_OSD-main.xml" , os.getcwd(), "Default")
+		
+		ui = gui.GUI( "script-OpenSubtitles_OSD-"+ skin +".xml" , os.getcwd(), "Default")
 		service_present = ui.set_allparam ( movieFullPath,search_string,temp,sub_folder, year, debug )
 		if service_present > -1 : ui.doModal()
 		
