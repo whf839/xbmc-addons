@@ -1,44 +1,58 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <!--Translator: Özgür BASKIN (queeup)-->
 <!--Email: ozgur.baskin@gmail.com-->
-<!--Date of translation: 20/02/2010-->
-<!--Based on English strings revision 1464-->
+<!--Date of translation: 21/02/2010-->
+<!--Based on English strings revision 1621-->
 <strings>
     <!-- settings labels -->
-    <string id="30000">Fragman kalitesi</string>
-    <string id="30001">Standart</string>
-    <string id="30002">480p</string>
-    <string id="30003">720p</string>
-    <string id="30004">1080p</string>
-    <string id="30010">Büyük poster kullan</string>
-    <string id="30020">Fragmanlar için MPAA limiti</string>
-    <string id="30030">Oynatma modu</string>
-    <string id="30031">Akış</string>
-    <string id="30032">İndir</string>
-    <string id="30033">İndir ve Kaydet</string>
-    <string id="30040">- Kaydetme klasörü</string>
-    <string id="30050">Posta Kodu veya Şehir</string>
-    <string id="30060">Seans scraper</string>
-    <string id="30070">Film listesi için gün belirleyin</string>
-    <string id="30071">Bugün</string>
-    <string id="30072">Yarın</string>
-    <string id="30073">3. Gün</string>
-    <string id="30074">4. Gün</string>
-    <string id="30075">5. Gün</string>
-    <string id="30076">6. Gün</string>
-    <string id="30077">7. Gün</string>
-    <string id="30078">8. Gün</string>
-    <string id="30080">- Kaydedilen dosya için film başlığını kullan</string>
-    <string id="30090">Fanart resmi</string>
-    <string id="30100">- 1. fanart rengi (AARRGGBB)</string>
-    <string id="30110">- 2. fanart rengi (AARRGGBB)</string>
-    <string id="30120">- 3. fanart rengi (AARRGGBB)</string>
-    <string id="30130">- Her zaman kaydedilmiş fragmanları oynat</string>
-    <string id="30140">- Kaydedilen fragmanlara '-trailer' ekle</string>
+    <string id="30100">Tercih edilen fragman kalitesi</string>
+    <string id="30101">Standart</string>
+    <string id="30102">480p</string>
+    <string id="30103">720p</string>
+    <string id="30104">1080p</string>
+    <string id="30110">Büyük poster kullan</string>
+    <string id="30120">Fragmanlar için MPAA limiti</string>
+    <string id="30130">Oynatma modu</string>
+    <string id="30131">Akış</string>
+    <string id="30132">İndir</string>
+    <string id="30133">İndir ve Kaydet</string>
+    <string id="30140">- Kaydetme klasörü</string>
+    <string id="30150">Posta Kodu veya Şehir</string>
+    <string id="30160">Seans scraper</string>
+    <string id="30170">Film listesi için gün belirleyin</string>
+    <string id="30171">Bugün</string>
+    <string id="30172">Yarın</string>
+    <string id="30173">3. Gün</string>
+    <string id="30174">4. Gün</string>
+    <string id="30175">5. Gün</string>
+    <string id="30176">6. Gün</string>
+    <string id="30177">7. Gün</string>
+    <string id="30178">8. Gün</string>
+    <string id="30180">- Kaydedilen dosya için film başlığını kullan</string>
+    <string id="30190">Fanart resmi</string>
+    <string id="30200">- Her zaman kaydedilmiş fragmanları oynat</string>
+    <string id="30210">- Kaydedilen fragmanlara '-trailer' ekle</string>
+    <string id="30220">- Kaydedilen fragmanlar için NFO dosyası oluştur</string>
+    <string id="30230">- Derecelendirilmemiş fragmanlar için MPAA rating</string>
+    <string id="30240">- Sadece 720p/1080p fragmanlar</string>
+    <string id="30250">- Kaydedilen fragmanlarla beraber küçük resmi kopyala</string>
 
-    <!-- plugin buttons -->
-    <string id="30201">Ara...</string>
-    <string id="30202">Ayarlar</string>
+    <!-- category & label separators -->
+    <string id="30300">Tercihler</string>
+    <string id="30301">Seanslar</string>
+    <string id="30302">Skinning</string>
+    
+    <string id="30320">Fragman Tercihleri</string>
+    <string id="30321">Seans Scraper</string>
+    <string id="30322">Fanart Tercihleri</string>
+
+    <!-- mpaa ratings -->
+    <string id="30400">G</string>
+    <string id="30401">PG</string>
+    <string id="30402">PG-13</string>
+    <string id="30403">R</string>
+    <string id="30404">NC-17</string>
+    <string id="30405">Sınırsız</string>
 
     <!-- messages -->
     <string id="30500">Karşıdan Yükleniyor: %s</string>
@@ -51,6 +65,7 @@
     <string id="30601">Seanslar bulunuyor, lütfen bekleyin...</string>
     <string id="30602">Tarih</string>
     <string id="30603">Yer</string>
+    <string id="30604">HATA: Sinema listesi bulunamadı! [I](Muhtemelen sitedeki değişikliklerden dolayı)[/I]</string>
 
     <!-- compatible messages -->
     <string id="30700">sürüm</string>
