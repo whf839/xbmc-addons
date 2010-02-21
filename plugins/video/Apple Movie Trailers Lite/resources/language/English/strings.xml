@@ -1,40 +1,54 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
     <!-- settings labels -->
-    <string id="30000">Trailer quality</string>
-    <string id="30001">Standard</string>
-    <string id="30002">480p</string>
-    <string id="30003">720p</string>
-    <string id="30004">1080p</string>
-    <string id="30010">Use large poster</string>
-    <string id="30020">MPAA rating limit for trailers</string>
-    <string id="30030">Play mode</string>
-    <string id="30031">Stream</string>
-    <string id="30032">Download</string>
-    <string id="30033">Download &amp; Save</string>
-    <string id="30040">- Save folder</string>
-    <string id="30050">Zipcode/Post Code or City, State</string>
-    <string id="30060">Showtimes scraper</string>
-    <string id="30070">Day to list movies for</string>
-    <string id="30071">Today</string>
-    <string id="30072">Tomorrow</string>
-    <string id="30073">Day 3</string>
-    <string id="30074">Day 4</string>
-    <string id="30075">Day 5</string>
-    <string id="30076">Day 6</string>
-    <string id="30077">Day 7</string>
-    <string id="30078">Day 8</string>
-    <string id="30080">- Use movie title for saved filename</string>
-    <string id="30090">Fanart image</string>
-    <string id="30100">- Fanart color one (AARRGGBB)</string>
-    <string id="30110">- Fanart color two (AARRGGBB)</string>
-    <string id="30120">- Fanart color three (AARRGGBB)</string>
-    <string id="30130">- Always play saved trailers</string>
-    <string id="30140">- Add '-trailer' to saved trailers</string>
+    <string id="30100">Preferred trailer quality</string>
+    <string id="30101">Standard</string>
+    <string id="30102">480p</string>
+    <string id="30103">720p</string>
+    <string id="30104">1080p</string>
+    <string id="30110">Use large poster</string>
+    <string id="30120">MPAA rating limit for trailers</string>
+    <string id="30130">Play mode</string>
+    <string id="30131">Stream</string>
+    <string id="30132">Download</string>
+    <string id="30133">Download &amp; Save</string>
+    <string id="30140">- Save folder</string>
+    <string id="30150">Zipcode/Post Code or City, State</string>
+    <string id="30160">Showtimes scraper</string>
+    <string id="30170">Day to list movies for</string>
+    <string id="30171">Today</string>
+    <string id="30172">Tomorrow</string>
+    <string id="30173">Day 3</string>
+    <string id="30174">Day 4</string>
+    <string id="30175">Day 5</string>
+    <string id="30176">Day 6</string>
+    <string id="30177">Day 7</string>
+    <string id="30178">Day 8</string>
+    <string id="30180">- Use trailer title for filename</string>
+    <string id="30190">Fanart image</string>
+    <string id="30200">- Always play saved trailers</string>
+    <string id="30210">- Add '-trailer' to filename</string>
+    <string id="30220">- Create NFO files for saved trailers</string>
+    <string id="30230">- MPAA rating for unrated trailers</string>
+    <string id="30240">- Only 720p/1080p trailers</string>
+    <string id="30250">- Copy thumb with saved trailer</string>
 
-    <!-- plugin buttons -->
-    <string id="30201">Search...</string>
-    <string id="30202">Settings</string>
+    <!-- category & label separators -->
+    <string id="30300">Preferences</string>
+    <string id="30301">Showtimes</string>
+    <string id="30302">Skinning</string>
+    
+    <string id="30320">Trailer Preferences</string>
+    <string id="30321">Showtimes Scraper</string>
+    <string id="30322">Fanart Preferences</string>
+
+    <!-- mpaa ratings -->
+    <string id="30400">G</string>
+    <string id="30401">PG</string>
+    <string id="30402">PG-13</string>
+    <string id="30403">R</string>
+    <string id="30404">NC-17</string>
+    <string id="30405">No Limit</string>
 
     <!-- messages -->
     <string id="30500">Downloading: %s</string>
@@ -47,6 +61,7 @@
     <string id="30601">Finding showtimes, please wait...</string>
     <string id="30602">Date</string>
     <string id="30603">Location</string>
+    <string id="30604">ERROR: No theater list found! [I](Possible site changes)[/I]</string>
 
     <!-- compatible messages -->
     <string id="30700">version</string>

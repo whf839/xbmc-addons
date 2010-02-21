@@ -102,8 +102,12 @@ class MediaWindow:
     def _set_buttons( self, ok=True ):
         # only set buttons on a successful directory listing
         if ( ok and self.buttons is not None ):
+            # clear all buttons
+            self._clear_buttons()
+            # set buttons heading
+            self.m_window.setProperty( "PluginButtons.Heading", xbmc.getLocalizedString( self.buttons[ 0 ] ) )
             # enumerate thru and set each button
-            for label, onclick, onfocus, onunfocus, bId in self.buttons:
+            for label, onclick, onfocus, onunfocus, bId in self.buttons[ 1 ]:
                 # set button
                 self._set_button( label, onclick, onfocus, onunfocus, bId )
 
@@ -131,3 +135,11 @@ class MediaWindow:
             self.m_window.setProperty( "PluginButton.%d.OnFocus" % bId, onfocus )
         if ( onunfocus is not None ):
             self.m_window.setProperty( "PluginButton.%d.OnUnFocus" % bId, onunfocus )
+
+    def _clear_buttons( self ):
+        # we want to clear all buttons in case another script uses them
+        for bId in range( self.BUTTON_MIN, self.BUTTON_MAX ):
+            self.m_window.clearProperty( "PluginButton.%d.Label" % bId )
+            self.m_window.clearProperty( "PluginButton.%d.OnClick" % bId )
+            self.m_window.clearProperty( "PluginButton.%d.OnFocus" % bId )
+            self.m_window.clearProperty( "PluginButton.%d.OnUnFocus" % bId )
