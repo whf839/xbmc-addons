@@ -76,11 +76,11 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	  	  
 	  self.sub_folder = sub_folder									# Subtitle download folder
 	  
-	  self.file_original_path = path								# Movie Path
+	  self.file_original_path = urllib.unquote ( path )		# Movie Path
 
-	  self.file_path = path
+	  self.file_path = urllib.unquote( path )
 	  
-	  self.set_temp = temp											
+	  self.set_temp = temp
   
 	  self.search_string1 = unicode(search, 'utf-8')				# de-accent Search String
 	  self.search_string = unicodedata.normalize('NFKD', unicode(self.search_string1)).encode('ascii','ignore')
@@ -223,7 +223,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
         	self.set_xbox = False
         else:
         	self.set_xbox = True
-        if self.debug : LOG( LOG_INFO, "XBOX System: [%s]" ,  xbox )	
+        if self.debug : LOG( LOG_INFO, "XBOX detected" )
         self.controlId = -1
         self.osdb_server = OSDBServer()
         self.manuall = False
@@ -261,15 +261,15 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	
 		ok = False
 		msg = ""
-		hashTry = timeout(self.set_filehash, timeout_duration=5)
 		
-		if self.file_original_path.find("http") > -1  or self.set_xbox : 
+		if self.file_original_path.find("http") > -1 or self.set_xbox == True : 
 			hash_search = False
 		else:
-			hash_search = True	
+			hash_search = True
 		
 		try:
 	            if hash_search :
+	                hashTry = timeout(self.set_filehash, timeout_duration=5)
 	                if self.debug : LOG( LOG_INFO, "Search by hash and name " +  os.path.basename( self.file_original_path ) )
 	                self.getControl( STATUS_LABEL ).setLabel( _( 642 ) % ( "...", ) )
 	                
@@ -281,12 +281,11 @@ class GUI( xbmcgui.WindowXMLDialog ):
 	                if self.debug : LOG( LOG_INFO, "Hash and Name Search: " + msg )
 	                
 	            else: 
-	                if self.debug : LOG( LOG_INFO, "Search by Name " +  os.path.basename( self.file_original_path ) )
+	                if self.debug : LOG( LOG_INFO, "Search by Name " + self.file_original_path )
 	                self.getControl( STATUS_LABEL ).setLabel( _( 642 ) % ( "...", ) )
 	                 
 	                try : ok,msg = self.osdb_server.searchsubtitles( self.search_string, "000000000" ,"000000000",self.lang1,self.lang2,self.lang3,self.year,hash_search )
 	                except: self.connected = False
-	
 	                if self.debug : LOG( LOG_INFO, "Name Search: " + msg )                
 	                
 	
@@ -587,9 +586,11 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
             filename = self.osdb_server.subtitles_list[pos]["filename"]
             url = self.osdb_server.subtitles_list[pos]["link"]
-            local_path = xbmc.translatePath( "special://temp" )
+            local_path = "special://temp"
             zip_filename = xbmc.translatePath( os.path.join( local_path, "zipsubs.zip" ) )
             sub_filename = os.path.basename( self.file_path )           
+            print sub_filename
+            print zip_filename
             lang = toOpenSubtitles_two(self.osdb_server.subtitles_list[pos]["language_name"])
             subName1 = sub_filename[0:sub_filename.rfind(".")] 
             if subName1 == "":
@@ -617,17 +618,17 @@ class GUI( xbmcgui.WindowXMLDialog ):
 		    if download_wait > 0 :
 			time.sleep(float(download_wait))
 				
-	            xbmc.Player().setSubtitles(xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib','dummy.srt' ) ) )
+	            xbmc.Player().setSubtitles(os.path.join( os.getcwd(), 'resources', 'lib','dummy.srt' ) )
 	
 	            subtitle_b64_data = sublightWebService.DownloadByID(self.session_id, subtitle_id, ticket_id)
-	            base64_file_path = os.path.join(xbmc.translatePath( "special://temp" ), "subtitle.b64" )
+	            base64_file_path = os.path.join( "special://temp", "subtitle.b64" )
 	            base64_file      = open(base64_file_path, "wb")
 	            base64_file.write( subtitle_b64_data )
 	            base64_file.close()
 	            
 	            base64_file = open(base64_file_path, "r")
 	             
-	            zip_file_path = os.path.join(xbmc.translatePath( "special://temp" ) , "subtitle.zip" )
+	            zip_file_path = os.path.join( "special://temp", "subtitle.zip" )
 	            zip_file      = open(zip_file_path, "wb")
 	                     
 	            base64.decode(base64_file, zip_file)
@@ -741,7 +742,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
         if self.debug : LOG( LOG_INFO, "extract_subtitles" )
 
         self.getControl( STATUS_LABEL ).setLabel(  _( 652 ) )
-        xbmc.Player().setSubtitles(xbmc.translatePath( os.path.join( os.getcwd(), 'resources', 'lib','dummy.srt' ) ) )
+        xbmc.Player().setSubtitles(os.path.join( os.getcwd(), 'resources', 'lib','dummy.srt' ) )
         
         try:
             un = unzip.unzip()
@@ -822,7 +823,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
                 i   = 0
                 for zip_entry in zip.namelist():
                     if (zip_entry.find( "srt" ) < 0)  and (zip_entry.find( "sub" ) < 0)  and (zip_entry.find( "txt" )< 0) :
-                		os.remove (xbmc.translatePath(( os.path.join( "special://temp/", zip_entry ) )))
+                		os.remove( os.path.join( "special://temp/", zip_entry ) )
 
                     if ( zip_entry.find( "srt" )  > 0 ) or ( zip_entry.find( "sub" )  > 0 ) or ( zip_entry.find( "txt" )  > 0 ):
                     
@@ -832,7 +833,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 							file_name = zip_entry
 							sub_ext  = os.path.splitext( file_name )[1]
 							sub_name = os.path.splitext( movie_files[i - 1] )[0]
-									
+							
 							file_name = "%s.%s%s" % ( sub_name, str(lang), ".srt" )
 							file_path = os.path.join(self.sub_folder, file_name)
 
@@ -848,7 +849,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
 								if selected == 1:
 									__settings__.openSettings()								
 							 
-							os.remove (xbmc.translatePath( ( os.path.join( "special://temp/", zip_entry ) )))
+							os.remove ( os.path.join( "special://temp/", zip_entry ) )
 							
                 zip.close()
 
