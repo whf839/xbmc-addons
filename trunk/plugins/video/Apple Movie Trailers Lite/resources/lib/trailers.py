@@ -185,8 +185,9 @@ class _Parser:
                 # encode/clean plot
                 plot = unicode( unescape( trailer[ 9 ] ), encoding, "replace" )
                 # duration of trailer
-                duration = xbmc.getLocalizedString( 14044 ).replace( "%i", "%s" )
-                duration = duration % ( trailer[ 2 ], )
+                # this displays right in video info dialog, but not in the lists (the formula xbmc uses does not accept seconds)
+                #duration = xbmc.getLocalizedString( 14044 ).replace( "%i", "%s" ) % ( trailer[ 2 ], )
+                duration = "%s:%s" % ( trailer[ 2 ].replace( ":", "" ).rjust( 4, "0" )[ : 2 ], trailer[ 2 ].replace( ":", "" ).rjust( 4, "0" )[ 2 : ], )
                 # format release date
                 releasedate = trailer[ 6 ]
                 # add the item to our media list
