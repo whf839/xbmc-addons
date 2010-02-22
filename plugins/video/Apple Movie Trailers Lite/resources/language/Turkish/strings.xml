@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <!--Translator: Özgür BASKIN (queeup)-->
 <!--Email: ozgur.baskin@gmail.com-->
-<!--Date of translation: 21/02/2010-->
-<!--Based on English strings revision 1621-->
+<!--Date of translation: 22/02/2010-->
+<!--Based on English strings revision 1626-->
 <strings>
     <!-- settings labels -->
-    <string id="30100">Tercih edilen fragman kalitesi</string>
+    <string id="30100">Tercih edilen fragman çözünürlüğü</string>
     <string id="30101">Standart</string>
     <string id="30102">480p</string>
     <string id="30103">720p</string>
     <string id="30104">1080p</string>
     <string id="30110">Büyük poster kullan</string>
-    <string id="30120">Fragmanlar için MPAA limiti</string>
+    <string id="30120">Fragmanlar için MPAA derecelendirme limiti</string>
     <string id="30130">Oynatma modu</string>
     <string id="30131">Akış</string>
     <string id="30132">İndir</string>
     <string id="30133">İndir ve Kaydet</string>
     <string id="30140">- Kaydetme klasörü</string>
     <string id="30150">Posta Kodu veya Şehir</string>
-    <string id="30160">Seans scraper</string>
-    <string id="30170">Film listesi için gün belirleyin</string>
+    <string id="30160">Scraper</string>
+    <string id="30170">- Film listesi için gün belirleyin</string>
     <string id="30171">Bugün</string>
     <string id="30172">Yarın</string>
     <string id="30173">3. Gün</string>
@@ -38,13 +38,16 @@
     <string id="30250">- Kaydedilen fragmanlarla beraber küçük resmi kopyala</string>
 
     <!-- category & label separators -->
-    <string id="30300">Tercihler</string>
+    <string id="30300">Genel</string>
     <string id="30301">Seanslar</string>
     <string id="30302">Skinning</string>
     
-    <string id="30320">Fragman Tercihleri</string>
-    <string id="30321">Seans Scraper</string>
+    <string id="30320">Çözünürlük</string>
+    <string id="30321">Konum</string>
     <string id="30322">Fanart Tercihleri</string>
+    <string id="30323">Derecelendirme Limiti</string>
+    <string id="30324">Kayıttan Yürüt</string>
+    <string id="30325">Scraper</string>
 
     <!-- mpaa ratings -->
     <string id="30400">G</string>
@@ -64,7 +67,7 @@
     <string id="30600">Seans bulunamadı!</string>
     <string id="30601">Seanslar bulunuyor, lütfen bekleyin...</string>
     <string id="30602">Tarih</string>
-    <string id="30603">Yer</string>
+    <string id="30603">Konum</string>
     <string id="30604">HATA: Sinema listesi bulunamadı! [I](Muhtemelen sitedeki değişikliklerden dolayı)[/I]</string>
 
     <!-- compatible messages -->
