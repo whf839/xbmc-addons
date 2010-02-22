@@ -1,7 +1,7 @@
 __plugin__ = "NakedCanal"
 __authors__ = "thebitjockey"
 __credits__ = ""
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 import urllib,urllib2,re,xbmcplugin,xbmcgui
 
@@ -30,7 +30,8 @@ def VIDEOLIST(url,page):
         response.close()
         match=re.compile('<div class="video_box">\s+?<a href="/video/(.+?)/.+?"><img src=".+?" title="(.+?)" alt=".+?" width=".+?" height=".+?" id=".+?" />').findall(link)
         for videoid,name in match:
-                addLink(name,'http://www.nakedcanal.com/media/videos/flv/'+videoid+'.flv','http://www.nakedcanal.com/media/videos/tmb/'+videoid+'/1.jpg',len(match))
+                videourl=getvideourl(videoid)
+                addLink(name,videourl,'http://www.nakedcanal.com/media/videos/tmb/'+videoid+'/1.jpg',len(match))
         if (len(match) == 16):
             addDir('Next Page',url,2,'',page+1)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
@@ -68,6 +69,16 @@ def addDir(name,url,mode,iconimage,page):
         liz.setInfo( type="Video", infoLabels={ "Title": name, "MPAA" : "XXX" } )
         ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
         return ok
+
+def getvideourl(videoid):
+        url='http://www.nakedcanal.com/media/player/config.php?vkey='+videoid
+        req = urllib2.Request(url)
+        response = urllib2.urlopen(req)
+        link=response.read()
+        response.close()
+        match=re.compile('<src>(.+?)\.flv</src>').findall(link)
+        videourl = match[0]+'.flv'
+        return videourl
 
 def run():
         
