@@ -13,7 +13,7 @@ __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Apple%2
 __useragent__ = "QuickTime/7.6.5 (qtver=7.6.5;os=Windows NT 5.1Service Pack 3)"
 #__useragent__ = "iTunes/9.0.2 (Windows; Microsoft Windows XP Professional Service Pack 3 (Build 2600)) AppleWebKit/531.21.8"
 __credits__ = "Team XBMC"
-__version__ = "1.8.1"
+__version__ = "1.8.2"
 __svn_revision__ = "$Revision$"
 __XBMC_Revision__ = "22965"
 
