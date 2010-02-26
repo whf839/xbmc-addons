@@ -23,6 +23,7 @@ import zipfile
 import os
 import os.path
 import getopt
+import xbmc
 
 class unzip:
     def __init__(self, verbose = False, percent = 10):
@@ -54,7 +55,7 @@ class unzip:
                 print "%s%% complete" % complete
 
             if not name.endswith('/'):
-                outfile = open(os.path.join(dir, name), 'wb')
+                outfile = open(xbmc.translatePath( os.path.join(dir, name) ), 'wb')
                 outfile.write(zf.read(name))
                 outfile.flush()
                 outfile.close()
@@ -84,7 +85,7 @@ class unzip:
                 print "%s%% complete" % complete
 
             if not name.endswith('/'):
-                outfile = open(os.path.join(dir, name), 'wb')
+                outfile = open(xbmc.translatePath( os.path.join(dir, name) ), 'wb')
                 outfile.write(zf.read(name))
                 outfile.flush()
                 outfile.close()
@@ -102,7 +103,7 @@ class unzip:
     def _makedirs(self, directories, basedir):
         """ Create any directories that don't currently exist """
         for dir in directories:
-            curdir = os.path.join(basedir, dir)
+            curdir = xbmc.translatePath( os.path.join(basedir, dir) )
             if not os.path.exists(curdir):
                 os.mkdir(curdir)
 

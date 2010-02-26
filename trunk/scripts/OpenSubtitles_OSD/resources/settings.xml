@@ -20,5 +20,7 @@
     <setting id="debug" type="bool" label="Enable Debug Log" default="false"/>
     <setting type="lsep" label="Check for new version" />
     <setting id="new_ver" type="bool" label="Auto check for newer version" default="false"/>
+    <setting type="lsep" label="Display File Name" />
+    <setting id="fil_name" type="bool" label="Display file name in results page" default="false"/>
     
 </settings>
