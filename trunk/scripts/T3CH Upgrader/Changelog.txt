@@ -1,5 +1,7 @@
 T3CH Upgrader Changelog:
 ========================
+v1.9.6c 01/03/2010
+ Updated: Dutch strings (thanks to Bulkzooi)
 v1.9.6b 08/02/2010
  Change: Lowered free RAM limit that decides when unzip should use chunk unpacking.
  Change: Added better exception trap in unzip
