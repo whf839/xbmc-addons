@@ -27,8 +27,8 @@ __scriptname__ = "T3CH Upgrader"
 __author__ = 'BigBellyBilly [BigBellyBilly@gmail.com]'
 __url__ = "http://code.google.com/p/xbmc-scripting/"
 __svn_url__ = "http://xbmc-scripting.googlecode.com/svn/trunk/T3CH%20Upgrader"
-__date__ = '08-02-2010'
-__version__ = "1.9.6b"
+__date__ = '01-03-2010'
+__version__ = "1.9.6c"
 __svn_revision__ = "$Revision$"
 __XBMC_Revision__ = "19001"
 xbmc.log( "[%s]: v%s  Dated: %s svn %s" % (__scriptname__, __version__, __date__, __svn_revision__), xbmc.LOGNOTICE)
