@@ -249,6 +249,7 @@ def playVideo(url, name, plot, cat):
 	date=url
 	date=date.rsplit('/')
 	name=date[10]
+	name=name[:+32]
 	print name
 	def Download(url,dest):
 			dp = xbmcgui.DialogProgress()
