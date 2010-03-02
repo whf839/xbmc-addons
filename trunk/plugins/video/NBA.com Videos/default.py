@@ -2,8 +2,8 @@
 __scriptname__ = "NBA.com Videos"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/NBA.com%20Videos"
-__date__ = '01-09-2010'
-__version__ = "1.0.5"
+__date__ = '03-01-2010'
+__version__ = "1.0.6"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1.7) Gecko/20091221 Firefox/3.5.7'
