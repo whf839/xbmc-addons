@@ -18,6 +18,10 @@ def open_url(url):
 	return data
 
 
+class UserCancelException(Exception):
+	pass
+
+
 def _check_for_update():
 	print "NBA.com Videos"+__version__
 	url = 'http://code.google.com/p/xbmc-addons/source/browse/trunk/plugins/video/NBA.com%20Videos/default.py'
@@ -103,7 +107,10 @@ def get_video_info(url,page,name):
 	url=re.compile('<file(.*?)type="large"(.*?)>(.+?)</file>').findall(data)
 	length=re.compile('<length(.*?)>((.+?)</length>)?').findall(data)
 	section=re.compile('<sectionName(.*?)>(.+?)</sectionName>', re.DOTALL).findall(data)
-	playVideo('http://nba.cdn.turner.com/nba/big'+url[0][2], title[0][1], plot[0][1], section[0][1].capitalize())
+	try:
+		playVideo('http://nba.cdn.turner.com/nba/big'+url[0][2], title[0][1], plot[0][1], section[0][1].capitalize())
+	except UserCancelException:
+		pass
 		
 def get_feature(url,page,cat):
 	data=[
@@ -225,7 +232,18 @@ def showList(url,page):
 			u=sys.argv[0]+"?mode=3&name="+urllib.quote_plus(save)+"&url="+urllib.quote_plus(url)+"&plot="+urllib.quote_plus('')
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li)
 			x=x+1
-			
+
+def getDownloadFileName(basename):
+	path = xbmcplugin.getSetting('download_path')
+	if not path:
+		dialog = xbmcgui.Dialog()
+		path = dialog.browse(3, 'Choose Download Directory', 'video', '', False, False, '')
+	if not path:
+		raise UserCancelException('no directory selected')
+	filename = xbmc.translatePath(os.path.join(path, basename))
+	return filename
+
+
 def playVideo(url, name, plot, cat):
 	thisname=name
 	date=url
@@ -249,15 +267,16 @@ def playVideo(url, name, plot, cat):
 	stream = 'false'
 	if (xbmcplugin.getSetting('download') == 'true'):
 			dialog = xbmcgui.Dialog()
-			flv_file = dialog.browse(3, 'Choose Download Directory', 'video', '', False, False, '')
-			#print flv_file
-			Download(url,flv_file+name)
-	elif (xbmcplugin.getSetting('download') == 'false' and xbmcplugin.getSetting('download_ask') == 'true'):
+			flv_file = getDownloadFileName(name)
+			Download(url, flv_file)
+	elif (xbmcplugin.getSetting('download') == 'false'
+	      and xbmcplugin.getSetting('download_ask') == 'true'):
 		dia = xbmcgui.Dialog()
-		ret = dia.select('What do you want to do?', ['Download & Play', 'Stream', 'Exit'])
+		ret = dia.select('What do you want to do?',
+				 ['Download & Play', 'Stream', 'Exit'])
 		if (ret == 0):
-			flv_file = xbmc.translatePath(os.path.join(xbmcplugin.getSetting('download_Path'), name + '.flv'))
-			Download(url,flv_file)
+			flv_file = getDownloadFileName(name)
+			Download(url, flv_file)
 		elif (ret == 1):
 			stream = 'true'
 		else:
@@ -271,8 +290,8 @@ def playVideo(url, name, plot, cat):
 		player_type = xbmc.PLAYER_CORE_DVDPLAYER
 	else:
 		player_type = xbmc.PLAYER_CORE_MPLAYER
-	if (flv_file != None and os.path.isfile(flv_file+name)):
-		xbmc.Player(player_type).play(flv_file+name, item)
+	if (flv_file != None and os.path.isfile(flv_file)):
+		xbmc.Player(player_type).play(flv_file, item)
 	elif (stream == 'true'):
 		xbmc.Player(player_type).play(str(url), item)
 	xbmc.sleep(200)
