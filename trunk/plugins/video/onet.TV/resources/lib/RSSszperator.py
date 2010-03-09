@@ -19,8 +19,8 @@ class Main:
 
 		numerek=re.compile('.+?15,(.+?),desc.+?rss=1').findall(url)[0]
 		nast=str(int(numerek) + 1)
-		adresik=re.compile('(.+?),\d,(.+$)').findall(url)[0]
-		nastFin=adresik[0] +"," + nast +"," + adresik[1]
+		adresik=re.compile('(.+?)15,.+?,(.+$)').findall(url)[0]
+		nastFin=adresik[0] +"15," + nast +"," + adresik[1]
 
 		next=xbmcgui.ListItem("Następna Strona")
 		u=sys.argv[0]+"?RSS&po_co="+"Następna Strona"+"&url="+urllib.quote_plus(nastFin)

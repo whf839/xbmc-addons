@@ -1,7 +1,7 @@
 __plugin__  = "Onet.TV"
 __author__  = "pajretX"
-__date__    = "not finished yet"
-__version__ = "0.01"
+__date__    = "09-03-10"
+__version__ = "0.02"
 
 import os
 import sys
