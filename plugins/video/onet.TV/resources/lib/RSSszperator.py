@@ -5,6 +5,11 @@ import xbmcgui
 import xbmcplugin 
 import urllib,urllib2 
 import re 
+
+HOME_DIR = os.getcwd()
+names = xbmc.Language( HOME_DIR ).getLocalizedString
+
+NP = (names (33335))
  
 class Main: 
 	def __init__( self ) :
@@ -22,8 +27,8 @@ class Main:
 		adresik=re.compile('(.+?)15,.+?,(.+$)').findall(url)[0]
 		nastFin=adresik[0] +"15," + nast +"," + adresik[1]
 
-		next=xbmcgui.ListItem("Następna Strona")
-		u=sys.argv[0]+"?RSS&po_co="+"Następna Strona"+"&url="+urllib.quote_plus(nastFin)
+		next=xbmcgui.ListItem(NP)
+		u=sys.argv[0]+"?RSS&po_co="+NP+"&url="+urllib.quote_plus(nastFin)
 		xbmcplugin.addDirectoryItem(int(sys.argv[1]),u, next, isFolder=True)
  
 		for link in links:	 
@@ -32,10 +37,8 @@ class Main:
 			linkContent = response.read()
 			response.close()
  
-#			video = re.compile('<onettv:mid>(.+?)</onettv:mid>').findall(linkContent)[0]
     			video=re.compile('<onettv:bitrate>800(.+?)</onettv:url>').findall(str(linkContent).replace('\t',"").replace('\r',"").replace('\n',""))[0]
     			video=str(video).replace('</onettv:bitrate><onettv:url>','http://www.onet.tv')	
-#			video = 'http://www.onet.tv/_mmv/' + video + ',19,1.flv'
 			title = re.compile('<title>(.+?)</title>').findall(linkContent)[0]
 			duration = re.compile('<onettv:duration>(.+?)</onettv:duration>').findall(linkContent)[0]
  			image = re.compile('type="image/jpeg" href="(.+?)"').findall(linkContent)[0]
