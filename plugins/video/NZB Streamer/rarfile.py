@@ -127,10 +127,9 @@ class RarInfo:
 
 class RarFile:
     '''Rar archive handling.'''
-    def __init__(self, rarfile, mode="r", only_one_file=False, charset='cp850', info_callback=None):
+    def __init__(self, rarfile, mode="r", charset='cp850', info_callback=None):
         self.rarfile = rarfile
         self.charset = charset
-        self.only_one_file = only_one_file
 
         self.info_list = []
         self.is_solid = 0
@@ -237,24 +236,18 @@ class RarFile:
         if id != RAR_ID:
             raise Exception("Not a Rar")
 
-        h = self._parse_header(fd)
-        self._process_entry(h)
-        h = self._parse_header(fd)
-        self._process_entry(h)
-        fd.close()
-        return
-
         volume = 0  # first vol (.rar) is 0
         more_vols = 0
         while 1:
             h = self._parse_header(fd)
             if not h:
-                if not self.only_one_file and more_vols:
-                    volume += 1
-                    fd = open(self._gen_volname(volume), "rb")
-                    more_vols = 0
-                    if fd:
-                        continue
+                #if more_vols:
+                #    volume += 1
+                #    fd = open(self._gen_volname(volume), "rb")
+                #    more_vols = 0
+                #    if fd:
+                #        fd.close()
+                #        continue
                 break
             h.volume = volume
 
@@ -360,7 +353,7 @@ class RarFile:
         else:
             h.filename = name
             h.unicode_filename = name.decode(self.charset, 'replace')
-        print h.filename
+
         if h.flags & RAR_FILE_SALT:
             h.salt = h.data[pos : pos + 8]
             pos += 8

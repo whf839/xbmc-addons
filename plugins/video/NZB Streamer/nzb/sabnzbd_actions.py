@@ -32,11 +32,12 @@ class SABnzbdActions:
 
             movie_name = None
             for filename in rar_file.namelist():
-                if filename.endswith(".avi") or \
-                   filename.endswith(".mkv") or \
-                   filename.endswith(".mpg") or \
-                   filename.endswith(".ts") or \
-                   filename.endswith(".wmv"):
+                filename_lower = filename.lower()
+                if filename_lower.endswith(".avi") or \
+                   filename_lower.endswith(".mkv") or \
+                   filename_lower.endswith(".mpg") or \
+                   filename_lower.endswith(".ts") or \
+                   filename_lower.endswith(".wmv"):
                     movie_name = filename
                     break
 
@@ -51,7 +52,7 @@ class SABnzbdActions:
 
             # the movie could not be found or the RAR is passworded
             if not xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).isPlaying():
-                if xbmcgui.Dialog().yesno("Unable to find MKV/AVI/MPG file in RAR...cancel download?",
+                if xbmcgui.Dialog().yesno("Unable to find MKV/AVI/MPG/TS/WMV file in RAR...cancel download?",
                                           "NZB Streamer requires one of these files with the",
                                           "same filename as the RAR archive to be inside.",
                                           "Passworded RAR files could also cause this.",
