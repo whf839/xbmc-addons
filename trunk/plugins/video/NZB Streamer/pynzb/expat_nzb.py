@@ -4,6 +4,7 @@ from pynzb.base import BaseNZBParser, NZBFile, NZBSegment
 
 class ExpatNZBParser(BaseNZBParser):
     def start_element(self, name, attrs):
+        self.current_data = None
         if name == 'file':
             self.current_file = NZBFile(
                 poster = attrs['poster'],
@@ -26,7 +27,10 @@ class ExpatNZBParser(BaseNZBParser):
             self.current_file.add_segment(self.current_segment)
 
     def char_data(self, data):
-        self.current_data = data
+        if self.current_data:
+            self.current_data += data
+        else:
+            self.current_data = data
 
     def parse(self, xml):
         self.files = []
