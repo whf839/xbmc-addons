@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : settings.xml
+    Created on : October 31, 2009, 6:00 PM
+    Author     : brian
+    Description:
+        KollectiON X Script settings dialog
+-->
+
+<settings>
+    <setting id='mysqlhost' label='30000' type='text' default='localhost' />
+    <setting id='mysqlport' label='30001' type='integer' default='3306' />
+    <setting id='mysqluser' label='30002' type='text' default='root' />
+    <setting id='mysqlpassword' option="hidden" label='30003' type='text' default='' />
+    <setting id='mysqldatabase' label='30004' type='text' default='mymovies' />
+    <!-- There is no way to do check boxes yet with Settings,
+         so hiding this entry, and using custom genre selection instead. -->
+    <setting id='genreignore' type='text' visible='false' />
+</settings>
