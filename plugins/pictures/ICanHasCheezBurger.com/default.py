@@ -15,11 +15,11 @@
 # 
 # Constants
 #
-__plugin__  = "ICanHasCheezBurger"
+__plugin__  = "ICanHasCheezBurger.com"
 __author__  = "Brian Millham <brian@millham.net>"
 __url__     = ""
-__date__    = "6 March 2010"
-__version__ = "0.1"
+__date__    = "20 March 2010"
+__version__ = "1.0"
 
 #
 # Imports
