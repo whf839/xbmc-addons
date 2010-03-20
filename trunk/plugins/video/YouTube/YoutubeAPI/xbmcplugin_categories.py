@@ -73,21 +73,22 @@ class Main:
         # default categories
         if ( root ):
             categories = (
-                                    ( xbmc.getLocalizedString( 30951 ), "most_viewed", "", "", "", True, "viewCount", 0, "", False, ),
                                     ( xbmc.getLocalizedString( 30952 ), "presets_videos", "", "", "", True, "updated", 0, "", False, ),
                                     ( xbmc.getLocalizedString( 30953 ), "presets_users", "", "", "", True, "updated", 0, "", False, ),
-                                    ( xbmc.getLocalizedString( 30954 ), "recently_featured", "", "", "", True, "updated", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30969 ), "presets_categories", "", "", "", True, "updated", 0, "", False, ),
                                     ( xbmc.getLocalizedString( 30957 ), "top_rated", "", "", "", True, "rating", 0, "", False, ),
-                                    ( xbmc.getLocalizedString( 30958 ), "watch_on_mobile", "", "", "", True, "updated", 0, "", False, ),
-                                    ( xbmc.getLocalizedString( 30960 ), "play_video_by_id", "", "", "", False, "relevance", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30963 ), "top_favorites", "", "", "", True, "relevance", 0, "", False, ),
                                     ( xbmc.getLocalizedString( 30961 ), "my_uploads", "", "", "", True, "updated", 0, "", True, ),
                                     ( xbmc.getLocalizedString( 30962 ), "my_favorites", "", "", "", True, "updated", 0, "", True, ),
-                                    ( xbmc.getLocalizedString( 30963 ), "top_favorites", "", "", "", True, "relevance", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30971 ), "my_subscriptions", "", "", "", True, "updated", 0, "", True, ),
+                                    ( xbmc.getLocalizedString( 30954 ), "recently_featured", "", "", "", True, "updated", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30967 ), "most_recent", "", "", "", True, "relevance", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30951 ), "most_viewed", "", "", "", True, "viewCount", 0, "", False, ),
                                     ( xbmc.getLocalizedString( 30964 ), "most_discussed", "", "", "", True, "relevance", 0, "", False, ),
                                     ( xbmc.getLocalizedString( 30965 ), "most_linked", "", "", "", True, "relevance", 0, "", False, ),
                                     ( xbmc.getLocalizedString( 30966 ), "most_responded", "", "", "", True, "relevance", 0, "", False, ),
-                                    ( xbmc.getLocalizedString( 30967 ), "most_recent", "", "", "", True, "relevance", 0, "", False, ),
-                                    ( xbmc.getLocalizedString( 30969 ), "presets_categories", "", "", "", True, "updated", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30958 ), "watch_on_mobile", "", "", "", True, "updated", 0, "", False, ),
+                                    ( xbmc.getLocalizedString( 30960 ), "play_video_by_id", "", "", "", False, "relevance", 0, "", False, ),
                                 )
         # search preset category
         elif ( "category='presets_videos'" in sys.argv[ 2 ] ):
@@ -100,6 +101,8 @@ class Main:
             categories = self.get_presets( 2 )
         elif ( "category='delete_preset'" in sys.argv[ 2 ] ):
             categories = self.delete_preset()
+        elif ( "category='my_subscriptions'" in sys.argv[ 2 ] ):
+            categories = self.get_my_subscriptions()
         # do not run for delete preset
         if ( categories ):
             # fill media list
@@ -168,6 +171,25 @@ class Main:
         xbmcplugin.setSetting( "presets_%s" % ( "videos", "users", "categories", )[ self.args.issearch - 1  ], repr( presets ) )
         # refresh container so item is removed
         xbmc.executebuiltin( "Container.Refresh" )
+
+    def get_my_subscriptions( self ):
+        self.username = xbmcplugin.getSetting( "username" )
+        self.authkey = xbmcplugin.getSetting( "authkey" )
+        # our client api
+        from YoutubeAPI.YoutubeClient import YoutubeClient
+        client = YoutubeClient( base_url=YoutubeClient.BASE_USERS_URL, authkey=self.authkey )
+        # start index should be 1, TODO: may need to fix for page 2...
+        start_index = ( self.args.page - 1 ) * int( xbmcplugin.getSetting( "perpage" ) ) + 1
+        # get subscriptions
+        feeds = client.my_subscriptions( orderby=self.args.orderby, related=self.args.related, region_id="", time="", racy=xbmcplugin.getSetting( "include_racy" ), start__index=start_index, max__results=int( xbmcplugin.getSetting( "perpage" ) ), vq=self.args.vq, author=self.args.username, category=self.args.cat )
+        # initialize our categories
+        categories = []
+        # iterate thru and create an item same as user search
+        for feed in feeds[ "feed" ].get( "entry", [] ):
+            # add subscription to our dictionary
+            categories += [ [ feed[ "yt$username" ][ "$t" ], "videos", self.args.vq, feed[ "yt$username" ][ "$t" ], self.args.cat, True, "updated", 0, feed[ "media$thumbnail" ][ "url" ], False ] ]
+        # return categories
+        return categories
 
     def _fill_media_list( self, categories ):
         try:
