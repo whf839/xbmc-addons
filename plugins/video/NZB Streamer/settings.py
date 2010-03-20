@@ -21,8 +21,11 @@ newzbin_rss = [
 #{'name':'Newzbin - Consoles (Latest)', 'url':'http://www.newzbin.com/browse/category/p/consoles/?feed=rss'},
 ]
 
-binsearch_rss = [{'name':'Binsearch - TV (Latest)', 'url':'http://rss.binsearch.net/rss.php?max=50&g=alt.binaries.multimedia', 'category':'tv'},
-{'name':'Binsearch - Movies Divx (Latest)', 'url':'http://rss.binsearch.net/rss.php?max=50&g=alt.binaries.movies.divx', 'category':'movies'},]
+binsearch_rss = [
+#{'name':'Binsearch - Search', 'url':'http://binsearch.info/index.php/?q=%s&m=&max=250&minsize=0&maxsize=&font=&postdate=&hideposter=on&hidegroup=on'},
+{'name':'Binsearch - TV (Latest)', 'url':'http://rss.binsearch.net/rss.php?max=50&g=alt.binaries.multimedia', 'category':'tv'},
+{'name':'Binsearch - Movies Divx (Latest)', 'url':'http://rss.binsearch.net/rss.php?max=50&g=alt.binaries.movies.divx', 'category':'movies'},
+]
 
 tvnzb_rss = [
 {'name':'TVNZB (Latest)', 'url':'http://tvnzb.com/tvnzb_new.rss', 'category':'tv'},
@@ -31,7 +34,7 @@ tvnzb_rss = [
 {'name':'NZBSRUS (Latest)', 'url':'http://www.nzbsrus.com/rssfeed.php'},
 ]'''
 nzbindex_rss = [
-{'name':'NZBIndex - Search', 'url':'http://www.nzbindex.nl/rss/?searchitem=%s&x=0&y=0&age=30&group=&min_size=&max_size=&poster='},
+{'name':'NZBIndex - Search', 'url':'http://www.nzbindex.nl/rss/?searchitem=%s&x=0&y=0&age=365&group=&min_size=100&max_size=&poster='},
 ]
 
 """ ADD CUSTOM RSS FEEDS HERE """
@@ -40,9 +43,9 @@ other_rss = [
 
 ]
 
-sabnzbd_rss = [
-{'name':'SABnzbd - Queue', 'url':''}, #leave the url blank for this one
-]
+#sabnzbd_rss = [
+#{'name':'SABnzbd - Queue', 'url':''}, #leave the url blank for this one
+#]
 
 #ignore below
 rss_dict = []
@@ -58,5 +61,5 @@ if xbmcplugin.getSetting( "nzbindex_show" ) == "true":
     rss_dict.extend(nzbindex_rss)
 if xbmcplugin.getSetting( "custom_show" ) == "true":
     rss_dict.extend(other_rss)
-rss_dict.extend(sabnzbd_rss)
+#rss_dict.extend(sabnzbd_rss)
 
