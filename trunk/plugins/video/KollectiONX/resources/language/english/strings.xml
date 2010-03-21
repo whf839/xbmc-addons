@@ -30,6 +30,10 @@
     <string id="30057">By Writer</string>
     <string id="30060">Genre Filter</string>
     <string id="30061">Play All</string>
+    <string id="30062">Play One Random</string>
+    <string id="30063">Play All Random</string>
+    <string id="30064">Filtered</string>
+    <string id="30065">Unfiltered</string>
     <string id="32000">Genres to Ignore</string>
     <string id='32001'>KollectiONX</string>
     <string id='32002'>Unable to connect to the DB server</string>
