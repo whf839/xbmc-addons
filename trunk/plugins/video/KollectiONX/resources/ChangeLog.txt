@@ -6,3 +6,7 @@ V 0.2: 3/20/2010
   was clicked the DBServer would crash
  Added some more localized strings in strings.xml
  Added Play One Random and Play All Random to the context menu
+
+V 0.2.1: 3/21/2010
+ Renamed changelog and readme again
+ Lowered the minimum XBMC revision requirement

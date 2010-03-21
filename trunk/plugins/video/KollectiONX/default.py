@@ -2,9 +2,9 @@ __plugin__  = "KollectiONX"
 __author__  = "Brian Millham <brian@millham.net>"
 __url__     = ""
 __date__    = "20 March 2010"
-__version__ = "0.2"
+__version__ = "0.2.1"
 __svn_revision__ = "$Revision:$"
-__XBMC_Revision__ = "26018"
+__XBMC_Revision__ = "19457"
 
 import urllib
 import re
