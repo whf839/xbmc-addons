@@ -168,6 +168,21 @@ MOVIE_LINKS = """
   ORDER BY linksid
 """
 
+RANDOM_MOVIE_LINK = """
+  SELECT * FROM moviexlinks
+  WHERE movieid = %s
+   AND linktype = 'movie'
+  ORDER BY RAND()
+  LIMIT 1
+"""
+
+ALL_RANDOM_MOVIE_LINKS = """
+  SELECT * FROM moviexlinks
+  WHERE movieid = %s
+   AND linktype = 'movie'
+  ORDER BY RAND()
+"""
+
 
 ACTORS_LIST = """
   SELECT ActorID,

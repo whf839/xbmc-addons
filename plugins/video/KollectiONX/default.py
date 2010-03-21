@@ -2,7 +2,7 @@ __plugin__  = "KollectiONX"
 __author__  = "Brian Millham <brian@millham.net>"
 __url__     = ""
 __date__    = "20 March 2010"
-__version__ = "0.1"
+__version__ = "0.2"
 __svn_revision__ = "$Revision:$"
 __XBMC_Revision__ = "26018"
 
@@ -36,7 +36,9 @@ MOVIES_BY_YEAR=24
 MOVIES_BY_DIRECTOR=25
 MOVIES_BY_STUDIO=26
 MOVIES_BY_WRITER=27
-PLAY_ALL_LINKS=99
+PLAY_ALL_LINKS=30061
+PLAY_RANDOM_LINK=30062
+PLAY_ALL_RANDOM_LINKS=30063
 
 MainMenu = {xbmc.getLocalizedString(30050): FILTERED, #Filtered
             xbmc.getLocalizedString(30051): UNFILTERED, # Unfiltered
@@ -50,7 +52,9 @@ MainMenu = {xbmc.getLocalizedString(30050): FILTERED, #Filtered
             }
 
 MyName=xbmc.getLocalizedString(32001)
-filter_list=xbmcplugin.getSetting('genreignore').split(",")
+filter_list = []
+if xbmcplugin.getSetting('genreignore') != '':
+   filter_list=xbmcplugin.getSetting('genreignore').split(",")
 
 def fixUrl(url):
       if url == '':
@@ -195,10 +199,16 @@ def linkList(movieid):
               "Plot": moviedetails["Plot"]})
             xbmcplugin.addDirectoryItem(int(sys.argv[1]), fixUrl(link["URL"]), l, False, totalcount)
 
-def playAll(movieid):
+def playLinks(mode, movieid):
     (moviedetails, moviecount) = db.runSQL(SQL.SINGLE_MOVIE % movieid, True)
-    (results, totalcount) = db.runSQL(SQL.MOVIE_LINKS % movieid)
+    if mode==PLAY_ALL_LINKS:
+        query = SQL.MOVIE_LINKS
+    elif mode==PLAY_RANDOM_LINK:
+        query = SQL.RANDOM_MOVIE_LINK
+    elif mode==PLAY_ALL_RANDOM_LINKS:
+        query = SQL.ALL_RANDOM_MOVIE_LINKS
 
+    (results, totalcount) = db.runSQL(query % movieid)
     playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
     playlist.clear()
 
@@ -252,6 +262,12 @@ def createInfoLabels(row, castandrole=None, cast=None, genre_list=None, director
         infolabels["Year"] = row["year"]
     return infolabels
 
+def createContextMenuUrl(type, movieid):
+    uplayall=sys.argv[0]+ \
+        "?mode="+str(type)+ \
+        "&movieid="+str(movieid)
+    return 'XBMC.RunPlugin('+uplayall+')'
+
 def addLink(row, totalcount):
         actors = db.getActorsByMovie(row['movieid'])
         castandrole = getList(actors, "ActorAsPart")
@@ -299,12 +315,14 @@ def addDir(movieid=0,
                              thumbnailImage = iconimage)
         if row: liz.setInfo( type="Video", infoLabels=createInfoLabels(row))
         if row != None:
-            uplayall=sys.argv[0]+ \
-              "?mode="+str(PLAY_ALL_LINKS)+ \
-              "&movieid="+str(movieid)
             liz.addContextMenuItems([
-             (xbmc.getLocalizedString(30061),
-             'XBMC.RunPlugin('+uplayall+')',)], True)
+              (xbmc.getLocalizedString(PLAY_ALL_LINKS),
+               createContextMenuUrl(PLAY_ALL_LINKS, movieid),),
+               (xbmc.getLocalizedString(PLAY_RANDOM_LINK),
+               createContextMenuUrl(PLAY_RANDOM_LINK, movieid),),
+               (xbmc.getLocalizedString(PLAY_ALL_RANDOM_LINKS),
+               createContextMenuUrl(PLAY_ALL_RANDOM_LINKS, movieid),)
+               ], True)
         if mode == MOVIES_BY_GENRE:
             if str(movieid) in filter_list:
                 text = "Remove filter for %s" % name
@@ -397,7 +415,7 @@ if mode==GENRE_FILTER:
 
 if mode==None or not db.isConnected():
         mainMenu()
-elif mode==UNFILTERED:
+elif mode==UNFILTERED or (mode==FILTERED and xbmcplugin.getSetting('genreignore') == ''):
     movieList(SQL.ALL_MOVIES % '')
 elif mode==BY_GENRE:
     genreList()
@@ -405,7 +423,7 @@ elif mode==BY_ACTOR:
     actorList()
 elif mode==BY_YEAR:
     yearList()
-elif mode==FILTERED:
+elif mode==FILTERED and xbmcplugin.getSetting('genreignore') != '':
     movieList(SQL.ALL_MOVIES % SQL.IGNORE_GENRE_WHERE % xbmcplugin.getSetting('genreignore'))
 elif mode==BY_DIRECTOR:
     directorList()
@@ -427,8 +445,8 @@ elif mode==MOVIES_BY_STUDIO:
     movieList(SQL.ALL_MOVIES % SQL.STUDIO_WHERE % movieid)
 elif mode==MOVIES_BY_WRITER:
     movieList(SQL.ALL_MOVIES % SQL.WRITER_WHERE % movieid)
-elif mode==PLAY_ALL_LINKS:
-    playAll(movieid)
+elif mode==PLAY_ALL_LINKS or mode==PLAY_RANDOM_LINK or mode==PLAY_ALL_RANDOM_LINKS:
+    playLinks(mode, movieid)
 elif mode==GENRE_TOGGLE:
     if str(movieid) in filter_list:
         filter_list.remove(movieid)
@@ -436,7 +454,6 @@ elif mode==GENRE_TOGGLE:
         filter_list.append(movieid)
     xbmcplugin.setSetting('genreignore', ",".join(filter_list))
     xbmc.executebuiltin('Container.Refresh')
-
 elif mode==MOVIE_LINK_LIST:
     linkList(movieid)
 
