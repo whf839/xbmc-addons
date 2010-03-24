@@ -27,3 +27,6 @@ V 0.2.4: 3/23/2010
 V 0.2.5: 3/24/2010
  Fixed problem with the url link in the moviexlinks table
  Replaced missing skin directory
+
+V 0.2.6: 3/24/2010
+ Properly handle drive letters in the link path
