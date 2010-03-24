@@ -30,3 +30,6 @@ V 0.2.5: 3/24/2010
 
 V 0.2.6: 3/24/2010
  Properly handle drive letters in the link path
+
+V 0.2.7: 3/24/2010
+ Fixed problem when the imdbrating was not a number

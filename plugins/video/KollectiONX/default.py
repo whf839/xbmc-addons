@@ -2,7 +2,7 @@ __plugin__  = "KollectiONX"
 __author__  = "Brian Millham <brian@millham.net>"
 __url__     = ""
 __date__    = "22 March 2010"
-__version__ = "0.2.6"
+__version__ = "0.2.7"
 __svn_revision__ = "$Revision:$"
 __XBMC_Revision__ = "19457"
 
@@ -263,7 +263,10 @@ def createInfoLabels(row, castandrole=None, cast=None, genre_list=None, director
     if row["audiencerating"] != None:
         infolabels["mpaa"] = row["audiencerating"]
     if row["IMDbRating"] != '':
-        infolabels["Rating"] = float(row["imdbrating"])
+        try:
+            infolabels["Rating"] = float(row["imdbrating"])
+        except:
+            infolabels["Rating"] = 0.0
     if row["year"] != None:
         infolabels["Year"] = row["year"]
     return infolabels
