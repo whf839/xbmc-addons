@@ -18,3 +18,8 @@ V 0.2.2: 3/22/2010
 
 V 0.2.3: 3/22/2010
  Forgot to update the version in default.py
+
+V 0.2.4: 3/23/2010
+ Removed the .pyd 32/64 bit versions of _mysql, and replaced them with the
+  proper version.
+ Changed fixurl to leave urls alone again.
