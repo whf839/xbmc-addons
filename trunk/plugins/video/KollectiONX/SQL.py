@@ -85,7 +85,7 @@ ALL_MOVIES = """
          IMDbRating,
          RunningTime,
          audiencerating.displayname AS AudienceRating,
-         IF(COUNT(url)=1,url,"") AS movieurl
+         IF(COUNT(moviexlinks.url)=1,moviexlinks.url,"") AS movieurl
   FROM movie
    LEFT JOIN moviexlinks
     ON movie.id = moviexlinks.movieid
