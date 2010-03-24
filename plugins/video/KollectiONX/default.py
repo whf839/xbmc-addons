@@ -2,7 +2,7 @@ __plugin__  = "KollectiONX"
 __author__  = "Brian Millham <brian@millham.net>"
 __url__     = ""
 __date__    = "22 March 2010"
-__version__ = "0.2.4"
+__version__ = "0.2.5"
 __svn_revision__ = "$Revision:$"
 __XBMC_Revision__ = "19457"
 
