@@ -2,7 +2,7 @@ __plugin__  = "KollectiONX"
 __author__  = "Brian Millham <brian@millham.net>"
 __url__     = ""
 __date__    = "22 March 2010"
-__version__ = "0.2.5"
+__version__ = "0.2.6"
 __svn_revision__ = "$Revision:$"
 __XBMC_Revision__ = "19457"
 
@@ -61,12 +61,18 @@ def fixUrl(url):
         return ''
       #if platform != 'linux2':
       #    return url
+
       r = re.compile('\\\\')
       myfile = r.sub('/', url)
-      r1 = re.compile("//(.*?)/")
-      m = r1.match(myfile)
-      server = m.group(1)
-      myfile1 = r1.sub('smb://' + server + '/', myfile)
+      myfile1 = ''
+      l = url.split(':')
+      if len(l) == 2:
+          myfile1 = myfile
+      else:
+          r1 = re.compile("//(.*?)/")
+          m = r1.match(myfile)
+          server = m.group(1)
+          myfile1 = r1.sub('smb://' + server + '/', myfile)
       return(str(myfile1))
 
 def mainMenu():
@@ -377,6 +383,7 @@ print "Mode: "+str(mode)
 print "URL: "+str(url)
 print "Name: "+str(name)
 print "MovieID: "+str(movieid)
+print "Platform: %s" % platform
 
 db = MovieSQL.MovieSQL()
 
