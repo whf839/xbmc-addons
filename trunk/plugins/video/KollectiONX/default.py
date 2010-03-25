@@ -2,7 +2,7 @@ __plugin__  = "KollectiONX"
 __author__  = "Brian Millham <brian@millham.net>"
 __url__     = ""
 __date__    = "22 March 2010"
-__version__ = "0.2.7"
+__version__ = "0.2.8"
 __svn_revision__ = "$Revision:$"
 __XBMC_Revision__ = "19457"
 
@@ -59,8 +59,6 @@ if xbmcplugin.getSetting('genreignore') != '':
 def fixUrl(url):
       if url == '':
         return ''
-      #if platform != 'linux2':
-      #    return url
 
       r = re.compile('\\\\')
       myfile = r.sub('/', url)
@@ -69,10 +67,7 @@ def fixUrl(url):
       if len(l) == 2:
           myfile1 = myfile
       else:
-          r1 = re.compile("//(.*?)/")
-          m = r1.match(myfile)
-          server = m.group(1)
-          myfile1 = r1.sub('smb://' + server + '/', myfile)
+          myfile1 = "smb:" + myfile
       return(str(myfile1))
 
 def mainMenu():
@@ -203,6 +198,7 @@ def linkList(movieid):
               "TVShowTitle": moviedetails["Title"],
               "Title": link["Description"],
               "Plot": moviedetails["Plot"]})
+            print "Adding link: " + link["URL"]
             xbmcplugin.addDirectoryItem(int(sys.argv[1]), fixUrl(link["URL"]), l, False, totalcount)
 
 def playLinks(mode, movieid):
@@ -264,9 +260,9 @@ def createInfoLabels(row, castandrole=None, cast=None, genre_list=None, director
         infolabels["mpaa"] = row["audiencerating"]
     if row["IMDbRating"] != '':
         try:
-            infolabels["Rating"] = float(row["imdbrating"])
+            infolabels["Rating"] = float(row["imdbrating"].split(" ")[0])
         except:
-            infolabels["Rating"] = 0.0
+            pass
     if row["year"] != None:
         infolabels["Year"] = row["year"]
     return infolabels
