@@ -90,6 +90,9 @@ ALL_MOVIES = """
    LEFT JOIN moviexlinks
     ON movie.id = moviexlinks.movieid
        AND linktype="movie"
+       AND (moviexlinks.url RLIKE "^.:"
+             OR
+            moviexlinks.url RLIKE "^\\\\\\\\")
    LEFT JOIN year
     ON moviereleaseyear = year.id
    LEFT JOIN audiencerating
@@ -165,6 +168,8 @@ MOVIE_LINKS = """
   SELECT * FROM moviexlinks
   WHERE movieid = %s
         AND linktype = 'movie'
+        AND (url RLIKE "^.:" OR
+             url RLIKE "^\\\\\\\\")
   ORDER BY linksid
 """
 
