@@ -66,7 +66,7 @@ ACTORS = """
             CONCAT_WS(', ',lastname,actor.name)) AS label1,
          IF(partxactor.name='',
             actor.displayname,
-            CONCAT_WS('|',actor.displayname,partxactor.name)) AS ActorAsPart
+            CONCAT(actor.displayname, ": [B][I]", partxactor.name, "[/I][/B]")) AS ActorAsPart
   FROM `partxmovie`
    LEFT JOIN partxactor
     ON partxmovie.partid = partxactor.partid
@@ -100,6 +100,26 @@ ALL_MOVIES = """
   %s
   GROUP BY moviexlinks.movieid
   ORDER BY IF(titlesort = "", title, titlesort)
+"""
+
+MOVIE_LETTER_LIST="""
+  SELECT
+   LEFT(
+    IF(
+     titlesort='',
+     title,
+     titlesort
+    ),
+   1) AS letter,
+   COUNT(id)
+  FROM movie
+  %s
+  GROUP BY letter
+  ORDER BY letter
+"""
+
+MOVIE_COUNT="""
+  SELECT COUNT(id) AS movie_count %s
 """
 
 YEAR_WHERE = """

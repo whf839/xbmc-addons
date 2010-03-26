@@ -1,8 +1,8 @@
 __plugin__  = "KollectiONX"
 __author__  = "Brian Millham <brian@millham.net>"
 __url__     = ""
-__date__    = "22 March 2010"
-__version__ = "0.2.8"
+__date__    = "25 March 2010"
+__version__ = "0.3"
 __svn_revision__ = "$Revision:$"
 __XBMC_Revision__ = "19457"
 
@@ -69,6 +69,25 @@ def fixUrl(url):
       else:
           myfile1 = "smb:" + myfile
       return(str(myfile1))
+
+def fixHtml(html):
+    if html == '': return ''
+
+    r = re.compile('<(b|B)>')
+    html = r.sub('[B]', html)
+    r = re.compile('</(b|B)>')
+    html = r.sub('[/B]', html)
+    r = re.compile('<(i|I)>')
+    html = r.sub('[I]', html)
+    r = re.compile('</(i|I)>')
+    html = r.sub('[/I]', html)
+    r = re.compile('<.?(p|P)>')
+    html = r.sub('[CR]', html)
+    r = re.compile('<(.?(l|L)(i|I))>')
+    html = r.sub('[CR]', html)
+    r = re.compile('<.*?>')
+    html = r.sub('', html)
+    return html
 
 def mainMenu():
     for k in sorted(MainMenu):
@@ -187,7 +206,7 @@ def linkList(movieid):
         l.setInfo(type="Video", infoLabels={
               "TVShowTitle": moviedetails["Title"],
               "Title": xbmc.getLocalizedString(30061),
-              "Plot": moviedetails["Plot"]})
+              "Plot": fixHtml(moviedetails["Plot"])})
         xbmcplugin.addDirectoryItem(int(sys.argv[1]), u, l, False)
 
         for link in results:
@@ -197,7 +216,7 @@ def linkList(movieid):
             l.setInfo(type="Video", infoLabels={
               "TVShowTitle": moviedetails["Title"],
               "Title": link["Description"],
-              "Plot": moviedetails["Plot"]})
+              "Plot": fixHtml(moviedetails["Plot"])})
             print "Adding link: " + link["URL"]
             xbmcplugin.addDirectoryItem(int(sys.argv[1]), fixUrl(link["URL"]), l, False, totalcount)
 
@@ -221,7 +240,7 @@ def playLinks(mode, movieid):
        l.setInfo(type="Video", infoLabels={
          "TVShowTitle": moviedetails["Title"],
          "Title": link["Description"],
-         "Plot": moviedetails["Plot"]})
+         "Plot": fixHtml(moviedetails["Plot"])})
        playlist.add(url=fixUrl(link['url']), listitem=l)
 
     xbmc.Player().play(playlist)
@@ -248,7 +267,7 @@ def createInfoLabels(row, castandrole=None, cast=None, genre_list=None, director
     infolabels = {}
     if row == None: return infolabels
     infolabels["Title"] = row["title"]
-    infolabels["Plot"] = row["plot"]
+    infolabels["Plot"] = fixHtml(row["plot"])
     #if cast: infolabels["Cast"] = cast
     if castandrole: infolabels['castandrole'] = castandrole
     if genre_list: infolabels["Genre"] = ", ".join(genre_list)

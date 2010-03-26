@@ -35,9 +35,14 @@ V 0.2.7: 3/24/2010
  Fixed problem when the imdbrating was not a number (just ignores the rating
   for now)
 
-V 0.2.8: 3/21/2010
+V 0.2.8: 3/24/2010
  Movie links must start with either a \\ or a drive letter (like x:) Limks
   that don't match this will be ignored.
  Simplified the link url change to just switch \ for /, and if no drive letter
   is used, add smb: to the url
  Now strips vote and other info from the IMDb ratings to give just the number.
+
+V 0.3: 3/25/2010
+ Changes html formatting to XBMC formatting when possible in plot info.
+ Changed the format of Actor|Part to Actor: [b][i]part[/i][/b]
+ Added Dutch and Bulgarian language files (translated by Stranger224
