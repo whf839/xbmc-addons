@@ -111,7 +111,7 @@ MOVIE_LETTER_LIST="""
      titlesort
     ),
    1) AS letter,
-   COUNT(id)
+   COUNT(id) AS lettercount
   FROM movie
   %s
   GROUP BY letter
@@ -123,7 +123,7 @@ MOVIE_BY_LETTER="""
    SELECT movieid
    FROM moviexgenre
    WHERE genreid IN(%s)
-  ) AND title RLIKE '^%s'
+  ) AND IF(titlesort='',title,titlesort) RLIKE '^%s'
 """
 
 MOVIE_COUNT="""

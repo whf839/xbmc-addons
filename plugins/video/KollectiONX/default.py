@@ -18,7 +18,8 @@ import sys
 
 platform=sys.platform
 
-movie_limit = 500
+limit = [100, 250, 500, 750, 1000, 1500, 2000]
+movie_limit = limit[int(xbmcplugin.getSetting('maxmoviecount'))]
 
 MOVIE_LINK_LIST=5
 GENRE_TOGGLE=100
@@ -181,14 +182,18 @@ def yearList():
 def movieLetterList(clause):
     (results, totalcount) = db.runSQL(SQL.MOVIE_LETTER_LIST % clause)
     for row in results:
+        name = "%s (%d)" % (row['letter'], row['lettercount'])
         addDir(row['letter'],
-          name=row['letter'],
+          name=name,
           mode=MOVIES_BY_LETTER,
           totalcount=totalcount)
 
 def movieList(sql, clause='', nomax=False):
         (mcount, mtotal) = db.runSQL(SQL.MOVIE_COUNT % clause, True)
+        limit=int(xbmcplugin.getSetting('maxmoviecount'))
+        print "Movie count setting: %s" % xbmcplugin.getSetting('maxmoviecount')
         print "Movie count: %d" % mcount['movie_count']
+        print "Movie limit: %d, momax: %d" % (movie_limit, nomax)
         if mcount['movie_count'] > movie_limit and not nomax:
             movieLetterList(clause)
         else:
@@ -492,6 +497,7 @@ elif mode==MOVIES_BY_LETTER:
         f = '-1'
     else:
         f = ",".join(filter_list)
+    if movieid == '.': movieid = '\\\\.'
     lclause = SQL.MOVIE_BY_LETTER % (f, movieid)
     print "Clause: %s" % lclause
     movieList(SQL.ALL_MOVIES, clause=lclause, nomax=True)
