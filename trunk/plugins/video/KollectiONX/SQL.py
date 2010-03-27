@@ -118,8 +118,16 @@ MOVIE_LETTER_LIST="""
   ORDER BY letter
 """
 
+MOVIE_BY_LETTER="""
+  WHERE movie.id NOT IN(
+   SELECT movieid
+   FROM moviexgenre
+   WHERE genreid IN(%s)
+  ) AND title RLIKE '^%s'
+"""
+
 MOVIE_COUNT="""
-  SELECT COUNT(id) AS movie_count %s
+  SELECT COUNT(id) AS movie_count FROM movie %s
 """
 
 YEAR_WHERE = """
