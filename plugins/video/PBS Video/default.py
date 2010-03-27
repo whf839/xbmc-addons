@@ -3,8 +3,8 @@ __scriptname__ = "PBS Video"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/PBS%20Video"
-__date__ = '01-25-10'
-__version__ = "1.3.1"
+__date__ = '03-27-10'
+__version__ = "1.3.2"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 from urllib import urlretrieve, urlcleanup
@@ -94,7 +94,7 @@ def playVideo(url, name, thumb, plot):
 	f=urllib2.urlopen(req)
 	a=f.read()
 	f.close()
-	p=re.compile('&releaseURL=http%3A//release.theplatform.com/content.select%3Fpid%3D(.+?)%26UserName')
+	p=re.compile('http%3A//release.theplatform.com/content.select%3Fpid%3D(.+?)%26UserName')
 	info=p.findall(a)
 	url='http://release.theplatform.com/content.select?pid='+info[0]+'&format=SMIL'
 	req = urllib2.Request(url)
