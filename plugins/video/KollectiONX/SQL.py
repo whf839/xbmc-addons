@@ -66,7 +66,7 @@ ACTORS = """
             CONCAT_WS(', ',lastname,actor.name)) AS label1,
          IF(partxactor.name='',
             actor.displayname,
-            CONCAT(actor.displayname, ": [B][I]", partxactor.name, "[/I][/B]")) AS ActorAsPart
+            CONCAT("[B]", actor.displayname, "[/B]: [I]", partxactor.name, "[/I]")) AS ActorAsPart
   FROM `partxmovie`
    LEFT JOIN partxactor
     ON partxmovie.partid = partxactor.partid

@@ -346,7 +346,7 @@ def addDir(movieid=0,
                createContextMenuUrl(PLAY_RANDOM_LINK, movieid),),
                (xbmc.getLocalizedString(PLAY_ALL_RANDOM_LINKS),
                createContextMenuUrl(PLAY_ALL_RANDOM_LINKS, movieid),)
-               ], True)
+               ], False)
         if mode == MOVIES_BY_GENRE:
             if str(movieid) in filter_list:
                 text = "Remove filter for %s" % name
