@@ -57,3 +57,9 @@ V 0.4.0: 3/26/2010
   movies.
  If more than 500 movies are in the All Movies list, show a list of
   movies by letter. This is for large collections.
+
+V 0.4.1: 3/27/2010
+ Movies by letter now shows a count of the movies for each letter
+ Trying to view movies starting with '.' would return all movies
+ Titlesort wasn't being used when looking for movies starting with a letter
+ Added user setting for the max movie count threshold.

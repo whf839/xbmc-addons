@@ -14,6 +14,9 @@
     <setting id='mysqluser' label='30002' type='text' default='root' />
     <setting id='mysqlpassword' option="hidden" label='30003' type='text' default='' />
     <setting id='mysqldatabase' label='30004' type='text' default='mymovies' />
+    <setting type='sep' />
+    <setting id='maxmoviecount' label='30005' default='2' type='enum'
+             values='100|250|500|750|1000|1500|2000' />
     <!-- There is no way to do check boxes yet with Settings,
          so hiding this entry, and using custom genre selection instead. -->
     <setting id='genreignore' type='text' visible='false' />
