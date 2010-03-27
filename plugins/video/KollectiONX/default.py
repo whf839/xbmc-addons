@@ -18,6 +18,8 @@ import sys
 
 platform=sys.platform
 
+movie_limit = 500
+
 MOVIE_LINK_LIST=5
 GENRE_TOGGLE=100
 BY_GENRE=11
@@ -36,12 +38,13 @@ MOVIES_BY_YEAR=24
 MOVIES_BY_DIRECTOR=25
 MOVIES_BY_STUDIO=26
 MOVIES_BY_WRITER=27
+MOVIES_BY_LETTER=28
 PLAY_ALL_LINKS=30061
 PLAY_RANDOM_LINK=30062
 PLAY_ALL_RANDOM_LINKS=30063
 
 MainMenu = {xbmc.getLocalizedString(30050): FILTERED, #Filtered
-            xbmc.getLocalizedString(30051): UNFILTERED, # Unfiltered
+            #xbmc.getLocalizedString(30051): UNFILTERED, # Unfiltered
             xbmc.getLocalizedString(30052): BY_ACTOR, # Actor
             xbmc.getLocalizedString(30053): BY_GENRE, # Genre
             xbmc.getLocalizedString(30054): BY_YEAR, # Year
@@ -95,7 +98,7 @@ def mainMenu():
             u=sys.argv[0]+ \
              "?mode="+str(GENRE_FILTER)+ \
              "&name="+urllib.quote_plus(k)
-            liz=xbmcgui.ListItem(k,
+            liz=xbmcgui.ListItem(k, 
              iconImage="DefaultVideo.png",
              thumbnailImage="DefaultVideo.png")
             xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),
@@ -175,18 +178,31 @@ def yearList():
                    mode=MOVIES_BY_YEAR,
                    totalcount=totalcount)
 
-def movieList(sql):
-        (results, totalcount) = db.runSQL(sql)
-	for row in results:
-	    if row["movieurl"] == "":
-	      addDir(row["movieid"],
-               name=row["title"],
-               mode=MOVIE_LINK_LIST,
-               iconimage=fixUrl(row["frontcover"]),
-               totalcount=totalcount,
-               row=row)
-	    else:
-              addLink(row, totalcount)
+def movieLetterList(clause):
+    (results, totalcount) = db.runSQL(SQL.MOVIE_LETTER_LIST % clause)
+    for row in results:
+        addDir(row['letter'],
+          name=row['letter'],
+          mode=MOVIES_BY_LETTER,
+          totalcount=totalcount)
+
+def movieList(sql, clause='', nomax=False):
+        (mcount, mtotal) = db.runSQL(SQL.MOVIE_COUNT % clause, True)
+        print "Movie count: %d" % mcount['movie_count']
+        if mcount['movie_count'] > movie_limit and not nomax:
+            movieLetterList(clause)
+        else:
+            (results, totalcount) = db.runSQL(sql % clause)
+	    for row in results:
+	      if row["movieurl"] == "":
+	        addDir(row["movieid"],
+                 name=row["title"],
+                 mode=MOVIE_LINK_LIST,
+                 iconimage=fixUrl(row["frontcover"]),
+                 totalcount=totalcount,
+                 row=row)
+	      else:
+                addLink(row, totalcount)
         #xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TITLE)
         #xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_TITLE_IGNORE_THE)
         #xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_GENRE)
@@ -360,6 +376,7 @@ def addDir(movieid=0,
                                                    movieid)
             liz.addContextMenuItems([(text,
               'XBMC.RunPlugin('+ufilter+')',)], True)
+        
         ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),
                                        url=u,
                                        listitem=liz,
@@ -441,7 +458,7 @@ if mode==GENRE_FILTER:
 if mode==None or not db.isConnected():
         mainMenu()
 elif mode==UNFILTERED or (mode==FILTERED and xbmcplugin.getSetting('genreignore') == ''):
-    movieList(SQL.ALL_MOVIES % '')
+    movieList(SQL.ALL_MOVIES)
 elif mode==BY_GENRE:
     genreList()
 elif mode==BY_ACTOR:
@@ -449,7 +466,7 @@ elif mode==BY_ACTOR:
 elif mode==BY_YEAR:
     yearList()
 elif mode==FILTERED and xbmcplugin.getSetting('genreignore') != '':
-    movieList(SQL.ALL_MOVIES % SQL.IGNORE_GENRE_WHERE % xbmcplugin.getSetting('genreignore'))
+    movieList(SQL.ALL_MOVIES, clause=SQL.IGNORE_GENRE_WHERE % xbmcplugin.getSetting('genreignore'))
 elif mode==BY_DIRECTOR:
     directorList()
 elif mode==BY_STUDIO:
@@ -457,19 +474,27 @@ elif mode==BY_STUDIO:
 elif mode==BY_WRITER:
     writerList()
 elif mode==MOVIES_BY_GENRE:
-    movieList(SQL.ALL_MOVIES % SQL.GENRE_WHERE % movieid)
+    movieList(SQL.ALL_MOVIES, clause=SQL.GENRE_WHERE % movieid, nomax=True)
 elif mode==ACTOR_LETTER_LIST:
     actorLetterList(movieid)
 elif mode==MOVIES_BY_ACTOR:
-    movieList(SQL.ALL_MOVIES % SQL.ACTOR_WHERE % movieid)
+    movieList(SQL.ALL_MOVIES, clause=SQL.ACTOR_WHERE % movieid)
 elif mode==MOVIES_BY_YEAR:
-    movieList(SQL.ALL_MOVIES % SQL.YEAR_WHERE % int(movieid))
+    movieList(SQL.ALL_MOVIES, clause=SQL.YEAR_WHERE % int(movieid))
 elif mode==MOVIES_BY_DIRECTOR:
-    movieList(SQL.ALL_MOVIES % SQL.DIRECTOR_WHERE % movieid)
+    movieList(SQL.ALL_MOVIES, clause=SQL.DIRECTOR_WHERE % movieid)
 elif mode==MOVIES_BY_STUDIO:
-    movieList(SQL.ALL_MOVIES % SQL.STUDIO_WHERE % movieid)
+    movieList(SQL.ALL_MOVIES, clause=SQL.STUDIO_WHERE % movieid)
 elif mode==MOVIES_BY_WRITER:
-    movieList(SQL.ALL_MOVIES % SQL.WRITER_WHERE % movieid)
+    movieList(SQL.ALL_MOVIES, clause=SQL.WRITER_WHERE % movieid)
+elif mode==MOVIES_BY_LETTER:
+    if len(filter_list) == 0:
+        f = '-1'
+    else:
+        f = ",".join(filter_list)
+    lclause = SQL.MOVIE_BY_LETTER % (f, movieid)
+    print "Clause: %s" % lclause
+    movieList(SQL.ALL_MOVIES, clause=lclause, nomax=True)
 elif mode==PLAY_ALL_LINKS or mode==PLAY_RANDOM_LINK or mode==PLAY_ALL_RANDOM_LINKS:
     playLinks(mode, movieid)
 elif mode==GENRE_TOGGLE:
