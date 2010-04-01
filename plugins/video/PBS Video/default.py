@@ -1,15 +1,43 @@
 
 __scriptname__ = "PBS Video"
-__author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
+__author__ = 'stacked <stacked.xbmc@gmail.com> - XBMC profile: http://xbmc.org/forum/member.php?u=26908'
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/PBS%20Video"
-__date__ = '03-27-10'
-__version__ = "1.3.2"
+__date__ = '03-31-10'
+__version__ = "1.3.3"
 
-import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
+import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback, time
 from urllib import urlretrieve, urlcleanup
-HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1.1) Gecko/20090715 Firefox/3.5.1'
+from urllib2 import Request, urlopen, URLError, HTTPError
+HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2'
 BASE_CACHE_PATH = os.path.join( xbmc.translatePath( "special://profile/" ), "Thumbnails", "Video" )
+THUMBNAIL_PATH = os.path.join(os.getcwd().replace( ";", "" ),'resources','media')
+
+def open_url(url):
+	retries = 0
+	while retries < 1:
+		try:
+			req = urllib2.Request(url)
+			content=urllib2.urlopen(req)
+			data=content.read()
+			content.close()
+			return data
+		except HTTPError,e:
+			print 'PBS Video - Error code: ', e.code
+			if e.code == 500:
+				dialog = xbmcgui.Dialog()
+				ok = dialog.ok('PBS Video', 'Sorry...We could not find any videos that match your search query.\nPlease check your spelling, or try again using different search words.')
+				main()
+				return "data"
+			retries += 1
+			print 'PBS Video - Retries: ' + str(retries)
+			time.sleep(2)
+			continue
+		else:
+			break
+	else:
+		print 'Fetch of ' + url + ' failed after ' + str(retries) + 'tries.'
+
 
 def _check_for_update():
 	print "PBS Video v"+__version__
@@ -26,42 +54,87 @@ def _check_for_update():
 			dia = xbmcgui.Dialog()
 			ok = dia.ok("PBS Video", 'Updates are available on SVN Repo Installer\n\n'+'Current Version: '+__version__+'\n'+'Update Version: '+newVersion)
 
-def showRoot():
+def main():
+	li3=xbmcgui.ListItem("1. Programs",iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'tv_icon.png'))
+	u3=sys.argv[0]+"?mode=2"
+	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u3,li3,True)
+	li3=xbmcgui.ListItem("2. Topics",iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'tv_icon.png'))
+	u3=sys.argv[0]+"?mode=3"
+	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u3,li3,True)
+	li3=xbmcgui.ListItem("3. Collections",iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'tv_icon.png'))
+	u3=sys.argv[0]+"?mode=4"
+	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u3,li3,True)
+	li3=xbmcgui.ListItem("4. Search",iconImage="DefaultVideo.png", thumbnailImage=os.path.join(THUMBNAIL_PATH, 'search_icon.png'))
+	u3=sys.argv[0]+"?mode=5"
+	xbmcplugin.addDirectoryItem(int(sys.argv[1]),u3,li3,True)
+
+def Programs():
 		url='http://video.pbs.org/'
-		req = urllib2.Request(url)
-		req.add_header('User-Agent', HEADER)
-		f=urllib2.urlopen(req)
-		a=f.read()
-		f.close()
-		p=re.compile('<ul id="mainnav">(.+?)<li class="more">', re.DOTALL)
-		match=p.findall(a)
-		o=re.compile('<li><a href="http://video.pbs.org/program/(.+?)/" title="(.+?)">')
-		data=o.findall(match[0])
+		data=open_url(url)
+		mainnav=re.compile('<li class="programs-nav">(.+?)<li class="more">', re.DOTALL).findall(data)
+		ids_title=re.compile('<li><a href="http://video.pbs.org/program/(.+?)/" title="(.+?)">').findall(mainnav[0])
 		x=0
-		for url, name in data:
+		for url, name in ids_title:
 			url='http://www.pbs.org/video/programReleases/' + url + '/start/01/end/999/'
+			name=clean(name)
 			li=xbmcgui.ListItem(name)
 			u=sys.argv[0]+"?mode=0&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
 			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
 			x=x+1
 
+def Topics():
+		url='http://video.pbs.org/'
+		data=open_url(url)
+		mainnav=re.compile('<li class="topics-nav">(.+?)<li class="collections-nav">', re.DOTALL).findall(data)
+		ids_title=re.compile('<li><a href="http://video.pbs.org/subject/(.+?)/" title="(.+?)">').findall(mainnav[0])
+		x=0
+		for url, name in ids_title:
+			url='http://www.pbs.org/video/subjectReleases/' + url + '/start/01/end/999/'
+			print url
+			name=clean(name)
+			li=xbmcgui.ListItem(name)
+			u=sys.argv[0]+"?mode=0&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
+			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+			x=x+1
+
+def Collections():
+		url='http://video.pbs.org/'
+		data=open_url(url)
+		mainnav=re.compile('<li class="collections-nav">(.+?)<li class="divider-nav">', re.DOTALL).findall(data)
+		ids_title=re.compile('<li><a href="http://video.pbs.org/feature/(.+?)/" title="(.+?)">').findall(mainnav[0])
+		x=0
+		for url, name in ids_title:
+			url='http://www.pbs.org/video/featureReleases/' + url + '/start/01/end/999/'
+			name=clean(name)
+			li=xbmcgui.ListItem(name)
+			u=sys.argv[0]+"?mode=0&name="+urllib.quote_plus(name)+"&url="+urllib.quote_plus(url)
+			xbmcplugin.addDirectoryItem(int(sys.argv[1]),u,li,True)
+			x=x+1
+
+def Search():
+	searchStr = ''
+	keyboard = xbmc.Keyboard(searchStr, "Search")
+	keyboard.doModal()
+	if (keyboard.isConfirmed() == False):
+		return
+	searchstring = keyboard.getText()
+	newStr = searchstring.replace(' ','%20')
+	if len(newStr) == 0:
+		return
+	url = 'http://video.pbs.org/searchReleases/' + newStr + '/start/01/end/999/'
+	showList(url, searchstring)
+
 def showList(url, name):
 		cat=name
-		req = urllib2.Request(url)
-		req.add_header('User-Agent', HEADER)
-		f=urllib2.urlopen(req)
-		a=f.read()
-		f.close()
-		p=re.compile('<p class="info">\n                \n                <a href="http://video.pbs.org/video/(.+?)" class="title" title="(.+?)">(.+?)</a>\n')
-		q=re.compile('<span class="list">(.*?)</span>')
-		r=re.compile('<img src="(.+?)" alt="(.+?)" />')
-		info=p.findall(a)
-		disc=q.findall(a)
-		img=r.findall(a)
+		data=open_url(url)
+		info=re.compile('<p class="info">\n                \n                <a href="http://video.pbs.org/video/(.+?)" class="title" title="(.+?)">(.+?)</a>\n').findall(data)
+		disc=re.compile('<span class="list">(.*?)</span>').findall(data)
+		img=re.compile('<img src="(.+?)" alt="(.+?)" />').findall(data)
 		x=0
 		for url,trash,title in info:
 			thumb = get_thumbnail( img[x][0] )
-			url='http://video.pbs.org/videoPlayerData/' +url
+			print img[x][0]
+			url='http://video.pbs.org/xbmc/' +url
 			title=clean(title)
 			name = str(int(x+1))+'. '+title+' - '+clean(disc[x])
 			li=xbmcgui.ListItem(name, iconImage=thumb, thumbnailImage=thumb)
@@ -89,21 +162,13 @@ def get_thumbnail(thumbnail_url):
 		return thumbnail_url
 			
 def playVideo(url, name, thumb, plot):
-	req = urllib2.Request(url)
-	req.add_header('User-Agent', HEADER)
-	f=urllib2.urlopen(req)
-	a=f.read()
-	f.close()
-	p=re.compile('http%3A//release.theplatform.com/content.select%3Fpid%3D(.+?)%26UserName')
-	info=p.findall(a)
+	print url
+	data=open_url(url)
+	info=re.compile('http%3A//release.theplatform.com/content.select%3Fpid%3D(.+?)%26UserName').findall(data)
 	url='http://release.theplatform.com/content.select?pid='+info[0]+'&format=SMIL'
-	req = urllib2.Request(url)
-	req.add_header('User-Agent', HEADER)
-	f=urllib2.urlopen(req)
-	a=f.read()
-	f.close()
-	p=re.compile('<meta base="(.+?)" />').findall(a)
-	r=re.compile('<ref src="(.+?)" title="(.+?)" author').findall(a)
+	data2=open_url(url)
+	p=re.compile('<meta base="(.+?)" />').findall(data2)
+	r=re.compile('<ref src="(.+?)" title="(.+?)" author').findall(data2)
 	if p[0] == 'http://ad.doubleclick.net/adx/':
 		data = r[0][0].split("&lt;break&gt;")
 		rtmp_url = data[0]
@@ -168,11 +233,23 @@ except:
 if mode==None:
 	name = ''
 	_check_for_update()
-	showRoot()
+	main()
 elif mode==0:
 	showList(url, name)
 elif mode==1:
 	playVideo(url, name, thumb, plot)
+elif mode==2:
+	name = 'Programs'
+	Programs()
+elif mode==3:
+	name = 'Topics'
+	Topics()
+elif mode==4:
+	name = 'Collections'	
+	Collections()
+elif mode==5:
+	name = 'Search'
+	Search()
 
 xbmcplugin.setPluginCategory(int(sys.argv[1]), name )
 xbmcplugin.addSortMethod( handle=int( sys.argv[ 1 ] ), sortMethod=xbmcplugin.SORT_METHOD_LABEL )
