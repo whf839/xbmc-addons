@@ -15,7 +15,7 @@ THUMBNAIL_PATH = os.path.join(os.getcwd().replace( ";", "" ),'resources','media'
 
 def open_url(url):
 	retries = 0
-	while retries < 1:
+	while retries < 3:
 		try:
 			req = urllib2.Request(url)
 			content=urllib2.urlopen(req)
