@@ -9,7 +9,7 @@ def CATS():
                 req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
                 response = urllib2.urlopen(req)
                 link=response.read()
-                for page in range(1,19):
+                for page in range(1,33):
                         req = urllib2.Request('http://animeseed.com/index.php/search-results?sr_sim=1&page='+str(page))
                         req.add_header('User-Agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14')
                         response = urllib2.urlopen(req)
@@ -33,7 +33,7 @@ def INDEX(url,name):
         link=response.read()
         clean=re.sub('&#038;','&',link)
         response.close()
-        match=re.compile(r'<td align=\'.+?\' width = .+?><a href="(.+?)" onClick=".+?">(.+?)</a>').findall(clean)
+        match=re.compile(r'<td align=.+? width = .+?><a href=\'(.+?)\' onClick=".+?">(.+?)</a>').findall(clean)
         thumb=re.compile(r"<img src='(.+?)'").findall(clean)
         for url,name in match:
                 addDir(name,url,2,thumb[1])
