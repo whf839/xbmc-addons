@@ -1,5 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
     <string id="20000">OPTIONS:</string>
     <string id="30000">Download Flv</string>
+    <string id="30100">Megavideo premium mode:</string>
+    <string id="30101">Megavideo User name:</string>
+    <string id="30102">Megavideo Password:</string>
+    <string id="30103">Megavideo Cookie:</string>
     
 </strings>
