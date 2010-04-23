@@ -1,7 +1,19 @@
 #
 # Imports
 #
+#import os
+#import md5
+#import time
+#import array
+#import httplib
+#import xbmc
+#import xml.dom.minidom
+#import xml.sax.saxutils as SaxUtils
+
+import sys
 import os
+import xmlrpclib
+from utilities import LOG, LOG_INFO, toOpenSubtitles_two
 import md5
 import time
 import array
@@ -9,6 +21,9 @@ import httplib
 import xbmc
 import xml.dom.minidom
 import xml.sax.saxutils as SaxUtils
+import base64
+import gui
+
 
 #
 # Integer => Hexadecimal
@@ -67,7 +82,7 @@ def calculateMD5VideoHash(filename):
 #
 # Calculate Sublight video hash...
 #
-def calculateVideoHash(filename, isPlaying = False):
+def calculateVideoHash(filename, isPlaying = True):
     #
     # Check file...
     #
@@ -258,16 +273,14 @@ def toSublightLanguage(id):
 class SublightWebService :
     def __init__ (self):
         self.SOAP_HOST                  = "www.sublight.si"
-        self.SOAP_SUBTITLES_API_URL     = "/SubtitlesAPI2.asmx"
+        self.SOAP_SUBTITLES_API_URL     = "/API/WS/Sublight.asmx"
         self.SOAP_SUBLIGHT_UTILITY_URL  = "/SublightUtility.asmx"
         
-        self.LOGIN_ANONYMOUSLY_ACTION   = "http://www.subtitles-on.net/LogInAnonymous4"
-        self.GET_FULL_VIDEO_HASH_ACTION = "http://www.subtitles-on.net/GetFullVideoHash"
-        self.SUGGEST_TITLES             = "http://www.subtitles-on.net/SuggestTitles"
-        self.SEARCH_SUBTITLES_ACTION    = "http://www.subtitles-on.net/SearchSubtitles3"
-        self.GET_DOWNLOAD_TICKET_ACTION = "http://www.subtitles-on.net/GetDownloadTicket"
-        self.DOWNLOAD_BY_ID_ACTION      = "http://www.subtitles-on.net/DownloadByID3"
-        self.LOGOUT_ACTION              = "http://www.subtitles-on.net/LogOut"
+        self.LOGIN_ANONYMOUSLY_ACTION   = "http://www.sublight.si/LogInAnonymous4"
+        self.SEARCH_SUBTITLES_ACTION    = "http://www.sublight.si/SearchSubtitles3"
+        self.GET_DOWNLOAD_TICKET_ACTION = "http://www.sublight.si/GetDownloadTicket2"
+        self.DOWNLOAD_BY_ID_ACTION      = "http://www.sublight.si/DownloadByID4"
+        self.LOGOUT_ACTION              = "http://www.sublight.si/LogOut"
         
     #
     # Perform SOAP request...
@@ -288,7 +301,6 @@ class SublightWebService :
             
             ##if r.status != 200:
                ## LOG( LOG_INFO,'Error connecting: %s, %s' % (r.status, r.reason))
-            
             return d
     
     #
@@ -301,7 +313,7 @@ class SublightWebService :
                                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                                        xmlns:xsd="http://www.w3.org/2001/XMLSchema">
                           <soap:Body>
-                            <LogInAnonymous4 xmlns="http://www.subtitles-on.net/">
+                            <LogInAnonymous4 xmlns="http://www.sublight.si/">
                               <clientInfo>
 				<ClientId>OpenSubtitles_OSD</ClientId>
 				<ApiKey>b44bc9b9-91f4-45be-8a49-c9b18ca86566</ApiKey>
@@ -332,7 +344,7 @@ class SublightWebService :
                                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                                        xmlns:xsd="http://www.w3.org/2001/XMLSchema">
                           <soap:Body>
-                            <LogOut xmlns="http://www.subtitles-on.net/">
+                            <LogOut xmlns="http://www.sublight.si/">
                               <session>%s</session>
                             </LogOut>
                           </soap:Body>
@@ -350,77 +362,6 @@ class SublightWebService :
         return result
     
     #
-    # GetFullVideoHash
-    #
-    def GetFullVideoHash(self, sessionId, partialVideoHash):
-        # Build request XML...
-        requestXML = """<?xml version="1.0" encoding="utf-8"?>
-                        <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" 
-                                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                                       xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-                          <soap:Body>
-                            <GetFullVideoHash xmlns="http://www.subtitles-on.net/">
-                              <session>%s</session>
-                              <partialVideoHash>%s</partialVideoHash>
-                            </GetFullVideoHash>
-                          </soap:Body>
-                        </soap:Envelope>""" % ( sessionId, partialVideoHash )
-                          
-        # Call SOAP service...
-        resultXML = self.SOAP_POST (self.SOAP_SUBLIGHT_UTILITY_URL, self.GET_FULL_VIDEO_HASH_ACTION, requestXML)
-        
-        # Parse result
-        resultDoc = xml.dom.minidom.parseString(resultXML)
-        xmlUtils  = XmlUtils()
-        getFullVideoHashResult = xmlUtils.getText( resultDoc, "GetFullVideoHashResult" )
-        
-        videoHash = ""
-        if (getFullVideoHashResult == "true") :
-          if len(resultDoc.getElementsByTagName("bestMatchVideoHash")) > 0 :
-            videoHash = xmlUtils.getText( resultDoc, "bestMatchVideoHash" )
-        
-        # Return value
-        return videoHash
-
-    #
-    # SuggestTitles
-    #
-    def SuggestTitles( self, keywords ):
-        # Build request XML...
-        requestXML = """<?xml version="1.0" encoding="utf-8"?>
-                        <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" 
-                                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-                                       xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-                          <soap:Body>
-                            <SuggestTitles xmlns="http://www.subtitles-on.net/">
-                              <keyword>%s</keyword>
-                              <itemsCount>%u</itemsCount>
-                            </SuggestTitles>
-                          </soap:Body>
-                        </soap:Envelope>""" % ( keywords,
-                                                15 )
-                        
-        # Call SOAP service...
-        resultXML = self.SOAP_POST (self.SOAP_SUBTITLES_API_URL, self.SUGGEST_TITLES, requestXML)
-        
-        # Parse result
-        resultDoc = xml.dom.minidom.parseString(resultXML)
-        xmlUtils  = XmlUtils() 
-        result    = xmlUtils.getText(resultDoc, "SuggestTitlesResult")
-        
-        titles = []      
-        if (result == "true") :
-            imdbNodes = resultDoc.getElementsByTagName( "IMDB" )
-            for imdbNode in imdbNodes :
-                id  = xmlUtils.getText( imdbNode, "Id" )
-                title  = xmlUtils.getText( imdbNode, "Title" )
-                year   = xmlUtils.getText( imdbNode, "Year" )
-                titles.append( { "id" : id, "title" : title, "year" : year } )
-                    
-        # Return value
-        return titles
-
-    #
     # SearchSubtitles
     #
     def SearchSubtitles(self, sessionId, videoHash, title, year, season, episode,language1, language2, language3):
@@ -431,7 +372,7 @@ class SublightWebService :
                                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                                        xmlns:xsd="http://www.w3.org/2001/XMLSchema">
                           <soap:Body>
-                            <SearchSubtitles3 xmlns="http://www.subtitles-on.net/">
+                            <SearchSubtitles3 xmlns="http://www.sublight.si/">
                               <session>%s</session>
                               <videoHash>%s</videoHash>
                               <title>%s</title>
@@ -501,7 +442,7 @@ class SublightWebService :
                 subtitles.append( { "title" : title, "year" : year, "release" : release, "language" : language, "subtitleID" : subtitleID, "mediaType" : mediaType, "numberOfDiscs" : numberOfDiscs, "downloads" : downloads, "isLinked" : isLinked, "rate" : rate } )            
             
         # Return value
-        return subtitles       
+        return subtitles        
     
     #
     # GetDownloadTicket
@@ -513,10 +454,10 @@ class SublightWebService :
                                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
                                        xmlns:xsd="http://www.w3.org/2001/XMLSchema">
                           <soap:Body>
-                            <GetDownloadTicket xmlns="http://www.subtitles-on.net/">
+                            <GetDownloadTicket2 xmlns="http://www.sublight.si/">
                               <session>%s</session>
                               <id>%s</id>
-                            </GetDownloadTicket>
+                            </GetDownloadTicket2>
                           </soap:Body>
                         </soap:Envelope>""" % ( sessionID, subtitleID )
                         
@@ -526,7 +467,7 @@ class SublightWebService :
         # Parse result
         resultDoc = xml.dom.minidom.parseString(resultXML)
         xmlUtils  = XmlUtils()
-        result    = xmlUtils.getText( resultDoc, "GetDownloadTicketResult" )
+        result    = xmlUtils.getText( resultDoc, "GetDownloadTicket2Result" )
         
         ticket = ""
         if result == "true" :
@@ -537,7 +478,7 @@ class SublightWebService :
         return ticket, que
     
     #
-    # DownloadByID3 
+    # DownloadByID4 
     #
     def DownloadByID(self, sessionID, subtitleID, ticketID):
         # Build request XML...
@@ -546,13 +487,13 @@ class SublightWebService :
                                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
                                        xmlns:xsd="http://www.w3.org/2001/XMLSchema">
                           <soap:Body>
-                            <DownloadByID3 xmlns="http://www.subtitles-on.net/">
+                            <DownloadByID4 xmlns="http://www.sublight.si/">
                               <sessionID>%s</sessionID>
                               <subtitleID>%s</subtitleID>
                               <codePage>1250</codePage>
                               <removeFormatting>false</removeFormatting>
                               <ticket>%s</ticket>
-                            </DownloadByID3>
+                            </DownloadByID4>
                           </soap:Body>
                         </soap:Envelope>""" % ( sessionID, subtitleID, ticketID )
 
@@ -562,7 +503,7 @@ class SublightWebService :
         # Parse result
         resultDoc = xml.dom.minidom.parseString(resultXML)
         xmlUtils  = XmlUtils()
-        result    = xmlUtils.getText( resultDoc, "DownloadByID3Result" )
+        result    = xmlUtils.getText( resultDoc, "DownloadByID4Result" )
         
         base64_data = ""
         if result == "true" :

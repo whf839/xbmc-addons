@@ -223,7 +223,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
             self.set_xbox = False
         else:
             self.set_xbox = True
-        if self.debug : LOG( LOG_INFO, "XBOX detected" )
+            if self.debug : LOG( LOG_INFO, "XBOX detected" )
         self.controlId = -1
         self.osdb_server = OSDBServer()
         self.manuall = False
@@ -423,9 +423,9 @@ class GUI( xbmcgui.WindowXMLDialog ):
         video_hash = ""
 
         if not self.set_xbox and not self.file_original_path.find("http") > -1 :
-            md5_video_hash = SublightUtils.calculateMD5VideoHash( self.file_original_path )
-            video_hash     = sublightWebService.GetFullVideoHash( session_id, md5_video_hash )
-        
+#            md5_video_hash = SublightUtils.calculateMD5VideoHash( self.file_original_path )
+#            video_hash     = sublightWebService.GetFullVideoHash( session_id, md5_video_hash )
+            video_hash     = SublightUtils.calculateVideoHash( self.file_original_path )
         if video_hash == "":
             video_hash = "0000000000000000000000000000000000000000000000000000"
 
