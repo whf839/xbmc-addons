@@ -473,12 +473,12 @@ class GUI( xbmcgui.WindowXMLDialog ):
         
         label = ""
         self.list = []                    
-        if self.SL :
+        if self.OS :
             label2 = "[COLOR=FFFF0000]%s[/COLOR]" % (  _( 610 ) + " OpenSubtitles.org" )
             listitem = xbmcgui.ListItem( label,label2 )
             self.list.append("OS")
             self.getControl( SUBTITLES_LIST ).addItem( listitem )
-        if self.OS :
+        if self.PN :
             label2 = "[COLOR=FFFF0000]%s[/COLOR]" % (  _( 610 ) + " Podnapisi.net" )
             listitem = xbmcgui.ListItem( label,label2 )
             self.list.append("PN")                               
