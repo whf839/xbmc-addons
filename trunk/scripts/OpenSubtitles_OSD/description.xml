@@ -23,7 +23,7 @@
     <title>OpenSubtitles_OSD</title>
 
     <!-- (required) Major.minor.build -->
-    <version>1.50</version>
+    <version>1.52</version>
 
     <!-- (required) author name & email.  at least one author name is required -->
     <authors>
