@@ -1,7 +1,7 @@
 __plugin__ = "EmpFlix"
 __authors__ = "thebitjockey"
 __credits__ = ""
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 import urllib,urllib2,re,xbmcplugin,xbmcgui
 
@@ -19,10 +19,10 @@ def CATEGORIES():
 
 def SORTMETHOD(url):
         addDir('Being Watched',url+'&category=bw',2,'',1)
-        addDir('Most Recent',url+'category=mr',2,'',1)
-        addDir('Most Viewed',url+'category=mv',2,'',1)
-        addDir('Top Rated',url+'category=tr',2,'',1)
-        addDir('Full Movies',url+'category=rd',2,'',1)
+        addDir('Most Recent',url+'&category=mr',2,'',1)
+        addDir('Most Viewed',url+'&category=mv',2,'',1)
+        addDir('Top Rated',url+'&category=tr',2,'',1)
+        addDir('Full Movies',url+'&category=rd',2,'',1)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
         
                        
