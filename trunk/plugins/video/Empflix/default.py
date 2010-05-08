@@ -1,7 +1,7 @@
 __plugin__ = "EmpFlix"
 __authors__ = "thebitjockey"
 __credits__ = ""
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 import urllib,urllib2,re,xbmcplugin,xbmcgui
 
@@ -43,7 +43,7 @@ def PLAYVIDEO(url):
         response = urllib2.urlopen(req)
         link=response.read()
         response.close()
-        match=re.compile('<a href="(.+?)">Download FLV</a>').findall(link)
+        match=re.compile('<a href="(.+?)" class="downloadButton">Download FLV</a>').findall(link)
         for videourl in match:
                 xbmc.Player().play(videourl)
 
