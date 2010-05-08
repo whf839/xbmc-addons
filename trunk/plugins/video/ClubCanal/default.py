@@ -1,7 +1,7 @@
 __plugin__ = "ClubCanal"
 __authors__ = "thebitjockey"
 __credits__ = ""
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 import urllib,urllib2,re,xbmcplugin,xbmcgui
 
@@ -30,7 +30,7 @@ def VIDEOLIST(url,page):
         match=re.compile('<div class="video_box">\s+?<a href="/video/(.+?)/.+?"><img src=".+?" title="(.+?)" alt=".+?" width=".+?" height=".+?" id=".+?" />').findall(link)
         for videoid,name in match:
                 addLink(name,'http://www.clubcanal.com/media/videos/flv/'+videoid+'.flv','http://www.clubcanal.com/media/videos/tmb/'+videoid+'/1.jpg',len(match))
-        if (len(match) == 16):
+        if (len(match) == 15):
             addDir('Next Page',url,2,'',page+1)
         
 def get_params():
