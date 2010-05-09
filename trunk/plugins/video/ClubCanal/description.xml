@@ -2,7 +2,7 @@
 <addoninfo>
     <!-- (required) guuid: unique identifier of this addon
     guuids can be generated online at sites such as http://www.famkruithof.net/uuid/uuidgen -->
-    <guid>3ed8cc80-0eb1-11df-8a39-0800200c9a66</guid>
+    <guid>ac1d3c30-0e94-11df-8a39-0800200c9a66</guid>
 
     <!-- (required) type:
     1:  visualization
@@ -20,10 +20,10 @@
     <type>8</type>
 
     <!-- (required) Title -->
-    <title>NakedCanal</title>
+    <title>ClubCanal</title>
 
     <!-- (required) Major.minor.build -->
-    <version>1.0.2</version>
+    <version>1.0.1</version>
 
     <!-- (required) author name & email.  at least one author name is required -->
     <authors>
@@ -31,14 +31,14 @@
     </authors>
 
     <!-- (required) Short description of addon. -->
-    <summary>Watch Adult Videos www.nakedcanal.com</summary>
+    <summary>Watch Dance and Electronic Music Videos Online (www.clubcanal.com)</summary>
 
     <!-- Longer descrption of addon.  Usage instructions should go here if required. -->
-    <description>Watch Adult Videos www.nakedcanal.com</description>
+    <description>Watch Dance and Electronic Music Videos Online (www.clubcanal.com).  WARNING: Some videos hosted by ClubCanal contain nudity.</description>
 
     <!-- user defined tags e.g. <tags><tag>Example</tag></tags> -->
     <tags>
-        <tag>Adult</tag>
+        <tag>Music</tag>
     </tags>
 
     <!-- minimum revision of xbmc your addon will run on.  Leave blank all for revisions-->
