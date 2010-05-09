@@ -1,7 +1,7 @@
 __plugin__ = "NakedCanal"
 __authors__ = "thebitjockey"
 __credits__ = ""
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 import urllib,urllib2,re,xbmcplugin,xbmcgui
 
@@ -32,7 +32,7 @@ def VIDEOLIST(url,page):
         for videoid,name in match:
                 videourl=getvideourl(videoid)
                 addLink(name,videourl,'http://www.nakedcanal.com/media/videos/tmb/'+videoid+'/1.jpg',len(match))
-        if (len(match) == 16):
+        if (len(match) == 15):
             addDir('Next Page',url,2,'',page+1)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
         
