@@ -8,7 +8,7 @@ __plugin__ = "Tube 8"
 __author__ = "The BIT Jockey"
 __url__ = 'http://code.google.com/p/xbmc-addons/'
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Tube8"
-__version__ = "1.4.2"
+__version__ = "1.4.3"
 __svn_revision__ = "$Revision$"
 __XBMC_Revision__ = "19457"
 
