@@ -1,7 +1,7 @@
 __plugin__ = "NakedCanal"
 __authors__ = "thebitjockey"
 __credits__ = ""
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 
 import urllib,urllib2,re,xbmcplugin,xbmcgui
 
@@ -25,6 +25,7 @@ def SORTMETHOD(url):
                        
 def VIDEOLIST(url,page):
         req = urllib2.Request(url+'&page='+str(page))
+        req.add_header('Cookie','splash=1')
         response = urllib2.urlopen(req)
         link=response.read()
         response.close()
@@ -73,6 +74,7 @@ def addDir(name,url,mode,iconimage,page):
 def getvideourl(videoid):
         url='http://www.nakedcanal.com/media/player/config.php?vkey='+videoid
         req = urllib2.Request(url)
+        req.add_header('Cookie','splash=1')
         response = urllib2.urlopen(req)
         link=response.read()
         response.close()
