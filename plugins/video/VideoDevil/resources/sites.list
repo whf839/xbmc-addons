@@ -71,13 +71,6 @@ director=VideoDevil
 icon=video.devil.image|tube8.png
 url=tube8.com.cfg
 ########################################################
-title=XClips
-type=rss
-genre=XClips
-director=VideoDevil
-icon=video.devil.image|xclips.png
-url=xclips.ws.cfg
-########################################################
 title=PornoMovies
 type=rss
 genre=Pornomovies
@@ -112,6 +105,13 @@ genre=MofoSex
 director=VideoDevil
 icon=video.devil.image|mofosex.png
 url=mofosex.com.cfg
+########################################################
+title=ExtremeTube
+type=rss
+genre=ExtremeTube
+director=VideoDevil
+icon=video.devil.image|extremetube.png
+url=extremetube.com.cfg
 ########################################################
 #title=Metacafe
 #type=rss

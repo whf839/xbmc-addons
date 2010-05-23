@@ -98,7 +98,17 @@ extension=flv
 quality=standard
 ########################################################
 title=tube8.com
-target=so.addVariable\('videoUrl','([^']+)'\)
+target=var videourl="([^']+flv)";
+url=%s
+quality=standard
+########################################################
+title=extremetube.com
+target=flashvars.video_url = '([^']+flv)';
+url=%s
+quality=standard
+########################################################
+title=redtube.com
+target=so[.]addParam[(]"flashvars","[^"]+hashlink=([^"]+)"[)];
 url=%s
 quality=standard
 ########################################################
@@ -106,12 +116,6 @@ title=mofosex.com
 target=videoPath: "http://www.mofosex.com/playlist.php[?]v=([^"]+)%
 url=%s
 build=http://media.mofosex.com/media/flvs/%s.flv
-quality=standard
-########################################################
-title=xclips.ws
-target=<param name="movie" value="http://www.xclips.ws/media/player/player.swf[?]f=(http://www.xclips.ws/media/player/config.php[?]vkey=\d+)" />
-url=%s
-ext_target=<src>(http://www.xclips.ws[^"]+)</src>[^<]+<related>
 quality=standard
 ########################################################
 title=boysfood.com
@@ -127,9 +131,9 @@ extension=flv
 quality=high
 ########################################################
 title=keezmovies.com
-target=to.addVariable[(]"options","(http://www.keezmovies.com/watch_player.php\?id=[^"]+)"[)];
+target=flashvars.video_url = '([^"]+flv)';
 url=%s
-ext_target=<flv_url>(http://media[^"]+flv)</flv_url>
+header=Cookie|age_verified=1
 quality=standard
 ########################################################
 title=clipa.tv
