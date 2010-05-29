@@ -117,6 +117,11 @@ target=videoPath: "http://www.mofosex.com/playlist.php[?]v=([^"]+)%
 url=%s
 build=http://media.mofosex.com/media/flvs/%s.flv
 quality=standard
+ ########################################################
+title=pornrabbit.com
+target=span class="download".+?href="(.+?)"
+url=%s
+quality=standard
 ########################################################
 title=boysfood.com
 target=href="([^"]+wmv)">GET</a></td>
