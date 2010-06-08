@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<strings> <!--  19.4.2009 Finnish   -->
+<strings> <!--  8.6.2010 Finnish   -->
     <!-- Plugin strings -->
     <string id="30900">Tallenna esiasetukseksi</string>
     <string id="30901">Haluatko lisätä tämän haun esiasetukseksi?</string>
@@ -14,8 +14,7 @@
     <string id="30910">Toista tunnisteen video</string>
     <string id="30911">Tarkoititko</string>
     <string id="30912">Valitse kategoria</string>
-    <string id="30913">Hae kaikki videot merkillä - *</string>
-
+    <string id="30913">* - merkillä haetaan kaikki videot</string>
 
     <!-- Category strings -->
     <string id="30950">Kaikki videot</string>
@@ -39,6 +38,7 @@
     <string id="30968">Samankaltaiset</string>
     <string id="30969">Etsi kategorioista</string>
     <string id="30970">Etsi kategorioista...</string>
+    <string id="30971">Minun tilaukset</string>
 
     <!-- Context menu strings -->
     <string id="30500">Samankaltaiset videot</string>
