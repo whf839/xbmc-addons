@@ -2,8 +2,8 @@
 __scriptname__ = "G4TV"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/G4TV"
-__date__ = '2009-08-13'
-__version__ = "2.2"
+__date__ = '06-14-2010'
+__version__ = "2.3"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 from urllib2 import Request, urlopen, URLError, HTTPError
@@ -132,7 +132,7 @@ def get_shows_data(name,url,cat):
 		xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=item,isFolder=True)
 
 def get_video(name,url,cat):
-	videokey=re.compile('http://g4tv.com/videos/(.+?)/(.+?)/').findall(url)
+	videokey=re.compile('videos/(.+?)/(.+?)/').findall(url)
 	url='http://g4tv.com/xml/broadbandplayerservice.asmx/GetEmbeddedVideo?videoKey='+videokey[0][0]+'&playLargeVideo=true&excludedVideoKeys=&playlistType=normal&maxPlaylistSize=0'
 	try:
 		req=urllib2.Request(url)
