@@ -1,8 +1,0 @@
-[KollectiONK] Fixed Mysql problems with windows and removed unnedded pdy files.
---This line, and those below, will be ignored--
-
-AM   plugins/video/KollectiONX/_mysql.pyd
-M    plugins/video/KollectiONX/resources/changelog.txt
-D    plugins/video/KollectiONX/MySQLdb/linux
-D    plugins/video/KollectiONX/MySQLdb/windows
-M    plugins/video/KollectiONX/default.py
