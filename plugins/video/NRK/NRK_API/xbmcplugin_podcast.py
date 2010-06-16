@@ -30,7 +30,7 @@ from podcast_parser import Podcasts
 from feedparser import feedparser
 from utils import Key
 
-
+__settings__ = sys.modules[ "__main__" ].__settings__
 
 class Main:
     
@@ -49,12 +49,12 @@ class Main:
     resrspath = os.path.join( os.getcwd(), 'resources' )
     imagepath = os.path.join( os.getcwd(), 'resources', 'images' )
     cachepath = os.path.join( xbmc.translatePath("special://profile/"), 
-                "plugin_data", "video", os.path.basename(os.getcwd()), "cache" )
+                "addon_data", os.path.basename(os.getcwd()), "cache" )
     
     add = xbmcplugin.addDirectoryItem
     eod = xbmcplugin.endOfDirectory
     entry  = xbmcgui.ListItem
-    getset = xbmcplugin.getSetting
+    getset = __settings__.getSetting
     
     
     def __init__(self):

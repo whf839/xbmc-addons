@@ -9,13 +9,7 @@ import re
 import urllib
 import utils
 
-BASE_CURRENT_SOURCE_PATH = os.path.join(
-                xbmc.translatePath("special://profile/"), 
-                "plugin_data", 
-                "video", 
-                os.path.basename(utils.Plugin.cwd), 
-                "shows.xml"
-            )
+BASE_CURRENT_SOURCE_PATH = os.path.join( xbmc.translatePath( "special://profile/" ), "addon_data", os.path.basename( os.getcwd() ), "shows.xml")
             
             
 class Main:

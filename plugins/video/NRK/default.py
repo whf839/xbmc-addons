@@ -8,21 +8,23 @@ import os
 import sys
 import xbmc
 from NRK_API.utils import PluginError, PluginScriptError
-   
+import xbmcaddon   
    
 #plugin constants
 __plugin__         = "NRK"
 __author__         = "VictorV"
-__version__        = "0.9.6"
+__version__        = "0.9.7"
 __XBMC_Revision__  = "21735"
 
+__settings__ = xbmcaddon.Addon(id='plugin.video.nrk')
+__language__ = __settings__.getLocalizedString
 
 def run_once():
     import xbmcplugin
-    runonce = xbmcplugin.getSetting('runonce') == 'true'
+    runonce = __settings__.getSetting('runonce') == 'true'
     if runonce == True:
-        xbmcplugin.openSettings(url=sys.argv[0])
-        xbmcplugin.setSetting('runonce', 'True')
+        __settings__.openSettings(url=sys.argv[0])
+        __settings__.setSetting('runonce', 'True')
     
     
 def _check_compatible():
@@ -51,10 +53,10 @@ def _check_compatible():
     if ( not ok ):
         import xbmcgui
         xbmcgui.Dialog().ok( "%s - %s: %s" % (
-                 __plugin__, xbmc.getLocalizedString( 30700 ), __version__), 
-                 xbmc.getLocalizedString( 30701 ) % (__plugin__),
-                 xbmc.getLocalizedString( 30702 ) % (__XBMC_Revision__),
-                 xbmc.getLocalizedString( 30703 ) )
+                 __plugin__, __language__( 30700 ), __version__), 
+                 __language__( 30701 ) % (__plugin__),
+                 __language__( 30702 ) % (__XBMC_Revision__),
+                 __language__( 30703 ) )
                  
     #return result
     return ok
