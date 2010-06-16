@@ -90,7 +90,7 @@ region_abbr = {
     }
 
 # shortcuts    
-lang = xbmc.getLocalizedString
+lang = sys.modules[ "__main__" ].__language__
 
 
 def seconds_to_hms(seconds):

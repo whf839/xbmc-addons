@@ -8,7 +8,7 @@ from utils import Key
 
 pDialog = xbmcgui.DialogProgress()
 pDialog.create( sys.modules[ "__main__" ].__plugin__ )
-
+__settings__ = sys.modules[ "__main__" ].__settings__
 
 class Main:
     
@@ -23,7 +23,7 @@ class Main:
             
     def download( self ):
     
-        download_path = xbmcplugin.getSetting("download_path")
+        download_path = __settings__.getSetting("download_path")
         
                 
         url = self.key.url 

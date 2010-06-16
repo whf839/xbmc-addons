@@ -23,7 +23,7 @@
 import sys, os
 import re
 from urllib import quote_plus, unquote_plus
-
+import xbmcaddon
 
 WINDOWS = 0; LINUX = 1; XBOX = 2
 platform_dict = { WINDOWS: 'Windows', LINUX: 'Linux', XBOX: 'xbox' }
@@ -43,6 +43,8 @@ try:
 except:
     __plugin__ = 'DEBUG MODE'
 
+__settings__ = xbmcaddon.Addon(id='plugin.video.nrk')
+__language__ = __settings__.getLocalizedString
 
 print "PLUGIN::LOADED -> '%s'" % __name__
 
@@ -339,7 +341,7 @@ class Key(PluginBase):
     def build_url(prefix, path=None, words=None, **kwargs):
     
         if not path: 
-            path = sys.argv[0]
+            path = "plugin://plugin.video.nrk"
         if words: 
             for kw in kwargs:
                 words[kw] = kwargs[kw]
@@ -548,7 +550,7 @@ class PluginPlayer(xbmc.Player):
         
 class PluginSettings:
 
-    _getset  = xbmcplugin.getSetting
+    _getset  = __settings__.getSetting
     _verbose = 1
     
     

@@ -27,11 +27,11 @@ from xbmcgui import ListItem
 from xbmcplugin import addDirectoryItem, endOfDirectory, getSetting
 
 xbmc.log( "PLUGIN::LOADED -> '%s'" % __name__, xbmc.LOGNOTICE )
-lang = xbmc.getLocalizedString
+lang = sys.modules[ "__main__" ].__language__
+
 FAV_PATH = os.path.join(
                 xbmc.translatePath("special://profile/"), 
-                "plugin_data", 
-                "video", 
+                "addon_data",  
                 os.path.basename(Plugin.cwd), 
                 "shows.xml"
             )
