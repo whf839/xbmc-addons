@@ -2,8 +2,8 @@
 __scriptname__ = "Revision3"
 __author__ = 'stacked [http://xbmc.org/forum/member.php?u=26908]'
 __svn_url__ = "https://xbmc-addons.googlecode.com/svn/trunk/plugins/video/Revision3"
-__date__ = '06-09-2010'
-__version__ = "1.4"
+__date__ = '06-16-2010'
+__version__ = "1.5"
 
 import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, traceback
 HEADER = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.1.1) Gecko/20090715 Firefox/3.5.1'
@@ -93,7 +93,7 @@ def playVideoA(url,name,plot,cat):
 	date=url
 	date=date.replace('/tzdaily','')
 	date=date.rsplit('/')
-	clip=date[7]
+	clip=date[10]
 	clip2=clip.split('.')[0]
 	#name=clip2[:27]+'.'+clip.split('.')[1]+'.'+clip.split('.')[2]
 	name=cat+' '+name.split(' - ')[0]+'.'+clip.split('.')[2]
