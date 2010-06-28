@@ -103,7 +103,7 @@ url=%s
 quality=standard
 ########################################################
 title=extremetube.com
-target=flashvars.video_url = '([^']+flv)';
+target=flashvars.video_url = '(http[^']+[.]fl[^']+)';
 url=%s
 quality=standard
 ########################################################
