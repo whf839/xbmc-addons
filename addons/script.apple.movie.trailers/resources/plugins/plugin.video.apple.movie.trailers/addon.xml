@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.video.apple.movie.trailers" name="Apple Movie Trailers" version="1.5.0" provider-name="nuka1195">
+    <requires>
+        <import addon="xbmc.python" version="1.0"/>
+        <import addon="script.module.pysqlite" version="2.5.6"/>
+        <import addon="script.apple.movie.trailers" version="pre-0.99.8"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="addon.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <minversion>31632</minversion>
+        <summary>Watch movie trailers.</summary>
+        <description>Watch movie trailers from http://trailers.apple.com/.</description>
+        <disclaimer>Requires AMT script and database created.</disclaimer>
+    </extension>
+</addon>
