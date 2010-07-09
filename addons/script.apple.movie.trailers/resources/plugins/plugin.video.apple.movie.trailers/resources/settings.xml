@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
-    <setting id="amt_db_path" type="files" source="local" mask="AMT.db" label="30160" default="special://profile/addon_data/script.apple.movie.trailers/AMT.db" />
+    <setting id="amt_db_path" type="file" source="local" mask="AMT.db" label="30160" default="special://profile/addon_data/script.apple.movie.trailers/AMT.db" />
     <setting id="quality" type="enum" lvalues="30001|30002|30003|30004|30005|30006" label="30000" default="2" />
     <setting id="only_hd" type="bool" enable="gt(-1,3)" label="30010" default="false" />
     <setting id="play_all" type="bool" label="30020" default="true" />
@@ -15,7 +15,7 @@
     <setting type="sep" />
     <setting id="fanart_genre" type="bool" label="30100" default="false" />
     <setting id="fanart_genre_path" type="folder" source="pictures" label="30110"  enable="eq(-1,true)" default="" />
-    <setting id="fanart_image" type="pictures" label="30120"  enable="eq(-2,false)" default="" />
+    <setting id="fanart_image" type="image" label="30120"  enable="eq(-2,false)" default="" />
     <setting id="fanart_color1" type="text" label="30130" enable="!eq(-1,) | eq(-3,true)" default="" />
     <setting id="fanart_color2" type="text" label="30140" enable="!eq(-2,) | eq(-4,true)" default="" />
     <setting id="fanart_color3" type="text" label="30150" enable="!eq(-3,) | eq(-5,true)" default="" />
