@@ -122,6 +122,11 @@ title=pornrabbit.com
 target=span class="download".+?href="(.+?)"
 url=%s
 quality=standard
+#########################################################
+title=hotgoo.com
+target=so.addVariable\('file','(.+?)'
+url=%s
+quality=standard
 ########################################################
 title=boysfood.com
 target=href="([^"]+wmv)">GET</a></td>
@@ -136,7 +141,7 @@ extension=flv
 quality=high
 ########################################################
 title=keezmovies.com
-target=flashvars.video_url = '([^"]+flv)';
+target=flashvars.video_url.+?(http.+?)';
 url=%s
 header=Cookie|age_verified=1
 quality=standard
