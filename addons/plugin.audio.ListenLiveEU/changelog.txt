@@ -1,0 +1,9 @@
+[B]Version 0.3.1[/B]
+
+- Added: changelog.txt and license.txt
+
+
+[B]Version 0.3.0[/B]
+
+- Changed: plugin to work with the new add-on system
+- Updated: fixed utf-8 encoding problem for ubuntu/linux users (hopefully)
