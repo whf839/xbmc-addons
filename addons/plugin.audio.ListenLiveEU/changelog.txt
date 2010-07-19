@@ -1,5 +1,6 @@
 [B]Version 0.3.1[/B]
 
+- Changed: svn url
 - Added: changelog.txt and license.txt
 
 
