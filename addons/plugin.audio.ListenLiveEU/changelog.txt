@@ -2,6 +2,8 @@
 
 - Changed: svn url
 - Added: changelog.txt and license.txt
+- Added: hungarian summary & description
+- Changed: end line characters (thx spiff)
 
 
 [B]Version 0.3.0[/B]
