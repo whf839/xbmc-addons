@@ -21,6 +21,7 @@
     <platform>all</platform>
   </extension>
 </addon>
+
 <addon id="plugin.video.apple.movie.trailers.lite" name="Apple Movie Trailers - Lite" version="2.0.0" provider-name="nuka1195">
     <requires>
         <import addon="xbmc.python" version="1.0"/>
@@ -36,6 +37,7 @@
         <disclaimer>Only the most recent 100 or so trailers are listed.</disclaimer>
     </extension>
 </addon>
+
 <addon id="plugin.video.cnn.video" name="CNN Video" version="2.0.0" provider-name="nuka1195">
     <requires>
         <import addon="xbmc.python" version="1.0"/>
@@ -52,6 +54,7 @@
         <supportedcontent>episodes</supportedcontent>
     </extension>
 </addon>
+
 <addon id="repository.googlecode.xbmc-addons" name="googlecode.xbmc-addons Add-ons" version="1.0.0" provider-name="nuka1195">
 	<extension point="xbmc.addon.repository" name="googlecode.xbmc-addons Add-on Repository">
 		<info compressed="false">http://xbmc-addons.googlecode.com/svn/addons/addons.xml</info>
@@ -65,6 +68,7 @@
 		<platform>all</platform>
 	</extension>
 </addon>
+
 <addon id="script.apple.movie.trailers" name="Apple Movie Trailers" version="pre-0.99.8" provider-name="nuka1195">
     <requires>
         <import addon="xbmc.python" version="1.0"/>
@@ -82,6 +86,7 @@
         <disclaimer></disclaimer>
     </extension>
 </addon>
+
 <addon id="script.pydocs" name="PyDocs Printer" version="2.0.0" provider-name="nuka1195">
     <requires>
         <import addon="xbmc.python" version="1.0"/>
