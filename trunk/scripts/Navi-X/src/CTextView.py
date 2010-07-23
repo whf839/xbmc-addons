@@ -7,7 +7,7 @@
 #############################################################################
 #
 # CTextView:
-# Text viewer class.
+# Text viewer class. Displays a text file in a new window.
 #############################################################################
 
 from string import *
@@ -29,13 +29,9 @@ except: Emulating = False
 ######################################################################
 # Description: Text viewer
 ######################################################################
-#class CTextView(xbmcgui.WindowDialog):
 class CTextView(xbmcgui.WindowXMLDialog): 
-    #def __init__(self):
     def __init__(self,strXMLname, strFallbackPath):#, strDefaultName, forceFallback):
-        #pass
-    
-    #def onInit( self ):
+
         self.setCoordinateResolution(PAL_4x3)
     
         #user background image
@@ -58,10 +54,6 @@ class CTextView(xbmcgui.WindowXMLDialog):
     def onAction(self, action):
         if (action == ACTION_PREVIOUS_MENU) or (action == ACTION_PARENT_DIR):# or (action == ACTION_MOVE_LEFT):
             self.close()
-        #if (action == ACTION_MOVE_DOWN):
-        #    self.onScrollDown()
-        #if (action == ACTION_MOVE_UP):
-        #    self.onScrollUp()
 
     def onFocus( self, controlId ):
         pass
@@ -72,14 +64,6 @@ class CTextView(xbmcgui.WindowXMLDialog):
     def onControl(self, control):
         #self.setFocus(control)
         pass
-           
-#    def onScrollDown(self):
-#        control=self.getControl(130)
-#        control.onScrollDown()
-        
-#    def onScrollUp(self):
-#        if self.offset > 0:
-#            self.offset = self.offset - 100           
 
     ######################################################################
     # Description: Reads the document and prepares the display. The
@@ -99,7 +83,7 @@ class CTextView(xbmcgui.WindowXMLDialog):
             mediaitem=CMediaItem()
         
         #from here we use the mediaitem object
-        loader = CFileLoader()
+        loader = CFileLoader2()
         #first load the background image
         if (mediaitem.background != 'default'): #default BG image
             ext = getFileExtension(mediaitem.background)

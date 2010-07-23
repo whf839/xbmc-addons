@@ -53,7 +53,7 @@ class CInstaller(xbmcgui.Window):
         SetInfoText("Downloading... ")
         
         #download the file.
-        loader = CFileLoader()
+        loader = CFileLoader2()
         loader.load(self.URL, tempCacheDir + 'script.zip')
         if loader.state != 0:
             return -2
@@ -62,7 +62,7 @@ class CInstaller(xbmcgui.Window):
         SetInfoText("Installing... ")
 
         result = self.unzip_file_into_dir(filename, scriptDir)   
-
+        
         return result
                 
     ######################################################################
@@ -93,7 +93,7 @@ class CInstaller(xbmcgui.Window):
         SetInfoText("Downloading... ")
         
         #download the file.
-        loader = CFileLoader()
+        loader = CFileLoader2()
         loader.load(self.URL, tempCacheDir + 'plugin.zip', content_type='zip')
         if loader.state != 0:
             if loader.state == -2:
@@ -105,7 +105,7 @@ class CInstaller(xbmcgui.Window):
         SetInfoText("Installing... ")
         
         result = self.unzip_file_into_dir(filename, pluginDir + subdir)    
-       
+                     
         return result
 
     ######################################################################
@@ -128,7 +128,7 @@ class CInstaller(xbmcgui.Window):
         SetInfoText("Downloading... ")
         
         #download the file.
-        loader = CFileLoader()
+        loader = CFileLoader2()
         loader.load(self.URL, tempCacheDir + 'skin.zip')
         if loader.state != 0:
             return -2

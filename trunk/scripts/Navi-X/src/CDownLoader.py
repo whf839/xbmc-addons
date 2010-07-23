@@ -20,6 +20,9 @@ import re, os, time, datetime, traceback
 import shutil
 import zipfile
 import threading
+import ftplib
+import os
+import socket
 from settings import *
 from CPlayList import *
 from CDialogBrowse import *
@@ -32,13 +35,13 @@ except: Emulating = False
 ######################################################################
 # Description: See comments in class body
 ######################################################################
-class myURLOpener(urllib.FancyURLopener):
-    """Create sub-class in order to overide error 206.  This error means a
-       partial file is being sent,
-       which is ok in this case.  Do nothing with this error.
-    """
-    def http_error_206(self, url, fp, errcode, errmsg, headers, data=None):
-        pass
+#class myURLOpener(urllib.FancyURLopener):
+#    """Create sub-class in order to overide error 206.  This error means a
+#       partial file is being sent,
+#       which is ok in this case.  Do nothing with this error.
+#    """
+#    def http_error_206(self, url, fp, errcode, errmsg, headers, data=None):
+#        pass
 
 ######################################################################
 # Description: File downloader including progress bar. 
@@ -86,7 +89,7 @@ class CDownLoader(threading.Thread):
         
     ######################################################################
     # Description: Downloads a URL to local disk
-    # Parameters : URL=source
+    # Parameters : entry = media item
     # Return     : -
     ######################################################################
     def browse(self, entry, dir=myDownloadsDir):
@@ -95,71 +98,26 @@ class CDownLoader(threading.Thread):
        
         URL=entry.URL
 
-        if URL[:4] != 'http':
+        if (URL[:4] != 'http') and (URL[:3] != 'ftp'):
             self.state = -1 #URL does not point to internet file.
             return
 
-        urlopener = CURLLoader()
-        result = urlopener.urlopen(URL, entry)
-        if result != 0:
-            self.state = -1 #URL does not point to internet file.
+        ext = self.read_file_extension(entry)
+        if self.state != 0:
             return
-        loc_url = urlopener.loc_url
-##########################
-        #Now we try to open the URL. If it does not exist an error is
-        #returned.
-        try:
-            oldtimeout=socket.getdefaulttimeout()
-            socket.setdefaulttimeout(url_open_timeout)
-
-            values = { 'User-Agent' : 'Mozilla/4.0 (compatible;MSIE 7.0;Windows NT 6.0)'}
-            req = urllib2.Request(loc_url, None, values)
-            f = urllib2.urlopen(req)
-            loc_url=f.geturl()
-            socket.setdefaulttimeout(oldtimeout)
-
-        except IOError:
-            socket.setdefaulttimeout(oldtimeout)
-            self.state = -1 #failed to open URL
-            return
-########################
-            
-        #special handing for some URL's
-        pos = URL.find('http://youtube.com/v') #find last 'http' in the URL
-        if pos != -1:
-            ext='.mp4'
-        else:
-            pos = URL.find("flyupload.com")
-            if pos != -1:
-                ext='.avi'
-            else:
-                #strip the file extension
-                pos = loc_url.rfind('.') #find last '.' in the string
-                if pos != -1:
-                    ext = loc_url[pos:] #the file extension
-                else:
-                    ext = ""
                
         #For the local file name we use the playlist item 'name' field.
         #But this string may contain invalid characters. Therefore
         #we strip these invalid characters. We also limit the file
         #name length to 42 which is the XBMC limit.
-        localfile = entry.name.replace('<',"")
-        localfile = localfile.replace('>',"")
-        localfile = localfile.replace('=',"")
-        localfile = localfile.replace('?',"")
-        localfile = localfile.replace(':',"")
-        localfile = localfile.replace(';',"")
-        localfile = localfile.replace('"',"")
-        localfile = localfile.replace('*',"")
-        localfile = localfile.replace('+',"")
-        localfile = localfile.replace(',',"")
-        localfile = localfile.replace('/',"")
-        localfile = localfile.replace('|',"")
-        localfile = localfile[:(42-len(ext))] #limit to 42 characters.
+
+        localfile = re.sub('[^\w\s-]', '', entry.name) # remove characters which are not a letter, digit, white-space, underscore, or dash
+        localfile = re.sub('\s+', ' ', localfile) # convert all instances of multiple spaces to single spaces
+        localfile = localfile[:(42-len(ext))] # limit to 42 characters.
         localfile = localfile + ext
                 
-        browsewnd = CDialogBrowse(parent=self.MainWindow)
+        #browsewnd = CDialogBrowse(parent=self.MainWindow)
+        browsewnd = CDialogBrowse("CBrowseskin.xml", os.getcwd())
         browsewnd.SetFile(dir, localfile, 3)
         browsewnd.doModal()
 
@@ -176,6 +134,64 @@ class CDownLoader(threading.Thread):
             if dialog.yesno("Message", "The destination file already exists, continue?") == False:
                 self.state = -2 #cancel download
 
+    ######################################################################
+    # Description: Retrieve the file extenstion of a URL 
+    # Parameters : entry = mediaitem.
+    # Return     : the file extension
+    ######################################################################
+    def read_file_extension(self, entry):
+        self.state = 0 #success    
+        ext=''
+    
+        URL=entry.URL
+    
+        if URL[:3] == 'ftp':
+            #Retrieve the extenstion using lib2 function
+#@todo: include the dot in the returned file extension
+            ext = getFileExtension(URL)
+            if ext != '':
+                ext = '.' + ext
+        else:
+            #HTTP
+            urlopener = CURLLoader()
+            result = urlopener.urlopen(URL, entry)
+            if result != 0:
+                self.state = -1 #URL does not point to internet file.
+                return
+            loc_url = urlopener.loc_url
+
+            #Now we try to open the URL. If it does not exist an error is
+            #returned.
+            try:
+                values = { 'User-Agent' : 'Mozilla/4.0 (compatible;MSIE 7.0;Windows NT 6.0)'}
+                req = urllib2.Request(loc_url, None, values)
+                f = urllib2.urlopen(req)
+                loc_url=f.geturl()
+
+            except IOError:
+                self.state = -1 #failed to open URL
+                return
+            
+            #special handing for some URL's
+            pos = URL.find('http://youtube.com/v') #find last 'http' in the URL
+            if pos != -1:
+                ext='.mp4'
+            else:
+                pos = URL.find("flyupload.com")
+                if pos != -1:
+                    ext='.avi'
+                else:
+                    #extract the file extension
+                    url_stripped=re.sub('\?.*$', '', loc_url) # strip GET-method args
+                    re_ext=re.compile('(\.\w+)$') # find extension
+                    match=re_ext.search(url_stripped)
+                    if match is None:
+                        ext = ""
+                    else:
+                        ext = match.group(1)
+
+        return ext
+        
     ######################################################################
     # Description: Downloads a URL to local disk
     # Parameters : URL=source
@@ -197,34 +213,30 @@ class CDownLoader(threading.Thread):
 
     ######################################################################
     # Description: Downloads a URL to local disk
-    # Parameters : URL=source
+    # Parameters : shutdown = true if auto shutdown after download.
     # Return     : -
     ######################################################################
     def download_queue(self, shutdown = False):
         self.state = 0 #success
         
-        index = 0
         counter = 0
         size = self.playlist_src.size()
         
         self.MainWindow.download_logo.setVisible(1)
         self.MainWindow.dlinfotekst.setVisible(1)
         
-        while (self.state != -2) and (index < self.playlist_src.size()) and (self.killed == False) and (self.running == True):
+        while (self.state != -2) and (self.playlist_src.size() > 0) and (self.killed == False) and (self.running == True):
             header = str(counter+1) + " of " + str(size)
             self.download_file(self.playlist_src.list[0], shutdown, header) #download single file
 
             if self.state == -1:
                 dialog = xbmcgui.Dialog()
                 dialog.ok("Error", "Download failed.")
-
-#@todo: index can be removed            
+           
             if self.state != -2:
-                #When not Navi-X shutdown and not downloading stopped by user.
+                #Download file completed or the download failed, remove the file fro the queue.
                 self.playlist_src.remove(0)
                 self.playlist_src.save(RootDir + downloads_queue)
-            #else:
-            #    index = index + 1
             
             counter = counter + 1
             
@@ -247,18 +259,30 @@ class CDownLoader(threading.Thread):
 
     ######################################################################
     # Description: Downloads a URL to local disk
-    # Parameters : URL=source
+    # Parameters : entry =  mediaitem to download
+    #              shutdown = true is shutdown after download
+    #              header = header to display (1 of x)
     # Return     : -
     ######################################################################
     def download_file(self, entry, shutdown = False, header=""):
+#@todo: shutdown parameter can be removed
+
         self.state = 0 #success
         
         URL = entry.URL
         localfile = entry.DLloc     
         
+        #download of FTP file is handled in a separte function
+        if URL[:3] == 'ftp':
+            self.download_fileFTP(entry, shutdown, header)
+            return
+        
         if URL[:4] != 'http':
             self.state = -1 #URL does not point to internet file.
             return
+
+        #Continue with HTTP download
+        self.MainWindow.dlinfotekst.setLabel('(' + header + ')' + " Retrieving file info...") 
 
         #Get the direct URL to the mediaitem given URL      
         urlopener = CURLLoader()
@@ -271,48 +295,61 @@ class CDownLoader(threading.Thread):
   
         #open the URL and get the direct URL
     
-        self.MainWindow.dlinfotekst.setLabel("Getting file from server.")
-
+        
         try:
-            oldtimeout=socket_getdefaulttimeout()
-            socket_setdefaulttimeout(url_open_timeout)
+#            oldtimeout=socket_getdefaulttimeout()
+#            socket_setdefaulttimeout(url_open_timeout)
 
             existSize=0
-            #myUrlclass = myURLOpener()
+
             if os.path.exists(localfile):
-                file = open(localfile,"ab")
+                #Append to the existing file. Because opening a file for append no longer works,
+                #we need to copy the existing file in a new file.
+                self.MainWindow.dlinfotekst.setLabel("Preparing append to file...")            
                 existSize = os.path.getsize(localfile)
-                               
-                #If the file exists, then only download the remainder
-                #myUrlclass.addheader("User-Agent","Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)")                            
-                #myUrlclass.addheader("Range","bytes=%s-" % existSize)   
+                
+                #Message("Exist size: " + str(existSize/1024))
+                
+                backupfile = localfile[0:-1] + '~'
+                os.rename(localfile, backupfile)
+                
+                file2 = open(backupfile, "rb")
+                file = open(localfile, "wb")
+                bytes= 0
+                while (bytes < existSize):
+                    chunk = 1024
+                    if (bytes + chunk) > existSize:
+                        chunk = existSize-bytes #remainder
+                    file.write(file2.read(chunk))
+                    bytes = bytes + chunk
+                
+                file2.close()
+                os.remove(backupfile)
+               
+                #If the file exists, then only download the remainder 
                 headers = { 'User-Agent' : 'Mozilla/4.0 (compatible;MSIE 7.0;Windows NT 6.0)',
                             'Range' : 'bytes=%s-' % existSize}                          
 
-            else: #file does not exist
-                #open the destination file
+            else: 
                 file = open(localfile, "wb")
+                #file does not exist            
                 headers = { 'User-Agent' : 'Mozilla/4.0 (compatible;MSIE 7.0;Windows NT 6.0)'}
+            
+            #destination is already open            
 
-            #f = myUrlclass.open(URL)
-                      
+            self.MainWindow.dlinfotekst.setLabel('(' + header + ')' + " Downloading file...")  
+            
             req = urllib2.Request(URL, None, headers)
             f = urllib2.urlopen(req)            
-            
+                        
             #If the file exists, but we already have the whole thing, don't download again
             size_string = f.headers['Content-Length']
             size = int(size_string) #The remaining bytes
             
+            #Message("Remaining: " + str(size/1024))
+                        
 #todo: size may be existsize if file is downloaded exactly 50%            
             if (size > 0) and (size != existSize):
-                if shutdown == True:
-                    string = "Downloading + Shutdown " + header
-                else:
-                    string = "Downloading " + header
-
-#                dialog = xbmcgui.DialogProgress()
-#                dialog.create(string, entry.name)
-                
                 bytes = existSize #bytes downloaded already
                 size = size + existSize
                 size_MB = float(size) / (1024 * 1024)
@@ -322,36 +359,28 @@ class CDownLoader(threading.Thread):
                     chunk = 100 * 1024
                     if (bytes + chunk) > size:
                         chunk = size-bytes #remainder
+                    #data = f.read(chunk)
                     file.write(f.read(chunk))
                     bytes = bytes + chunk
-            
-#                    if(dialog.iscanceled()):
-#                        self.state = -2 #cancel download
-#                        break
-                
+                            
                     percent = 100 * bytes / size
                     done = float(bytes) / (1024 * 1024)
-                    #line2 = '%.1f MB of %.1f MB copied.' % (done, size_MB)
-                    line2 = '%.1f MB - %d ' % (size_MB, percent) + '%'
-#                    dialog.update(percent, entry.name, line2)
+                    line2 = '(%s) %.1f MB - %d ' % (header, size_MB, percent) + '%'
                 
                     self.MainWindow.dlinfotekst.setLabel(line2)
                 
-#                dialog.close()
-                f.close()
+                f.close() #close the URL
 
                 if (self.killed == True) or (self.running == False):
                     self.state = -2 #failed to download the file
-                
-            
-        except IOError:
-            #f.close()     
-            socket_setdefaulttimeout(oldtimeout)       
+                        
+        except IOError:  
+#            socket_setdefaulttimeout(oldtimeout)       
             self.state = -1 #failed to download the file
             return
 
-        file.close()      
-        socket_setdefaulttimeout(oldtimeout)
+        file.close() #close the destination file  
+#        socket_setdefaulttimeout(oldtimeout)
   
         #add the downloaded file to the download list
         if self.state == 0:
@@ -363,4 +392,165 @@ class CDownLoader(threading.Thread):
             tmp.player = entry.player
             self.playlist_dst.add(tmp)
             self.playlist_dst.save(RootDir + downloads_complete)
+        
+        #end of function
+            
+
+    ######################################################################
+    # Description: Downloads a FTP URL to local disk
+    # Parameters : entry =  mediaitem to download
+    #              shutdown = true is shutdown after download
+    #              header = header to display (1 of x)
+    # Return     : -
+    ######################################################################            
+    def download_fileFTP(self, entry, shutdown = False, header=""):
+        self.state = 0 #success
+
+        URL = entry.URL
+        localfile = entry.DLloc
+
+        self.header = header
+        self.MainWindow.dlinfotekst.setLabel('(' + header + ')')
+#@todo: move URLparse to another function.
+########################
+        #Parse URL according RFC 1738: ftp://user:password@host:port/path 
+        #There is no standard Python funcion to split these URL's.
+        username=''
+        password=''        
+        port=21
+        
+        #check for username, password
+        index = URL.find('@')
+        if index != -1:
+            index2 = URL.find(':',6,index)
+            if index2 != -1:
+                username = URL[6:index2]
+                print 'user: ' + username
+                password = URL[index2+1:index]
+                print 'password: ' + password            
+            URL = URL[index+1:]
+        else:
+            URL = URL[6:]
+        
+        #check for host
+        index = URL.find('/')
+        if index != -1:
+            host = URL[:index]
+            path = URL[index:]
+        else:
+            host = URL
+            path = ''
+            
+        #retrieve the port
+        index = host.find(':')
+        if index != -1:
+            port = int(host[index+1:])
+            host = host[:index]
+            
+        print 'host: ' + host    
+        print 'port: ' + str(port)
+            
+        #split path and file
+        index = path.rfind('/')
+        if index != -1:
+            file = path[index+1:]
+            path = path[:index]
+        else:
+            file = ''        
+        
+        print 'path: ' + path
+        print 'file: ' + file
+########################        
+        try:
+            self.f = ftplib.FTP()
+            self.f.connect(host,port)
+        except (socket.error, socket.gaierror), e:
+            print 'ERROR: cannot reach "%s"' % host
+            self.state = -1 #failed to download the file
+            return
+
+        print '*** Connected to host "%s"' % host
+
+        try:
+            if username != '':
+                self.f.login(username, password)
+            else:
+                self.f.login()
+        except ftplib.error_perm:
+            print 'ERROR: cannot login anonymously'
+            self.f.quit()
+            self.state = -1 #failed to download the file
+            return
+
+        print '*** Logged in as "anonymous"'
+
+        try:
+            self.f.cwd(path)
+        except ftplib.error_perm:
+            print 'ERROR: cannot CD to "%s"' % path
+            self.f.quit()
+            self.state = -1 #failed to download the file
+            return
+
+        print '*** Changed to "%s" folder' % path
+
+        #retrieve the file
+        self.bytes = 0
+        self.file = open(entry.DLloc, 'wb')
+
+        try:
+            #f.retrbinary('RETR %s' % file, open(entry.DLloc, 'wb').write)
+            self.size = self.f.size(file)
+            self.size_MB = float(self.size) / (1024 * 1024)
+            self.percent2 = 0
+            self.f.retrbinary('RETR %s' % file, self.download_fileFTP_callback)
+        except ftplib.error_perm:
+            print 'ERROR: cannot read file "%s"' % file
+            os.unlink(self.file)
+        else:
+            print '*** Downloaded "%s" to CWD' % file
+        
+        self.f.quit()
+       
+        self.file.close()
+       
+        if self.state == 0:
+            tmp = CMediaItem() #create new item
+            tmp.type = entry.type
+            tmp.name = entry.name
+            tmp.thumb = entry.thumb
+            tmp.URL = entry.DLloc
+            tmp.player = entry.player
+            self.playlist_dst.add(tmp)
+            self.playlist_dst.save(RootDir + downloads_complete)    
     
+        #end of function
+
+    ######################################################################
+    # Description: Downloads a FTP URL to local disk (callback)
+    # Parameters : entry =  mediaitem to download
+    #              shutdown = true is shutdown after download
+    #              header = header to display (1 of x)
+    # Return     : -
+    ######################################################################       
+    def download_fileFTP_callback(self, string):
+                
+        self.file.write(string)
+        
+        self.bytes = self.bytes + len(string)
+        percent = 100 * self.bytes / self.size
+        
+        if percent != self.percent2:
+            self.percent2 = percent
+        
+            done = float(self.bytes) / (1024 * 1024)
+        
+            line2 = '(%s) %.1f MB - %d ' % (self.header, self.size_MB, percent) + '%'
+                
+            self.MainWindow.dlinfotekst.setLabel(line2)      
+        
+        if (self.killed == True) or (self.running == False):
+            self.state = -2 #failed to download the file
+            self.f.abort()
+        
+        #end of function

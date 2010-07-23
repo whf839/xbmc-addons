@@ -8,12 +8,15 @@
 #
 # CPlaylist:
 # Playlist class. Supports loading of Navi-X PLX files, RSS2.0 files, 
-# flick feed files and html files.
+# Youtube, shoutcast and flick feed files.
 #############################################################################
 
 from string import *
 import sys, os.path
 import urllib
+import ftplib
+import os
+import socket
 import re, random, string
 import xbmc, xbmcgui
 import re, os, time, datetime, traceback
@@ -116,19 +119,6 @@ class CPlayList:
         if loader.state != 0:
             return -2
         data = loader.data.splitlines()
-        
-#        loader.load(self.URL, cacheDir + 'playlist.plx', proxy=proxy)
-#        if loader.state != 0:
-#            return -2
-#        filename = loader.localfile
-#        
-#        try:
-#            f = open(filename, 'r')
-#            data = f.read()
-#            data = data.splitlines()
-#            f.close()
-#        except IOError:
-#            return -2
         
         #defaults
         self.version = '-1'
@@ -261,6 +251,8 @@ class CPlayList:
                         tmp.player=value 
                     elif key == 'background':
                         tmp.background=value
+                    elif key == 'rating':
+                        tmp.rating=value                        
                     elif key == 'processor':
                         tmp.processor=value
                     elif key == 'playpath':
@@ -288,8 +280,9 @@ class CPlayList:
         
         return 0 #successful
         
+
     ######################################################################
-    # Description: Loads a RSS2.0 feed xml file.
+    # Description: Loads a RSS webfeed.
     # Parameters : filename=URL or local file
     #              mediaitem=CMediaItem object to load    
     # Return     : 0=succes, 
@@ -312,21 +305,6 @@ class CPlayList:
             return -2
         data = loader.data.split('<item')
         #data = loader.data.split('<entry')
-        
-########################        
-#        loader.load(self.URL, cacheDir + 'feed.xml', proxy=proxy)
-#        if loader.state != 0:
-#            return -2
-#        filename = loader.localfile
-#        
-#        try:
-#            f = open(filename, 'r')
-#            data = f.read()
-#            data = data.split('<item')
-#            f.close()
-#        except IOError:
-#            return -2
-########################
         
         #defaults
         self.version = plxVersion
@@ -407,6 +385,7 @@ class CPlayList:
                             index4 = m.find(':', index2, index3)
                             if index4 != -1:
                                 value = m[index2+1:index4-2]
+                                value = value.replace('\n',"") 
                                 tmp.name = value
 
                 #get the title.
@@ -518,6 +497,221 @@ class CPlayList:
                             else:
                                 tmp.type = 'html'
                                         
+                if tmp.URL != '':
+                    self.list.append(tmp)
+                    counter = counter + 1
+                    
+        return 0
+
+    ######################################################################
+    # Description: Loads a atom webfeed.
+    # Parameters : filename=URL or local file
+    #              mediaitem=CMediaItem object to load    
+    # Return     : 0=succes, 
+    #              -1=invalid playlist version, 
+    #              -2=could not open playlist
+    ######################################################################
+    def load_atom_10(self, filename='', mediaitem=CMediaItem(), proxy="CACHING"):
+        if filename != '':
+            self.URL = filename
+        else:
+            self.URL = mediaitem.URL
+
+        loader = CFileLoader2()
+        
+        loader.load(self.URL, proxy=proxy)
+        if loader.state != 0:
+            return -2
+        data = loader.data.split('<entry')
+        
+        #defaults
+        self.version = plxVersion
+        #use the current background image if mediaitem background is not set.
+        if mediaitem.background != 'default':
+            self.background = mediaitem.background
+        self.logo = 'none'
+        self.title = ''
+        self.description = ''
+        self.player = mediaitem.player
+        self.processor = mediaitem.processor
+        self.playmode = 'default'
+        self.start_index = 0
+        #clear the list
+        del self.list[:]
+        
+        #set the default type
+        index=mediaitem.type.find(":")
+        if index != -1:
+            type_default = mediaitem.type[index+1:]
+        else:
+            type_default = ''
+        
+        counter=0
+        #parse playlist entries 
+        for m in data:
+            if counter == 0:
+                #fill the title
+                index = m.find('<title>')
+                if index != -1:
+                    index2 = m.find('</title>')
+                    if index != -1:
+                        value = m[index+7:index2]
+                        self.title = value
+
+                index = m.find('<subtitle')
+                if index != -1:
+                    index2 = m.find('</subtitle>')
+                    if index2 != -1:
+                        value = m[index+13:index2]
+                        self.description = value
+                        index3 = self.description.find('<![CDATA[')
+                        if index3 != -1:
+                            self.description = self.description[9:-3]
+                
+                #fill the logo
+                index = m.find('<logo>')
+                if index != -1:
+                    index2 = m.find('</logo>')
+                    if index2 != -1:
+                        index3 = m.find('http', index, index2)
+                        if index3 != -1:
+                            index4 = m.find('</', index3, index2+2)
+                            if index4 != -1:
+                                value = m[index3:index4]
+                                self.logo = value
+
+                #fill the logo
+                index = m.find('<icon>')
+                if index != -1:
+                    index2 = m.find('</icon>')
+                    if index2 != -1:
+                        index3 = m.find('http', index, index2)
+                        if index3 != -1:
+                            index4 = m.find('</', index3, index2+2)
+                            if index4 != -1:
+                                value = m[index3:index4]
+                                self.logo = value
+ 
+                counter = counter + 1
+            else:
+                tmp = CMediaItem() #create new item
+                tmp.player = self.player
+                tmp.processor = self.processor
+
+                #get the publication date.
+                index = m.find('<published')
+                if index != -1:
+                    index2 = m.find('>', index)
+                    if index2 != -1:
+                        index3 = m.find('</published')
+                        if index3 != -1:
+                            index4 = m.find(':', index2, index3)
+                            if index4 != -1:
+                                value = m[index2+1:index4-3]
+                                value = value.replace('\n',"") 
+                                tmp.name = value
+                                
+                #get the publication date.
+                index = m.find('<updated')
+                if index != -1:
+                    index2 = m.find('>', index)
+                    if index2 != -1:
+                        index3 = m.find('</updated')
+                        if index3 != -1:
+                            index4 = m.find(':', index2, index3)
+                            if index4 != -1:
+                                value = m[index2+1:index4-3]
+                                value = value.replace('\n',"") 
+                                tmp.name = value                                
+                                
+                #get the title.
+                index = m.find('<title')
+                if index != -1:
+                    index2 = m.find('>', index)
+                    if index2 != -1:
+                        index3 = m.find('</title>')
+                        if index3 != -1:
+                            index4 = m.find('![CDATA[', index2, index3)
+                            if index4 != -1:
+                                value = m[index2+10:index3-3]
+                            else:
+                                value = m[index2+1:index3]
+                            value = value.replace('\n'," '")                              
+                            tmp.name = tmp.name + ' ' + value
+                                             
+                #get the description.
+                index = m.find('<summary')
+                if index != -1:
+                    index2 = m.find('>', index)
+                    if index2 != -1:
+                        index3 = m.find('</summary')
+                        if index3 != -1:
+                            value = m[index2+1:index3]
+                            value = value.replace('\n',"") 
+                            tmp.description = value
+
+                if tmp.description == '' and tmp.name != '':
+                    tmp.description = tmp.name
+
+                #get the thumb
+                index = m.find('<link type="image')
+                if index != -1:
+                    index2 = m.find('href=', index+16)
+                    if index2 != -1:
+                        index3 = m.find('"', index2+6)
+                        if index3 != -1:
+                            value = m[index2+6:index3]
+                            tmp.thumb = value
+
+                if tmp.thumb == 'default':
+                    #no thumb image found, therefore grab any jpg image in the item
+                    index = m.find('.jpg')
+                    if index != -1:
+                        index2 = m.rfind('http', 0, index)
+                        if index2 != -1:
+                            value = m[index2:index+4]
+                            tmp.thumb = value   
+
+                #get the enclosed content.
+                index = m.find('<link rel="enclosure')   
+                if index == -1:
+                    index = m.find('<link')   
+                if index != -1:
+                    index2 = m.find('href="',index) #get the URL attribute
+                    if index2 != -1:
+                        index3 = m.find('"', index2+6)
+                        if index3 != -1:
+                            value = m[index2+6:index3]
+                            tmp.URL = value
+                                          
+                    #get the media type
+                    if type_default != '':
+                        tmp.type = type_default
+
+                    if tmp.type == 'unknown':   
+                        index2 = m.find('type="',index) #get the type attribute
+                        if index2 != -1:
+                            index3 = m.find('"', index2+6)
+                            if index3 != -1:
+                                type = m[index2+6:index3]
+                                if type[0:11] == 'application':
+                                    tmp.type = 'download'
+                                elif type[0:5] == 'video':
+                                    tmp.type = 'video'
+                        
+                    if (tmp.type == 'unknown') and (tmp.URL != ''): #valid URL found
+                        #validate the type based on file extension
+                        ext_pos = tmp.URL.rfind('.') #find last '.' in the string
+                        if ext_pos != -1:
+                            ext = tmp.URL[ext_pos+1:]
+                            ext = ext.lower()
+                            if ext == 'jpg' or ext == 'gif' or ext == 'png':
+                                tmp.type = 'image'
+                            elif ext == 'mp3':
+                                tmp.type = 'audio'
+                            else:
+                                tmp.type = 'html'
+                                                       
                 if tmp.URL != '':
                     self.list.append(tmp)
                     counter = counter + 1
@@ -656,6 +850,7 @@ class CPlayList:
         self.title = 'Youtube' + ' - ' + mediaitem.name
         self.description = ''
         self.player = mediaitem.player
+        self.processor = mediaitem.processor        
         self.playmode = 'default'
         str_nextpage = 'Next Page'
         
@@ -703,38 +898,38 @@ class CPlayList:
                 tmp.name = value
                 
                 tmp.player = self.player
+                if self.processor != '':
+                    tmp.processor = self.processor   
+                else: #hard coded processor
+                    tmp.processor = "http://navix.turner3d.net/proc/youtube"
                 self.list.append(tmp)                
 
         #check if there is a next page in the html. Get the last one in the page.
-        next_page_str = ''
-        for m in lines:
-            #index1 = m.find('class="pagerNotCurrent" >')
-            index1a = m.find('class="pagerNotCurrent')
-            index1b = m.find(';start=')
-            if (index1a != -1) or (index1b != -1):
-                next_page_str = m
-
-        if next_page_str != '': #next page found. Grab the URL
-            index2 = next_page_str.find("<a href=")
+        index1 = data.rfind('data-page')
+        if index1 != -1:
+            index2 = data.rfind('<a href=',0,index1)
             if index2 != -1:
-                index3 = next_page_str.find(next_page_str[index2+8:index2+9],index2+9)
+                index3 = data.find('"',index2,index1)
                 if index3 != -1:
-                    value = next_page_str[index2+9:index3]
-                    tmp = CMediaItem() #create new item
-                    tmp.type = 'html_youtube'
-                    tmp.name = str_nextpage
-                    tmp.player = self.player
-                    tmp.background = self.background
+                    index4 = data.find('"',index3+1,index1)
+                    if index4 != -1:
+                        value = data[index3+1:index4]
+#                        Message(value)
+                        tmp = CMediaItem() #create new item
+                        tmp.type = 'html_youtube'
+                        tmp.name = str_nextpage
+                        tmp.player = self.player
+                        tmp.background = self.background
                     
-                    #create the next page URL
-                    index4 = self.URL.find("?")
-                    url = self.URL[:index4]
-                    index5 = value.find("?")
-                    value = value[index5:]
-                    tmp.URL= url+ value
+                        #create the next page URL
+                        index4 = self.URL.find("?")
+                        url = self.URL[:index4]
+                        index5 = value.find("?")
+                        value = value[index5:]
+                        tmp.URL= url+ value
                     
-                    self.list.append(tmp)                
-
+                        self.list.append(tmp)                             
+        
         return 0
 
     ######################################################################
@@ -788,7 +983,8 @@ class CPlayList:
 
         if data.find('<stationlist>') != -1:
             #parse playlist entries
-            entries = data.split('</station>')            
+            #entries = data.split('<station name')   
+            entries = data.split('\n')  
             for m in entries:
                 tmp = CMediaItem() #create new item
                 tmp.type = 'audio'
@@ -1011,12 +1207,6 @@ class CPlayList:
         else:
             self.URL = mediaitem.URL
 
-        if self.URL[1] != ':':
-            self.URL = RootDir + self.URL
-
-        if not os.path.exists(self.URL):
-            return -2
-
         #defaults
         self.version = plxVersion
         self.background = mediaitem.background
@@ -1040,20 +1230,113 @@ class CPlayList:
         #clear the list
         del self.list[:]        
 
-        #parse directory (including subdirectory) entries 
-        try:        
-            for root, dirs, files in os.walk(self.URL , topdown=False):
-                for name in files:
-                    if name[-4:] == '.plx':
-                        tmp = CMediaItem() #create new item
-                        tmp.type = 'playlist'
-                        tmp.name = name[:-4]
-                        tmp.URL = os.path.join(root, name)
-                        self.list.append(tmp)                    
-        except IOError:
-            return -2
+        if self.URL[:3] != 'ftp':
+            #local directory
+            
+            if self.URL[1] != ':':
+                self.URL = RootDir + self.URL
 
+            if not os.path.exists(self.URL):
+                return -2
+            
+            #parse directory (including subdirectory) entries 
+            try:        
+                for root, dirs, files in os.walk(self.URL , topdown=False):
+                    for name in files:
+                        if name[-4:] == '.plx':
+                            tmp = CMediaItem() #create new item
+                            tmp.type = 'playlist'
+                            tmp.name = name[:-4]
+                            tmp.URL = os.path.join(root, name)
+                            self.list.append(tmp)                    
+            except IOError:
+                return -2
+        else:
+            #FTP directory  
+            if self.URL[-1] != '/':
+                self.URL = self.URL + '/'
+            urlparse = CURLParseFTP(self.URL)
+            
+            try:
+                self.f = ftplib.FTP()
+                self.f.connect(urlparse.host,urlparse.port)
+            except (socket.error, socket.gaierror), e:
+                print 'ERROR: cannot reach "%s"' % urlparse.host
+                return -2
+
+            print '*** Connected to host "%s"' % urlparse.host
+
+            try:
+                if urlparse.username != '':
+                    self.f.login(urlparse.username, urlparse.password)
+                else:
+                    self.f.login()
+            except ftplib.error_perm:
+                print 'ERROR: cannot login anonymously'
+                self.f.quit()
+                return -2
+
+            print '*** Logged in as "anonymous"'
+
+            try:
+                if urlparse.path != '':
+                    self.f.cwd(urlparse.path)
+            except ftplib.error_perm:
+                print 'ERROR: cannot CD to "%s"' % urlparse.path
+                self.f.quit()
+                return -2
+
+            print '*** Changed to "%s" folder' % urlparse.path            
+            
+            dir_LIST = []
+            try:
+                self.f.retrlines('LIST', dir_LIST.append)
+            except ftplib.error_perm:
+                print 'ERROR: cannot read directory' 
+
+            #print dir_LIST
+
+            dir_NLST = []
+            try:
+                self.f.retrlines('NLST', dir_NLST.append)
+            except ftplib.error_perm:
+                print 'ERROR: cannot read directory'              
+                       
+            #print dir_NLST                       
+                       
+            for i in range(len(dir_LIST)):
+                tmp = CMediaItem() #create new item
+                tmp.name = dir_NLST[i]
+                                
+                if dir_LIST[i][0] == 'd':
+                    tmp.type = 'directory'
+                else:
+                    ext = getFileExtension(dir_NLST[i])
+                    ext = ext.lower()
+                    if ext == 'jpg' or ext == 'gif' or ext == 'png':
+                        tmp.type = 'image'
+                    elif ext == 'mp3':
+                        tmp.type = 'audio'
+                    elif ext == 'plx':
+                        tmp.type = 'playlist'
+                    elif ext == 'txt':
+                        tmp.type = 'text'
+                    else:
+                        tmp.type = 'video'
+                
+                tmp.URL = self.URL + dir_NLST[i]
+                self.list.append(tmp)                          
+            
         return 0
+
+#    def load_dir_callback1(self, string):
+#        tmp = CMediaItem() #create new item
+#        if string[0] == 'd':
+#            tmp.type = 'playlist'
+#        self.list.append(tmp)
+
+#    def load_dir_callback2(self, string):
+#        self.list[
 
     ######################################################################
     # Description: Saves a playlist .plx file to disk.
