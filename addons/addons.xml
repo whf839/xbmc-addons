@@ -55,10 +55,10 @@
     </extension>
 </addon>
 
-<addon id="repository.googlecode.xbmc-addons" name="googlecode.xbmc-addons Add-ons" version="1.0.0" provider-name="nuka1195">
+<addon id="repository.googlecode.xbmc-addons" name="googlecode.xbmc-addons Add-ons" version="1.0.1" provider-name="nuka1195">
 	<extension point="xbmc.addon.repository" name="googlecode.xbmc-addons Add-on Repository">
 		<info compressed="false">http://xbmc-addons.googlecode.com/svn/addons/addons.xml</info>
-		<checksum></checksum>
+		<checksum>http://xbmc-addons.googlecode.com/svn/addons/addons.xml.md5</checksum>
 		<datadir zip="false">http://xbmc-addons.googlecode.com/svn/addons</datadir>
 	</extension>
 	<extension point="xbmc.addon.metadata">
