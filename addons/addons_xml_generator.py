@@ -1,6 +1,6 @@
 """ addons.xml generator """
 
-import os
+import os, md5
 
 class Generator:
     """
@@ -11,7 +11,8 @@ class Generator:
     def __init__( self ):
         # generate file
         self._generate_addons_file()
-
+        self._generate_md5_file()
+        
     def _generate_addons_file( self ):
         # addon list
         addons = os.listdir( "." )
@@ -52,6 +53,20 @@ class Generator:
             # oops
             print "An error occurred saving file\n%s" % ( e, )
 
+    def _generate_md5_file( self ):
+        try:
+            # create a new md5 object
+            m = md5.new()
+        except Exception, e:
+            print "An error occurred creating md5 object\n%s" % (e, )
+        else:
+            try:
+                # update the md5 object with the contents of addons.xml
+                m.update(open( "addons.xml").read())
+                # write md5 file
+                open( "addons.xml.md5", "w" ).write( m.hexdigest() )
+            except Exception, e:
+                print "An error occured saving md5 file\n%s" % ( e, )
 
 if ( __name__ == "__main__" ):
     # start
