@@ -1,9 +1,13 @@
+[B]Version 0.3.2[/B]
+- Added: hungarian summary & description]
+- Added: hungarian strings
+- Changed: end line characters (thx spiff)
+
+
 [B]Version 0.3.1[/B]
 
 - Changed: svn url
 - Added: changelog.txt and license.txt
-- Added: hungarian summary & description
-- Changed: end line characters (thx spiff)
 
 
 [B]Version 0.3.0[/B]

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="plugin.audio.ListenLiveEU"
-  version="0.3.1"
+  version="0.3.2"
   name="ListenLiveEU"
   provider-name="bootsy [bootsy82@gmail.com]">
   <requires>
    <import addon="xbmc.python" version="1.0"/>
   </requires>
-  <extension 
+  <extension
     point="xbmc.python.pluginsource"
     library="default.py">
    <provides>audio</provides>
@@ -16,7 +16,7 @@
     <summary lang="en">European radio stations streaming live on the internet</summary>
     <summary lang="hu">Európai internetes rádiók</summary>
     <description lang="en">Welcome to listenlive.eu, a web radio directory showcasing over 4000 radio stations from across Europe streaming live on the internet.</description>
-    <description lang="hu">A listenlive.eu több mint 4000 élő rádióadást tartalmaz Európából, melyeket az interneten keresztül érhetsz el.</description>
+    <description lang="hu">A listenlive.eu több mint 4000 élo rádióadást tartalmaz Európából, melyeket az interneten keresztül érhetsz el.</description>
     <platform>all</platform>
   </extension>
 </addon>
