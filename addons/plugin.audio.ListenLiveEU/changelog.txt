@@ -1,5 +1,5 @@
 [B]Version 0.3.2[/B]
-- Added: hungarian summary & description]
+- Added: hungarian summary & description
 - Added: hungarian strings
 - Changed: end line characters (thx spiff)
 
