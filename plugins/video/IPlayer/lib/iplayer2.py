@@ -80,7 +80,7 @@ def fix_selfclosing(xml):
 
 def set_http_cache(dir):
     try:
-        cache = httplib2.FileCache(HTTP_CACHE_DIR, safe=lambda x: md5.new(x).hexdigest())
+        cache = httplib2.FileCache(dir, safe=lambda x: md5.new(x).hexdigest())
         http.cache = cache
     except:
         pass
@@ -92,7 +92,6 @@ class NoItemsError(Exception):
     def __str__(self):
         reason = self.reason or '<no reason given>'
         return "Programme unavailable ('%s')" % (reason)
-    
 
 class memoize(object):
     def __init__(self, func):
