@@ -9,9 +9,14 @@ import xbmc
 import xbmcgui
 import xbmcplugin
 
-import urllib
+try:
+    import xbmcaddon
+except:
+    # get xbox compatibility module
+    from resources.lib.xbox import *
+    xbmcaddon = XBMCADDON()
 
-from resources.lib.utils import LOG, Addon
+import urllib
 
 
 class _Info:
@@ -26,6 +31,8 @@ class Main:
     BASE_PLUGIN_THUMBNAIL_PATH = os.path.join( os.getcwd(), "resources", "thumbnails" )
     # plugin handle
     _handle = int( sys.argv[ 1 ] )
+    # Addon class
+    Addon = xbmcaddon.Addon( id=os.path.basename( os.getcwd() ) )
 
     def __init__( self ):
         self._parse_argv()
@@ -33,62 +40,70 @@ class Main:
 
     def _parse_argv( self ):
         if ( not sys.argv[ 2 ] ):
+            self._log_addon_action( "started" )
             self.args = _Info( title="", category=None )
         else:
             # call _Info() with our formatted argv to create the self.args object
             exec "self.args = _Info(%s)" % ( urllib.unquote_plus( sys.argv[ 2 ][ 1 : ].replace( "&", ", " ) ), )
 
+    def _log_addon_action( self, action ):
+        # log addon info
+        xbmc.log( "=" * 80, xbmc.LOGNOTICE )
+        xbmc.log( "[ADD-ON] - %s %s!" % ( self.Addon.getAddonInfo( "Name" ), action, ), xbmc.LOGNOTICE )
+        xbmc.log( "           Id: %s - Type: %s - Version: %s" % ( self.Addon.getAddonInfo( "Id" ), self.Addon.getAddonInfo( "Type" ), self.Addon.getAddonInfo( "Version" ) ), xbmc.LOGNOTICE )
+        xbmc.log( "=" * 80, xbmc.LOGNOTICE )
+
     def get_categories( self ):
         try:
             if ( not sys.argv[ 2 ] ):
                 categories = (
-                                        ( Addon.getLocalizedString( 30900 ), "categories", ),
-                                        ( Addon.getLocalizedString( 30901 ), "ireports", ),
-                                        #( Addon.getLocalizedString( 30902 ), "ontv", ),
-                                        ( Addon.getLocalizedString( 30903 ), "espanol", ),
-                                        #( Addon.getLocalizedString( 30904 ), "live", ),
+                                        ( self.Addon.getLocalizedString( 30900 ), "categories", ),
+                                        ( self.Addon.getLocalizedString( 30901 ), "ireports", ),
+                                        #( self.Addon.getLocalizedString( 30902 ), "ontv", ),
+                                        ( self.Addon.getLocalizedString( 30903 ), "espanol", ),
+                                        #( self.Addon.getLocalizedString( 30904 ), "live", ),
                                     )
             elif ( self.args.category == "categories" ):
                 categories = (
-                                        ( Addon.getLocalizedString( 30950 ), "most_popular", ),
-                                        ( Addon.getLocalizedString( 30951 ), "by_section_us", ),
-                                        ( Addon.getLocalizedString( 30952 ), "by_section_world", ),
-                                        ( Addon.getLocalizedString( 30953 ), "by_section_politics", ),
-                                        ( Addon.getLocalizedString( 30954 ), "by_section_showbiz", ),
-                                        ( Addon.getLocalizedString( 30955 ), "by_section_crime", ),
-                                        ( Addon.getLocalizedString( 30956 ), "by_section_funny_news", ),
-                                        ( Addon.getLocalizedString( 30957 ), "by_section_tech", ),
-                                        ( Addon.getLocalizedString( 30958 ), "by_section_living", ),
-                                        ( Addon.getLocalizedString( 30959 ), "by_section_health", ),
-                                        ( Addon.getLocalizedString( 30960 ), "by_section_student", ),
-                                        ( Addon.getLocalizedString( 30961 ), "by_section_business", ),
-                                        ( Addon.getLocalizedString( 30962 ), "by_section_sports", ),
-                                        ( Addon.getLocalizedString( 30963 ), "by_section_weather", ),
-                                        ( Addon.getLocalizedString( 30964 ), "top_stories", ),
+                                        ( self.Addon.getLocalizedString( 30950 ), "most_popular", ),
+                                        ( self.Addon.getLocalizedString( 30951 ), "by_section_us", ),
+                                        ( self.Addon.getLocalizedString( 30952 ), "by_section_world", ),
+                                        ( self.Addon.getLocalizedString( 30953 ), "by_section_politics", ),
+                                        ( self.Addon.getLocalizedString( 30954 ), "by_section_showbiz", ),
+                                        ( self.Addon.getLocalizedString( 30955 ), "by_section_crime", ),
+                                        ( self.Addon.getLocalizedString( 30956 ), "by_section_funny_news", ),
+                                        ( self.Addon.getLocalizedString( 30957 ), "by_section_tech", ),
+                                        ( self.Addon.getLocalizedString( 30958 ), "by_section_living", ),
+                                        ( self.Addon.getLocalizedString( 30959 ), "by_section_health", ),
+                                        ( self.Addon.getLocalizedString( 30960 ), "by_section_student", ),
+                                        ( self.Addon.getLocalizedString( 30961 ), "by_section_business", ),
+                                        ( self.Addon.getLocalizedString( 30962 ), "by_section_sports", ),
+                                        ( self.Addon.getLocalizedString( 30963 ), "by_section_weather", ),
+                                        ( self.Addon.getLocalizedString( 30964 ), "top_stories", ),
                                     )
             elif ( self.args.category == "ireports" ):
                 categories = (
-                                        ( Addon.getLocalizedString( 30965 ), "ireport_newsiest_now", ),
-                                        ( Addon.getLocalizedString( 30966 ), "ireport_on_cnn", ),
-                                        ( Addon.getLocalizedString( 30967 ), "ireport_sound_off", ),
-                                        ( Addon.getLocalizedString( 30968 ), "ireport_off_beat", ),
-                                        ( Addon.getLocalizedString( 30969 ), "cnni_programs_ireport", ),
+                                        ( self.Addon.getLocalizedString( 30965 ), "ireport_newsiest_now", ),
+                                        ( self.Addon.getLocalizedString( 30966 ), "ireport_on_cnn", ),
+                                        ( self.Addon.getLocalizedString( 30967 ), "ireport_sound_off", ),
+                                        ( self.Addon.getLocalizedString( 30968 ), "ireport_off_beat", ),
+                                        ( self.Addon.getLocalizedString( 30969 ), "cnni_programs_ireport", ),
                                     )
             elif ( self.args.category == "ontv" ):
                 categories = (
-                                        ( Addon.getLocalizedString( 30980 ), "cnn_programs_american_morning", ),
+                                        ( self.Addon.getLocalizedString( 30980 ), "cnn_programs_american_morning", ),
                                     )
             elif ( self.args.category == "espanol" ):
                 categories = (
-                                        ( Addon.getLocalizedString( 30970 ), "spanish_eleccions", ),
-                                        ( Addon.getLocalizedString( 30971 ), "spanish_economia", ),
-                                        ( Addon.getLocalizedString( 30972 ), "spanish_tu_dinero", ),
-                                        ( Addon.getLocalizedString( 30973 ), "spanish_vida", ),
-                                        ( Addon.getLocalizedString( 30974 ), "spanish_entretenimiento", ),
-                                        ( Addon.getLocalizedString( 30975 ), "spanish_tecnologia", ),
-                                        ( Addon.getLocalizedString( 30976 ), "spanish_estados_unidos", ),
-                                        ( Addon.getLocalizedString( 30977 ), "spanish_america_latina", ),
-                                        ( Addon.getLocalizedString( 30978 ), "spanish_spanish_mundo", ),
+                                        ( self.Addon.getLocalizedString( 30970 ), "spanish_eleccions", ),
+                                        ( self.Addon.getLocalizedString( 30971 ), "spanish_economia", ),
+                                        ( self.Addon.getLocalizedString( 30972 ), "spanish_tu_dinero", ),
+                                        ( self.Addon.getLocalizedString( 30973 ), "spanish_vida", ),
+                                        ( self.Addon.getLocalizedString( 30974 ), "spanish_entretenimiento", ),
+                                        ( self.Addon.getLocalizedString( 30975 ), "spanish_tecnologia", ),
+                                        ( self.Addon.getLocalizedString( 30976 ), "spanish_estados_unidos", ),
+                                        ( self.Addon.getLocalizedString( 30977 ), "spanish_america_latina", ),
+                                        ( self.Addon.getLocalizedString( 30978 ), "spanish_spanish_mundo", ),
                                     )
             # fill media list
             ok = self._fill_media_list( categories )
@@ -108,11 +123,11 @@ class Main:
 
     def _set_fanart( self ):
         # user fanart preference
-        fanart = [ Addon.getSetting( "fanart_image" ), [ None, Addon.getSetting( "fanart_path" ) ][ Addon.getSetting( "fanart_path" ) != "" and Addon.getSetting( "fanart_type" ) == "0" ], [ Addon.getAddonInfo( "id" ), self.args.category ][ self.args.category is not None ] ]
+        fanart = [ self.Addon.getSetting( "fanart_image" ), [ None, self.Addon.getSetting( "fanart_path" ) ][ self.Addon.getSetting( "fanart_path" ) != "" and self.Addon.getSetting( "fanart_type" ) == "0" ], [ self.Addon.getAddonInfo( "id" ), self.args.category ][ self.args.category is not None ] ]
         # if user passed fanart tuple (image, category path,)
         if ( fanart is not None ):
             # if skin has fanart image use it
-            fanart_image = Addon.getAddonInfo( "id" ) + "-fanart.png"
+            fanart_image = self.Addon.getAddonInfo( "Id" ) + "-fanart.png"
             # if no skin image check for a category image
             if ( not xbmc.skinHasImage( fanart_image ) ):
                 if ( fanart[ 1 ] is not None ):

@@ -37,8 +37,7 @@
     <string id="30610">Check for updates</string>
     <string id="30615">View changelog</string>
     <string id="30620">View readme</string>
-    <string id="30625">View credits</string>
-    <string id="30660">Clear cache folder</string>
+    <string id="30625">View license</string>
 
     <!-- universal strings -->
     <!-- compatible messages -->
@@ -67,28 +66,23 @@
     <!-- search terms -->
     <string id="30730">Search</string>
     <string id="30731">Enter keywords/phrase to search for...</string>
+    <string id="30735">Browse for install path</string>
     <!-- credits titles -->
     <string id="30750">Author</string>
     <string id="30751">Version</string>
     <string id="30752">Subversion Repo</string>
     <string id="30753">Language Translation</string>
-    <string id="30758">Updated</string>
-    <string id="30759">current version</string>
+    <string id="30759">Updated</string>
     <!-- viewer messages -->
-    <string id="30760">Fetching changelog, please wait...</string>
-    <string id="30761">Fetching readme, please wait...</string>
-    <string id="30762">Checking for updates, please wait...</string>
-    <string id="30763">Changelog</string>
-    <string id="30764">Readme</string>
+    <string id="30760">Checking for updates, please wait...</string>
+    <string id="30761">Fetching changelog, please wait...</string>
+    <string id="30762">Fetching readme, please wait...</string>
+    <string id="30763">Fetching license, please wait...</string>
     <string id="30765">Updates</string>
-    <string id="30766">An error occurred fetching %s![CR][CR]%s</string>
-    <!-- addon manager strings -->
-    <string id="30770"></string>
-    <string id="30771"></string>
-    <string id="30772"></string>
-    <string id="30773"></string>
-    <string id="30774"></string>
-    <string id="30775"></string>
+    <string id="30766">Changelog</string>
+    <string id="30767">Readme</string>
+    <string id="30768">License</string>
+    <string id="30770">An error occurred fetching %s![CR][CR]%s</string>
 
     <!-- Category strings -->
     <string id="30900">Main categories</string>

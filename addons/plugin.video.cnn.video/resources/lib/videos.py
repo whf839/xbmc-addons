@@ -9,10 +9,15 @@ import xbmc
 import xbmcgui
 import xbmcplugin
 
+try:
+    import xbmcaddon
+except:
+    # get xbox compatibility module
+    from resources.lib.xbox import *
+    xbmcaddon = XBMCADDON()
+
 import xml.dom.minidom
 import urllib
-
-from resources.lib.utils import LOG, Addon
 
 
 class _Info:
@@ -30,7 +35,7 @@ class _Parser:
     BASE_STREAMING_URL = "http://ht.cdn.turner.com/cnn/big/%s_640x360_dl.flv?|User-Agent=%s"#&Accept=%s&Accept-Language=%s&Referer=%s&x-flash-version=%s&Accept-Encoding=%s&Host=%s&Connection=%s"
     BASE_LIVE_STREAMING_URL = "http://www.cnn.com/video/live/cnnlive_%s.asx"
 
-    def __init__( self, xmlSource ):
+    def __init__( self, xmlSource, Addon ):
         # list of _Info() objects
         self.videos = []
         self.large_thumb = Addon.getSetting( "use_large_thumb" ) == "true"
@@ -93,6 +98,8 @@ class Main:
     BASE_CACHE_PATH = os.path.join( xbmc.translatePath( "special://profile/" ), "Thumbnails", "Video" )
     # plugin handle
     _handle = int( sys.argv[ 1 ] )
+    # Addon class
+    Addon = xbmcaddon.Addon( id=os.path.basename( os.getcwd() ) )
 
     def __init__( self ):
         self._parse_argv()
@@ -111,7 +118,7 @@ class Main:
             # close socket
             usock.close()
             # parse xmlSource for videos and fill media list
-            ok = self._fill_media_list( _Parser( xmlSource ).videos )
+            ok = self._fill_media_list( _Parser( xmlSource, self.Addon ).videos )
         except Exception, e:
             # oops, notify user what error occurred
             LOG( str( e ), xbmc.LOGERROR )
@@ -157,11 +164,11 @@ class Main:
 
     def _set_fanart( self ):
         # user fanart preference
-        fanart = [ Addon.getSetting( "fanart_image" ), [ None, Addon.getSetting( "fanart_path" ) ][ Addon.getSetting( "fanart_path" ) != "" and Addon.getSetting( "fanart_type" ) == "0" ], self.args.title ]
+        fanart = [ self.Addon.getSetting( "fanart_image" ), [ None, self.Addon.getSetting( "fanart_path" ) ][ self.Addon.getSetting( "fanart_path" ) != "" and self.Addon.getSetting( "fanart_type" ) == "0" ], self.args.title ]
         # if user passed fanart tuple (image, category path,)
         if ( fanart is not None ):
             # if skin has fanart image use it
-            fanart_image = Addon.getAddonInfo( "id" ) + "-fanart.png"
+            fanart_image = self.Addon.getAddonInfo( "Id" ) + "-fanart.png"
             # if no skin image check for a category image
             if ( not xbmc.skinHasImage( fanart_image ) ):
                 if ( fanart[ 1 ] is not None ):
