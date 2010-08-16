@@ -12,9 +12,15 @@ pDialog.update( 0 )
 
 import os
 import xbmc
-import xbmcaddon
-import urllib
 
+try:
+    import xbmcaddon
+except:
+    # get xbox compatibility module
+    from xbox import *
+    xbmcaddon = XBMCADDON()
+
+import urllib
 from utils import get_filesystem, get_legal_filepath, LOG
 
 
@@ -56,7 +62,7 @@ class Main:
     # set our trailer duration
     g_duration = xbmc.getInfoLabel( "ListItem.Duration" )
     # set cast list
-    g_cast = unicode( " / ".join( xbmc.getInfoLabel( "ListItem.Cast" ).split( "\n" ) ), "utf-8" )
+    g_cast = unicode( " / ".join( xbmc.getInfoLabel( "ListItem.Cast" ).splitlines() ), "utf-8" )
     # set our year
     g_year = 0
     if ( xbmc.getInfoLabel( "ListItem.Year" ) ):

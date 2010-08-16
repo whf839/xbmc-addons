@@ -8,14 +8,19 @@ import os
 import xbmc
 import xbmcgui
 import xbmcplugin
-import xbmcaddon
+
+try:
+    import xbmcaddon
+except:
+    # get xbox compatibility module
+    from xbox import *
+    xbmcaddon = XBMCADDON()
 
 import time
 import re
 import urllib
 import datetime
 from xml.sax.saxutils import unescape
-
 from utils import LOG, get_legal_filepath
 from MediaWindow import MediaWindow, DirectoryItem
 
@@ -346,7 +351,7 @@ class Main:
         try:
             xmlSource = []
             # grab all xml sources
-            for source in ( "current.xml", "current_480p.xml", "current_720p.xml", ):
+            for source in ( "newest.xml", "newest_480p.xml", "newest_720p.xml", ):
                 # set path and url
                 base_path = os.path.join( self.BASE_CURRENT_SOURCE_PATH, source )
                 base_url = self.BASE_CURRENT_URL % ( source, )

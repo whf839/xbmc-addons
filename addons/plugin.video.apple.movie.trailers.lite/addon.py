@@ -40,7 +40,12 @@ if ( __name__ == "__main__" ):
     elif ( sys.argv[ 2 ].startswith( "?settings=" ) ):
         import os
         import xbmc
-        import xbmcaddon
+        try:
+            import xbmcaddon
+        except:
+            # get xbox compatibility module
+            from resources.lib.xbox import *
+            xbmcaddon = XBMCADDON()
         # open settings
         xbmcaddon.Addon( id=os.path.basename( os.getcwd() ) ).openSettings()
         # refresh listing in case settings changed

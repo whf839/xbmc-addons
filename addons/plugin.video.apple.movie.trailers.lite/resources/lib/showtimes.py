@@ -10,6 +10,13 @@ import os
 import xbmc
 import xbmcgui
 
+try:
+    import xbmcaddon
+except:
+    # get xbox compatibility module
+    from xbox import *
+    xbmcaddon = XBMCADDON()
+
 from urllib import unquote_plus
 
 
@@ -67,7 +74,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
         # set our trailer duration
         self.movie_showtimes[ "duration" ] = xbmc.getInfoLabel( "ListItem.Duration" )
         # set cast list
-        self.movie_showtimes[ "cast" ] = unicode( " / ".join( xbmc.getInfoLabel( "ListItem.Cast" ).split( "\n" ) ), "utf-8" )
+        self.movie_showtimes[ "cast" ] = unicode( " / ".join( xbmc.getInfoLabel( "ListItem.Cast" ).splitlines() ), "utf-8" )
 
     def _show_trailer_info( self ):
         # set initial apple trailer info
