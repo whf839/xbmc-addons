@@ -8,7 +8,12 @@ import os
 import xbmc
 import xbmcgui
 import xbmcplugin
-import xbmcaddon
+try:
+    import xbmcaddon
+except:
+    # get xbox compatibility module
+    from xbox import *
+    xbmcaddon = XBMCADDON()
 
 from pysqlite2 import dbapi2 as sqlite
 

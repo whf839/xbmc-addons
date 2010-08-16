@@ -11,13 +11,13 @@ import xbmcgui
 
 DEBUG_MODE = 0
 
-_ = sys.modules[ "__main__" ].__language__
+_ = sys.modules[ "__main__" ].__Addon__.getLocalizedString
+__Addon__ = sys.modules[ "__main__" ].__Addon__
 __scriptname__ = sys.modules[ "__main__" ].__scriptname__
 __version__ = sys.modules[ "__main__" ].__version__
-__svn_revision__ = sys.modules[ "__main__" ].__svn_revision__
 
 # comapatble versions
-DATABASE_VERSIONS = ( "pre-0.99.7.1", "pre-0.99.7.2", "pre-0.99.7.3", "pre-0.99.7.3a", "pre-0.99.7.3b", "pre-0.99.8", )
+DATABASE_VERSIONS = ( "pre-0.99.7.1", "pre-0.99.7.2", "pre-0.99.7.3", "pre-0.99.7.3a", "pre-0.99.7.3b", "pre-0.99.8", "2.0.0", )
 SETTINGS_VERSIONS = DATABASE_VERSIONS
 # special categories
 GENRES = -1
@@ -32,9 +32,9 @@ RECENTLY_ADDED = -11
 MULTIPLE_TRAILERS = -12
 CUSTOM_SEARCH = -99
 # base paths
-BASE_DATA_PATH = os.path.join( xbmc.translatePath( "special://masterprofile/" ), "addon_data", os.path.basename( os.getcwd() ) )
-BASE_SETTINGS_PATH = os.path.join( xbmc.translatePath( "special://profile/" ), "addon_data", os.path.basename( os.getcwd() ), "settings.txt" )
-BASE_DATABASE_PATH = os.path.join( xbmc.translatePath( "special://profile/" ), "addon_data", os.path.basename( os.getcwd() ), "AMT.db" )
+BASE_DATA_PATH = __Addon__.getAddonInfo( "Profile" )
+BASE_SETTINGS_PATH = os.path.join( xbmc.translatePath( __Addon__.getAddonInfo( "Profile" ) ), "settings.txt" )
+BASE_DATABASE_PATH = os.path.join( xbmc.translatePath( __Addon__.getAddonInfo( "Profile" ) ), "AMT.db" )
 BASE_RESOURCE_PATH = sys.modules[ "__main__" ].BASE_RESOURCE_PATH
 # special button codes
 SELECT_ITEM = ( 11, 256, 61453, )
@@ -270,5 +270,5 @@ class Settings:
             settings_file.close()
             return True
         except:
-            LOG( LOG_ERROR, "%s (rev: %s) %s::%s (%d) [%s]", __scriptname__, __svn_revision__, self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
+            LOG( LOG_ERROR, "%s %s::%s (%d) [%s]", __scriptname__, self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
             return False

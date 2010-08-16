@@ -19,9 +19,9 @@ __version__ = "1.5.0"
 
 if ( __name__ == "__main__" ):
     if ( not sys.argv[ 2 ] ):
-        from amtAPI import xbmcplugin_categories as plugin
+        from resources.lib import categories as plugin
     elif ( "idMovie=" in sys.argv[ 2 ] ):
-        from amtAPI import xbmcplugin_player as plugin
+        from resources.lib import player as plugin
     else:
-        from amtAPI import xbmcplugin_videos as plugin
+        from resources.lib import videos as plugin
     plugin.Main()

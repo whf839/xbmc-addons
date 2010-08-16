@@ -8,7 +8,12 @@ import os
 import xbmc
 import xbmcgui
 import xbmcplugin
-import xbmcaddon
+try:
+    import xbmcaddon
+except:
+    # get xbox compatibility module
+    from xbox import *
+    xbmcaddon = XBMCADDON()
 
 import re
 from random import randrange

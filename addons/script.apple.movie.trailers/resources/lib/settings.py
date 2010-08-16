@@ -12,10 +12,9 @@ import xbmcgui
 from utilities import *
 import chooser
 
-_ = sys.modules[ "__main__" ].__language__
+_ = sys.modules[ "__main__" ].__Addon__.getLocalizedString
 __scriptname__ = sys.modules[ "__main__" ].__scriptname__
 __version__ = sys.modules[ "__main__" ].__version__
-__svn_revision__ = sys.modules[ "__main__" ].__svn_revision__
 
 
 class GUI( xbmcgui.WindowXMLDialog ):
@@ -42,7 +41,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
     def _set_labels( self ):
         try:
             #self.getControl( 20 ).setLabel( __scriptname__ )
-            self.getControl( 30 ).setLabel( "%s: %s-%s" % ( _( 1006 ), __version__, __svn_revision__, ) )
+            self.getControl( 30 ).setLabel( "%s: %s" % ( _( 1006 ), __version__, ) )
             #self.getControl( 250 ).setLabel( _( 250 ) )
             #self.getControl( 251 ).setLabel( _( 251 ) )
             #self.getControl( 252 ).setLabel( _( 252 ) )

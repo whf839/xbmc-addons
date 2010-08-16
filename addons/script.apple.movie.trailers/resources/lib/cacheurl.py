@@ -27,7 +27,7 @@ __module_version__ = "0.1"
 #__useragent__ = "iTunes/4.7"
 __useragent__ = "QuickTime/7.2 (qtver=7.2;os=Windows NT 5.1Service Pack 3)"
 
-_ = sys.modules[ "__main__" ].__language__
+_ = sys.modules[ "__main__" ].__Addon__.getLocalizedString
 
 
 def percent_from_ratio( top, bottom ):

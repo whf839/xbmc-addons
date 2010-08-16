@@ -9,11 +9,10 @@ import xbmcgui
 
 from utilities import *
 
-_ = sys.modules[ "__main__" ].__language__
+_ = sys.modules[ "__main__" ].__Addon__.getLocalizedString
 __scriptname__ = sys.modules[ "__main__" ].__scriptname__
 __version__ = sys.modules[ "__main__" ].__version__
 __svn_url__ = sys.modules[ "__main__" ].__svn_url__
-__svn_revision__ = sys.modules[ "__main__" ].__svn_revision__
 
 
 class GUI( xbmcgui.WindowXMLDialog ):
@@ -30,7 +29,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
         try:
             #team credits
             self.getControl( 20 ).setLabel( __scriptname__ )
-            self.getControl( 30 ).setLabel( "%s: %s-%s" % ( _( 1006 ), __version__, __svn_revision__, ) )
+            self.getControl( 30 ).setLabel( "%s: %s" % ( _( 1006 ), __version__, ) )
             self.getControl( 40 ).addLabel( __svn_url__ )
             self.getControl( 901 ).setLabel( _( 901 ) )
             self.getControl( 101 ).reset()

@@ -9,10 +9,9 @@ import xbmcgui
 
 from utilities import *
 
-_ = sys.modules[ "__main__" ].__language__
+_ = sys.modules[ "__main__" ].__Addon__.getLocalizedString
 __scriptname__ = sys.modules[ "__main__" ].__scriptname__
 __version__ = sys.modules[ "__main__" ].__version__
-__svn_revision__ = sys.modules[ "__main__" ].__svn_revision__
 
 
 class GUI( xbmcgui.WindowXMLDialog ):

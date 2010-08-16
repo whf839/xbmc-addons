@@ -15,10 +15,9 @@ def _progress_dialog( count=0, msg="" ):
     else:
         dialog.close()
     
-_ = sys.modules[ "__main__" ].__language__
+_ = sys.modules[ "__main__" ].__Addon__.getLocalizedString
 __scriptname__ = sys.modules[ "__main__" ].__scriptname__
 __version__ = sys.modules[ "__main__" ].__version__
-__svn_revision__ = sys.modules[ "__main__" ].__svn_revision__
 
 try:
     _progress_dialog( None )
@@ -854,7 +853,11 @@ class GUI( xbmcgui.WindowXML ):
         ##if ( self.Timer is not None ): self.Timer.cancel()
         self._set_video_resolution( True )
         self.close()
-        if ( restart ): xbmc.executebuiltin( "XBMC.RunScript(%s)" % ( os.path.join( os.getcwd(), "addon.py" ), ) )
+        if ( restart ): 
+            if ( os.path.isfile( os.path.join( os.getcwd(), "addon.py" ) ) ):
+                xbmc.executebuiltin( "XBMC.RunScript(%s)" % ( os.path.join( os.getcwd(), "addon.py" ), ) )
+            else:
+                xbmc.executebuiltin( "XBMC.RunScript(%s)" % ( os.path.join( os.getcwd(), "default.py" ), ) )
 
     def onClick( self, controlId ):
         try:
@@ -941,7 +944,6 @@ class GUI( xbmcgui.WindowXML ):
 
 def main():
     _progress_dialog( len( modules ) + 1, _( 55 ) )
-    settings = Settings().get_settings()
     ui = GUI( "script-%s-main.xml" % ( __scriptname__.replace( " ", "_" ), ), os.getcwd(), "Default", "PAL16x9" )
     _progress_dialog( -1 )
     ui.doModal()

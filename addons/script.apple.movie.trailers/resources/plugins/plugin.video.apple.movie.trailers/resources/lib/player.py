@@ -4,7 +4,12 @@
 
 # TODO: remove this when dialog issue is resolved
 import xbmc
-import xbmcaddon
+try:
+    import xbmcaddon
+except:
+    # get xbox compatibility module
+    from xbox import *
+    xbmcaddon = XBMCADDON()
 
 _ = xbmcaddon.Addon( id="plugin.video.apple.movie.trailers" ).getLocalizedString
 _S = xbmcaddon.Addon( id="plugin.video.apple.movie.trailers" ).getSetting
