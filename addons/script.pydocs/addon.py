@@ -1,8 +1,20 @@
+""" PyDocs Printer """
+
 import os
 import xbmc
 import xbmcgui
 import xbmcplugin
-import xbmcaddon
+
+try:
+    import xbmcaddon
+    modules = [ "xbmcaddon" ]
+except:
+    # get xbox compatibility module
+    from resources.lib.xbox import *
+    xbmcaddon = XBMCADDON()
+    # no need for the dummy modules docs
+    modules = []
+
 import resources.lib.pydoc as pydoc
 
 
@@ -23,30 +35,31 @@ if ( __name__ == "__main__" ):
     # get user prefered save location
     doc_path = Addon.getSetting( "doc_path" )
     # get location if none set
-    # TODO: do we want to ask this each time? (i think not, user can set in settings)
     if ( not doc_path ):
         doc_path = _get_browse_dialog( doc_path, Addon.getLocalizedString( 30110 ) )
     # if doc_path create html docs
     if ( doc_path ):
         # show feedback
         pDialog = xbmcgui.DialogProgress()
-        pDialog.create( Addon.getAddonInfo( "name" ) )
+        pDialog.create( Addon.getAddonInfo( "Name" ) )
         # set the doc_path setting incase the browse dialog was used
         Addon.setSetting( "doc_path", doc_path )
         # get our document object
         doc = pydoc.HTMLDoc()
         # modules
-        modules = [ "xbmc", "xbmcgui", "xbmcplugin", "xbmcaddon" ]
+        modules += [ "xbmc", "xbmcgui", "xbmcplugin" ]
         # enumerate thru and print our help docs
         for count, module in enumerate( modules ):
             # set correct path
-            path = xbmc.validatePath( xbmc.translatePath( os.path.join( doc_path, "%s.html" % ( module, ) ) ) )
+            _path = xbmc.validatePath( xbmc.translatePath( os.path.join( doc_path, "%s.html" % ( module, ) ) ) )
             # update dialog
-            pDialog.update( count * 25, Addon.getLocalizedString( 30711 ) % ( module + ".html PyDoc", ), Addon.getLocalizedString( 30712 ) % ( path, ) )
+            pDialog.update( count * ( 100 / len( modules ) ), Addon.getLocalizedString( 30711 ) % ( module + ".html PyDoc", ), Addon.getLocalizedString( 30712 ) % ( _path, ) )
             # print document
-            f = open( path, "w" )
-            f.write( doc.document( eval( module ) ) )
-            f.close()
+            try:
+                open( _path, "w" ).write( doc.document( eval( module ) ) )
+            except Exception, e:
+                # oops
+                xbmc.log( "An error occurred saving %s! (%s)" % ( module, e, ), xbmc.LOGERROR )
         #close dialog
         pDialog.update( 100 )
         pDialog.close()
