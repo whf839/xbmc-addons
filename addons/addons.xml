@@ -2,7 +2,7 @@
 <addons>
 <addon
   id="plugin.audio.ListenLiveEU"
-  version="0.3.1"
+  version="0.3.2"
   name="ListenLiveEU"
   provider-name="bootsy [bootsy82@gmail.com]">
   <requires>
@@ -17,12 +17,12 @@
     <summary lang="en">European radio stations streaming live on the internet</summary>
     <summary lang="hu">Európai internetes rádiók</summary>
     <description lang="en">Welcome to listenlive.eu, a web radio directory showcasing over 4000 radio stations from across Europe streaming live on the internet.</description>
-    <description lang="hu">A listenlive.eu több mint 4000 élő rádióadást tartalmaz Európából, melyeket az interneten keresztül érhetsz el.</description>
+    <description lang="hu">A listenlive.eu több mint 4000 élo rádióadást tartalmaz Európából, melyeket az interneten keresztül érhetsz el.</description>
     <platform>all</platform>
   </extension>
 </addon>
 
-<addon id="plugin.video.apple.movie.trailers.lite" name="Apple Movie Trailers - Lite" version="2.0.0" provider-name="nuka1195">
+<addon id="plugin.video.apple.movie.trailers.lite" name="Apple Movie Trailers - Lite" version="2.0.1" provider-name="nuka1195">
     <requires>
         <import addon="xbmc.python" version="1.0"/>
     </requires>
@@ -31,14 +31,13 @@
     </extension>
     <extension point="xbmc.addon.metadata">
         <platform>all</platform>
-        <minversion>31632</minversion>
         <summary>Watch current movie trailers from apple.com.</summary>
-        <description>Watch current movie trailers from http://trailers.apple.com/.[CR][CR]Check movie showtimes for theaters in your area.</description>
         <disclaimer>Only the most recent 100 or so trailers are listed.</disclaimer>
+        <description>Watch current movie trailers from http://trailers.apple.com/.[CR][CR]Check movie showtimes for theaters in your area.</description>
     </extension>
 </addon>
 
-<addon id="plugin.video.cnn.video" name="CNN Video" version="2.0.0" provider-name="nuka1195">
+<addon id="plugin.video.cnn.video" name="CNN Video" version="2.0.1" provider-name="nuka1195">
     <requires>
         <import addon="xbmc.python" version="1.0"/>
     </requires>
@@ -47,26 +46,9 @@
     </extension>
     <extension point="xbmc.addon.metadata">
         <platform>all</platform>
-        <minversion>31632</minversion>
         <summary>View videos of the latest news from CNN.</summary>
-        <description>View videos of the latest news from CNN.</description>
         <disclaimer>CNN slants their views liberally. (Obama media)</disclaimer>
-        <supportedcontent>episodes</supportedcontent>
-    </extension>
-</addon>
-
-<addon id="plugin.video.nakedcanal" name="NakedCanal" version="2.0.0" provider-name="TheBITJockey">
-    <requires>
-        <import addon="xbmc.python" version="1.0"/>
-    </requires>
-    <extension point="xbmc.python.pluginsource" library="addon.py">
-        <provides>video</provides>
-    </extension>
-    <extension point="xbmc.addon.metadata">
-        <summary>Stream adult videos from NakedCanal.com</summary>
-        <description>NakedCanal.com features high quality adult videos.</description>
-        <disclaimer>This addon contains explicit adult material. You may only view this addon if you are at least 18 years of age, or at least the age of majority in the jurisdiction where you reside or from which you access this content. If you do not meet these requirements, then you do not have permission to use this addon.  All content is hosted by NakedCanal.com.  The author does not host or distribute any of the content displayed by this addon. The author does not have any affiliation with the content provider.</disclaimer>
-		<platform>all</platform>
+        <description>View videos of the latest news from CNN.</description>
     </extension>
 </addon>
 
@@ -84,10 +66,11 @@
 	</extension>
 </addon>
 
-<addon id="script.apple.movie.trailers" name="Apple Movie Trailers" version="pre-0.99.8" provider-name="nuka1195">
+<addon id="script.apple.movie.trailers" name="Apple Movie Trailers" version="2.0.0" provider-name="nuka1195">
     <requires>
         <import addon="xbmc.python" version="1.0"/>
         <import addon="script.module.pysqlite" version="2.5.6"/>
+        <import addon="script.module.elementtree" version="1.2.7"/>
         <import addon="script.module.pil" version="1.1.7"/>
     </requires>
     <extension point="xbmc.python.script" library="addon.py">
@@ -95,24 +78,24 @@
     </extension>
     <extension point="xbmc.addon.metadata">
         <platform>all</platform>
-        <minversion>31632</minversion>
         <summary>Watch movie trailers.</summary>
-        <description>Watch movie trailers from http://trailers.apple.com/. Check movie showtimes for theaters in your area.</description>
         <disclaimer></disclaimer>
+        <description>Watch movie trailers from http://trailers.apple.com/. Check movie showtimes for theaters in your area.</description>
     </extension>
 </addon>
 
-<addon id="script.pydocs" name="PyDocs Printer" version="2.0.0" provider-name="nuka1195">
+<addon id="script.pydocs" name="PyDocs Printer" version="2.0.1" provider-name="nuka1195">
     <requires>
         <import addon="xbmc.python" version="1.0"/>
     </requires>
-    <extension point="xbmc.python.script" library="addon.py"/>
+    <extension point="xbmc.python.script" library="addon.py">
+        <provides>executable</provides>
+    </extension>
     <extension point="xbmc.addon.metadata">
         <platform>all</platform>
-        <minversion>31123</minversion>
         <summary>Creates html python help docs.</summary>
-        <description>Creates html python help docs for xbmc, xbmcgui, xbmcplugin and xbmcaddon modules.</description>
         <disclaimer>Only accurate for the version of xbmc this script was run in.</disclaimer>
+        <description>Creates html python help docs for xbmc, xbmcgui, xbmcplugin and xbmcaddon modules.</description>
     </extension>
 </addon>
 </addons>
