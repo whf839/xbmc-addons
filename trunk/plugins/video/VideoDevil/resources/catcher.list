@@ -98,12 +98,18 @@ extension=flv
 quality=standard
 ########################################################
 title=tube8.com
-target=var videourl="([^']+flv)";
+target=var videourl="([^"]+flv)";
 url=%s
+header=Cookie|t8disclaimer=1
 quality=standard
 ########################################################
 title=extremetube.com
 target=flashvars.video_url = '(http[^']+[.]fl[^']+)';
+url=%s
+quality=standard
+########################################################
+title=xvideos.com
+target=flv_url=(http[^']+[.]flv[^']+)&amp;
 url=%s
 quality=standard
 ########################################################
