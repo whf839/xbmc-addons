@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!--Maintainer: nuka1195-->
+<!--Email: -->
+<!--Date: 2010.07.01-->
+<scraper title="LyricsMode">
+    <url address="http://www.lyricsmode.com/lyrics/" useragent="Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727)">
+        <song join="/" space="_" clean="true" case="lower" search="" urlencode="false">
+            <artist tail="/" sub="true" group="0-9"/>
+            <title tail=".html"/>
+        </song>
+    </url>
+    <source encoding="iso-8859-1">
+        <lyrics type="standard" clean="true">
+            <regex flags="dotall ignorecase">&lt;div.+?id='songlyrics_h'.+?class='dn'&gt;(.+?)&lt;/div&gt;</regex>
+        </lyrics>
+        <songlist swap="true" always="false" select="manual">
+            <regex flags="ignorecase">&lt;a.+?href=&quot;/lyrics/([^&quot;]+)&quot;.+?title=&quot;[^&quot;]+&quot;&gt;(.+?) lyrics[^&lt;]*&lt;/a&gt;</regex>
+        </songlist>
+    </source>
+</scraper>

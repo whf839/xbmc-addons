@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!--Maintainer: nuka1195-->
+<!--Email: -->
+<!--Date: 2010.07.01-->
+<scraper title="LyricsTime">
+    <url address="http://www.lyricstime.com/" useragent="Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727)">
+        <song join="-" space="-" clean="true" case="lower" search="" urlencode="false">
+            <artist tail="-lyrics.html" sub="false" group=""/>
+            <title tail="-lyrics.html"/>
+        </song>
+    </url>
+    <source encoding="iso-8859-1">
+        <lyrics type="standard" clean="true">
+            <regex flags="dotall ignorecase">&lt;div.+?id=&quot;songlyrics&quot;.*?&gt;(.+?)&lt;/div&gt;</regex>
+        </lyrics>
+        <songlist swap="true" always="false" select="manual">
+            <regex flags="ignorecase">&lt;a.+?href=&quot;/(.+?-lyrics.html)&quot;&gt;&lt;b&gt;[^&lt;]+&lt;/b&gt;([^&lt;]+)&lt;b&gt;lyrics&lt;/b&gt;&lt;/a&gt;&lt;br/&gt;</regex>
+        </songlist>
+    </source>
+</scraper>
