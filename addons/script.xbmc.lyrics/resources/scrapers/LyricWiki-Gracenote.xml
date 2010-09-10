@@ -11,10 +11,10 @@
     </url>
     <source encoding="utf-8">
         <lyrics type="standard" clean="true">
-            <regex flags="dotall ignorecase">\(uneditable Gracenote version\).+?&lt;div class='lyricbox'&gt;.+?&lt;p&gt;(.+?)&lt;!--</regex>
+            <regex flags="dotall ignorecase">\(uneditable Gracenote version\).+?&lt;div.+?class='lyricbox'&gt;.+?&lt;p&gt;(.+?)&lt;!--</regex>
         </lyrics>
         <songlist swap="true" always="false" select="manual">
-            <regex flags="ignorecase">&lt;a href=&quot;/Gracenote:([^&quot;]+)&quot;.+?title=&quot;[^&quot;]+&quot;&gt;([^\&lt;]+)&lt;/a&gt;</regex>
+            <regex flags="ignorecase">&lt;a.+?href=&quot;/Gracenote:([^&quot;]+)&quot;.+?title=&quot;[^&quot;]+&quot;&gt;([^\&lt;]+)&lt;/a&gt;</regex>
         </songlist>
     </source>
 </scraper>

@@ -25,8 +25,9 @@
     <string id="30130">Enable</string>
     <string id="30140">Enable karaoke mode</string>
     <string id="30141">[I](Required for playing and tagging LRC (simple format) lyrics)[/I]</string>
-    <string id="30150">Song filename template</string>
-    <string id="30151">[I](Used to parse artist/album/title for missing tags)[/I]</string>
+    <string id="30150">Autoscroll non LRC tagged lyrics</string>
+    <string id="30160">Song filename template</string>
+    <string id="30161">[I](Used to parse artist/album/title for missing tags)[/I]</string>
 
     <!-- Lyrics -->
     <string id="30200">Cache</string>

@@ -76,6 +76,7 @@ class Lyrics:
         if ( self.prefetch and song.status ):
             lyrics_cache[ cachename ] = {
                 "lyrics": song.lyrics,
+                "lrc_lyrics": song.lrc_lyrics,
                 "website": song.website,
                 "message": song.message,
                 "status": song.status,
@@ -86,6 +87,8 @@ class Lyrics:
     def _clean_lyrics( self, song ):
         # nothing to clean?
         if ( song.lyrics is None ): return
+        # default to lrc lyrics
+        lrc_lyrics = True
         # get website
         if ( song.website is None ):
             try:
@@ -96,8 +99,20 @@ class Lyrics:
         song.lyrics = self.clean_info_regex.sub( "", song.lyrics )
         # separate lyrics and time stamps
         lyrics = self.clean_lrc_lyrics_regex.findall( song.lyrics )
+        # autoscroll if lyrics not tagged and user preference
+        if ( not lyrics and self.Addon.getSetting( "autoscroll_lyrics" ) == "true" ):
+            # split lines
+            lines = song.lyrics.strip().splitlines()
+            # we set the same amount of time per lyric, what do you expect?
+            lyric_time = float( xbmc.Player().getTotalTime() ) / len( lines )
+            # enumerate thru and set each tagged lyric
+            lyrics = [ [ str( int( ( ( count + 1 ) * lyric_time ) / 60 ) ), str( float( ( count + 1 ) * lyric_time ) % 60 ), lyric ] for count, lyric in enumerate( lines ) ]
+            # these are non lrc lyrics
+            lrc_lyrics = False
         # format lyrics
         if ( lyrics ):
+            # set lyric type
+            song.lrc_lyrics = lrc_lyrics
             # get any timestamp adjustment
             try:
                 offset = float( self.timestamp_lrc_lyrics_regex.search( song.lyrics ).group( 1 ) ) / 1000

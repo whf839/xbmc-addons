@@ -274,7 +274,7 @@ class Scraper:
             text = text.replace( char, self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "space" ] )
         # urlencode item
         if ( self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "urlencode" ] ):
-            text = quote_plus( text.encode( "utf-8" ), " " )
+            text = quote_plus( text.encode( "utf-8" ) )
         # return result
         return text
 
@@ -298,8 +298,7 @@ class Scraper:
             source = usock.read()
         # close socket
         usock.close()
-        # simple check for utf-8
-        # FIXME: verify this works correctly, "Ã" seems to be right, but "â" may not be right â€™
+        # simple check for utf-8 FIXME: verify this works correctly, "Ã" seems to be right, but "â" may not be right â€™
         if ( source.find( "Ã" ) >= 0 or source.find( "â" ) >= 0 ):
             encoding = "utf-8"
         # return a unicode object
@@ -414,7 +413,7 @@ if ( __name__ == "__main__" ):
         artist = artists[songno]
         title = songs[songno]
     _song = SONG()
-    
+
     scraper = Scraper( Addon=XBMCADDON().Addon( "python.testing" ), prefetch=False )
     scraper.fetch_lyrics( _song )
     print [ _song.status, repr( _song.message ), repr(_song.website) ]

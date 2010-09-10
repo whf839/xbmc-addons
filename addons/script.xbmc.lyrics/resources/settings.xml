@@ -12,10 +12,11 @@
         <setting label="$ADDON[script.xbmc.lyrics 30130] LyrDB" subsetting="true" type="bool" id="scraper_lyrdb" default="true" visible="!StringCompare(Addon.Setting(primary_scraper),LyrDB)"/>
         <setting label="30101" type="lsep"/>
         <setting label="30140" type="bool" id="enable_karaoke_mode" default="true"/>
-        <setting label="30141" type="text" enable="false"/>
+        <!--setting label="30141" type="text" enable="false"/-->
+        <setting label="30150" subsetting="true" type="bool" id="autoscroll_lyrics" default="false" enable="IsTrue(Addon.Setting(enable_karaoke_mode))"/>
         <setting label="30102" type="lsep"/>
-        <setting label="30150" type="labelenum" id="song_filename_template" default="%A/%B/[%N - ][%A - ]%T" values="[%N - ]%A - %T|%A/%B/[%N - ][%A - ]%T"/>
-        <setting label="30151" type="text" enable="false"/>
+        <setting label="30160" type="labelenum" id="song_filename_template" default="%A/%B/[%N - ][%A - ]%T" values="[%N - ]%A - %T|%A/%B/[%N - ][%A - ]%T"/>
+        <setting label="30161" type="text" enable="false"/>
     </category>
 
     <!-- Lyrics -->
@@ -25,9 +26,9 @@
         <setting label="30220" subsetting="true" type="folder" id="lyrics_save_path" default="special://profile/addon_data/script.xbmc.lyrics/lyrics" source="auto" option="writeable" enable="StringCompare(Addon.Setting(lyrics_save_mode),0)"/>
         <setting label="30230" subsetting="true" type="labelenum" id="lyrics_subfolder_template" default="%A/%B/" values="%A/|%A/%B/" enable="StringCompare(Addon.Setting(lyrics_save_mode),0)"/>
         <setting label="30240" subsetting="true" type="text" id="lyrics_save_extension" default=".lyrics"/>
-        <setting label="30201" type="lsep"/>
-        <setting label="30250" type="bool" id="lyrics_allow_tagging" default="true" enable="IsTrue(Addon.Setting(enable_karaoke_mode))"/>
-        <setting label="30260" subsetting="true" type="slider" id="lyrics_tagging_offset" default="-250" range="-500,10,0" format="%1.f $ADDON[script.xbmc.lyrics 30261]" enable="IsTrue(Addon.Setting(enable_karaoke_mode)) + IsTrue(Addon.Setting(lyrics_allow_tagging))"/>
+        <setting label="30201" type="lsep" enable="IsTrue(Addon.Setting(enable_karaoke_mode)) + !IsTrue(Addon.Setting(autoscroll_lyrics))"/>
+        <setting label="30250" type="bool" id="lyrics_allow_tagging" default="true" enable="IsTrue(Addon.Setting(enable_karaoke_mode)) + !IsTrue(Addon.Setting(autoscroll_lyrics))"/>
+        <setting label="30260" subsetting="true" type="slider" id="lyrics_tagging_offset" default="-250" range="-500,10,0" format="%1.f $ADDON[script.xbmc.lyrics 30261]" enable="IsTrue(Addon.Setting(enable_karaoke_mode)) + !IsTrue(Addon.Setting(autoscroll_lyrics)) + IsTrue(Addon.Setting(lyrics_allow_tagging))"/>
     </category>
 
     <!-- Maintenance -->
@@ -41,7 +42,7 @@
         <setting type="sep"/>
         <setting label="30600" type="lsep"/>
         <setting label="30610" type="action" action="RunScript($CWD/resources/lib/xbox.py,updates)" visible="system.platform.xbox"/>
-        <setting label="30615" type="action" action="RunScript($CWD/resources/lib/utils.py,changelog)" visible="system.platform.windows"/>
+        <setting label="30615" type="action" action="RunScript($CWD/resources/lib/utils.py,changelog)" visible="system.platform.windows + System.HasAddon(script.module.pysvn)"/>
         <setting label="30620" type="action" action="RunScript($CWD/resources/lib/utils.py,readme)"/>
         <setting label="30625" type="action" action="RunScript($CWD/resources/lib/utils.py,license)"/>
         <setting label="30601" type="lsep"/>

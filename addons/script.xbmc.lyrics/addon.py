@@ -134,7 +134,7 @@ class XBMCPlayer( xbmc.Player ):
             # fetch lyrics
             self.song.get_song_info()
             # set lyrics and messages
-            self._set_properties( self.song.lyrics, self.song.website, self.song.message, self.song.status, self.song.lyric_tags, self.song.prefetched )
+            self._set_properties( self.song.lyrics, self.song.lrc_lyrics, self.song.website, self.song.message, self.song.status, self.song.lyric_tags, self.song.prefetched )
             # prefetch next song
             if ( self.prefetched_song is not None ):
                 self.prefetched_song.get_song_info()
@@ -168,10 +168,11 @@ class XBMCPlayer( xbmc.Player ):
             # log ended action
             self._log_addon_action( "ended" )
 
-    def _set_properties( self, lyrics="", website="", message="", status=True, tags=list(), prefetched=False ):
+    def _set_properties( self, lyrics="", lrc_lyrics=False, website="", message="", status=True, tags=list(), prefetched=False ):
         # we set the properties on the visualisation window
         self.WINDOW.setProperty( "Message", message )
         self.WINDOW.setProperty( "Success", str( status ) )
+        self.WINDOW.setProperty( "Autoscroll", str( not lrc_lyrics and len( tags ) > 0 ) )
         self.WINDOW.setProperty( "KaraokeMode", str( self.Addon.getSetting( "enable_karaoke_mode" ) == "true" and len( tags ) > 0 and status ) )
         self.WINDOW.setProperty( "AllowTagging", str( self.Addon.getSetting( "enable_karaoke_mode" ) == "true" and self.Addon.getSetting( "lyrics_allow_tagging" ) == "true" and self.use_gui and len( tags ) == 0 and status and lyrics is not None ) )
         # if lyrics is None we only set messages

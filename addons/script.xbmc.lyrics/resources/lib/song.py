@@ -28,6 +28,7 @@ class Song:
         self.status = True
         self.lyrics = None
         self.lyric_tags = list()
+        self.lrc_lyrics = False
         self.lyrics_path = None
         self.prefetched = False
 

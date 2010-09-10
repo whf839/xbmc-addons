@@ -87,7 +87,7 @@
                 <width>550</width>
                 <height>41</height>
                 <texture border="0,2,0,2">lyrics-MenuItemFO.png</texture>
-                <visible>Control.HasFocus(110) | IsTrue(Window(Visualisation).Property(KaraokeMode))</visible>
+                <visible>Control.HasFocus(110) | [IsTrue(Window(Visualisation).Property(KaraokeMode)) + !IsTrue(Window(Visualisation).Property(Autoscroll))]</visible>
             </control>
 			<control type="fixedlist" id="110">
                 <visible>IsTrue(Window(Visualisation).Property(EnableKaraokeMode)) + IsTrue(Window(Visualisation).Property(Success))</visible>
@@ -154,6 +154,20 @@
 						<textcolor>FFEB9E17</textcolor>
 						<shadowcolor>FF000000</shadowcolor>
                         <label fallback="--">$INFO[ListItem.Label]</label>
+                        <visible>!IsTrue(Window(Visualisation).Property(Autoscroll))</visible>
+					</control>
+					<control type="label">
+						<posx>290</posx>
+						<posy>0</posy>
+						<width>535</width>
+						<height>41</height>
+						<font>font13</font>
+						<aligny>center</aligny>
+						<align>center</align>
+                        <textcolor>88FFFFFF</textcolor>
+						<shadowcolor>FF000000</shadowcolor>
+                        <label fallback="--">$INFO[ListItem.Label]</label>
+                        <visible>IsTrue(Window(Visualisation).Property(Autoscroll))</visible>
 					</control>
 				</focusedlayout>
 			</control>

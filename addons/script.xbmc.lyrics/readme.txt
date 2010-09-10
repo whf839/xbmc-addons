@@ -1,4 +1,4 @@
-Find, download, save and display song lyrics from the internet using xml based scrapers. Displays embedded lyrics if available. Abilty to play and tag LRC (simple format) lyrics. *see Tagging lyrics. Can save lyrics to a song's folder or a shared folder. *see settings.
+Find, download, save and display song lyrics from the internet using xml based scrapers. Displays embedded lyrics if available. Abilty to play and tag LRC (simple format) lyrics. *see Tagging lyrics. Can be set to autoscroll untagged lyrics. Can save lyrics to a song's folder or a shared folder. *see settings.
 
 Uses primary scraper first then searches using all other enabled scrapers. *see settings. Will list all available songs for an artist if no song match was found. Artist aliases allow you to input an alias if no artist match was found. Ability to prefetch the next songs lyrics (will not interrupt user if no match was found).
 
