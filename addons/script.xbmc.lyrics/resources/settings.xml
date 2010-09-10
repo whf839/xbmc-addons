@@ -26,7 +26,7 @@
         <setting label="30220" subsetting="true" type="folder" id="lyrics_save_path" default="special://profile/addon_data/script.xbmc.lyrics/lyrics" source="auto" option="writeable" enable="StringCompare(Addon.Setting(lyrics_save_mode),0)"/>
         <setting label="30230" subsetting="true" type="labelenum" id="lyrics_subfolder_template" default="%A/%B/" values="%A/|%A/%B/" enable="StringCompare(Addon.Setting(lyrics_save_mode),0)"/>
         <setting label="30240" subsetting="true" type="text" id="lyrics_save_extension" default=".lyrics"/>
-        <setting label="30201" type="lsep" enable="IsTrue(Addon.Setting(enable_karaoke_mode)) + !IsTrue(Addon.Setting(autoscroll_lyrics))"/>
+        <setting label="30201" type="lsep"/>
         <setting label="30250" type="bool" id="lyrics_allow_tagging" default="true" enable="IsTrue(Addon.Setting(enable_karaoke_mode)) + !IsTrue(Addon.Setting(autoscroll_lyrics))"/>
         <setting label="30260" subsetting="true" type="slider" id="lyrics_tagging_offset" default="-250" range="-500,10,0" format="%1.f $ADDON[script.xbmc.lyrics 30261]" enable="IsTrue(Addon.Setting(enable_karaoke_mode)) + !IsTrue(Addon.Setting(autoscroll_lyrics)) + IsTrue(Addon.Setting(lyrics_allow_tagging))"/>
     </category>

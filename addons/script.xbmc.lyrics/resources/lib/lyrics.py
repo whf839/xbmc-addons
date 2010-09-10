@@ -103,8 +103,10 @@ class Lyrics:
         if ( not lyrics and self.Addon.getSetting( "autoscroll_lyrics" ) == "true" ):
             # split lines
             lines = song.lyrics.strip().splitlines()
+            # get total time
+            total_time = int( xbmc.getInfoLabel( "MusicPlayer.Offset(%d).Duration" % ( self.prefetch, ) ).split( ":" )[ 0 ] ) * 60 + int( xbmc.getInfoLabel( "MusicPlayer.Offset(%d).Duration" % ( self.prefetch, ) ).split( ":" )[ 1 ] )
             # we set the same amount of time per lyric, what do you expect?
-            lyric_time = float( xbmc.Player().getTotalTime() ) / len( lines )
+            lyric_time = float( total_time ) / len( lines )
             # enumerate thru and set each tagged lyric
             lyrics = [ [ str( int( ( ( count + 1 ) * lyric_time ) / 60 ) ), str( float( ( count + 1 ) * lyric_time ) % 60 ), lyric ] for count, lyric in enumerate( lines ) ]
             # these are non lrc lyrics
