@@ -2,7 +2,7 @@
 <addons>
 <addon
   id="plugin.audio.ListenLiveEU"
-  version="0.3.2"
+  version="0.4.1"
   name="ListenLiveEU"
   provider-name="bootsy [bootsy82@gmail.com]">
   <requires>
@@ -99,7 +99,7 @@
     </extension>
 </addon>
 
-<addon id="script.xbmc.lyrics" name="XBMC Lyrics" version="2.0.2" provider-name="nuka1195">
+<addon id="script.xbmc.lyrics" name="XBMC Lyrics" version="2.0.3" provider-name="nuka1195">
     <requires>
         <import addon="xbmc.python" version="1.0"/>
         <import addon="script.module.pysvn" version="2.4.0"/>

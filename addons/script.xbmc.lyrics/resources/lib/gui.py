@@ -9,15 +9,15 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
     def __init__( self, *args, **kwargs ):
         xbmcgui.WindowXMLDialog.__init__( self )
+        # clear gui attributes
+        self._clear_gui_attributes()
         # set our Player class
         self.player = kwargs[ "Player" ]
         # we set these for faster performance
         # allow tagging?
-        self.allow_tagging = self.player.Addon.getSetting( "lyrics_allow_tagging" ) == "true"
+        self.allow_tagging = ( self.player.Addon.getSetting( "enable_karaoke_mode" ) == "true" and self.player.Addon.getSetting( "lyrics_allow_tagging" ) == "true" and self.player.Addon.getSetting( "autoscroll_lyrics" ) == "false" )
         # tag offset setting
         self.tag_offset = float( self.player.Addon.getSetting( "lyrics_tagging_offset" ) ) / 1000
-        # clear gui attributes
-        self._clear_gui_attributes()
 
     def onInit( self ):
         try:
@@ -64,7 +64,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
             self.non_lyrics.append( lyric )
         else:
             # format tag
-            tag = "[%d:%05.02f]" % ( int( current / 60 ), current % 60, )
+            tag = "[%d:%05.02f]" % divmod( current, 60 )
             # set any non lyrics with tag
             for non_lyric in self.non_lyrics:
                 self.tagged_lyrics.append( tag + non_lyric )

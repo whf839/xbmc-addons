@@ -9,7 +9,7 @@ if ( os.environ.get( "OS", "n/a" ) == "xbox" ):
     import base64
 
 # needs to be global as song and prefetched_song are two instances
-lyrics_cache = dict()
+prefetched_lyrics = dict()
 
 
 class Lyrics:
@@ -36,32 +36,32 @@ class Lyrics:
     def get_lyrics( self, song ):
         try:
             # needs to be global as song and prefetched_song are two instances
-            global lyrics_cache
+            global prefetched_lyrics
             # set key
             cachename = xbmc.getCacheThumbName( song.artist + song.title )
-            # if cached lyrics are found set them
-            if ( lyrics_cache.has_key( cachename ) ):
+            # if prefetched lyrics are found set them
+            if ( prefetched_lyrics.has_key( cachename ) ):
                 # FIXME: deleting them loses the prefetched song when skipping backwards
                 if ( not self.prefetch ):
                     # loop thru and set all attributes
-                    for key, value in lyrics_cache[ cachename ].iteritems():
+                    for key, value in prefetched_lyrics[ cachename ].iteritems():
                         setattr( song, key, value )
-                    # delete cached lyrics as they should be saved now.
-                    del lyrics_cache[ cachename ]
-                # cached lyrics are already cleaned
+                    # delete prefetched lyrics as they should be cached now
+                    del prefetched_lyrics[ cachename ]
+                # prefetched lyrics are already cleaned
                 return
             # if embedded lyrics are found set them
             elif ( xbmc.getInfoLabel( "MusicPlayer.Offset(%d).Lyrics" % ( self.prefetch, ) ) ):
                 song.lyrics = unicode( xbmc.getInfoLabel( "MusicPlayer.Offset(%d).Lyrics" % ( self.prefetch, ) ), "utf-8", "replace" )
                 song.message = self.Addon.getLocalizedString( 30861 )
-            # if saved lyrics are found set them
+            # if cached lyrics are found set them
             else:
-                # use httpapi for xbox, with hack for change in xbmc so older revisions still work
+                # use httpapi for smb:// paths if xbox, with hack for change in xbmc so older revisions still work
                 if ( song.lyrics_path.startswith( "smb://" ) and os.environ.get( "OS", "n/a" ) == "xbox" ):
                     song.lyrics = unicode( base64.standard_b64decode( xbmc.executehttpapi( "FileDownload(%s,bare)" % ( song.lyrics_path, ) ).split("\r\n\r\n")[ -1 ].strip( BOM_UTF8 ) ), "utf-8" )
                 else:
                     song.lyrics = unicode( open( song.lyrics_path, "r" ).read().strip( BOM_UTF8 ), "utf-8" )
-                # set saved message
+                # set cached message
                 song.message = self.Addon.getLocalizedString( 30862 )
         except Exception, e:
             # no lyrics found, so fetch lyrics from internet
@@ -71,22 +71,21 @@ class Lyrics:
                 self.save_lyrics( song )
         # we need to clean lyrics in case they are lrc tagged
         self._clean_lyrics( song )
-        # cache lyrics only if prefetch, we only cache for the fetched message.
-        # TODO: consider removing this since the fetched message is only good once
+        # store lyrics only if prefetch, we only store for the fetched message.
         if ( self.prefetch and song.status ):
-            lyrics_cache[ cachename ] = {
-                "lyrics": song.lyrics,
-                "lrc_lyrics": song.lrc_lyrics,
-                "website": song.website,
+            prefetched_lyrics[ cachename ] = {
                 "message": song.message,
+                "website": song.website,
                 "status": song.status,
+                "lyrics": song.lyrics,
                 "lyric_tags": song.lyric_tags,
-                "prefetched": True
+                "lrc_lyrics": song.lrc_lyrics,
+                "prefetched": self.prefetch
             }
 
     def _clean_lyrics( self, song ):
         # nothing to clean?
-        if ( song.lyrics is None ): return
+        if ( song.lyrics is None or not song.status ): return
         # default to lrc lyrics
         lrc_lyrics = True
         # get website
@@ -99,7 +98,7 @@ class Lyrics:
         song.lyrics = self.clean_info_regex.sub( "", song.lyrics )
         # separate lyrics and time stamps
         lyrics = self.clean_lrc_lyrics_regex.findall( song.lyrics )
-        # autoscroll if lyrics not tagged and user preference
+        # auto tag lyrics if not tagged and user preference
         if ( not lyrics and self.Addon.getSetting( "autoscroll_lyrics" ) == "true" ):
             # split lines
             lines = song.lyrics.strip().splitlines()
@@ -108,7 +107,7 @@ class Lyrics:
             # we set the same amount of time per lyric, what do you expect?
             lyric_time = float( total_time ) / len( lines )
             # enumerate thru and set each tagged lyric
-            lyrics = [ [ str( int( ( ( count + 1 ) * lyric_time ) / 60 ) ), str( float( ( count + 1 ) * lyric_time ) % 60 ), lyric ] for count, lyric in enumerate( lines ) ]
+            lyrics = [ divmod( ( count + 1 ) * lyric_time, 60 ) + ( lyric, ) for count, lyric in enumerate( lines ) ]
             # these are non lrc lyrics
             lrc_lyrics = False
         # format lyrics
@@ -124,7 +123,6 @@ class Lyrics:
             song.lyrics = ""
             # loop thru and set our lyrics
             for lyric in lyrics:
-                # valid lyric, add it
                 song.lyric_tags.append( int( lyric[ 0 ] ) * 60 + float( lyric[ 1 ] ) + offset )
                 song.lyrics += lyric[ 2 ].strip() + "\n"
         # strip lyrics 
@@ -142,9 +140,9 @@ class Lyrics:
                 song.website,
                 song.lyrics,
             )
-            # use httpapi for xbox, with hack for change in xbmc so older revisions still work
+            # use httpapi for smb:// paths if xbox
             if ( song.lyrics_path.startswith( "smb://" ) and os.environ.get( "OS", "n/a" ) == "xbox" ):
-                # no way to create dirs on smb:// paths
+                # no way to create dirs for smb:// paths on xbox
                 xbmc.executehttpapi( "FileUpload(%s,%s)" % ( song.lyrics_path, base64.standard_b64encode( BOM_UTF8 + song.lyrics.encode( "utf-8", "replace" ) ), ) )
             else:
                 # if the path to the source file does not exist create it

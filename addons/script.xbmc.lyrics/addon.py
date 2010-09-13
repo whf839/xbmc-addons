@@ -174,7 +174,7 @@ class XBMCPlayer( xbmc.Player ):
         self.WINDOW.setProperty( "Success", str( status ) )
         self.WINDOW.setProperty( "Autoscroll", str( not lrc_lyrics and len( tags ) > 0 ) )
         self.WINDOW.setProperty( "KaraokeMode", str( self.Addon.getSetting( "enable_karaoke_mode" ) == "true" and len( tags ) > 0 and status ) )
-        self.WINDOW.setProperty( "AllowTagging", str( self.Addon.getSetting( "enable_karaoke_mode" ) == "true" and self.Addon.getSetting( "lyrics_allow_tagging" ) == "true" and self.use_gui and len( tags ) == 0 and status and lyrics is not None ) )
+        self.WINDOW.setProperty( "AllowTagging", str( self.Addon.getSetting( "enable_karaoke_mode" ) == "true" and self.Addon.getSetting( "lyrics_allow_tagging" ) == "true" and self.Addon.getSetting( "autoscroll_lyrics" ) == "false" and self.use_gui and len( tags ) == 0 and status and lyrics is not None ) )
         # if lyrics is None we only set messages
         if ( lyrics is not None ):
             # set lyrics property for textbox control
@@ -211,10 +211,10 @@ class XBMCPlayer( xbmc.Player ):
         pos = [ count for count, tag in enumerate( self.lyric_tags + [ current + 1 ] ) if ( tag > current ) ][ 0 ]
         # select listitem
         self.listcontrol.selectItem( pos - 1 )
-        # no more lyrics
+        # return if no more lyrics
         if ( pos == len( self.lyric_tags ) ): return
-        # calculate update time, additional time necessary so one timer event fires per lyric
-        update = self.lyric_tags[ pos ] - current + 0.05
+        # calculate update time, additional time necessary to limit the number of repeat timer events
+        update = self.lyric_tags[ pos ] - current + 0.02
         # set new timer
         self.timer = Timer( update, self._update_lyric )
         # start timer

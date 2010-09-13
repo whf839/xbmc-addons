@@ -37,15 +37,13 @@ class Scraper:
         self.Addon = Addon
         # is this prefetch
         self.prefetch = prefetch
-        # clean song regex
+        # clean song regex #FIXME: do we want to strip inside ()?
         self.clean_song_regex = re.compile( "[\[\(]+.+?[\]\)]+" )
-        # clean lyrics regex
-        # FIXME: eliminate the <name> when i can test
+        # clean lyrics regex FIXME: is <name> necessary?
         self.clean_lyrics_regex = re.compile( "(?P<name><.+?>)*" )
         # normalize lyrics regex
         self.normalize_lyrics_regex = re.compile( "&#[x]*(?P<name>[0-9]+);*" )
-        # clean lrc lyrics regex
-        # FIXME: are names necessary?
+        # clean lrc lyrics regex FIXME: are <start> and <end> necessary?
         self.clean_lrc_lyrics_regex = re.compile( "(?P<start>^\[[0-9]+:[^\]]+\]\s)*(?P<end>\[[0-9]+:[^\]]+\]$)*" )
         # get scraper info
         self._get_scraper_info()
@@ -56,6 +54,13 @@ class Scraper:
     def fetch_lyrics( self, song ):
         # log message
         xbmc.log( "Scraper::fetch_lyrics             (artist=%s, title=%s, prefetch=%s)" % ( repr( song.artist ), repr( song.title ), repr( self.prefetch ), ), xbmc.LOGDEBUG )
+        # sometimes you don't have internet
+        if ( not xbmc.getCondVisibility( "System.InternetState" ) ):
+            song.lyrics = self.Addon.getLocalizedString( 30851 ) % ( "No Internet connection!", )
+            song.message = self.Addon.getLocalizedString( 30851 ) % ( "No Internet connection!", )
+            song.status = False
+            song.website = ""            
+            return
         # variable to hold a new artist alias
         self.new_alias = dict()
         # used for aliases and song selection
@@ -123,6 +128,8 @@ class Scraper:
     def _scrape_lyrics( self, source, scraper ):
         # scrape lyrics
         lyrics = self.SCRAPERS[ scraper ][ "source" ][ "lyrics" ][ "regex" ].search( source ).group( 1 )
+        # replace breaks with newlines FIXME: maybe put under clean
+        lyrics = lyrics.replace( "<br>", "\n" ).replace( "<br />", "\n" ).replace( "<br/>", "\n" )
         # sometimes the lyrics are not human readable or poorly formatted
         if ( self.SCRAPERS[ scraper ][ "source" ][ "lyrics" ][ "clean" ] ):
             lyrics = self.clean_lyrics_regex.sub( "", lyrics ).strip()
@@ -215,9 +222,8 @@ class Scraper:
         keyboard = xbmc.Keyboard( artist, self.Addon.getLocalizedString( 30810 ) % ( self.artist, ) )
         # show keyboard
         keyboard.doModal( autoclose )
-        # return user input
+        # set new alias from user input
         if ( keyboard.isConfirmed() ):
-            # set new alias from user input
             alias = { self.artist: unicode( keyboard.getText(), "utf-8" ) }
         # log message
         xbmc.log( "     Scraper::_get_artist_alias   (artist=%s, new=%s)" % ( repr( self.artist ), repr( alias.get( self.artist, None ) ), ), xbmc.LOGDEBUG )
@@ -255,8 +261,7 @@ class Scraper:
         return self.SCRAPERS[ scraper ][ "url" ][ "address" ] + self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "search" ] + _search
 
     def _format_item( self, text, scraper ):
-        # TODO: maybe put back under clean
-        # strip anything inside () or []
+        # strip anything inside () or [] FIXME: maybe put back under clean
         text = self.clean_song_regex.sub( "", text ).strip()
         # clean text
         if ( self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "clean" ] ):
@@ -345,8 +350,7 @@ class Scraper:
         # loop thru and set our info
         for scraper in scrapers:
             # is this scraper enabled?
-            if ( scraper.replace( ".xml", "" ) != self.Addon.getSetting( "primary_scraper" ) and self.Addon.getSetting( "scraper_%s" % ( scraper.replace( ".xml", "" ).replace( "-", "_" ).lower(), ) ) == "false" ):
-                continue
+            if ( not scraper.endswith( ".xml" ) or ( scraper.replace( ".xml", "" ) != self.Addon.getSetting( "primary_scraper" ) and self.Addon.getSetting( "scraper_%s" % ( scraper.replace( ".xml", "" ).replace( "-", "_" ).lower(), ) ) == "false" ) ): continue
             # set full path to file
             _path = os.path.join( SCRAPER_PATH, scraper )
             # skip any malformed scrapers

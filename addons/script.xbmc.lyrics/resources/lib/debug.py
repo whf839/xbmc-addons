@@ -66,6 +66,10 @@ class XBMC:
         return XBMC.INFOLABEL.get( infotag.lower(), "Invalid Id" )
 
     @staticmethod
+    def getCondVisibility( infotag ):
+        return True
+
+    @staticmethod
     def getCacheThumbName( path ):
         return "".join( [ char for char in path if char.isalnum() ] )
 

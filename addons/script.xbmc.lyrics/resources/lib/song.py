@@ -75,13 +75,13 @@ class Song:
             xbmc.log( "Song::_get_song_info_from_filename (format=%s, file=%s)" % ( self.Addon.getSetting( "song_filename_template" ), file, ), xbmc.LOGDEBUG )
             # parse artist/title from filename
             if ( self.Addon.getSetting( "song_filename_template" ) == r"[%N - ]%A - %T" ):
-                artist, title = os.path.splitext( os.path.basename( file ) )[ 0 ].rsplit( "-" )[ -2 : ]
+                artist, title = os.path.splitext( os.path.basename( file ) )[ 0 ].split( "-" )[ -2 : ]
                 album = "Unknown"
             # parse artist and album from folder names, title from filename
             elif ( self.Addon.getSetting( "song_filename_template" ) == r"%A/%B/[%N - ][%A - ]%T" ):
                 artist = os.path.basename( os.path.dirname( os.path.dirname( file ) ) )
                 album = os.path.basename( os.path.dirname( file ) )
-                title = os.path.splitext( os.path.basename( file ) )[ 0 ].rsplit( "-" )[ -1 ]
+                title = os.path.splitext( os.path.basename( file ) )[ 0 ].split( "-" )[ -1 ]
             # clean and make a unicode object
             self.artist = unicode( artist.strip(), "utf-8" )
             self.album = unicode( album.strip(), "utf-8" )
