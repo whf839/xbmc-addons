@@ -117,6 +117,10 @@ class XBMCPlayer( xbmc.Player ):
         # handle ended event
         self._handle_onplayback_event( "ended" )
 
+    def onPlayBackSpeedChanged( self ):
+        # handle FF/RW event
+        self._handle_onplayback_event( "speedchanged" )
+
     def _handle_onplayback_event( self, event ):
         # cancel any timer
         self.cancel_timer()
@@ -167,6 +171,9 @@ class XBMCPlayer( xbmc.Player ):
                 xbmc.executebuiltin( "Dialog.Close(%d)" % ( self.window_id, ) )
             # log ended action
             self._log_addon_action( "ended" )
+        # on speedchanged?
+        elif ( event == "speedchanged" ):
+            pass
 
     def _set_properties( self, lyrics="", lrc_lyrics=False, website="", message="", status=True, tags=list(), prefetched=False ):
         # we set the properties on the visualisation window

@@ -20,17 +20,14 @@ class Lyrics:
     def __init__( self, Addon, prefetch ):
         # set our Addon class
         self.Addon = Addon
-        # is this prefetch
+        # our we prefetching
         self.prefetch = prefetch
-        # info regex
+        # regex's
         self.clean_info_regex = re.compile( "\[[a-z]+?:.*\]\s" )
-        # lrc regex
-        self.clean_lrc_lyrics_regex = re.compile( "\[([0-9]+):([0-9]+(?:\.[0-9]+)?)\](.*)" )
-        # Overall timestamp adjustment in milliseconds regex
+        self.split_lrc_lyrics_regex = re.compile( "\[([0-9]+):([0-9]+(?:\.[0-9]+)?)\](.*)" )
         self.timestamp_lrc_lyrics_regex = re.compile( "\[offset:([+-]*[0-9]+)\]" )
-        # Website downloaded from regex
         self.website_regex = re.compile( "\[we:(.+)\]" )
-        # set our scraper object
+        # initialize our Scraper class
         self.scraper = Scraper( self.Addon, prefetch=self.prefetch )
 
     def get_lyrics( self, song ):
@@ -97,14 +94,14 @@ class Lyrics:
         # eliminate info block
         song.lyrics = self.clean_info_regex.sub( "", song.lyrics )
         # separate lyrics and time stamps
-        lyrics = self.clean_lrc_lyrics_regex.findall( song.lyrics )
+        lyrics = self.split_lrc_lyrics_regex.findall( song.lyrics )
         # auto tag lyrics if not tagged and user preference
-        if ( not lyrics and self.Addon.getSetting( "autoscroll_lyrics" ) == "true" ):
+        if ( not lyrics and self.Addon.getSetting( "enable_karaoke_mode" ) == "true" and self.Addon.getSetting( "autoscroll_lyrics" ) == "true" ):
             # split lines
             lines = song.lyrics.strip().splitlines()
             # get total time
             total_time = int( xbmc.getInfoLabel( "MusicPlayer.Offset(%d).Duration" % ( self.prefetch, ) ).split( ":" )[ 0 ] ) * 60 + int( xbmc.getInfoLabel( "MusicPlayer.Offset(%d).Duration" % ( self.prefetch, ) ).split( ":" )[ 1 ] )
-            # we set the same amount of time per lyric, what do you expect?
+            # we set the same amount of time per lyric, what do you expect?# FIXME: maybe eliminate the first 10 seconds and the last 10 seconds
             lyric_time = float( total_time ) / len( lines )
             # enumerate thru and set each tagged lyric
             lyrics = [ divmod( ( count + 1 ) * lyric_time, 60 ) + ( lyric, ) for count, lyric in enumerate( lines ) ]

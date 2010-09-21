@@ -51,6 +51,8 @@ class Song:
             self.message = self.Addon.getLocalizedString( 30850 )
             self.status = False
         else:
+            # set fatx filesystem? this is ignored for XBMC so no need to check if xbox
+            fatx = not file.startswith( "smb://" )
             # we use "Unknown" for non existent albums. it's only used for tagging lyrics
             if ( self.album is None or self.album == "" ):
                 self.album = u"Unknown"
@@ -58,14 +60,14 @@ class Song:
             if ( self.Addon.getSetting( "lyrics_save_mode" ) == "0" ):
                 # set user subfolder preference
                 if ( self.Addon.getSetting( "lyrics_subfolder_template" ) == r"%A/" ):
-                    subfolder = xbmc.makeLegalFilename( self.artist )
+                    subfolder = xbmc.makeLegalFilename( self.artist, fatx )
                 else:
-                    subfolder = os.path.join( xbmc.makeLegalFilename( self.artist ), xbmc.makeLegalFilename( self.album ) )
+                    subfolder = os.path.join( xbmc.makeLegalFilename( self.artist, fatx ), xbmc.makeLegalFilename( self.album,fatx ) )
                 # create full path
-                self.lyrics_path = xbmc.validatePath( os.path.join( xbmc.translatePath( self.Addon.getSetting( "lyrics_save_path" ) ), subfolder, os.path.splitext( os.path.basename( file ) )[ 0 ] + self.Addon.getSetting( "lyrics_save_extension" ) ) )
+                self.lyrics_path = xbmc.validatePath( os.path.join( xbmc.translatePath( self.Addon.getSetting( "lyrics_save_path" ) ), subfolder, xbmc.makeLegalFilename( os.path.splitext( os.path.basename( file ) )[ 0 ] + self.Addon.getSetting( "lyrics_save_extension" ), fatx ) ) )
             # set song path if user preference
             elif ( self.Addon.getSetting( "lyrics_save_mode" ) == "1" ):
-                self.lyrics_path = os.path.splitext( file )[ 0 ] + self.Addon.getSetting( "lyrics_save_extension" )
+                self.lyrics_path = xbmc.makeLegalFilename( os.path.splitext( file )[ 0 ] + self.Addon.getSetting( "lyrics_save_extension" ), fatx )
             # get lyrics
             self.Lyrics.get_lyrics( self )
 

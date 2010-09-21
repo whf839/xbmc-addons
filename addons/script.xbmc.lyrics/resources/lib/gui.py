@@ -68,10 +68,10 @@ class GUI( xbmcgui.WindowXMLDialog ):
             # set any non lyrics with tag
             for non_lyric in self.non_lyrics:
                 self.tagged_lyrics.append( tag + non_lyric )
-            # reset non lyrics
-            self._clear_gui_attributes( False )
             # set current lyric with tag
             self.tagged_lyrics.append( tag + lyric )
+            # reset non lyrics
+            self._clear_gui_attributes( all=False )
 
     def save_user_tagged_lyrics( self, ask=False ):
         # only save if lyrics were tagged

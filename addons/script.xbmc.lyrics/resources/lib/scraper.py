@@ -35,16 +35,13 @@ class Scraper:
     def __init__( self, Addon, prefetch ):
         # set our Addon class
         self.Addon = Addon
-        # is this prefetch
+        # our we prefetching
         self.prefetch = prefetch
-        # clean song regex #FIXME: do we want to strip inside ()?
-        self.clean_song_regex = re.compile( "[\[\(]+.+?[\]\)]+" )
-        # clean lyrics regex FIXME: is <name> necessary?
-        self.clean_lyrics_regex = re.compile( "(?P<name><.+?>)*" )
-        # normalize lyrics regex
+        # regex's
+        self.clean_song_regex = re.compile( "[\[\(]+.+?[\]\)]+" )# FIXME: do we want to strip inside ()?
+        self.clean_lyrics_regex = re.compile( "<.+?>" )
+        self.clean_lrc_lyrics_regex = re.compile( "(^\[[0-9]+:[^\]]+\]\s)*(\[[0-9]+:[^\]]+\]$)*" )
         self.normalize_lyrics_regex = re.compile( "&#[x]*(?P<name>[0-9]+);*" )
-        # clean lrc lyrics regex FIXME: are <start> and <end> necessary?
-        self.clean_lrc_lyrics_regex = re.compile( "(?P<start>^\[[0-9]+:[^\]]+\]\s)*(?P<end>\[[0-9]+:[^\]]+\]$)*" )
         # get scraper info
         self._get_scraper_info()
         # get artist aliases, only need to grab it once
@@ -274,6 +271,8 @@ class Scraper:
             text = text.lower()
         elif ( self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "case" ] == "title" and not text.isupper() ):
             text = " ".join( [ word.capitalize() for word in text.split() ] )
+        #elif ( self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "case" ] == "title" ):
+        #    text = " ".join( [ [ word.capitalize(), word ][ word.isupper() ] for word in text.split() ] )
         # replace url characters with separator
         for char in " /":
             text = text.replace( char, self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "space" ] )
@@ -296,10 +295,8 @@ class Scraper:
         usock = urllib2.urlopen( request )
         # if gzipped, we need to unzip the source
         if ( usock.info().getheader( "Content-Encoding" ) == "gzip" ):
-            # read zipped source
             source = gzip.GzipFile( fileobj=StringIO.StringIO( usock.read() ) ).read()
         else:
-            # read plain text source
             source = usock.read()
         # close socket
         usock.close()
@@ -409,9 +406,9 @@ class Scraper:
 
 
 if ( __name__ == "__main__" ):
-    songno = 2
-    artists = [ u"AC/DC", u"Blue Öyster Cult", u"The Rolling Stones (feat. Cheryl Crow)", u"38 Special", u"ABBA", u"Enya", u"Enya", u"*NSync", u"Enya", u"ABBA" ]
-    songs = [ u"Have a Drink on Me", u"Isn't it Time", u"Wild Horses [Live]", u"Hold on Loosely", u"Eagle", u"Aniron (I Desire)", u"Book of Days", u"Bye Bye Bye", u"Orinoco Flow", u"S.O.S." ]
+    songno = 0
+    artists = [ u"ABBA", u"AC/DC", u"Blue Öyster Cult", u"The Rolling Stones (feat. Cheryl Crow)", u"38 Special", u"ABBA", u"Enya", u"Enya", u"*NSync", u"Enya", u"ABBA" ]
+    songs = [ u"Eagle", u"Have a Drink on Me", u"Isn't it Time", u"Wild Horses [Live]", u"Hold on Loosely", u"Eagle", u"Aniron (I Desire)", u"Book of Days", u"Bye Bye Bye", u"Orinoco Flow", u"S.O.S." ]
 
     class SONG:
         artist = artists[songno]
