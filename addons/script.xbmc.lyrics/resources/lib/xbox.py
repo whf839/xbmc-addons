@@ -47,7 +47,7 @@ class XBMCADDON:
             # reset this to default.py as that's what xbox uses
             XBMCADDON.INFO[ "library" ] = "default.py"
             for metadata in [ "summary", "disclaimer", "description" ]:
-                XBMCADDON.INFO[ metadata ] = re.search( "<%s>([^<]*)</%s>" % ( metadata, metadata, ), xml, re.DOTALL ).group( 1 )
+                XBMCADDON.INFO[ metadata ] = re.search( "(?:<%s>([^<]*)</%s>)?" % ( metadata, metadata, ), xml, re.DOTALL ).group( 1 )
             # set other info
             XBMCADDON.INFO[ "path" ] = cwd
             XBMCADDON.INFO[ "libpath" ] = os.path.join( cwd, XBMCADDON.INFO[ "library" ] )

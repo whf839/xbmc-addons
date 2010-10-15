@@ -67,7 +67,12 @@ class Song:
                 self.lyrics_path = xbmc.validatePath( os.path.join( xbmc.translatePath( self.Addon.getSetting( "lyrics_save_path" ) ), subfolder, xbmc.makeLegalFilename( os.path.splitext( os.path.basename( file ) )[ 0 ] + self.Addon.getSetting( "lyrics_save_extension" ), fatx ) ) )
             # set song path if user preference
             elif ( self.Addon.getSetting( "lyrics_save_mode" ) == "1" ):
-                self.lyrics_path = xbmc.makeLegalFilename( os.path.splitext( file )[ 0 ] + self.Addon.getSetting( "lyrics_save_extension" ), fatx )
+                # split file from folder
+                folder, file = os.path.split( file )
+                # change extension
+                file = os.path.splitext( file )[ 0 ] + self.Addon.getSetting( "lyrics_save_extension" )
+                # create path
+                self.lyrics_path = xbmc.makeLegalFilename( os.path.join( folder, self.Addon.getSetting( "lyrics_subfolder" ), file ), fatx )
             # get lyrics
             self.Lyrics.get_lyrics( self )
 
