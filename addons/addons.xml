@@ -84,6 +84,20 @@
     </extension>
 </addon>
 
+<addon id="script.module.xbmcaddon"
+       name="xbmcaddon combatability module"
+       version="1.0.0"
+       provider-name="nuka1195">
+  <requires>
+    <import addon="xbmc.python" version="1.0"/>
+  </requires>
+  <extension point="xbmc.python.module"
+             library="lib" />
+  <extension point="xbmc.addon.metadata">
+    <platform>all</platform>
+  </extension>
+</addon>
+
 <addon id="script.pydocs" name="PyDocs Printer" version="2.0.1" provider-name="nuka1195">
     <requires>
         <import addon="xbmc.python" version="1.0"/>
