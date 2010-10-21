@@ -5,6 +5,7 @@ __all__ = [ "Addon" ]
 import os
 import xbmc
 import re
+from locale import getdefaultlocale
 
 # get current working directory
 cwd = os.getcwd()
@@ -38,12 +39,17 @@ class Addon:
         # get source
         xml = open( os.path.join( cwd, "addon.xml" ), "r" ).read()
         # set addon.xml info into dictionary
-        self._info[ "id" ], self._info[ "name" ], self._info[ "version" ], self._info[ "author" ] = re.search( "<addon id=\"([^\"]+)\".+?name=\"([^\"]+)\".+?version=\"([^\"]+)\".+?provider-name=\"([^\"]+)\".*?>", xml, re.DOTALL ).groups( 1 )
-        self._info[ "type" ], self._info[ "library" ] = re.search(  "<extension point=\"([^\"]+)\".+?library=\"([^\"]+)\".*?>", xml, re.DOTALL ).groups( 1 )
+        self._info[ "id" ], self._info[ "name" ], self._info[ "version" ], self._info[ "author" ] = re.search( "<addon.+?id=\"([^\"]+)\".+?name=\"([^\"]+)\".+?version=\"([^\"]+)\".+?provider-name=\"([^\"]+)\".*?>", xml, re.DOTALL ).groups( 1 )
+        self._info[ "type" ], self._info[ "library" ] = re.search( "<extension.+?point=\"([^\"]+)\".+?library=\"([^\"]+)\".*?>", xml, re.DOTALL ).groups( 1 )
         # reset this to default.py as that's what xbox uses
         self._info[ "library" ] = "default.py"
-        for metadata in [ "summary", "disclaimer", "description" ]:
-            self._info[ metadata ] = re.search( "(?:<%s>([^<]*)</%s>)?" % ( metadata, metadata, ), xml, re.DOTALL ).group( 1 )
+        # set any metadata
+        for metadata in [ "disclaimer", "summary", "description" ]:
+            data = re.findall( "<%s(?:.+?lang=\"(?:en|%s)\")?.*?>([^<]*)</%s>" % ( metadata, getdefaultlocale()[ 0 ][ : 2 ], metadata, ), xml, re.DOTALL )
+            if ( data ):
+                self._info[ metadata ] = data[ -1 ]
+            else:
+                self._info[ metadata ] = ""
         # set other info
         self._info[ "path" ] = cwd
         self._info[ "libpath" ] = os.path.join( cwd, self._info[ "library" ] )
