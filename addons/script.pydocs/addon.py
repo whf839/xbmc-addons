@@ -1,25 +1,16 @@
-""" PyDocs Printer """
+## PyDocs Printer
 
 import os
 import xbmc
 import xbmcgui
 import xbmcplugin
-
-try:
-    import xbmcaddon
-    modules = [ "xbmcaddon" ]
-except:
-    # get xbox compatibility module
-    from resources.lib.xbox import *
-    xbmcaddon = XBMCADDON()
-    # no need for the dummy modules docs
-    modules = []
-
+import xbmcaddon
 import resources.lib.pydoc as pydoc
 
 
 def _get_browse_dialog( default="", heading="", dlg_type=3, shares="files", mask="", use_thumbs=False, treat_as_folder=False ):
-    """ shows a browse dialog and returns a value
+    """ 
+        shows a browse dialog and returns a value
         - 0 : ShowAndGetDirectory
         - 1 : ShowAndGetFile
         - 2 : ShowAndGetImage
@@ -47,7 +38,7 @@ if ( __name__ == "__main__" ):
         # get our document object
         doc = pydoc.HTMLDoc()
         # modules
-        modules += [ "xbmc", "xbmcgui", "xbmcplugin" ]
+        modules = [ "xbmc", "xbmcgui", "xbmcplugin", "xbmcaddon" ]
         # enumerate thru and print our help docs
         for count, module in enumerate( modules ):
             # set correct path
