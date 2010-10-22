@@ -1,4 +1,4 @@
-""" Lyrics module """
+### Lyrics module
 
 import os
 import xbmc

@@ -1,4 +1,4 @@
-""" module for running in gui mode """
+## module for running in gui mode
 
 import xbmcgui
 

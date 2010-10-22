@@ -186,6 +186,13 @@
             <control type="group" id="1000">
                 <posx>25</posx>
                 <posy>630</posy>
+                <control type="progress">
+                    <posx>0</posx>
+                    <posy>-12</posy>
+                    <width>555</width>
+                    <height>4</height>
+                    <info>Player.Progress</info>
+                </control>
                 <control type="image">
                     <posx>-6</posx>
                     <posy>-8</posy>

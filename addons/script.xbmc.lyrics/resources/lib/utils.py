@@ -1,4 +1,4 @@
-""" Utilities module """
+## Utilities module
 
 import sys
 import os
@@ -6,12 +6,7 @@ import os
 try:
     import xbmc
     import xbmcgui
-    try:
-        import xbmcaddon
-    except:
-        # get xbox compatibility module
-        from xbox import *
-        xbmcaddon = XBMCADDON()
+    import xbmcaddon
 except:
     # get dummy xbmc modules (Debugging)
     from debug import *

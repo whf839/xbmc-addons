@@ -1,16 +1,11 @@
-""" XBMC Lyrics """
+## XBMC Lyrics
 
 import sys
 import os
+
 import xbmc
 import xbmcgui
-
-try:
-    import xbmcaddon
-except:
-    # get xbox compatibility module
-    from resources.lib.xbox import *
-    xbmcaddon = XBMCADDON()
+import xbmcaddon
 
 from threading import Timer
 from resources.lib.song import Song

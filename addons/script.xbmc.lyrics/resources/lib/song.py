@@ -1,4 +1,4 @@
-""" Song module """
+## Song module
 
 import os
 import xbmc

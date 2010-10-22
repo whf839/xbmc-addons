@@ -1,4 +1,4 @@
-""" Scraper module """
+## Scraper module
 #-*- coding: utf-8 -*-
 
 import os

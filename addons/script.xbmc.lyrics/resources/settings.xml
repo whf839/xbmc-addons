@@ -2,7 +2,7 @@
 <settings>
 
     <!-- General -->
-    <category label="30050">
+    <category label="30051">
         <setting label="30100" type="lsep"/>
         <setting label="30110" type="bool" id="prefetch_lyrics" default="true"/>
         <setting label="30101" type="lsep"/>
@@ -21,7 +21,7 @@
     </category>
 
     <!-- Lyrics -->
-    <category label="30051">
+    <category label="30052">
         <setting label="30200" type="lsep"/>
         <setting label="30210" type="enum" id="lyrics_save_mode" default="1" lvalues="30211|30212"/>
         <setting label="30220" subsetting="true" type="folder" id="lyrics_save_path" default="special://profile/addon_data/script.xbmc.lyrics/lyrics" source="auto" option="writeable" visible="StringCompare(Addon.Setting(lyrics_save_mode),0)"/>
@@ -43,7 +43,7 @@
         <setting label="[B]$ADDON[script.xbmc.lyrics 30754][/B]" type="text" default="VelvetKevorkian" enable="false"/>
         <setting type="sep"/>
         <setting label="30600" type="lsep"/>
-        <setting label="30610" type="action" action="RunScript($CWD/resources/lib/xbox.py,updates)" visible="system.platform.xbox"/>
+        <setting label="30610" type="action" action="RunScript($CWD/resources/lib/updates.py)" visible="system.platform.xbox"/>
         <setting label="30615" type="action" action="RunScript($CWD/resources/lib/utils.py,changelog)" visible="system.platform.windows + System.HasAddon(script.module.pysvn)"/>
         <setting label="30620" type="action" action="RunScript($CWD/resources/lib/utils.py,readme)"/>
         <setting label="30625" type="action" action="RunScript($CWD/resources/lib/utils.py,license)"/>
