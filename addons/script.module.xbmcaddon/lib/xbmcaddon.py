@@ -1,11 +1,12 @@
-## xbmcaddon emulator module (for xbox)
+## xbmcaddon emulator module for xbmc4xbox
 
 __all__ = [ "Addon" ]
+__author__ = "nuka1195"
 
 import os
 import xbmc
 import re
-from locale import getdefaultlocale
+import locale
 
 # get current working directory
 cwd = os.getcwd()
@@ -25,12 +26,21 @@ except:
 
 class Addon:
     """
-        Class to emulate xbmcaddon.Addon methods.
+        Addon(id) -- Creates a new Addon class.
+
+        id          : string - id of the addon.
+
+        example:
+         - self.Addon = xbmcaddon.Addon(id="script.xbmc.lyrics")
     """
     # dictionary to hold addon info
     _info = {}
     
     def __init__( self, id ):
+        """
+            Initializer for passing the addon's id and setting addon info.
+            Currently id is not used for xbmc4xbox.
+        """
         # TODO: do we want to use id for anything?
         # parse addon.xml and set all addon info
         self._set_addon_info( id )
@@ -45,7 +55,7 @@ class Addon:
         self._info[ "library" ] = "default.py"
         # set any metadata
         for metadata in [ "disclaimer", "summary", "description" ]:
-            data = re.findall( "<%s(?:.+?lang=\"(?:en|%s)\")?.*?>([^<]*)</%s>" % ( metadata, getdefaultlocale()[ 0 ][ : 2 ], metadata, ), xml, re.DOTALL )
+            data = re.findall( "<%s(?:.+?lang=\"(?:en|%s)\")?.*?>([^<]*)</%s>" % ( metadata, locale.getdefaultlocale()[ 0 ][ : 2 ], metadata, ), xml, re.DOTALL )
             if ( data ):
                 self._info[ metadata ] = data[ -1 ]
             else:
@@ -62,20 +72,62 @@ class Addon:
             self._info[ "profile" ] = "special://profile/script_data/%s" % ( os.path.basename( cwd ), )
 
     def getAddonInfo( self, id ):
+        """
+            getAddonInfo(id) -- Returns the value of an addon property as a string.
+
+            id        : string - id of the property you want returned.
+
+            *values for id: author, changelog, description, disclaimer, fanart. icon, id, libpath,
+                            library, name, path, profile, stars, summary, type, version
+
+            example:
+              - profile_path = self.Addon.getAddonInfo(id="profile")
+        """
         return self._info[ id.lower() ]
 
     @staticmethod
     def getLocalizedString( id ):
+        """
+            getLocalizedString(id) -- Returns the localized string as a unicode object.
+
+            id             : integer - id# of the string you want to localize.
+
+            example:
+              - locstr = self.Addon.getLocalizedString(id=30000)
+        """
         return _language_( id )
 
     @staticmethod
     def getSetting( id ):
+        """
+            getSetting(id) -- Returns the value of a setting as a unicode object.
+
+            id        : string - id of the setting you want returned.
+
+            example:
+              - username = self.Addon.getSetting(id="username")
+        """
         return _settings_.getSetting( id )
 
     @staticmethod
     def setSetting( id, value ):
+        """
+            setSetting(id, value) -- Sets a setting for this addon.
+
+            id        : string - id of the setting you want to set.
+            value     : string or unicode - value of the setting.
+
+            example:
+              - self.Addon.setSetting(id="username", value="nuka1195")
+        """
         _settings_.setSetting( id, value )
 
     @staticmethod
     def openSettings():
+        """
+            openSettings() -- Opens this addons settings dialog.
+
+            example:
+              - self.Addon.openSettings()
+        """
         _settings_.openSettings()
