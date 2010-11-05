@@ -155,7 +155,7 @@ class XBMCADDON:
     # dictionary to hold addon info
     INFO = {}
     STRINGS = {}
-    SETTINGS = { "primary_scraper": u"LyricWiki-Gracenote", "scraper_lyricwiki_gracenote": u"false", "scraper_lyricsmode": u"false", "scraper_lyricstime": u"false", "scraper_lyrdb": u"false", }
+    SETTINGS = { "primary_scraper": u"LyricsTime", "scraper_lyricwiki_gracenote": u"false", "scraper_lyricsmode": u"false", "scraper_lyricstime": u"false", "scraper_lyrdb": u"false", }
 
     class Addon:
         def __init__( self, id ):
@@ -183,8 +183,13 @@ class XBMCADDON:
             # set addon.xml info into dictionary
             XBMCADDON.INFO[ "id" ], XBMCADDON.INFO[ "name" ], XBMCADDON.INFO[ "version" ], XBMCADDON.INFO[ "author" ] = re.search( "<addon id=\"([^\"]+)\".+?name=\"([^\"]+)\".+?version=\"([^\"]+)\".+?provider-name=\"([^\"]+)\".*?>", xml, re.DOTALL ).groups( 1 )
             XBMCADDON.INFO[ "type" ], XBMCADDON.INFO[ "library" ] = re.search(  "<extension point=\"([^\"]+)\".+?library=\"([^\"]+)\".*?>", xml, re.DOTALL ).groups( 1 )
-            for metadata in [ "summary", "disclaimer", "description" ]:
-                XBMCADDON.INFO[ metadata ] = re.search( "<%s>([^<]*)</%s>" % ( metadata, metadata, ), xml, re.DOTALL ).group( 1 )
+            # set any metadata
+            for metadata in [ "disclaimer", "summary", "description" ]:
+                data = re.findall( "<%s(?:.+?lang=\"(?:en|%s)\")?.*?>([^<]*)</%s>" % ( metadata, "en", metadata, ), xml, re.DOTALL )
+                if ( data ):
+                    XBMCADDON.INFO[ metadata ] = data[ -1 ]
+                else:
+                    XBMCADDON.INFO[ metadata ] = ""
             # set other info
             XBMCADDON.INFO[ "path" ] = cwd
             XBMCADDON.INFO[ "libpath" ] = os.path.join( cwd, XBMCADDON.INFO[ "library" ] )

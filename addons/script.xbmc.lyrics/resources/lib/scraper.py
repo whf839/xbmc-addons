@@ -39,6 +39,7 @@ class Scraper:
         self.prefetch = prefetch
         # regex's
         self.clean_song_regex = re.compile( "[\[\(]+.+?[\]\)]+" )# FIXME: do we want to strip inside ()?
+        self.clean_br_regex = re.compile( "(<br>|<br />|<br/>)[\s]*" )
         self.clean_lyrics_regex = re.compile( "<.+?>" )
         self.clean_lrc_lyrics_regex = re.compile( "(^\[[0-9]+:[^\]]+\]\s)*(\[[0-9]+:[^\]]+\]$)*" )
         self.normalize_lyrics_regex = re.compile( "&#[x]*(?P<name>[0-9]+);*" )
@@ -125,10 +126,9 @@ class Scraper:
     def _scrape_lyrics( self, source, scraper ):
         # scrape lyrics
         lyrics = self.SCRAPERS[ scraper ][ "source" ][ "lyrics" ][ "regex" ].search( source ).group( 1 )
-        # replace breaks with newlines FIXME: maybe put under clean
-        lyrics = lyrics.replace( "<br>", "\n" ).replace( "<br />", "\n" ).replace( "<br/>", "\n" )
         # sometimes the lyrics are not human readable or poorly formatted
         if ( self.SCRAPERS[ scraper ][ "source" ][ "lyrics" ][ "clean" ] ):
+            lyrics = self.clean_br_regex.sub( "\n", lyrics ).strip()
             lyrics = self.clean_lyrics_regex.sub( "", lyrics ).strip()
             lyrics = self.normalize_lyrics_regex.sub( lambda m: unichr( int( m.group( 1 ) ) ), lyrics ).encode( "utf-8", "replace" ).decode( "utf-8" )
             lyrics = u"\n".join( [ lyric.strip() for lyric in lyrics.splitlines() ] )
@@ -420,4 +420,4 @@ if ( __name__ == "__main__" ):
     print [ _song.status, repr( _song.message ), repr(_song.website) ]
     print
     for lyric in _song.lyrics.splitlines():
-        print lyric
+        print repr(lyric)
