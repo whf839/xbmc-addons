@@ -52,6 +52,21 @@
     </extension>
 </addon>
 
+<addon id="plugin.video.nos.journaal" name="NOS Journaal" version="0.2" provider-name="Frank Spierings">
+    <requires>
+        <import addon="xbmc.python" version="1.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="default.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <summary>Stream NOS Journaal (www.nos.nl)</summary>
+        <disclaimer></disclaimer>
+        <description>Stream NOS Journaal (www.nos.nl)</description>
+    </extension>
+</addon>
+
 <addon id="repository.googlecode.xbmc-addons" name="googlecode.xbmc-addons Add-ons" version="1.0.1" provider-name="nuka1195">
 	<extension point="xbmc.addon.repository" name="googlecode.xbmc-addons Add-on Repository">
 		<info compressed="false">http://xbmc-addons.googlecode.com/svn/addons/addons.xml</info>
