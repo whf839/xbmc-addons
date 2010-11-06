@@ -37,7 +37,7 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.cnn.video" name="CNN Video" version="2.0.2" provider-name="nuka1195">
+<addon id="plugin.video.cnn.video" name="CNN Video" version="2.0.3" provider-name="nuka1195">
     <requires>
         <import addon="xbmc.python" version="1.0"/>
         <import addon="script.module.xbmcaddon" version="1.0.3"/>
