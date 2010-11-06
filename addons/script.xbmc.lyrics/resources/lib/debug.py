@@ -155,7 +155,7 @@ class XBMCADDON:
     # dictionary to hold addon info
     INFO = {}
     STRINGS = {}
-    SETTINGS = { "primary_scraper": u"LyricsTime", "scraper_lyricwiki_gracenote": u"false", "scraper_lyricsmode": u"false", "scraper_lyricstime": u"false", "scraper_lyrdb": u"false", }
+    SETTINGS = { "primary_scraper": u"LyricWiki-Gracenote", "scraper_lyricwiki_gracenote": u"false", "scraper_lyricsmode": u"false", "scraper_lyricstime": u"false", "scraper_lyrdb": u"false", }
 
     class Addon:
         def __init__( self, id ):
