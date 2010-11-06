@@ -87,14 +87,18 @@ class Viewer:
         else:
             # should only happen for "updates" and there are none
             changelog = Addon.getLocalizedString( 30704 )
-        # we need to compile so we can add DOTALL
+        # we need to compile so we can add flags
         clean_entry = self.re.compile( "\[.+?\][\s]+(?P<name>[^\[]+)(?:\[.+)?", self.re.DOTALL )
+        version = self.re.compile( "(Version.+)", self.re.IGNORECASE )
         # iterate thru and format each message
         for entry in log:
             # add heading
             changelog += "r%d - %s - %s\n\n" % ( entry[ "revision" ].number, datetime.datetime.fromtimestamp( entry[ "date" ] ).strftime( date_format ), entry[ "author" ], )
+            # add version
+            changelog += "%s\n" % ( version.search( entry[ "message" ] ).group( 1 ), )
             # add formatted message
-            changelog += "\n".join( [ self.re.sub( "(?P<name>^[a-zA-Z])", "- \\1", line.lstrip( " -" ) ) for line in clean_entry.sub( "\\1", entry[ "message" ] ).strip().splitlines() ] )
+            changelog += "\n".join( [ self.re.sub( "(?P<name>^[a-zA-Z])", "- \\1", line.lstrip( " -" ) ) for line in entry[ "message" ].strip().splitlines() if ( not line.startswith( "[" ) ) ] )
+            #changelog += "\n".join( [ self.re.sub( "(?P<name>^[a-zA-Z])", "- \\1", line.lstrip( " -" ) ) for line in clean_entry.sub( "\\1", entry[ "message" ] ).strip().splitlines() ] )
             # add separator
             changelog += "\n%s\n" % ( "-" * 150, )
         # return colorized result
@@ -118,6 +122,7 @@ class Viewer:
     def _colorize_text( self, text ):
         # format text using colors
         text = self.re.sub( "(?P<name>r[0-9]+ - .+?)(?P<name2>[\r\n]+)", "[COLOR FF0084FF]\\1[/COLOR]\\2", text )
+        text = self.re.sub( "(?P<name>Version.+)[\r\n]+", "[COLOR FFEB9E17]\\1[/COLOR]\n\n", text )
         text = self.re.sub( "(?P<name>http://[\S]+)", "[COLOR FFEB9E17]\\1[/COLOR]", text )
         text = self.re.sub( "(?P<name>[^\]]r[0-9]+)", "[COLOR FFEB9E17]\\1[/COLOR]", text )
         text = self.re.sub( "(?P<name>\".+?\")", "[COLOR FFEB9E17]\\1[/COLOR]", text )
@@ -146,7 +151,7 @@ def _clear_artist_aliases():
 if ( __name__ == "__main__" ):
     # need this while debugging
     if ( len( sys.argv ) == 1 ):
-        sys.argv.append( "updates" )
+        sys.argv.append( "changelog" )
     # clear aliases
     if ( sys.argv[ 1 ] == "clearaliases" ):
         _clear_artist_aliases()
