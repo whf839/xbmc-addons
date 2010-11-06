@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.pydocs" name="PyDocs Printer" version="2.0.2" provider-name="nuka1195">
+<addon id="script.pydocs" name="PyDocs Printer" version="2.0.3" provider-name="nuka1195">
     <requires>
         <import addon="xbmc.python" version="1.0"/>
-        <import addon="script.module.xbmcaddon" version="1.0.1"/>
+        <import addon="script.module.pysvn" version="2.4.0"/>
+        <import addon="script.module.xbmcaddon" version="1.0.3"/>
     </requires>
     <extension point="xbmc.python.script" library="addon.py">
         <provides>executable</provides>
