@@ -1,6 +1,4 @@
-"""
-    Plugin for streaming video content from CNN
-"""
+## Plugin for streaming video content from CNN
 
 # main imports
 import sys

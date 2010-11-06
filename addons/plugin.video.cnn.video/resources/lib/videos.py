@@ -1,6 +1,4 @@
-"""
-    Videos module: fetches a list of playable streams for a specific category
-"""
+## Videos module: fetches a list of playable streams for a specific category
 
 # main imports
 import sys
@@ -8,14 +6,7 @@ import os
 import xbmc
 import xbmcgui
 import xbmcplugin
-
-try:
-    import xbmcaddon
-except:
-    # get xbox compatibility module
-    from resources.lib.xbox import *
-    xbmcaddon = XBMCADDON()
-
+import xbmcaddon
 import xml.dom.minidom
 import urllib
 

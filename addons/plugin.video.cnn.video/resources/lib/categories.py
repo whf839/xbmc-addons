@@ -1,6 +1,4 @@
-"""
-    Category module: fetches a list of categories to use as folders
-"""
+## Category module: fetches a list of categories to use as folders
 
 # main imports
 import sys
@@ -8,14 +6,7 @@ import os
 import xbmc
 import xbmcgui
 import xbmcplugin
-
-try:
-    import xbmcaddon
-except:
-    # get xbox compatibility module
-    from resources.lib.xbox import *
-    xbmcaddon = XBMCADDON()
-
+import xbmcaddon
 import urllib
 
 
