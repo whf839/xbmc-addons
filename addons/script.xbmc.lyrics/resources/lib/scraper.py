@@ -39,7 +39,7 @@ class Scraper:
         self.prefetch = prefetch
         # regex's
         self.clean_song_regex = re.compile( "[\[\(]+.+?[\]\)]+" )# FIXME: do we want to strip inside ()?
-        self.clean_br_regex = re.compile( "(<br>|<br />|<br/>)[\s]*" )
+        self.clean_br_regex = re.compile( "<br.*?/*>[\s]*", re.IGNORECASE )
         self.clean_lyrics_regex = re.compile( "<.+?>" )
         self.clean_lrc_lyrics_regex = re.compile( "(^\[[0-9]+:[^\]]+\]\s)*(\[[0-9]+:[^\]]+\]$)*" )
         self.normalize_lyrics_regex = re.compile( "&#[x]*(?P<name>[0-9]+);*" )
@@ -406,9 +406,9 @@ class Scraper:
 
 
 if ( __name__ == "__main__" ):
-    songno = 3
+    songno = 0
     artists = [ u"4 Non Blondes", u"ABBA", u"AC/DC", u"Blue Öyster Cult", u"The Rolling Stones (feat. Cheryl Crow)", u"38 Special", u"ABBA", u"Enya", u"Enya", u"*NSync", u"Enya", u"ABBA" ]
-    songs = [ u"What's Up?", u"Eagle", u"Have a Drink on Me", u"Burning for you", u"Wild Horses [Live]", u"Hold on Loosely", u"Eagle", u"Aniron (I Desire)", u"Book of Days", u"Bye Bye Bye", u"Orinoco Flow", u"S.O.S." ]
+    songs = [ u"Dear Mr. President", u"Eagle", u"Have a Drink on Me", u"Burning for you", u"Wild Horses [Live]", u"Hold on Loosely", u"Eagle", u"Aniron (I Desire)", u"Book of Days", u"Bye Bye Bye", u"Orinoco Flow", u"S.O.S." ]
 
     class SONG:
         artist = artists[songno]

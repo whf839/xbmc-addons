@@ -11,7 +11,7 @@ class XBMC:
     LOGNOTICE = 2
     LOGERROR = 4
     CONFIRMED = False
-    REGION = { "datelong": "%A,%B %d, %Y", "time": "%I:%M%S %p", "tempunit": "F", "speedunit": "mph" }
+    REGION = { "datelong": "%A, %B %d, %Y", "time": "%I:%M:%S %p", "tempunit": "F", "speedunit": "mph" }
     INFOLABEL = { "System.Date": "Friday, July 2, 2010" }
 
     class Player:
