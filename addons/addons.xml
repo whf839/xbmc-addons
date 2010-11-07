@@ -37,7 +37,7 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.cnn.video" name="CNN Video" version="2.0.4" provider-name="nuka1195">
+<addon id="plugin.video.cnn.video" name="CNN Video" version="2.0.5" provider-name="nuka1195">
     <requires>
         <import addon="xbmc.python" version="1.0"/>
         <import addon="script.module.pysvn" version="2.4.0"/>
@@ -114,7 +114,7 @@
     </extension>
 </addon>
 
-<addon id="script.pydocs" name="PyDocs Printer" version="2.0.3" provider-name="nuka1195">
+<addon id="script.pydocs" name="PyDocs Printer" version="2.0.4" provider-name="nuka1195">
     <requires>
         <import addon="xbmc.python" version="1.0"/>
         <import addon="script.module.pysvn" version="2.4.0"/>
@@ -132,7 +132,7 @@
     </extension>
 </addon>
 
-<addon id="script.xbmc.lyrics" name="XBMC Lyrics" version="2.0.9" provider-name="nuka1195">
+<addon id="script.xbmc.lyrics" name="XBMC Lyrics" version="2.1.0" provider-name="nuka1195">
     <requires>
         <import addon="xbmc.python" version="1.0"/>
         <import addon="script.module.pysvn" version="2.4.0"/>
