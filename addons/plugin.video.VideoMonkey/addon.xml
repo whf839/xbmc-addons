@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
-  id="plugin.video.VideoMonkey"
+  id="plugin.video.videomonkey"
   version="1.4.1"
   name="VideoMonkey"
   provider-name="sfaxman / bootsy">

@@ -8,7 +8,7 @@ import re, os, time, datetime, traceback
 import cookielib, htmlentitydefs
 import socket, base64
 
-__settings__ = xbmcaddon.Addon(id='plugin.video.VideoMonkey')
+__settings__ = xbmcaddon.Addon(id='plugin.video.videomonkey')
 __language__ = __settings__.getLocalizedString
 rootDir = os.getcwd()
 if rootDir[-1] == ';':
