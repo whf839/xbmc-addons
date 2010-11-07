@@ -11,11 +11,15 @@
     <category label="30056">
         <setting type="sep"/>
         <setting label="[B]$ADDON[script.pydocs 30750][/B]" type="text" default="nuka1195" enable="false"/>
+        <!--setting label="[B]$ADDON[script.pydocs 30751][/B]" type="text" default="$VERSION" enable="false" /-->
         <setting label="[B]$ADDON[script.pydocs 30752][/B]" type="text" id="repo" default="http://xbmc-addons.googlecode.com/" enable="false"/>
         <setting label="[B]$ADDON[script.pydocs 30753][/B]" type="text" default="$ADDON[script.pydocs 30002]" enable="false"/>
         <setting type="sep"/>
-        <setting label="30600" type="lsep" visible="system.platform.xbox"/>
+        <setting label="30600" type="lsep"/>
         <setting label="30610" type="action" action="RunScript($CWD/resources/lib/updates.py)" visible="system.platform.xbox"/>
+        <setting label="30615" type="action" action="RunScript($CWD/resources/lib/utils.py,changelog)" visible="system.platform.windows + System.HasAddon(script.module.pysvn)"/>
+        <!--setting label="30620" type="action" action="RunScript($CWD/resources/lib/utils.py,readme)"/>
+        <setting label="30625" type="action" action="RunScript($CWD/resources/lib/utils.py,license)"/-->
     </category>
 
 </settings>
