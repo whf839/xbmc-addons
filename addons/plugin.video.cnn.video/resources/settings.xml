@@ -26,8 +26,8 @@
         <setting label="30600" type="lsep"/>
         <setting label="30610" type="action" action="RunScript($CWD/resources/lib/updates.py)" visible="system.platform.xbox"/>
         <setting label="30615" type="action" action="RunScript($CWD/resources/lib/utils.py,changelog)" visible="system.platform.windows + System.HasAddon(script.module.pysvn)"/>
-        <setting label="30620" type="action" action="RunScript($CWD/resources/lib/utils.py,readme)"/>
-        <setting label="30625" type="action" action="RunScript($CWD/resources/lib/utils.py,license)"/>
+        <!--setting label="30620" type="action" action="RunScript($CWD/resources/lib/utils.py,readme)"/>
+        <setting label="30625" type="action" action="RunScript($CWD/resources/lib/utils.py,license)"/-->
     </category>
 
 </settings>

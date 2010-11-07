@@ -82,7 +82,9 @@
     <string id="30766">Changelog</string>
     <string id="30767">Readme</string>
     <string id="30768">License</string>
-    <string id="30770">An error occurred fetching %s![CR][CR]%s</string>
+    <string id="30769">Properties</string>
+    <string id="30770">An error occurred checking for updates!</string>
+    <string id="30771">An error occurred fetching %s!</string>
 
     <!-- Category strings -->
     <string id="30900">Main categories</string>
