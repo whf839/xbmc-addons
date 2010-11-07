@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
-  id="plugin.audio.ListenLiveEU"
+  id="plugin.audio.listenliveeu"
   version="0.4.3"
   name="ListenLiveEU"
   provider-name="bootsy [bootsy82@gmail.com]">
