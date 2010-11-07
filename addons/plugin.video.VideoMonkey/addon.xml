@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon
+  id="plugin.video.VideoMonkey"
+  version="1.4.1"
+  name="VideoMonkey"
+  provider-name="sfaxman / bootsy">
+  <requires>
+   <import addon="xbmc.python" version="1.0"/>
+  </requires>
+  <extension 
+    point="xbmc.python.pluginsource"
+    library="default.py">
+   <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Stream videos of different sites</summary>
+    <description></description>
+    <platform>all</platform>
+  </extension>
+</addon>
