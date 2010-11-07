@@ -10,18 +10,21 @@ import traceback
 from pprint import pprint
 
 __plugin__ = "ListenLiveEU"
-__version__ = '0.4.2'
+__version__ = '0.4.3'
 __author__ = 'bootsy [bootsy82@gmail.com]'
-__date__ = '15-09-2010'
+__date__ = '07-11-2010'
 __svn__ = 'http://xbmc-addons.googlecode.com/svn/addons/plugin.audio.ListenLiveEU/'
 
 BASE_URL = 'http://www.listenlive.eu'
 URL_INDEX = '/'.join( [BASE_URL, 'index.html'] )
 URL_NEW = '/'.join( [BASE_URL, 'new.html'] )
 
-DIR_HOME = os.getcwd().replace(';','')
+addon = xbmcaddon.Addon(id='plugin.video.videomonkey')
+DIR_HOME = addon.getAddonInfo('path')
+DIR_HOME = xbmc.translatePath(DIR_HOME)
 FILE_INDEX_PAGE = os.path.join(DIR_HOME, 'index.html')
-DIR_SETTINGS = 'special://home/userdata/addon_data/plugin.audio.ListenLiveEU'
+DIR_SETTINGS = addon.getAddonInfo('profile')
+DIR_SETTINGS = xbmc.translatePath(DIR_SETTINGS)
 FILE_FAVS = os.path.join(DIR_SETTINGS, 'favorites.xml')
 
 dialogProgress = xbmcgui.DialogProgress()
