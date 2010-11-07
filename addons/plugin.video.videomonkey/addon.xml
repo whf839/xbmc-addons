@@ -13,8 +13,8 @@
    <provides>video</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
-    <summary>Stream videos of different sites</summary>
-    <description></description>
+    <summary>Stream videos from different sites</summary>
+    <description>Stream videos from YouTube, Clipfish, Kino.de, Computerclub², ARD / ZDF Mediathek, 3sat, Schweizer Fernsehen etc. Also live channels from different regions (DE, EN, FR, NL, SE, SP, THA, VN) and categories (kids, sports, music) are supported.</description>
     <platform>all</platform>
   </extension>
 </addon>
