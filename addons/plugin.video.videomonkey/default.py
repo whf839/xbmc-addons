@@ -1,4 +1,4 @@
-import xbmc, xbmcgui
+import xbmc, xbmcgui, xbmcaddon
 import sys, os, re
 import urllib, urllib2
 
@@ -8,7 +8,8 @@ __svn_url__ = 'http://xbmc-addons.googlecode.com/svn/addons/plugin.video.VideoMo
 __credits__ = 'bootsy'
 __version__ = '1.4.1'
 
-rootDir = os.getcwd()
+addon = xbmcaddon.Addon(id='plugin.video.videomonkey')
+rootDir = addon.getAddonInfo('path')
 if rootDir[-1] == ';':rootDir = rootDir[0:-1]
 
 class Main:

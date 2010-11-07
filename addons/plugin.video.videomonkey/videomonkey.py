@@ -8,13 +8,14 @@ import re, os, time, datetime, traceback
 import cookielib, htmlentitydefs
 import socket, base64
 
-__settings__ = xbmcaddon.Addon(id='plugin.video.videomonkey')
-__language__ = __settings__.getLocalizedString
-rootDir = os.getcwd()
+addon = xbmcaddon.Addon(id='plugin.video.videomonkey')
+__language__ = addon.getLocalizedString
+rootDir = addon.getAddonInfo('path')
 if rootDir[-1] == ';':
     rootDir = rootDir[0:-1]
 rootDir = xbmc.translatePath(rootDir)
-cacheDir = os.path.join(rootDir, 'cache')
+cacheDir = os.path.join(addon.getAddonInfo('profile'), 'cache')
+cacheDir = xbmc.translatePath(cacheDir)
 resDir = os.path.join(rootDir, 'resources')
 imgDir = os.path.join(resDir, 'images')
 #socket.setdefaulttimeout(20)
@@ -23,8 +24,8 @@ urlopen = urllib2.urlopen
 cj = cookielib.LWPCookieJar()
 Request = urllib2.Request
 
-if __settings__.getSetting('use_proxy') == 'true':
-    proxy_handler = urllib2.ProxyHandler({'http':'http://' + __settings__.getSetting('proxy_ipaddress') + ':' + __settings__.getSetting('proxy_port')})
+if addon.getSetting('use_proxy') == 'true':
+    proxy_handler = urllib2.ProxyHandler({'http':'http://' + addon.getSetting('proxy_ipaddress') + ':' + addon.getSetting('proxy_port')})
 else:
     proxy_handler = None
 
@@ -49,7 +50,7 @@ else:
 
 urllib2.install_opener(opener)
 
-if __settings__.getSetting('enable_debug') == 'true':
+if addon.getSetting('enable_debug') == 'true':
     enable_debug = True
     xbmc.output('VideoMonkey debug logging enabled')
 else:
@@ -1285,12 +1286,12 @@ class Main:
             if len(self.urlList) == 1:
                 self.videoExtension = '.' + self.extensionList[0]
                 return self.urlList[0]
-            elif int(__settings__.getSetting('video_type')) == 0:
+            elif int(addon.getSetting('video_type')) == 0:
                 dia = xbmcgui.Dialog()
                 selection = dia.select(__language__(30055), self.selectionList)
                 self.videoExtension = '.' + self.extensionList[selection]
                 return self.urlList[selection]
-            elif int(__settings__.getSetting('video_type')) == 1: # low
+            elif int(addon.getSetting('video_type')) == 1: # low
                 for source in self.currentlist.catcher:
                     if source.quality == 'low' and source.match != '':
                         self.videoExtension = '.' + source.extension
@@ -1303,7 +1304,7 @@ class Main:
                     if source.quality == 'high' and source.match != '':
                         self.videoExtension = '.' + source.extension
                         return source.match
-            elif int(__settings__.getSetting('video_type')) == 3: # high
+            elif int(addon.getSetting('video_type')) == 3: # high
                 for source in self.currentlist.catcher:
                     if source.quality == 'high' and source.match != '':
                         self.videoExtension = '.' + source.extension
@@ -1316,7 +1317,7 @@ class Main:
                     if source.quality == 'low' and source.match != '':
                         self.videoExtension = '.' + source.extension
                         return source.match
-            elif int(__settings__.getSetting('video_type')) == 2: # standard
+            elif int(addon.getSetting('video_type')) == 2: # standard
                 for source in self.currentlist.catcher:
                     if source.quality == 'standard' and source.match != '':
                         self.videoExtension = '.' + source.extension
@@ -1362,7 +1363,7 @@ class Main:
             except:
                 pass
         if self.currentlist.skill.find('nodownload') == -1:
-            if __settings__.getSetting('download') == 'true':
+            if addon.getSetting('download') == 'true':
                 self.pDialog = xbmcgui.DialogProgress()
                 self.pDialog.create('VideoMonkey', __language__(30050), __language__(30051))
                 flv_file = self.downloadMovie(url, title)
@@ -1370,7 +1371,7 @@ class Main:
                 if flv_file == None:
                     dialog = xbmcgui.Dialog()
                     dialog.ok('VideoMonkey Info', __language__(30053))
-            elif __settings__.getSetting('download') == 'false' and __settings__.getSetting('download_ask') == 'true':
+            elif addon.getSetting('download') == 'false' and addon.getSetting('download_ask') == 'true':
                 dia = xbmcgui.Dialog()
                 if dia.yesno('', __language__(30052)):
                     self.pDialog = xbmcgui.DialogProgress()
@@ -1383,7 +1384,7 @@ class Main:
         else:
             flv_file = None
 
-        player_type = {0:xbmc.PLAYER_CORE_AUTO, 1:xbmc.PLAYER_CORE_MPLAYER, 2:xbmc.PLAYER_CORE_DVDPLAYER}[int(__settings__.getSetting('player_type'))]
+        player_type = {0:xbmc.PLAYER_CORE_AUTO, 1:xbmc.PLAYER_CORE_MPLAYER, 2:xbmc.PLAYER_CORE_DVDPLAYER}[int(addon.getSetting('player_type'))]
         if self.currentlist.player == 'auto':
             player_type = xbmc.PLAYER_CORE_AUTO
         elif self.currentlist.player == 'mplayer':
@@ -1404,14 +1405,14 @@ class Main:
     def downloadMovie(self, url, title):
         if enable_debug:
             xbmc.output('Trying to download video ' + str(url))
-	if __settings__.getSetting('download_Path') == '':
+	if addon.getSetting('download_Path') == '':
 	    try:
 		dl_path = xbmcgui.Dialog().browse(0, __language__(30017),'files', '', False, False)
-		__settings__.setSetting(id='download_path', value=dl_path)
+		addon.setSetting(id='download_path', value=dl_path)
 		if not os.path.exists(dl_path):
 		    os.mkdir(dl_path)
 	    except:pass
-        file_path = xbmc.makeLegalFilename(os.path.join(xbmc.translatePath(__settings__.getSetting('download_Path')), title + self.videoExtension))
+        file_path = xbmc.makeLegalFilename(os.path.join(xbmc.translatePath(addon.getSetting('download_Path')), title + self.videoExtension))
         if os.path.isfile(file_path):
             file_path = xbmc.makeLegalFilename(self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '_', suffix = self.videoExtension))
         try:
@@ -1421,7 +1422,7 @@ class Main:
             return file_path
         except IOError:
             title = first_clean_filename(title)
-            file_path = xbmc.makeLegalFilename(os.path.join(xbmc.translatePath(__settings__.getSetting('download_Path')), title + self.videoExtension))
+            file_path = xbmc.makeLegalFilename(os.path.join(xbmc.translatePath(addon.getSetting('download_Path')), title + self.videoExtension))
             if os.path.isfile(file_path):
                 file_path = xbmc.makeLegalFilename(self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '_', suffix = self.videoExtension))
             try:
@@ -1431,7 +1432,7 @@ class Main:
                 return file_path
             except IOError:
                 title = second_clean_filename(title)
-                file_path = xbmc.makeLegalFilename(os.path.join(xbmc.translatePath(__settings__.getSetting('download_Path')), title + self.videoExtension))
+                file_path = xbmc.makeLegalFilename(os.path.join(xbmc.translatePath(addon.getSetting('download_Path')), title + self.videoExtension))
                 if os.path.isfile(file_path):
                     file_path = xbmc.makeLegalFilename(self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '_', suffix = self.videoExtension))
                 try:
@@ -1441,9 +1442,9 @@ class Main:
                     return file_path
                 except IOError:
                     title = third_clean_filename(title)
-                    file_path = xbmc.makeLegalFilename(os.path.join(xbmc.translatePath(__settings__.getSetting('download_Path')), title + self.videoExtension))
+                    file_path = xbmc.makeLegalFilename(os.path.join(xbmc.translatePath(addon.getSetting('download_Path')), title + self.videoExtension))
                     if os.path.isfile(file_path):
-                        file_path = xbmc.makeLegalFilename(self.currentlist.randomFilename(dir = __settings__.getSetting('download_Path'), suffix = self.videoExtension))
+                        file_path = xbmc.makeLegalFilename(self.currentlist.randomFilename(dir = addon.getSetting('download_Path'), suffix = self.videoExtension))
                     try:
                         urllib.urlretrieve(url, file_path, self.video_report_hook)
                         if enable_debug:
@@ -1451,7 +1452,7 @@ class Main:
                         return file_path
                     except IOError:
                         title = self.currentlist.randomFilename()
-                        file_path = xbmc.makeLegalFilename(os.path.join(xbmc.translatePath(__settings__.getSetting('download_Path')), title + self.videoExtension))
+                        file_path = xbmc.makeLegalFilename(os.path.join(xbmc.translatePath(addon.getSetting('download_Path')), title + self.videoExtension))
                         if os.path.isfile(file_path):
                             file_path = xbmc.makeLegalFilename(self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '_', suffix = self.videoExtension))
                         try:
@@ -1636,7 +1637,7 @@ class Main:
                 self.purgeCache()
                 if enable_debug:
                     xbmc.output('Cache directory purged')
-                if __settings__.getSetting('custom_entry') == 'false':
+                if addon.getSetting('custom_entry') == 'false':
                     self.parseView('sites.list')
                     del self.currentlist.items[:]
                 self.parseView('entry.list')
