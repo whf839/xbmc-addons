@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addons>
 <addon
-  id="plugin.audio.ListenLiveEU"
-  version="0.4.2"
+  id="plugin.audio.listenliveeu"
+  version="0.4.3"
   name="ListenLiveEU"
   provider-name="bootsy [bootsy82@gmail.com]">
   <requires>
@@ -55,7 +55,7 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.nos.journaal" name="NOS Journaal" version="0.2" provider-name="Frank Spierings">
+<addon id="plugin.video.nos.journaal" name="NOS Journaal" version="0.3" provider-name="Frank Spierings">
     <requires>
         <import addon="xbmc.python" version="1.0"/>
     </requires>
@@ -68,6 +68,26 @@
         <disclaimer></disclaimer>
         <description>Stream NOS Journaal (www.nos.nl)</description>
     </extension>
+</addon>
+
+<addon
+  id="plugin.video.videomonkey"
+  version="1.4.1"
+  name="VideoMonkey"
+  provider-name="sfaxman / bootsy">
+  <requires>
+   <import addon="xbmc.python" version="1.0"/>
+  </requires>
+  <extension
+    point="xbmc.python.pluginsource"
+    library="default.py">
+   <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Stream videos from different sites</summary>
+    <description>Stream videos from YouTube, Clipfish, Kino.de, Computerclub², ARD &amp; ZDF Mediathek, 3sat, Schweizer Fernsehen etc. Also live channels from different regions (DE, EN, FR, NL, SE, SP, THA, VN) and categories (kids, sports, music) are supported.</description>
+    <platform>all</platform>
+  </extension>
 </addon>
 
 <addon id="repository.googlecode.xbmc-addons" name="googlecode.xbmc-addons Add-ons" version="1.0.1" provider-name="nuka1195">
