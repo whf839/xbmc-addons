@@ -100,6 +100,7 @@ quality=standard
 title=extremetube.com
 target=flashvars.video_url = '(http[^']+[.]fl[^']+)';
 url=%s
+header=Cookie|age_verified=1
 quality=standard
 ########################################################
 title=xvideos.com
@@ -120,11 +121,16 @@ quality=standard
 title=mofosex.com
 target=videoPath: "http://www.mofosex.com/playlist.php[?]v=([^"]+)%
 url=%s
-build=http://cdn1.public.mofosex.com/media/flvs/%s.flv?nvb=20101017195101&nva=20101017203101&hash=0a4b5b0ede3ea85e6a4f5&ib=13&fs=0
+build=http://cdn1.public.mofosex.com/media/flvs/%s.flv?nvb=20101108151507&nva=20101108155507&hash=02d8bf9584ab79f8a1ec0&ib=13&fs=0
 quality=standard
  ########################################################
 title=pornrabbit.com
 target=span class="download".+?href="(.+?)"
+url=%s
+quality=standard
+ ########################################################
+title=stileproject.com
+target=file":'(.+?)'
 url=%s
 quality=standard
  ########################################################
