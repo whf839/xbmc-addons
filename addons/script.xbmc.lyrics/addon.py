@@ -2,11 +2,9 @@
 
 import sys
 import os
-
 import xbmc
 import xbmcgui
 import xbmcaddon
-
 from threading import Timer
 from resources.lib.song import Song
 
@@ -31,8 +29,9 @@ class XBMCPlayer( xbmc.Player ):
         self.use_gui = len( sys.argv ) == 1
         # log started action
         self._log_addon_action( "started" )
-        # initialize timer
-        self.timer = None
+        # initialize timers
+        self.lyric_timer = None
+        self.fetch_timer = None
         # set user preferences
         self._set_user_preferences()
         # initialize our Song class
@@ -118,7 +117,7 @@ class XBMCPlayer( xbmc.Player ):
 
     def _handle_onplayback_event( self, event ):
         # cancel any timer
-        self.cancel_timer()
+        self.cancel_timers()
         # log event
         xbmc.log( "XBMCPlayer::_handle_onplayback_event (event=%s)" % ( event, ), xbmc.LOGDEBUG )
         # on song change fetch lyrics
@@ -126,17 +125,10 @@ class XBMCPlayer( xbmc.Player ):
             # do we have any unsaved tagged lyrics
             if ( self.use_gui ):
                 self.gui.save_user_tagged_lyrics( ask=True )
-            # set fetching lyrics message
-            self._set_properties( message=self.Addon.getLocalizedString( 30800 ) )
-            # necessary for xbmc to catch up
-            xbmc.sleep( 100 )
-            # fetch lyrics
-            self.song.get_song_info()
-            # set lyrics and messages
-            self._set_properties( self.song.lyrics, self.song.lrc_lyrics, self.song.website, self.song.message, self.song.status, self.song.lyric_tags, self.song.prefetched )
-            # prefetch next song
-            if ( self.prefetched_song is not None ):
-                self.prefetched_song.get_song_info()
+            # set new timer (we use this incase user is skipping thru songs)
+            self.fetch_timer = Timer( float( self.Addon.getSetting( "fetch_lyrics_delay" ) ) / 1000, self._fetch_lyrics )
+            # start timer
+            self.fetch_timer.start()
         # on resume from FF/RW we need to reset any timers
         elif ( event == "resumed" ):
             # update lyric if karaoke mode is enabled
@@ -171,8 +163,9 @@ class XBMCPlayer( xbmc.Player ):
             pass
 
     def _set_properties( self, lyrics="", lrc_lyrics=False, website="", message="", status=True, tags=list(), prefetched=False ):
+        # set informational properties
+        self._set_info_properties( message, website, prefetched )
         # we set the properties on the visualisation window
-        self.WINDOW.setProperty( "Message", message )
         self.WINDOW.setProperty( "Success", str( status ) )
         self.WINDOW.setProperty( "Autoscroll", str( not lrc_lyrics and len( tags ) > 0 ) )
         self.WINDOW.setProperty( "KaraokeMode", str( self.Addon.getSetting( "enable_karaoke_mode" ) == "true" and len( tags ) > 0 and status ) )
@@ -181,11 +174,14 @@ class XBMCPlayer( xbmc.Player ):
         if ( lyrics is not None ):
             # set lyrics property for textbox control
             self.WINDOW.setProperty( "Lyrics", lyrics )
-            # set informational properties
-            self.WINDOW.setProperty( "Website", website )
-            self.WINDOW.setProperty( "Prefetched", str( prefetched ) )
             # fill list if karaoke mode is enabled
             self._set_karaoke_lyrics( lyrics, tags )
+
+    def _set_info_properties( self, message, website="", prefetched=False ):
+        # set informational properties
+        self.WINDOW.setProperty( "Message", message )
+        self.WINDOW.setProperty( "Website", website )
+        self.WINDOW.setProperty( "Prefetched", str( prefetched ) )
 
     def _set_karaoke_lyrics( self, lyrics, tags ):
         # if no list control or not user preference skip
@@ -218,14 +214,38 @@ class XBMCPlayer( xbmc.Player ):
         # calculate update time, additional time necessary to limit the number of repeat timer events
         update = self.lyric_tags[ pos ] - current + 0.02
         # set new timer
-        self.timer = Timer( update, self._update_lyric )
+        self.lyric_timer = Timer( update, self._update_lyric )
         # start timer
-        self.timer.start()
+        self.lyric_timer.start()
 
-    def cancel_timer( self ):
+    def cancel_timers( self ):
         # if there's a timer cancel it
-        if ( self.timer is not None ):
-            self.timer.cancel()
+        if ( self.lyric_timer is not None ):
+            self.lyric_timer.cancel()
+        if ( self.fetch_timer is not None ):
+            self.fetch_timer.cancel()
+
+    def _fetch_lyrics( self ):
+            # set fetching lyrics message
+            self._set_properties( message=self.Addon.getLocalizedString( 30800 ) )
+            # fetch lyrics
+            self.song.get_song_info()
+            # set lyrics and messages
+            self._set_properties( self.song.lyrics, self.song.lrc_lyrics, self.song.website, self.song.message, self.song.status, self.song.lyric_tags, self.song.prefetched )
+            # prefetch next song
+            if ( self.prefetched_song is not None ):
+                # set new timer FIXME: is 10 seconds a good time?
+                self.fetch_timer = Timer( 10, self._prefetch_lyrics, ( self.song.message, self.song.website, self.song.prefetched, ) )
+                # start timer
+                self.fetch_timer.start()
+
+    def _prefetch_lyrics( self, message, website, prefetched ):
+        # set prefetching message
+        self._set_info_properties( message=self.Addon.getLocalizedString( 30805 ) % ( unicode( xbmc.getInfoLabel( "MusicPlayer.Offset(1).Title"), "utf-8" ), ) )
+        # fetch next songs lyrics
+        self.prefetched_song.get_song_info()
+        # set previous properties
+        self._set_info_properties( message, website, prefetched )
 
     def save_user_tagged_lyrics( self, lyrics ):
         # set default saved lyrics message

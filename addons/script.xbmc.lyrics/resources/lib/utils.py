@@ -136,7 +136,7 @@ class Viewer:
 def _clear_artist_aliases():
     try:
         # ask if user is sure
-        if ( xbmcgui.Dialog().yesno( Addon.getAddonInfo( "Name" ), Addon.getLocalizedString( 30850 ) ) ):
+        if ( xbmcgui.Dialog().yesno( Addon.getAddonInfo( "Name" ), Addon.getLocalizedString( 30845 ) ) ):
             # create path to alias file
             _path = os.path.join( xbmc.translatePath( Addon.getAddonInfo( "Profile" ) ), "artist_aliases.txt" )
             # if file exists remove it

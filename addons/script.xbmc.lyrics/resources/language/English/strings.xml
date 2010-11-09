@@ -20,14 +20,16 @@
     <string id="30102">Playback</string>
     <string id="30103">Music</string>
     <!-- settings labels & options -->
-    <string id="30110">Prefetch next song's lyrics</string>
-    <string id="30120">Primary lyrics scraper</string>
-    <string id="30130">Enable</string>
-    <string id="30140">Enable karaoke mode</string>
-    <string id="30141">[I](Required for playing and tagging LRC (simple format) lyrics)[/I]</string>
-    <string id="30150">Autoscroll non LRC tagged lyrics</string>
-    <string id="30160">Song filename template</string>
-    <string id="30161">[I](Used to parse artist/album/title for missing tags)[/I]</string>
+    <string id="30110">Delay fetching lyrics</string>
+    <string id="30111">msec</string>
+    <string id="30120">Prefetch next song's lyrics</string>
+    <string id="30130">Primary lyrics scraper</string>
+    <string id="30140">Enable</string>
+    <string id="30150">Enable karaoke mode</string>
+    <string id="30151">[I](Required for playing and tagging LRC (simple format) lyrics)[/I]</string>
+    <string id="30160">Autoscroll non LRC tagged lyrics</string>
+    <string id="30170">Song filename template</string>
+    <string id="30171">[I](Used to parse artist/album/title for missing tags)[/I]</string>
 
     <!-- Lyrics -->
     <string id="30200">Cache</string>
@@ -102,12 +104,13 @@
 
     <!-- user messages -->
     <string id="30800">Fetching lyrics...</string>
+    <string id="30805">Prefetching lyrics for %s</string>
     <string id="30810">Alias for %s</string>
     <string id="30820">prefetched</string>
     <string id="30830">Artist aliases cleared!</string>
     <string id="30840">Would you like to save the tagged lyrics?</string>
     <string id="30841">For %s</string>
-    <string id="30850">Are you sure you want to clear artist aliases?</string>
+    <string id="30845">Are you sure you want to clear artist aliases?</string>
     <!-- error message -->
     <string id="30850">Could not determine artist or title!</string>
     <string id="30851">Fetching lyrics failed![CR]%s</string>

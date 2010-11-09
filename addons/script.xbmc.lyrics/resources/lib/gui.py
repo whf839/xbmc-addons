@@ -88,6 +88,6 @@ class GUI( xbmcgui.WindowXMLDialog ):
 
     def close_dialog( self ):
         # cancel any timer events
-        self.player.cancel_timer()
+        self.player.cancel_timers()
         # close dialog
         self.close()

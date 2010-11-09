@@ -406,9 +406,9 @@ class Scraper:
 
 
 if ( __name__ == "__main__" ):
-    songno = 0
+    songno = 4
     artists = [ u"4 Non Blondes", u"ABBA", u"AC/DC", u"Blue Öyster Cult", u"The Rolling Stones (feat. Cheryl Crow)", u"38 Special", u"ABBA", u"Enya", u"Enya", u"*NSync", u"Enya", u"ABBA" ]
-    songs = [ u"Dear Mr. President", u"Eagle", u"Have a Drink on Me", u"Burning for you", u"Wild Horses [Live]", u"Hold on Loosely", u"Eagle", u"Aniron (I Desire)", u"Book of Days", u"Bye Bye Bye", u"Orinoco Flow", u"S.O.S." ]
+    songs = [ u"Dear Mr. President", u"Eagle", u"Have a Drink on Me", u"Burning for you", u"Get off of my cloud", u"Hold on Loosely", u"Eagle", u"Aniron (I Desire)", u"Book of Days", u"Bye Bye Bye", u"Orinoco Flow", u"S.O.S." ]
 
     class SONG:
         artist = artists[songno]
