@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!--Maintainer: nuka1195-->
 <!--Email: -->
 <!--Date: 2010.07.01-->
@@ -9,7 +9,7 @@
             <title tail=""/>
         </song>
     </url>
-    <source encoding="utf-8">
+    <source encoding="UTF-8">
         <lyrics type="lrc" clean="true">
             <regex flags="dotall ignorecase">&lt;p.+?style=&quot;font-family:[^&quot;]+&quot;&gt;(.+?)&lt;/p&gt;</regex>
         </lyrics>

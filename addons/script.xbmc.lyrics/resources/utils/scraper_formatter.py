@@ -31,7 +31,7 @@ def _escape( text ):
     # return unescaped text
     return text.replace( "&", "&amp;" ).replace( "<", "&lt;" ).replace( ">", "&gt;" ).replace( "\"", "&quot;" )
 
-xml = """<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+xml = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!--Maintainer: %s-->
 <!--Email: %s-->
 <!--Date: %s-->

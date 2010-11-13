@@ -241,7 +241,7 @@ class XBMCPlayer( xbmc.Player ):
 
     def _prefetch_lyrics( self, message, website, prefetched ):
         # set prefetching message
-        self._set_info_properties( message=self.Addon.getLocalizedString( 30805 ) % ( unicode( xbmc.getInfoLabel( "MusicPlayer.Offset(1).Title"), "utf-8" ), ) )
+        self._set_info_properties( message=self.Addon.getLocalizedString( 30805 ) % ( unicode( xbmc.getInfoLabel( "MusicPlayer.Offset(1).Title"), "UTF-8" ), ) )
         # fetch next songs lyrics
         self.prefetched_song.get_song_info()
         # set previous properties

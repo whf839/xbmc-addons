@@ -38,9 +38,9 @@ class Song:
         # fetch next song info
         if ( self.prefetch and not xbmc.getCondVisibility( "MusicPlayer.HasNext" ) ): return
         # get song info from infolabels
-        self.artist = unicode( xbmc.getInfoLabel( "MusicPlayer.Offset(%d).Artist" % ( self.prefetch, ) ), "utf-8" )
-        self.album = unicode( xbmc.getInfoLabel( "MusicPlayer.Offset(%d).Album" % ( self.prefetch, ) ), "utf-8" )
-        self.title = unicode( xbmc.getInfoLabel( "MusicPlayer.Offset(%d).Title" % ( self.prefetch, ) ), "utf-8" )
+        self.artist = unicode( xbmc.getInfoLabel( "MusicPlayer.Offset(%d).Artist" % ( self.prefetch, ) ), "UTF-8" )
+        self.album = unicode( xbmc.getInfoLabel( "MusicPlayer.Offset(%d).Album" % ( self.prefetch, ) ), "UTF-8" )
+        self.title = unicode( xbmc.getInfoLabel( "MusicPlayer.Offset(%d).Title" % ( self.prefetch, ) ), "UTF-8" )
         file = xbmc.getInfoLabel( "MusicPlayer.Offset(%d).Filename" % ( self.prefetch, ) )
         # if no proper tags, parse from filename
         if ( not self.artist or not self.title ):
@@ -90,9 +90,9 @@ class Song:
                 album = os.path.basename( os.path.dirname( file ) )
                 title = os.path.splitext( os.path.basename( file ) )[ 0 ].split( "-" )[ -1 ]
             # clean and make a unicode object
-            self.artist = unicode( artist.strip(), "utf-8" )
-            self.album = unicode( album.strip(), "utf-8" )
-            self.title = unicode( title.strip(), "utf-8" )
+            self.artist = unicode( artist.strip(), "UTF-8" )
+            self.album = unicode( album.strip(), "UTF-8" )
+            self.title = unicode( title.strip(), "UTF-8" )
         except Exception, e:
             # log error
             xbmc.log( "Invalid file format setting (%s)" % ( e, ), xbmc.LOGERROR )

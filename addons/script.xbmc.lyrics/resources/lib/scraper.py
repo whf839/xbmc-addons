@@ -1,5 +1,5 @@
 ## Scraper module
-#-*- coding: utf-8 -*-
+#-*- coding: UTF-8 -*-
 
 import os
 
@@ -131,7 +131,7 @@ class Scraper:
         if ( self.SCRAPERS[ scraper ][ "source" ][ "lyrics" ][ "clean" ] ):
             lyrics = self.clean_br_regex.sub( "\n", lyrics ).strip()
             lyrics = self.clean_lyrics_regex.sub( "", lyrics ).strip()
-            lyrics = self.normalize_lyrics_regex.sub( lambda m: unichr( int( m.group( 1 ) ) ), lyrics ).encode( "utf-8", "replace" ).decode( "utf-8" )
+            lyrics = self.normalize_lyrics_regex.sub( lambda m: unichr( int( m.group( 1 ) ) ), lyrics ).encode( "UTF-8", "replace" ).decode( "UTF-8" )
             lyrics = u"\n".join( [ lyric.strip() for lyric in lyrics.splitlines() ] )
             # clean first and last blank lines for lrc lyrics
             if ( self.SCRAPERS[ scraper ][ "source" ][ "lyrics" ][ "type" ] == "lrc" ):
@@ -222,7 +222,7 @@ class Scraper:
         keyboard.doModal( autoclose )
         # set new alias from user input
         if ( keyboard.isConfirmed() ):
-            alias = { self.artist: unicode( keyboard.getText(), "utf-8" ) }
+            alias = { self.artist: unicode( keyboard.getText(), "UTF-8" ) }
         # log message
         xbmc.log( "     Scraper::_get_artist_alias   (artist=%s, new=%s)" % ( repr( self.artist ), repr( alias.get( self.artist, None ) ), ), xbmc.LOGDEBUG )
         # return result
@@ -271,17 +271,17 @@ class Scraper:
         if ( self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "case" ] == "lower" ):
             text = text.lower()
         elif ( self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "case" ] == "title" and not text.isupper() ):
-            text = self.titlecase_lyrics_regex.sub( lambda m: m.group( 1 ) + m.group( 2 ).lower(), text.title() ).encode( "utf-8", "replace" ).decode( "utf-8" )
+            text = self.titlecase_lyrics_regex.sub( lambda m: m.group( 1 ) + m.group( 2 ).lower(), text.title() ).encode( "UTF-8", "replace" ).decode( "UTF-8" )
         # replace url characters with separator
         for char in " /":
             text = text.replace( char, self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "space" ] )
         # urlencode item
         if ( self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "urlencode" ] ):
-            text = quote_plus( text.encode( "utf-8" ) )
+            text = quote_plus( text.encode( "UTF-8" ) )
         # return result
         return text
 
-    def _fetch_source( self, url, useragent, encoding="utf-8" ):
+    def _fetch_source( self, url, useragent, encoding="UTF-8" ):
         # log message
         xbmc.log( "     Scraper::_fetch_source       (url=%s)" % ( repr( url ), ), xbmc.LOGDEBUG )
         # add headers
@@ -301,9 +301,9 @@ class Scraper:
             source = usock.read()
         # close socket
         usock.close()
-        # simple check for utf-8 FIXME: verify this works correctly, "Ã" seems to be right, but "â" may not be right â€™
+        # simple check for UTF-8 FIXME: verify this works correctly, "Ã" seems to be right, but "â" may not be right â€™
         if ( source.find( "Ã" ) >= 0 or source.find( "â" ) >= 0 ):
-            encoding = "utf-8"
+            encoding = "UTF-8"
         # return a unicode object
         return unicode( source, encoding, "replace" )
 
@@ -354,7 +354,7 @@ class Scraper:
             # skip any malformed scrapers
             try:
                 # get scrapers xml source
-                xmlSource = unicode( open( _path, "r" ).read(), "utf-8" )
+                xmlSource = unicode( open( _path, "r" ).read(), "UTF-8" )
                 # get info
                 info = scraper_regex.search( xmlSource ).groups()
                 # create scraper

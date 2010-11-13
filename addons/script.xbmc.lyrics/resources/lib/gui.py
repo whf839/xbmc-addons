@@ -54,7 +54,7 @@ class GUI( xbmcgui.WindowXMLDialog ):
         # get current time
         current = self.player.getTime() + self.tag_offset
         # get current lyric
-        lyric = unicode( self.listcontrol.getSelectedItem().getLabel(), "utf-8" )
+        lyric = unicode( self.listcontrol.getSelectedItem().getLabel(), "UTF-8" )
         # mark as tagged
         self.listcontrol.getSelectedItem().setLabel2( u"\u221A" )
         # select next item

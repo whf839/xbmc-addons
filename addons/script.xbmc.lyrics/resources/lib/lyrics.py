@@ -49,15 +49,15 @@ class Lyrics:
                 return
             # if embedded lyrics are found set them
             elif ( xbmc.getInfoLabel( "MusicPlayer.Offset(%d).Lyrics" % ( self.prefetch, ) ) ):
-                song.lyrics = unicode( xbmc.getInfoLabel( "MusicPlayer.Offset(%d).Lyrics" % ( self.prefetch, ) ), "utf-8", "replace" )
+                song.lyrics = unicode( xbmc.getInfoLabel( "MusicPlayer.Offset(%d).Lyrics" % ( self.prefetch, ) ), "UTF-8", "replace" )
                 song.message = self.Addon.getLocalizedString( 30861 )
             # if cached lyrics are found set them
             else:
                 # use httpapi for smb:// paths if xbox, with hack for change in xbmc so older revisions still work
                 if ( song.lyrics_path.startswith( "smb://" ) and os.environ.get( "OS", "n/a" ) == "xbox" ):
-                    song.lyrics = unicode( base64.standard_b64decode( xbmc.executehttpapi( "FileDownload(%s,bare)" % ( song.lyrics_path, ) ).split( "\r\n\r\n" )[ -1 ].strip( BOM_UTF8 ) ), "utf-8" )
+                    song.lyrics = unicode( base64.standard_b64decode( xbmc.executehttpapi( "FileDownload(%s,bare)" % ( song.lyrics_path, ) ).split( "\r\n\r\n" )[ -1 ].strip( BOM_UTF8 ) ), "UTF-8" )
                 else:
-                    song.lyrics = unicode( open( song.lyrics_path, "r" ).read().strip( BOM_UTF8 ), "utf-8" )
+                    song.lyrics = unicode( open( song.lyrics_path, "r" ).read().strip( BOM_UTF8 ), "UTF-8" )
                 # set cached message
                 song.message = self.Addon.getLocalizedString( 30862 )
         except Exception, e:
@@ -140,12 +140,12 @@ class Lyrics:
             # use httpapi for smb:// paths if xbox
             if ( song.lyrics_path.startswith( "smb://" ) and os.environ.get( "OS", "n/a" ) == "xbox" ):
                 # no way to create dirs for smb:// paths on xbox
-                xbmc.executehttpapi( "FileUpload(%s,%s)" % ( song.lyrics_path, base64.standard_b64encode( BOM_UTF8 + song.lyrics.encode( "utf-8", "replace" ) ), ) )
+                xbmc.executehttpapi( "FileUpload(%s,%s)" % ( song.lyrics_path, base64.standard_b64encode( BOM_UTF8 + song.lyrics.encode( "UTF-8", "replace" ) ), ) )
             else:
                 # if the path to the source file does not exist create it
                 self._makedirs( os.path.dirname( song.lyrics_path ) )
                 # save lyrics
-                open( song.lyrics_path, "w" ).write( BOM_UTF8 + song.lyrics.encode( "utf-8", "replace" ) )
+                open( song.lyrics_path, "w" ).write( BOM_UTF8 + song.lyrics.encode( "UTF-8", "replace" ) )
         except Exception, e:
             # log error
             xbmc.log( "Lyrics::save_lyrics (%s)" % ( e, ), xbmc.LOGERROR )
