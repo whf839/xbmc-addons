@@ -17,10 +17,10 @@ def _check_for_updates():
         # url to addon.xml file
         url = "%ssvn/addons/%s/addon.xml" % ( Addon.getSetting( "Repo" ), Addon.getAddonInfo( "Id" ), )
         # import here for faster dialog
-        import urllib2
+        import urllib
         import re
         # get addon.xml source
-        xml = urllib2.urlopen( url ).read()
+        xml = urllib.urlopen( url ).read()
         # parse version
         version = re.search( "<addon id=\"[^\"]+\".+?name=\"[^\"]+\".+?version=\"([^\"]+)\".+?provider-name=\"[^\"]+\".*?>", xml, re.DOTALL ).group( 1 )
         # set proper message
