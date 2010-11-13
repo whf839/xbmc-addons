@@ -39,10 +39,11 @@ class Scraper:
         self.prefetch = prefetch
         # regex's
         self.clean_song_regex = re.compile( "[\[\(]+.+?[\]\)]+" )# FIXME: do we want to strip inside ()?
-        self.clean_br_regex = re.compile( "<br.*?/*>[\s]*", re.IGNORECASE )
+        self.clean_br_regex = re.compile( "<br[ /]*>[\s]*", re.IGNORECASE )
         self.clean_lyrics_regex = re.compile( "<.+?>" )
         self.clean_lrc_lyrics_regex = re.compile( "(^\[[0-9]+:[^\]]+\]\s)*(\[[0-9]+:[^\]]+\]$)*" )
         self.normalize_lyrics_regex = re.compile( "&#[x]*(?P<name>[0-9]+);*" )
+        self.titlecase_lyrics_regex = re.compile( "(?P<word1>[a-zA-Z'])(?P<word2>[A-Z])" )
         # get scraper info
         self._get_scraper_info()
         # get artist aliases, only need to grab it once
@@ -258,10 +259,10 @@ class Scraper:
         return self.SCRAPERS[ scraper ][ "url" ][ "address" ] + self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "search" ] + _search
 
     def _format_item( self, text, scraper ):
-        # strip anything inside () or [] FIXME: maybe put back under clean
-        text = self.clean_song_regex.sub( "", text ).strip()
         # clean text
         if ( self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "clean" ] ):
+            # strip anything inside () or []
+            text = self.clean_song_regex.sub( "", text ).strip()
             # normalize text
             text = normalize( "NFKD", text ).encode( "ascii", "replace" )
             # remove bad characters
@@ -270,9 +271,7 @@ class Scraper:
         if ( self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "case" ] == "lower" ):
             text = text.lower()
         elif ( self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "case" ] == "title" and not text.isupper() ):
-            text = " ".join( [ word.capitalize() for word in text.split() ] )
-        #elif ( self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "case" ] == "title" ):
-        #    text = " ".join( [ [ word.capitalize(), word ][ word.isupper() ] for word in text.split() ] )
+            text = self.titlecase_lyrics_regex.sub( lambda m: m.group( 1 ) + m.group( 2 ).lower(), text.title() ).encode( "utf-8", "replace" ).decode( "utf-8" )
         # replace url characters with separator
         for char in " /":
             text = text.replace( char, self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "space" ] )
@@ -285,12 +284,14 @@ class Scraper:
     def _fetch_source( self, url, useragent, encoding="utf-8" ):
         # log message
         xbmc.log( "     Scraper::_fetch_source       (url=%s)" % ( repr( url ), ), xbmc.LOGDEBUG )
-        # request url
-        request = urllib2.Request( url )
         # add headers
-        request.add_header( "User-Agent", useragent )
-        request.add_header( "Accept", "text/html; charset=%s" % ( encoding, ) )
-        request.add_header( "Accept-Encoding", "gzip" )
+        headers = {
+            "User-Agent": useragent,
+            "Accept": "text/html; charset=%s" % ( encoding, ),
+            "Accept-Encoding": "gzip"
+        }
+        # request url
+        request = urllib2.Request( url, headers=headers )
         # open requested url
         usock = urllib2.urlopen( request )
         # if gzipped, we need to unzip the source
@@ -406,9 +407,9 @@ class Scraper:
 
 
 if ( __name__ == "__main__" ):
-    songno = 4
-    artists = [ u"4 Non Blondes", u"ABBA", u"AC/DC", u"Blue Öyster Cult", u"The Rolling Stones (feat. Cheryl Crow)", u"38 Special", u"ABBA", u"Enya", u"Enya", u"*NSync", u"Enya", u"ABBA" ]
-    songs = [ u"Dear Mr. President", u"Eagle", u"Have a Drink on Me", u"Burning for you", u"Get off of my cloud", u"Hold on Loosely", u"Eagle", u"Aniron (I Desire)", u"Book of Days", u"Bye Bye Bye", u"Orinoco Flow", u"S.O.S." ]
+    songno = 1
+    artists = [ u"britney spears", u".38 Special", u"The babys", u"4 Non Blondes", u"ABBA", u"AC/DC", u"Blue Öyster Cult", u"The Rolling Stones (feat. Cheryl Crow)", u"38 Special", u"ABBA", u"Enya", u"Enya", u"*NSync", u"Enya", u"ABBA" ]
+    songs = [ u"(You Drive Me) Crazy", u"Wild-Eyed Southern Boys [Live]", u"Isn't it time", u"Dear Mr. President", u"Gimme! Gimme! Gimme! (A Man After Midnight)", u"Have a Drink on Me", u"Burning for you", u"Get off of my cloud", u"Hold on Loosely", u"Eagle", u"Aniron (I Desire)", u"Book of Days", u"Bye Bye Bye", u"Orinoco Flow", u"S.O.S." ]
 
     class SONG:
         artist = artists[songno]

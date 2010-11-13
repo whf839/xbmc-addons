@@ -7,7 +7,7 @@
         <setting label="30110" type="slider" id="fetch_lyrics_delay" default="100" range="100,10,500" format="%1.f $ADDON[script.xbmc.lyrics 30111]"/>
         <setting label="30120" type="bool" id="prefetch_lyrics" default="true"/>
         <setting label="30101" type="lsep"/>
-        <setting label="30130" type="fileenum" id="primary_scraper" default="LyricsMode" mask=".xml" option="hideext" values="$CWD/resources/scrapers/"/>
+        <setting label="30130" type="fileenum" id="primary_scraper" default="LyricWiki-Gracenote" mask=".xml" option="hideext" values="$CWD/resources/scrapers/"/>
         <setting label="$ADDON[script.xbmc.lyrics 30140] LyrDB" subsetting="true" type="bool" id="scraper_lyrdb" default="true" visible="!StringCompare(Addon.Setting(primary_scraper),LyrDB)"/>
         <setting label="$ADDON[script.xbmc.lyrics 30140] LyricsMode" subsetting="true" type="bool" id="scraper_lyricsmode" default="true" visible="!StringCompare(Addon.Setting(primary_scraper),LyricsMode)"/>
         <setting label="$ADDON[script.xbmc.lyrics 30140] LyricsTime" subsetting="true" type="bool" id="scraper_lyricstime" default="true" visible="!StringCompare(Addon.Setting(primary_scraper),LyricsTime)"/>
@@ -38,7 +38,7 @@
     <category label="30056">
         <setting type="sep"/>
         <setting label="[B]$ADDON[script.xbmc.lyrics 30750][/B]" type="text" default="nuka1195" enable="false"/>
-        <!--setting label="[B]$ADDON[script.xbmc.lyrics 30751][/B]" type="text" default="$VERSION" enable="false" /-->
+        <!--setting label="[B]$ADDON[script.xbmc.lyrics 30751][/B]" type="text" default="$VERSION" enable="false"/-->
         <setting label="[B]$ADDON[script.xbmc.lyrics 30752][/B]" type="text" id="repo" default="http://xbmc-addons.googlecode.com/" enable="false"/>
         <setting label="[B]$ADDON[script.xbmc.lyrics 30753][/B]" type="text" default="$ADDON[script.xbmc.lyrics 30002]" enable="false"/>
         <setting label="[B]$ADDON[script.xbmc.lyrics 30754][/B]" type="text" default="VelvetKevorkian" enable="false"/>
