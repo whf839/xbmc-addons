@@ -1203,6 +1203,8 @@ class Main:
                         match = ext_urlsearch.group(1).replace('\r\n', '').replace('\n', '').lstrip().rstrip()
                         if source.ext_rule.action.find('unquote') != -1:
                             match = unquote_safe(match)
+                        elif source.ext_rule.action.find('decode') != -1:
+			    match = decode(match)
                         if source.ext_rule.build.find('%s') != -1:
                             match = source.ext_rule.build % match
                     else:
