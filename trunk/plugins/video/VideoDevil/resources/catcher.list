@@ -85,10 +85,11 @@ url=http://www.downloadshufunivideos.com/?v=%s
 quality=standard
 ########################################################
 title=youporn.com
-target=<p><a\ href="([^"]+)">FLV[^<]+</a>
+target=so.addVariable[(]'file', encodeURIComponent[(]'(http://download.youporn.com/download/[^"]+xml=1)'[)][)];
 url=%s
+ext_target=<location>(http[^"]+)</location>
+ext_action=decode
 header=Cookie|age_check=1
-extension=flv
 quality=standard
 ########################################################
 title=tube8.com
