@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!--Language file translated with Team XBMC Translator-->
+<!--Translator: blittan-->
+<!--Email: blittan@xbmc.org-->
+<!--Date of translation: 11/21/2010-->
+<!--$Revision$-->
+<strings>
+  <string id="30000">Dölj vuxet innehållsvarningsmeddelande.</string>
+  <string id="30061">VARNING: Detta tillägg innehåller endast vuxet material.</string>
+  <string id="30062">Du får endast fortsätta om du är minst 18 år gammal</string>
+  <string id="30063">eller minst den lagliga åldern i lagen där</string>
+  <string id="30064">du bor eller vartifrån du har åtkomst till detta material.</string>
+  <string id="30065">Avsluta</string>
+  <string id="30066">Börja</string>
+</strings>
