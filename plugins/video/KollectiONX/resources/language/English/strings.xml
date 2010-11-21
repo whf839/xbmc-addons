@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : strings.xml
+    Created on : November 1, 2009, 12:01 PM
+    Author     : brian
+    Description:
+        KollectiON X English strings
+-->
+
+<strings>
+    <string id="40000">Reset Movie List</string>
+    <string id="40001">Actor Search</string>
+    <string id="40002">Genre Search</string>
+    <string id="40003">Settings</string>
+    <string id="40004">Exit</string>
+    <string id="30000">MySQL Host</string>
+    <string id="30001">MySQL Port</string>
+    <string id="30002">MySQL Username</string>
+    <string id="30003">MySQL Password</string>
+    <string id="30004">MySQL Database</string>
+    <string id="30005">Maximum Movie Count</string>
+    <string id="30010">Play</string>
+    <string id="30050">All Movies</string>
+    <string id="30051">All Movies(Unfiltered)</string>
+    <string id="30052">By Actor</string>
+    <string id="30053">By Genre</string>
+    <string id="30054">By Year</string>
+    <string id="30055">By Director</string>
+    <string id="30056">By Studio</string>
+    <string id="30057">By Writer</string>
+    <string id="30060">Genre Filter</string>
+    <string id="30061">Play All</string>
+    <string id="30062">Play One Random</string>
+    <string id="30063">Play All Random</string>
+    <string id="30064">Filtered</string>
+    <string id="30065">Unfiltered</string>
+    <string id="32000">Genres to Ignore</string>
+    <string id='32001'>KollectiONX</string>
+    <string id='32002'>Unable to connect to the DB server</string>
+    <string id='32003'>Unable to connect to the database</string>
+    <string id='32004'>Select Yes to change the database settings and try again</string>
+    <string id='32005'>Click No to exit the plugin</string>
+</strings>
