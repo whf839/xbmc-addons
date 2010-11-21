@@ -2,7 +2,7 @@
 <!--Language file translated with Team XBMC Translator-->
 <!--Translator: blittan-->
 <!--Email: blittan@xbmc.org-->
-<!--Date of translation: 01/21/2010-->
+<!--Date of translation: 11/21/2010-->
 <!--$Revision$-->
 <strings>
   <string id="30000">Videoström att använda</string>
@@ -11,11 +11,14 @@
   <string id="30005">Kollapsa program till serier</string>
   <string id="30006">Inkludera programantal i serier och kategorilistningar</string>
   <string id="30007">Miniatyrbildsstorlek (mindre = snabbare att ladda)</string>
-  <string id="30010">Använd gamla stömmar (ignorerar ströminställningar)</string>
+  <string id="30010">Använd gamla strömmar (ignorerar ströminställningar)</string>
   <string id="30020">Ladda ner minatyrer</string>
   <string id="30021">Ta bort miniatyrer äldre än X dagar (0=inaktiverad)</string>
   <string id="30025">Undertexter</string>
   <string id="30050">Tidsgräns för socket (sekunder) (0=inaktiverad)</string>
   <string id="30060">Visa dialog vid klick på spela</string>
   <string id="30070">Utökad debug visning</string>
+  <string id="30080">Stömkällepreferens</string>
+  <string id="30090">Strömtimeout (sekunder)</string>
+  <string id="30100">Protokoll (försök med rtmpt bakom brandvägg)</string>
 </strings>
