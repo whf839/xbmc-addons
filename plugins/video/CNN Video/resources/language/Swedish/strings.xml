@@ -2,7 +2,7 @@
 <!--Language file translated with Team XBMC Translator-->
 <!--Translator: blittan-->
 <!--Email: blittan@xbmc.org-->
-<!--Date of translation: 05/30/2009-->
+<!--Date of translation: 11/21/2010-->
 <!--$Revision$-->
 <strings>
   <string id="30000">Använd stora miniatyrer</string>
@@ -35,6 +35,15 @@
   <string id="30967">Ljud av</string>
   <string id="30968">Offbeat</string>
   <string id="30969">CNN Show</string>
+  <string id="30970">Val</string>
+  <string id="30971">Ekonomi</string>
+  <string id="30972">Dina pengar</string>
+  <string id="30973">Livsstil</string>
+  <string id="30974">Underhållning</string>
+  <string id="30975">Teknologi</string>
+  <string id="30976">USA</string>
+  <string id="30977">Latinamerikanskt</string>
+  <string id="30978">Världen</string>
   <string id="30980">Amerikansk morgon</string>
   <string id="30990">Ström #1</string>
   <string id="30991">Ström #2</string>
