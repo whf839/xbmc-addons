@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!--Language file translated with Team XBMC Translator-->
+<!--Translator: blittan-->
+<!--Email: blittan@xbmc.org-->
+<!--Date of translation: 11/21/2010-->
+<!--$Revision$-->
+<strings>
+  <string id="30000">MySQL-värd</string>
+  <string id="30001">MySQL-port</string>
+  <string id="30002">MySQL-användarnamn</string>
+  <string id="30003">MySQL-lösenord</string>
+  <string id="30004">MySQL-databas</string>
+  <string id="30005">Maximal filmmängd</string>
+  <string id="30010">Spela</string>
+  <string id="30050">Alla filmer</string>
+  <string id="30051">Alla filmer(ofiltrerade)</string>
+  <string id="30052">Efter skådespelare</string>
+  <string id="30053">Efter genre</string>
+  <string id="30054">Efter årtal</string>
+  <string id="30055">Efter regissör</string>
+  <string id="30056">Efter studio</string>
+  <string id="30057">Efter författare</string>
+  <string id="30060">Genrefilter</string>
+  <string id="30061">Spela alla</string>
+  <string id="30062">Spela en slumpmässig</string>
+  <string id="30063">Spela alla slumpmässigt</string>
+  <string id="30064">Filtrerat</string>
+  <string id="30065">Ofiltrerat</string>
+  <string id="32000">Genre att ignorera</string>
+  <string id="32001">KollectiONX</string>
+  <string id="32002">Kunde inte ansluta till databasserver</string>
+  <string id="32003">Kunde inte ansluta till databasen</string>
+  <string id="32004">Välj ja för att ändra databasinställningarna och försök igen</string>
+  <string id="32005">Klicka nej för att avsluta tillägget</string>
+  <string id="40000">Återställ filmlistan</string>
+  <string id="40001">Skådespelarsökning</string>
+  <string id="40002">Genresökning</string>
+  <string id="40003">Inställningar</string>
+  <string id="40004">Avsluta</string>
+</strings>
