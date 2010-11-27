@@ -72,7 +72,7 @@
 
 <addon
   id="plugin.video.videomonkey"
-  version="1.4.1"
+  version="1.4.2"
   name="VideoMonkey"
   provider-name="sfaxman / bootsy">
   <requires>
