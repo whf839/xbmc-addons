@@ -6,7 +6,6 @@ __author__ = "nuka1195"
 import os
 import xbmc
 import re
-import locale
 
 
 class Addon:
@@ -63,7 +62,7 @@ class Addon:
         self._info[ "library" ] = "default.py"
         # set any metadata
         for metadata in [ "disclaimer", "summary", "description" ]:
-            data = re.findall( "<%s(?:.+?lang=\"(?:en|%s)\")?.*?>([^<]*)</%s>" % ( metadata, locale.getdefaultlocale()[ 0 ][ : 2 ], metadata, ), xml, re.DOTALL )
+            data = re.findall( "<%s(?:.+?lang=\"(?:en|%s)\")?.*?>([^<]*)</%s>" % ( metadata, xbmc.getRegion( "locale" ), metadata, ), xml, re.DOTALL )
             if ( data ):
                 self._info[ metadata ] = data[ -1 ]
             else:
