@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.xbmc.lyrics" name="XBMC Lyrics" version="2.1.3" provider-name="nuka1195">
+<addon id="script.xbmc.lyrics" name="XBMC Lyrics" version="2.1.4" provider-name="nuka1195">
     <requires>
         <import addon="xbmc.python" version="1.0"/>
         <import addon="script.module.pysvn" version="2.4.0"/>
-        <import addon="script.module.xbmcaddon" version="1.0.3"/>
+        <import addon="script.module.xbmcaddon" version="1.0.4"/>
     </requires>
     <extension point="xbmc.python.lyrics" library="addon.py"/>
     <extension point="xbmc.addon.metadata">

@@ -1,8 +1,11 @@
-Find, download, save and display song lyrics from the internet using xml based scrapers. Displays embedded lyrics if available. Abilty to play and tag LRC (simple format) lyrics. *see Tagging lyrics. Can be set to autoscroll untagged lyrics. Can save lyrics to a song's folder or a shared folder. *see settings.
+Find, download, save and display song lyrics from the internet using xml based scrapers. Displays embedded lyrics if available. Abilty to play and tag LRC (simple format) lyrics. *see Tagging lyrics. Can be set to autoscroll untagged lyrics. Can save lyrics in the song's folder or the song's artist folder under an optional subfolder or a shared folder under album and/or artist subfolders. (*Note, to save under the song's artist folder your folder structure must be artist/album/song.ext; this is good for multiple albums with same songs, but songs must also be named the same to prevent duplicates.) *see settings.
 
-Uses primary scraper first then searches using all other enabled scrapers. *see settings. Will list all available songs for an artist if no song match was found. Artist aliases allow you to input an alias if no artist match was found. Ability to prefetch the next songs lyrics (will not interrupt user if no match was found).
+Uses primary scraper first then searches using all other enabled scrapers (alphabetically). *see settings. Will list all available songs for an artist if no song match was found. Artist aliases allow you to input an alias if no artist match was found. Ability to prefetch the next songs lyrics (will not interrupt user if no match was found).
 
 Can run as a stand alone script (gui mode) or in the background. *see Running addon.
+
+*Thanks to VelvetKevorkian for the icon.
+
 
 [B]Running addon:[/B]
 ----------------------------------------------------------------------------------------------------------------------------------------------------------

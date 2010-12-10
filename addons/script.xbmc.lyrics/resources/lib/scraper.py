@@ -1,20 +1,16 @@
 ## Scraper module
-#-*- coding: UTF-8 -*-
+# -*- coding: UTF-8 -*-
 
 import os
 
 try:
     import xbmc
     import xbmcgui
-    # set scrapers path
-    SCRAPER_PATH = os.path.join( os.getcwd(), "resources", "scrapers" )
 except:
     # get dummy xbmc modules (Debugging)
     from debug import *
     xbmc = XBMC()
     xbmcgui = XBMCGUI()
-    # set scrapers path
-    SCRAPER_PATH = os.path.join( os.path.dirname( os.getcwd() ), "scrapers" )
 
 import StringIO
 import gzip
@@ -41,9 +37,9 @@ class Scraper:
         self.clean_song_regex = re.compile( "[\[\(]+.+?[\]\)]+" )# FIXME: do we want to strip inside ()?
         self.clean_br_regex = re.compile( "<br[ /]*>[\s]*", re.IGNORECASE )
         self.clean_lyrics_regex = re.compile( "<.+?>" )
-        self.clean_lrc_lyrics_regex = re.compile( "(^\[[0-9]+:[^\]]+\]\s)*(\[[0-9]+:[^\]]+\]$)*" )
+        self.clean_lrc_lyrics_regex = re.compile( "(^\[[0-9]+:[^\]]+\]\s)*(\[(ti|ar|al|re|ve|we):[^\]]+\]\s)*(\[[0-9]+:[^\]]+\]$)*" )
         self.normalize_lyrics_regex = re.compile( "&#[x]*(?P<name>[0-9]+);*" )
-        self.titlecase_lyrics_regex = re.compile( "(?P<word1>[a-zA-Z'])(?P<word2>[A-Z])" )
+        self.titlecase_lyrics_regex = re.compile( "(?P<word1>[a-zA-Z'])(?P<word2>[A-Z\(\[])" )
         # get scraper info
         self._get_scraper_info()
         # get artist aliases, only need to grab it once
@@ -66,34 +62,35 @@ class Scraper:
         self.artist = song.artist
         self.title = song.title
         # fetch lyrics
-        song.lyrics, song.message, song.status, song.website = self._fetch_lyrics_from_internet( self.artist, self.title )
+        song.lyrics, song.message, song.website, song.status = self._fetch_lyrics_from_internet( self.artist, self.title )
 
     def _fetch_lyrics_from_internet( self, artist, title, songlist=False ):
         # initialize our variables
         scraper = 0
-        lyrics = message = None
+        lyrics = None
+        message = website = ""
         status = False
         # loop until we have success or run out of scrapers
         while not status and scraper < len( self.SCRAPERS ):
             # fetch list if scraper only returns a list first or we found no lyrics
             if ( self.SCRAPERS[ scraper ][ "source" ][ "songlist" ][ "always" ] or songlist ):
-                # initialize to None, so we don't try and fetch lyrics if we are prefetching
+                # initialize to None, so we don't try and fetch lyrics if we are prefetching and we get a song list
                 url = None
                 # do not interrupt user if prefetching
-                if ( not self.prefetch or self.SCRAPERS[ scraper ][ "source" ][ "songlist" ][ "autoselect" ] ):
+                if ( ( not self.prefetch or self.SCRAPERS[ scraper ][ "source" ][ "songlist" ][ "autoselect" ] ) ):
                     url, message = self._fetch_song_list( artist, scraper=scraper, usetitle=not songlist )
             else:
                 url = artist
             # fetch lyrics
             if ( url is not None ):
-                lyrics, message, status, website = self._fetch_lyrics( url, title, scraper=scraper )
+                lyrics, message, website, status = self._fetch_lyrics( url, title, scraper=scraper )
             # increment scraper
             scraper += 1
         # if we succeeded or we are prefetching return results
         if ( status or self.prefetch ):
-            return lyrics, message, status, website
+            return lyrics, message, website, status
         # we failed, try to fetch a songlist if we haven't already
-        elif( not songlist ):
+        elif ( not songlist ):
             return self._fetch_lyrics_from_internet( artist, title, songlist=True )
         # no artist was found, so get an alias
         else:
@@ -103,7 +100,7 @@ class Scraper:
             if ( self.new_alias ):
                 return self._fetch_lyrics_from_internet( self.new_alias[ self.artist ], title )
         # we failed all trys
-        return self.Addon.getLocalizedString( 30851 ) % ( message, ), self.Addon.getLocalizedString( 30851 ) % ( message, ), False, ""
+        return self.Addon.getLocalizedString( 30851 ) % ( message, ), self.Addon.getLocalizedString( 30851 ) % ( message, ), "", False
 
     def _fetch_lyrics( self, artist, title="", scraper=0 ):
         try:
@@ -119,10 +116,10 @@ class Scraper:
             if ( self.new_alias ):
                 self._alias_file( self.new_alias )
             # return results
-            return lyrics, self.Addon.getLocalizedString( 30860 ), True, self.SCRAPERS[ scraper ][ "title" ]
+            return lyrics, self.Addon.getLocalizedString( 30860 ), self.SCRAPERS[ scraper ][ "title" ], True
         except Exception, e:
             # failure return None
-            return None, str( e ), False, None
+            return None, str( e ), None, False
 
     def _scrape_lyrics( self, source, scraper ):
         # scrape lyrics
@@ -136,6 +133,8 @@ class Scraper:
             # clean first and last blank lines for lrc lyrics
             if ( self.SCRAPERS[ scraper ][ "source" ][ "lyrics" ][ "type" ] == "lrc" ):
                 lyrics = self.clean_lrc_lyrics_regex.sub( "", lyrics ).strip()
+        # log message
+        xbmc.log( "     Scraper::_scrape_lyrics      (scraper=%s, Lyrics=Found!)" % ( repr( self.SCRAPERS[ scraper ][ "title" ] ), ), xbmc.LOGDEBUG )
         # return result
         return lyrics
 
@@ -154,18 +153,18 @@ class Scraper:
             # raise an error if no songs found
             if ( not len( songs ) ): raise
             # get user selection
-            url = self._get_song_selection( songs, self.SCRAPERS[ scraper ][ "source" ][ "songlist" ][ "swap" ], self.SCRAPERS[ scraper ][ "source" ][ "songlist" ][ "autoselect" ] )
+            url = self._get_song_selection( songs, self.SCRAPERS[ scraper ][ "title" ], self.SCRAPERS[ scraper ][ "source" ][ "songlist" ][ "swap" ], self.SCRAPERS[ scraper ][ "source" ][ "songlist" ][ "autoselect" ], not usetitle )
             # if selection, format url
             if ( url is not None ):
                 url = self.SCRAPERS[ scraper ][ "url" ][ "address" ] + url
             # return result
-            return url, None
+            return url, ""
         # an error occurred, should only happen if artist was not found
         except Exception, e:
             # no artist found
             return None, str( e )
 
-    def _get_song_selection( self, songs, swap, autoselect ):
+    def _get_song_selection( self, songs, title, swap, autoselect, songlist ):
         """ Returns a user selected song's url from a list of supplied songs """
         # sort songs, removing duplicates
         titles, dupes = self._sort_songs( songs, swap )
@@ -182,13 +181,13 @@ class Scraper:
             # if we have a match return it
             if ( choice ):
                 return dupes[ titles[ choice[ 0 ] ] ]
-        # if we are prefetching skip selection, we only go this far for autoselect scrapers
-        if ( self.prefetch ):
+        # if we are prefetching or autoselecting when not songlist skip selection, we only go this far for autoselect scrapers
+        if ( self.prefetch or ( autoselect and not songlist ) ):
             return None
-        # set the time to auto close in msec, 90% of time remaining is plenty of time and gives prefetch some time
-        autoclose = int( ( xbmc.Player().getTotalTime() - xbmc.Player().getTime() ) * 1000 * 0.90 )
+        # set the time to auto close in msec, 80% of time remaining is plenty of time and gives prefetch some time
+        autoclose = int( ( xbmc.Player().getTotalTime() - xbmc.Player().getTime() ) * 1000 * 0.80 )
         # get user selection
-        choice = xbmcgui.Dialog().select( self.title, titles, autoclose )
+        choice = xbmcgui.Dialog().select( self.title + " (%s)" % ( title ), titles, autoclose )
         # return selection
         if ( choice >= 0 ):
             return dupes[ titles[ choice ] ]
@@ -214,8 +213,8 @@ class Scraper:
     def _get_artist_alias( self, artist ):
         # initialize alias
         alias = dict()
-        # set the time to auto close in msec, 90% of time remaining is plenty of time and gives prefetch some time
-        autoclose = int( ( xbmc.Player().getTotalTime() - xbmc.Player().getTime() ) * 1000 * 0.90 )
+        # set the time to auto close in msec, 80% of time remaining is plenty of time and gives prefetch some time
+        autoclose = int( ( xbmc.Player().getTotalTime() - xbmc.Player().getTime() ) * 1000 * 0.80 )
         # get keyboard object
         keyboard = xbmc.Keyboard( artist, self.Addon.getLocalizedString( 30810 ) % ( self.artist, ) )
         # show keyboard
@@ -234,7 +233,9 @@ class Scraper:
         # log message
         xbmc.log( "     Scraper::_format_url         (artist=%s, alias=%s, title=%s)" % ( repr( artist ), repr( artist_aliases.get( artist, self.new_alias.get( self.artist, None ) ) ), repr( title ), ), xbmc.LOGDEBUG )
         # get alias if there is one
-        artist = artist_aliases.get( artist, self.new_alias.get( self.artist, self._format_item( artist, scraper ) ) )
+        artist = artist_aliases.get( artist, self.new_alias.get( self.artist, artist ) )
+        # format artist, we now format artist aliases also
+        artist = self._format_item( artist, scraper )
         # only need to format title if it exists
         if ( title ):
             title = self._format_item( title, scraper ) + self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "title" ][ "tail" ]
@@ -271,7 +272,7 @@ class Scraper:
         if ( self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "case" ] == "lower" ):
             text = text.lower()
         elif ( self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "case" ] == "title" and not text.isupper() ):
-            text = self.titlecase_lyrics_regex.sub( lambda m: m.group( 1 ) + m.group( 2 ).lower(), text.title() ).encode( "UTF-8", "replace" ).decode( "UTF-8" )
+            text = " ".join( [ [ self.titlecase_lyrics_regex.sub( lambda m: m.group( 1 ) + m.group( 2 ).lower(), word.title() ).encode( "UTF-8", "replace" ).decode( "UTF-8" ) , word ][ word.isupper() ] for word in text.split() ] )
         # replace url characters with separator
         for char in " /":
             text = text.replace( char, self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "space" ] )
@@ -335,8 +336,11 @@ class Scraper:
             return text.replace( "&amp;", "&" ).replace( "&lt;", "<" ).replace( "&gt;", ">" ).replace( "&quot;", "\"" )
         # initialize our scrapers list
         self.SCRAPERS = list()
+        # set scraper path
+        _scraper_path = os.path.join( self.Addon.getAddonInfo( "Path" ), "resources", "scrapers" )
         # get list of scrapers
-        scrapers = os.listdir( SCRAPER_PATH )
+        scrapers = os.listdir( _scraper_path )
+        scrapers.sort()
         # scrapers regex
         scraper_regex = re.compile( "<scraper.+?title=\"([^\"]+)\".*?>\s[^<]+<url.+?address=\"([^\"]+)\".*?useragent=\"([^\"]+)\".*?>\s[^<]+<song.*?join=\"([^\"]*)\".*?space=\"([^\"]*)\".*?clean=\"([^\"]*)\".*?case=\"([^\"]*)\".*?search=\"([^\"]*)\".*?urlencode=\"([^\"]*)\".*?>\s[^<]+<artist.+?tail=\"([^\"]*)\".*?sub=\"([^\"]*)\".*?group=\"([^\"]*)\".*?/>\s[^<]+<title.+?tail=\"([^\"]*)\".*?/>\s[^<]+</song>\s[^<]+</url>\s[^<]+<source.+?encoding=\"([^\"]*)\".*?>\s[^<]+<lyrics.+?type=\"([^\"]*)\".*?clean=\"([^\"]*)\".*?>\s[^<]+<regex.+?flags=\"([^\"]*)\".*?>([^<]+)</regex>\s[^<]+</lyrics>\s[^<]+<songlist.+?swap=\"([^\"]*)\".*?always=\"([^\"]*)\".*?select=\"([^\"]*)\".*?>\s[^<]+<regex.+?flags=\"([^\"]*)\".*?>([^<]+)</regex>\s[^<]+</songlist>", re.IGNORECASE )
         # re flags
@@ -350,7 +354,7 @@ class Scraper:
             # is this scraper enabled?
             if ( not scraper.endswith( ".xml" ) or ( scraper.replace( ".xml", "" ) != self.Addon.getSetting( "primary_scraper" ) and self.Addon.getSetting( "scraper_%s" % ( scraper.replace( ".xml", "" ).replace( "-", "_" ).lower(), ) ) == "false" ) ): continue
             # set full path to file
-            _path = os.path.join( SCRAPER_PATH, scraper )
+            _path = os.path.join( _scraper_path, scraper )
             # skip any malformed scrapers
             try:
                 # get scrapers xml source
@@ -407,9 +411,9 @@ class Scraper:
 
 
 if ( __name__ == "__main__" ):
-    songno = 1
-    artists = [ u"britney spears", u".38 Special", u"The babys", u"4 Non Blondes", u"ABBA", u"AC/DC", u"Blue Öyster Cult", u"The Rolling Stones (feat. Cheryl Crow)", u"38 Special", u"ABBA", u"Enya", u"Enya", u"*NSync", u"Enya", u"ABBA" ]
-    songs = [ u"(You Drive Me) Crazy", u"Wild-Eyed Southern Boys [Live]", u"Isn't it time", u"Dear Mr. President", u"Gimme! Gimme! Gimme! (A Man After Midnight)", u"Have a Drink on Me", u"Burning for you", u"Get off of my cloud", u"Hold on Loosely", u"Eagle", u"Aniron (I Desire)", u"Book of Days", u"Bye Bye Bye", u"Orinoco Flow", u"S.O.S." ]
+    songno = 2
+    artists = [ u"The Beatles", u"britney spears", u".38 Special", u"The babys", u"4 Non Blondes", u"ABBA", u"AC/DC", u"Blue Öyster Cult", u"The Rolling Stones (feat. Cheryl Crow)", u"38 Special", u"ABBA", u"Enya", u"Enya", u"*NSync", u"Enya", u"ABBA" ]
+    songs = [ u"Back in the USSR", u"(You Drive Me) Crazy", u"Wild-Eyed Southern Boys", u"Isn't it time", u"Dear Mr. President", u"Gimme! Gimme! Gimme! (A Man After Midnight)", u"Have a Drink on Me", u"Burning for you", u"Get off of my cloud", u"Hold on Loosely", u"Eagle", u"Aniron (I Desire)", u"Book of Days", u"Bye Bye Bye", u"Orinoco Flow", u"S.O.S." ]
 
     class SONG:
         artist = artists[songno]

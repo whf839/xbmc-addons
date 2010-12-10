@@ -35,8 +35,6 @@ class Song:
     def get_song_info( self ):
         # clear song info
         self._clear_song_attributes()
-        # fetch next song info
-        if ( self.prefetch and not xbmc.getCondVisibility( "MusicPlayer.HasNext" ) ): return
         # get song info from infolabels
         self.artist = unicode( xbmc.getInfoLabel( "MusicPlayer.Offset(%d).Artist" % ( self.prefetch, ) ), "UTF-8" )
         self.album = unicode( xbmc.getInfoLabel( "MusicPlayer.Offset(%d).Album" % ( self.prefetch, ) ), "UTF-8" )
@@ -54,21 +52,23 @@ class Song:
             # set fatx filesystem? this is ignored for XBMC so no need to check if xbox
             fatx = not file.startswith( "smb://" )
             # we use "Unknown" for non existent albums. it's only used for tagging lyrics
-            if ( self.album is None or self.album == "" ):
-                self.album = u"Unknown"
+            self.album = self.album or u"Unknown"
             # set shared path if user preference
             if ( self.Addon.getSetting( "lyrics_save_mode" ) == "0" ):
                 # set user subfolder preference
                 if ( self.Addon.getSetting( "lyrics_subfolder_template" ) == r"%A/" ):
                     subfolder = xbmc.makeLegalFilename( self.artist, fatx )
                 else:
-                    subfolder = os.path.join( xbmc.makeLegalFilename( self.artist, fatx ), xbmc.makeLegalFilename( self.album,fatx ) )
+                    subfolder = os.path.join( xbmc.makeLegalFilename( self.artist, fatx ), xbmc.makeLegalFilename( self.album, fatx ) )
                 # create full path
                 self.lyrics_path = xbmc.validatePath( os.path.join( xbmc.translatePath( self.Addon.getSetting( "lyrics_save_path" ) ), subfolder, xbmc.makeLegalFilename( os.path.splitext( os.path.basename( file ) )[ 0 ] + self.Addon.getSetting( "lyrics_save_extension" ), fatx ) ) )
             # set song path if user preference
-            elif ( self.Addon.getSetting( "lyrics_save_mode" ) == "1" ):
+            elif ( self.Addon.getSetting( "lyrics_save_mode" ) in [ "1", "2" ] ):
                 # split file from folder
                 folder, file = os.path.split( file )
+                # if save to artist's folder, assume artist/album/song.ext folder structure
+                if ( self.Addon.getSetting( "lyrics_save_mode" ) == "2" ):
+                    folder = os.path.dirname( folder )
                 # change extension
                 file = os.path.splitext( file )[ 0 ] + self.Addon.getSetting( "lyrics_save_extension" )
                 # create path

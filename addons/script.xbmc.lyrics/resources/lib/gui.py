@@ -1,11 +1,14 @@
-## module for running in gui mode
+## GUI Module for running in foreground
 
 import xbmcgui
 
 
 class GUI( xbmcgui.WindowXMLDialog ):
+    """
+        GUI class: used for viewing and tagging lyrics.
+    """
     # default actions
-    ACTION_CLOSE_DIALOG = ( 9, 10, )
+    ACTION_CLOSE_DIALOG = [ 9, 10 ]
 
     def __init__( self, *args, **kwargs ):
         xbmcgui.WindowXMLDialog.__init__( self )

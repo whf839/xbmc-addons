@@ -1,10 +1,11 @@
-### Lyrics module
+## Lyrics module
 
 import os
 import xbmc
 from codecs import BOM_UTF8
 import re
 from resources.lib.scraper import Scraper
+
 if ( os.environ.get( "OS", "n/a" ) == "xbox" ):
     import base64
 
@@ -99,12 +100,14 @@ class Lyrics:
         if ( not lyrics and self.Addon.getSetting( "enable_karaoke_mode" ) == "true" and self.Addon.getSetting( "autoscroll_lyrics" ) == "true" ):
             # split lines
             lines = song.lyrics.strip().splitlines()
+            # get offset
+            offset = int( float( self.Addon.getSetting( "autoscroll_lyrics_delay" ) ) )
             # get total time
-            total_time = int( xbmc.getInfoLabel( "MusicPlayer.Offset(%d).Duration" % ( self.prefetch, ) ).split( ":" )[ 0 ] ) * 60 + int( xbmc.getInfoLabel( "MusicPlayer.Offset(%d).Duration" % ( self.prefetch, ) ).split( ":" )[ 1 ] )
-            # we set the same amount of time per lyric, what do you expect?# FIXME: maybe eliminate the first 10 seconds and the last 10 seconds
+            total_time = int( xbmc.getInfoLabel( "MusicPlayer.Offset(%d).Duration" % ( self.prefetch, ) ).split( ":" )[ 0 ] ) * 60 + int( xbmc.getInfoLabel( "MusicPlayer.Offset(%d).Duration" % ( self.prefetch, ) ).split( ":" )[ 1 ] ) - ( offset * 2 )
+            # we set the same amount of time per lyric, what do you expect?
             lyric_time = float( total_time ) / len( lines )
             # enumerate thru and set each tagged lyric
-            lyrics = [ divmod( ( count + 1 ) * lyric_time, 60 ) + ( lyric, ) for count, lyric in enumerate( lines ) ]
+            lyrics = [ divmod( ( count + 1 ) * lyric_time + offset, 60 ) + ( lyric, ) for count, lyric in enumerate( lines ) ]
             # these are non lrc lyrics
             lrc_lyrics = False
         # format lyrics
