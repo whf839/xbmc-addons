@@ -11,7 +11,7 @@ _A_ = xbmcaddon.Addon('script.cinema.experience')
 
 class Main:
     # base paths
-    BASE_CURRENT_SOURCE_PATH = os.path.join( xbmc.translatePath( "special://profile/" ), "addon_data", os.path.basename( _A_.getAddonInfo('path') ) )
+    BASE_CURRENT_SOURCE_PATH = os.path.join( xbmc.translatePath( "special://profile/addon_data/" ), os.path.basename( _A_.getAddonInfo('path') ) )
 
     def __init__( self, mpaa=None, genre=None, settings=None, movie=None ):
         self.mpaa = mpaa

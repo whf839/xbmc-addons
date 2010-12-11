@@ -38,7 +38,7 @@ from random import shuffle
 class Main:
     # base paths
     BASE_CACHE_PATH = os.path.join( xbmc.translatePath( "special://profile" ), "Thumbnails", "Video" )
-    BASE_CURRENT_SOURCE_PATH = os.path.join( xbmc.translatePath( "special://profile/" ), "addon_data", os.path.basename( _A_.getAddonInfo('path') ) )
+    BASE_CURRENT_SOURCE_PATH = os.path.join( xbmc.translatePath( "special://profile/addon_data/" ), os.path.basename( _A_.getAddonInfo('path') ) )
 
     def __init__( self ):
         # if an arg was passed check it for ClearWatchedTrivia or ClearWatchedTrailers

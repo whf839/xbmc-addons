@@ -43,3 +43,5 @@ if ( __name__ == "__main__" ):
     if ( _check_compatible() ):
         from resources.lib import xbmcscript_player as script
         script.Main()
+
+

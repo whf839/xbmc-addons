@@ -14,7 +14,7 @@ _ = xbmc.getLocalizedString
 
 class Trivia( xbmcgui.WindowXML ):
     # base paths
-    BASE_CURRENT_SOURCE_PATH = os.path.join( xbmc.translatePath( "special://profile/" ), "script_data", os.path.basename( _A_.getAddonInfo('path') ) )
+    BASE_CURRENT_SOURCE_PATH = os.path.join( xbmc.translatePath( "special://profile/addon_data/" ), os.path.basename( _A_.getAddonInfo('path') ) )
     # special action codes
     ACTION_NEXT_SLIDE = ( 2, 3, 7, )
     ACTION_PREV_SLIDE = ( 1, 4, )
