@@ -8,12 +8,13 @@ import binascii
 from random import shuffle
 import re
 
+_A_ = xbmcaddon.Addon('script.cinema.experience')
 _ = xbmc.getLocalizedString
 
 
 class Trivia( xbmcgui.WindowXML ):
     # base paths
-    BASE_CURRENT_SOURCE_PATH = os.path.join( xbmc.translatePath( "special://profile/" ), "script_data", os.path.basename( os.getcwd() ) )
+    BASE_CURRENT_SOURCE_PATH = os.path.join( xbmc.translatePath( "special://profile/" ), "script_data", os.path.basename( _A_.getAddonInfo('path') ) )
     # special action codes
     ACTION_NEXT_SLIDE = ( 2, 3, 7, )
     ACTION_PREV_SLIDE = ( 1, 4, )

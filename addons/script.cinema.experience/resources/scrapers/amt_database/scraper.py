@@ -11,9 +11,9 @@ from random import shuffle
 from urllib import quote_plus
 import datetime
 
-# append the proper platforms folder to our path, xbox is the same as win32
-env = ( os.environ.get( "OS", "win32" ), "win32", )[ os.environ.get( "OS", "win32" ) == "xbox" ]
-sys.path.append( os.path.join( os.getcwd(), "resources", "platform_libraries", env ) )
+_A_ = xbmcaddon.Addon('script.cinema.experience')
+
+sys.path.append( os.path.join( _A_.getAddonInfo('path'), "resources" ) )
 from pysqlite2 import dbapi2 as sqlite
 
 __useragent__ = "QuickTime/7.2 (qtver=7.2;os=Windows NT 5.1Service Pack 3)"
