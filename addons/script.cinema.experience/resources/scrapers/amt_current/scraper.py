@@ -6,7 +6,7 @@ import sys
 import os
 
 import xbmc
-
+import xbmcaddon
 import time
 import re
 import urllib
@@ -124,10 +124,11 @@ class _Parser:
 
 
 class Main:
+    print "Apple Movie Trailers current trailers scraper"
     # base url
     BASE_CURRENT_URL = "http://www.apple.com/trailers/home/xml/current%s.xml"
     # base paths
-    BASE_CURRENT_SOURCE_PATH = os.path.join( xbmc.translatePath( "special://profile/" ), "script_data", os.path.basename( _A_.getAddonInfo('path') ) )
+    BASE_CURRENT_SOURCE_PATH = os.path.join( xbmc.translatePath( "special://profile/addon_data" ), os.path.basename( _A_.getAddonInfo('path') ) )
 
     def __init__( self, mpaa=None, genre=None, settings=None, movie=None ):
         self.mpaa = mpaa
