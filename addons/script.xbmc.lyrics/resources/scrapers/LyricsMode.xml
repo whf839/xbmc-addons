@@ -9,7 +9,7 @@
             <title tail=".html"/>
         </song>
     </url>
-    <source encoding="iso-8859-1">
+    <source encoding="ISO-8859-1">
         <lyrics type="standard" clean="true">
             <regex flags="dotall ignorecase">&lt;div.+?id='songlyrics_h'.+?class='dn'&gt;(.+?)&lt;/div&gt;</regex>
         </lyrics>

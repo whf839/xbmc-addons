@@ -34,21 +34,21 @@ class Scraper:
         # our we prefetching
         self.prefetch = prefetch
         # regex's
-        self.clean_song_regex = re.compile( "[\[\(]+.+?[\]\)]+" )# FIXME: do we want to strip inside ()?
-        self.clean_br_regex = re.compile( "<br[ /]*>[\s]*", re.IGNORECASE )
-        self.clean_lyrics_regex = re.compile( "<.+?>" )
-        self.clean_lrc_lyrics_regex = re.compile( "(^\[[0-9]+:[^\]]+\]\s)*(\[(ti|ar|al|re|ve|we):[^\]]+\]\s)*(\[[0-9]+:[^\]]+\]$)*" )
-        self.normalize_lyrics_regex = re.compile( "&#[x]*(?P<name>[0-9]+);*" )
-        self.titlecase_lyrics_regex = re.compile( "(?P<word1>[a-zA-Z'])(?P<word2>[A-Z\(\[])" )
+        self.regex_clean_song = re.compile( "[\[\(]+.+?[\]\)]+" )# FIXME: do we really want to strip inside ()? (seems to work good)
+        self.regex_clean_br = re.compile( "<br[ /]*>[\s]*", re.IGNORECASE )
+        self.regex_clean_lyrics = re.compile( "<.+?>" )
+        self.regex_clean_lrc_lyrics = re.compile( "(^\[[0-9]+:[^\]]+\]\s)*(\[(ti|ar|al|re|ve|we):[^\]]+\]\s)*(\[[0-9]+:[^\]]+\]$)*" )
+        self.regex_normalize_lyrics = re.compile( "&#[x]*(?P<name>[0-9]+);*" )
+        self.regex_titlecase_lyrics = re.compile( "(?P<word1>[a-zA-Z'])(?P<word2>[A-Z\(\[])" )
         # get scraper info
         self._get_scraper_info()
         # get artist aliases, only need to grab it once
         if ( prefetch or self.Addon.getSetting( "prefetch_lyrics" ) != "true" ):
             self._alias_file()
 
-    def fetch_lyrics( self, song ):
+    def fetch_lyrics( self, song, songlist ):
         # log message
-        xbmc.log( "Scraper::fetch_lyrics             (artist=%s, title=%s, prefetch=%s)" % ( repr( song.artist ), repr( song.title ), repr( self.prefetch ), ), xbmc.LOGDEBUG )
+        xbmc.log( "Scraper::fetch_lyrics             (artist=%s, title=%s, prefetch=%s, songlist=%s)" % ( repr( song.artist ), repr( song.title ), repr( self.prefetch ), repr( songlist ), ), xbmc.LOGDEBUG )
         # sometimes you don't have internet
         if ( not xbmc.getCondVisibility( "System.InternetState" ) ):
             song.lyrics = self.Addon.getLocalizedString( 30851 ) % ( "No Internet connection!", )
@@ -62,7 +62,7 @@ class Scraper:
         self.artist = song.artist
         self.title = song.title
         # fetch lyrics
-        song.lyrics, song.message, song.website, song.status = self._fetch_lyrics_from_internet( self.artist, self.title )
+        song.lyrics, song.message, song.website, song.status = self._fetch_lyrics_from_internet( self.artist, self.title, songlist )
 
     def _fetch_lyrics_from_internet( self, artist, title, songlist=False ):
         # initialize our variables
@@ -72,6 +72,8 @@ class Scraper:
         status = False
         # loop until we have success or run out of scrapers
         while not status and scraper < len( self.SCRAPERS ):
+            # get current scrapers artist aliases
+            self.artist_aliases = artist_aliases.get( self.SCRAPERS[ scraper ][ "title" ], dict() )
             # fetch list if scraper only returns a list first or we found no lyrics
             if ( self.SCRAPERS[ scraper ][ "source" ][ "songlist" ][ "always" ] or songlist ):
                 # initialize to None, so we don't try and fetch lyrics if we are prefetching and we get a song list
@@ -114,7 +116,7 @@ class Scraper:
             lyrics = self._scrape_lyrics( source, scraper )
             # save alias if we have one
             if ( self.new_alias ):
-                self._alias_file( self.new_alias )
+                self._alias_file( alias=self.new_alias, scraper=self.SCRAPERS[ scraper ][ "title" ] )
             # return results
             return lyrics, self.Addon.getLocalizedString( 30860 ), self.SCRAPERS[ scraper ][ "title" ], True
         except Exception, e:
@@ -126,13 +128,13 @@ class Scraper:
         lyrics = self.SCRAPERS[ scraper ][ "source" ][ "lyrics" ][ "regex" ].search( source ).group( 1 )
         # sometimes the lyrics are not human readable or poorly formatted
         if ( self.SCRAPERS[ scraper ][ "source" ][ "lyrics" ][ "clean" ] ):
-            lyrics = self.clean_br_regex.sub( "\n", lyrics ).strip()
-            lyrics = self.clean_lyrics_regex.sub( "", lyrics ).strip()
-            lyrics = self.normalize_lyrics_regex.sub( lambda m: unichr( int( m.group( 1 ) ) ), lyrics ).encode( "UTF-8", "replace" ).decode( "UTF-8" )
+            lyrics = self.regex_clean_br.sub( "\n", lyrics ).strip()
+            lyrics = self.regex_clean_lyrics.sub( "", lyrics ).strip()
+            lyrics = self.regex_normalize_lyrics.sub( lambda m: unichr( int( m.group( 1 ) ) ), lyrics ).encode( "UTF-8", "replace" ).decode( "UTF-8" )
             lyrics = u"\n".join( [ lyric.strip() for lyric in lyrics.splitlines() ] )
             # clean first and last blank lines for lrc lyrics
             if ( self.SCRAPERS[ scraper ][ "source" ][ "lyrics" ][ "type" ] == "lrc" ):
-                lyrics = self.clean_lrc_lyrics_regex.sub( "", lyrics ).strip()
+                lyrics = self.regex_clean_lrc_lyrics.sub( "", lyrics ).strip()
         # log message
         xbmc.log( "     Scraper::_scrape_lyrics      (scraper=%s, Lyrics=Found!)" % ( repr( self.SCRAPERS[ scraper ][ "title" ] ), ), xbmc.LOGDEBUG )
         # return result
@@ -173,7 +175,7 @@ class Scraper:
             # set key
             if ( len( songs[ 0 ] ) == 3 ):
                 # we use an artist alias if one was entered
-                key = " - ".join( [ self.title, self.new_alias.get( self.artist, artist_aliases.get( self.artist, self.artist ) ) ] ).lower()
+                key = " - ".join( [ self.title, self.new_alias.get( self.artist, self.artist_aliases.get( self.artist, self.artist ) ) ] ).lower()
             else:
                 key = self.title.lower()
             # loop thru and find a match FIXME: titles is sorted, so may not return best result?
@@ -231,9 +233,9 @@ class Scraper:
         # if we already have a url return it
         if ( artist.startswith( "http://" ) ): return artist
         # log message
-        xbmc.log( "     Scraper::_format_url         (artist=%s, alias=%s, title=%s)" % ( repr( artist ), repr( artist_aliases.get( artist, self.new_alias.get( self.artist, None ) ) ), repr( title ), ), xbmc.LOGDEBUG )
+        xbmc.log( "     Scraper::_format_url         (artist=%s, alias=%s, title=%s)" % ( repr( artist ), repr( self.artist_aliases.get( artist, self.new_alias.get( self.artist, None ) ) ), repr( title ), ), xbmc.LOGDEBUG )
         # get alias if there is one
-        artist = artist_aliases.get( artist, self.new_alias.get( self.artist, artist ) )
+        artist = self.artist_aliases.get( artist, self.new_alias.get( self.artist, artist ) )
         # format artist, we now format artist aliases also
         artist = self._format_item( artist, scraper )
         # only need to format title if it exists
@@ -263,7 +265,7 @@ class Scraper:
         # clean text
         if ( self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "clean" ] ):
             # strip anything inside () or []
-            text = self.clean_song_regex.sub( "", text ).strip()
+            text = self.regex_clean_song.sub( "", text ).strip()
             # normalize text
             text = normalize( "NFKD", text ).encode( "ascii", "replace" )
             # remove bad characters
@@ -272,7 +274,7 @@ class Scraper:
         if ( self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "case" ] == "lower" ):
             text = text.lower()
         elif ( self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "case" ] == "title" and not text.isupper() ):
-            text = " ".join( [ [ self.titlecase_lyrics_regex.sub( lambda m: m.group( 1 ) + m.group( 2 ).lower(), word.title() ).encode( "UTF-8", "replace" ).decode( "UTF-8" ) , word ][ word.isupper() ] for word in text.split() ] )
+            text = " ".join( [ [ self.regex_titlecase_lyrics.sub( lambda m: m.group( 1 ) + m.group( 2 ).lower(), word.title() ).encode( "UTF-8", "replace" ).decode( "UTF-8" ) , word ][ word.isupper() ] for word in text.split() ] )
         # replace url characters with separator
         for char in " /":
             text = text.replace( char, self.SCRAPERS[ scraper ][ "url" ][ "song" ][ "space" ] )
@@ -308,16 +310,19 @@ class Scraper:
         # return a unicode object
         return unicode( source, encoding, "replace" )
 
-    def _alias_file( self, alias=dict() ):
+    def _alias_file( self, alias=dict(), scraper=None ):
         try:
             # needs to be global as song and prefetched_song are two instances
             global artist_aliases
             # create path to alias file
             _path = os.path.join( self.Addon.getAddonInfo( "Profile" ), "artist_aliases.txt" )
             # read/write aliases file
-            if ( alias ):
+            if ( scraper is not None ):
+                # add key if necessary
+                if ( not artist_aliases.has_key( scraper ) ):
+                    artist_aliases.update( { scraper: dict() } )
                 # update aliases
-                artist_aliases.update( alias )
+                artist_aliases[ scraper ].update( alias )
                 # save aliases
                 open( _path, "w" ).write( repr( artist_aliases ) )
             else:
@@ -342,9 +347,9 @@ class Scraper:
         scrapers = os.listdir( _scraper_path )
         scrapers.sort()
         # scrapers regex
-        scraper_regex = re.compile( "<scraper.+?title=\"([^\"]+)\".*?>\s[^<]+<url.+?address=\"([^\"]+)\".*?useragent=\"([^\"]+)\".*?>\s[^<]+<song.*?join=\"([^\"]*)\".*?space=\"([^\"]*)\".*?clean=\"([^\"]*)\".*?case=\"([^\"]*)\".*?search=\"([^\"]*)\".*?urlencode=\"([^\"]*)\".*?>\s[^<]+<artist.+?tail=\"([^\"]*)\".*?sub=\"([^\"]*)\".*?group=\"([^\"]*)\".*?/>\s[^<]+<title.+?tail=\"([^\"]*)\".*?/>\s[^<]+</song>\s[^<]+</url>\s[^<]+<source.+?encoding=\"([^\"]*)\".*?>\s[^<]+<lyrics.+?type=\"([^\"]*)\".*?clean=\"([^\"]*)\".*?>\s[^<]+<regex.+?flags=\"([^\"]*)\".*?>([^<]+)</regex>\s[^<]+</lyrics>\s[^<]+<songlist.+?swap=\"([^\"]*)\".*?always=\"([^\"]*)\".*?select=\"([^\"]*)\".*?>\s[^<]+<regex.+?flags=\"([^\"]*)\".*?>([^<]+)</regex>\s[^<]+</songlist>", re.IGNORECASE )
+        regex_scraper = re.compile( "<scraper.+?title=\"([^\"]+)\".*?>\s[^<]+<url.+?address=\"([^\"]+)\".*?useragent=\"([^\"]+)\".*?>\s[^<]+<song.*?join=\"([^\"]*)\".*?space=\"([^\"]*)\".*?clean=\"([^\"]*)\".*?case=\"([^\"]*)\".*?search=\"([^\"]*)\".*?urlencode=\"([^\"]*)\".*?>\s[^<]+<artist.+?tail=\"([^\"]*)\".*?sub=\"([^\"]*)\".*?group=\"([^\"]*)\".*?/>\s[^<]+<title.+?tail=\"([^\"]*)\".*?/>\s[^<]+</song>\s[^<]+</url>\s[^<]+<source.+?encoding=\"([^\"]*)\".*?>\s[^<]+<lyrics.+?type=\"([^\"]*)\".*?clean=\"([^\"]*)\".*?>\s[^<]+<regex.+?flags=\"([^\"]*)\".*?>([^<]+)</regex>\s[^<]+</lyrics>\s[^<]+<songlist.+?swap=\"([^\"]*)\".*?always=\"([^\"]*)\".*?select=\"([^\"]*)\".*?>\s[^<]+<regex.+?flags=\"([^\"]*)\".*?>([^<]+)</regex>\s[^<]+</songlist>", re.IGNORECASE )
         # re flags
-        regex_flags = {
+        flags = {
             "dotall": re.DOTALL,
             "ignorecase": re.IGNORECASE,
             "multiline": re.MULTILINE,
@@ -360,7 +365,7 @@ class Scraper:
                 # get scrapers xml source
                 xmlSource = unicode( open( _path, "r" ).read(), "UTF-8" )
                 # get info
-                info = scraper_regex.search( xmlSource ).groups()
+                info = regex_scraper.search( xmlSource ).groups()
                 # create scraper
                 tmp_scraper = {
                     "title": info[ 0 ],
@@ -389,13 +394,13 @@ class Scraper:
                         "lyrics": {
                             "type": info[ 14 ],
                             "clean": info[ 15 ] == "true",
-                            "regex": re.compile( _unescape( info[ 17 ] ), sum( [ regex_flags[ flag ] for flag in info[ 16 ].split() ] ) ),
+                            "regex": re.compile( _unescape( info[ 17 ] ), sum( [ flags[ flag ] for flag in info[ 16 ].split() ] ) ),
                         },
                         "songlist": {
                             "swap": info[ 18 ] == "true",
                             "always": info[ 19 ] == "true",
                             "autoselect": info[ 20 ] == "auto",
-                            "regex": re.compile( _unescape( info[ 22 ] ), sum( [ regex_flags[ flag ] for flag in info[ 21 ].split() ] ) ),
+                            "regex": re.compile( _unescape( info[ 22 ] ), sum( [ flags[ flag ] for flag in info[ 21 ].split() ] ) ),
                         },
                     },
                 }
@@ -411,9 +416,9 @@ class Scraper:
 
 
 if ( __name__ == "__main__" ):
-    songno = 2
-    artists = [ u"The Beatles", u"britney spears", u".38 Special", u"The babys", u"4 Non Blondes", u"ABBA", u"AC/DC", u"Blue Öyster Cult", u"The Rolling Stones (feat. Cheryl Crow)", u"38 Special", u"ABBA", u"Enya", u"Enya", u"*NSync", u"Enya", u"ABBA" ]
-    songs = [ u"Back in the USSR", u"(You Drive Me) Crazy", u"Wild-Eyed Southern Boys", u"Isn't it time", u"Dear Mr. President", u"Gimme! Gimme! Gimme! (A Man After Midnight)", u"Have a Drink on Me", u"Burning for you", u"Get off of my cloud", u"Hold on Loosely", u"Eagle", u"Aniron (I Desire)", u"Book of Days", u"Bye Bye Bye", u"Orinoco Flow", u"S.O.S." ]
+    songno = 13
+    artists = [ u"The Guess Who", u"The Beatles", u"britney spears", u".38 Special", u"The babys", u"4 Non Blondes", u"ABBA", u"AC/DC", u"Blue Öyster Cult", u"The Rolling Stones (feat. Cheryl Crow)", u"38 Special", u"ABBA", u"Enya", u"Enya", u"*NSync", u"Enya", u"ABBA" ]
+    songs = [ u"Proper Stranger", u"Back in the USSR", u"(You Drive Me) Crazy", u"Wild-Eyed Southern Boys", u"Isn't it time", u"Dear Mr. President", u"Gimme! Gimme! Gimme! (A Man After Midnight)", u"Have a Drink on Me", u"Burning for you", u"Get off of my cloud", u"Hold on Loosely", u"Eagle", u"Aniron (I Desire)", u"Book of Days", u"Bye Bye Bye", u"Orinoco Flow", u"S.O.S." ]
 
     class SONG:
         artist = artists[songno]
@@ -422,7 +427,7 @@ if ( __name__ == "__main__" ):
 
     scraper = Scraper( Addon=XBMCADDON().Addon( "python.testing" ), prefetch=False )
     scraper.fetch_lyrics( _song )
-    print [ _song.status, repr( _song.message ), repr(_song.website) ]
+    print [ _song.status, _song.message, _song.website ]
     print
     for lyric in _song.lyrics.splitlines():
         print repr(lyric)

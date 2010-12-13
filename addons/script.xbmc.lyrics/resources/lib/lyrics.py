@@ -5,7 +5,7 @@ import xbmc
 from codecs import BOM_UTF8
 import re
 from resources.lib.scraper import Scraper
-
+# only need this for xbox and smb:// paths
 if ( os.environ.get( "OS", "n/a" ) == "xbox" ):
     import base64
 
@@ -24,14 +24,14 @@ class Lyrics:
         # our we prefetching
         self.prefetch = prefetch
         # regex's
-        self.clean_info_regex = re.compile( "\[[a-z]+?:.*\]\s" )
-        self.split_lrc_lyrics_regex = re.compile( "\[([0-9]+):([0-9]+(?:\.[0-9]+)?)\](.*)" )
-        self.timestamp_lrc_lyrics_regex = re.compile( "\[offset:([+-]*[0-9]+)\]" )
-        self.website_regex = re.compile( "\[we:(.+)\]" )
+        self.regex_clean_info = re.compile( "\[[a-z]+?:.*\]\s" )
+        self.regex_split_lrc_lyrics = re.compile( "\[([0-9]+):([0-9]+(?:\.[0-9]+)?)\](.*)" )
+        self.regex_timestamp_lrc_lyrics = re.compile( "\[offset:([+-]*[0-9]+)\]" )
+        self.regex_website = re.compile( "\[we:(.+)\]" )
         # initialize our Scraper class
         self.scraper = Scraper( self.Addon, prefetch=self.prefetch )
 
-    def get_lyrics( self, song ):
+    def get_lyrics( self, song, songlist ):
         try:
             # needs to be global as song and prefetched_song are two instances
             global prefetched_lyrics
@@ -63,7 +63,7 @@ class Lyrics:
                 song.message = self.Addon.getLocalizedString( 30862 )
         except Exception, e:
             # no lyrics found, so fetch lyrics from internet
-            self.scraper.fetch_lyrics( song )
+            self.scraper.fetch_lyrics( song, songlist )
             # if the search was successful save lyrics
             if ( song.status ):
                 self.save_lyrics( song )
@@ -89,13 +89,13 @@ class Lyrics:
         # get website
         if ( song.website is None ):
             try:
-                song.website = self.website_regex.search( song.lyrics ).group( 1 )
+                song.website = self.regex_website.search( song.lyrics ).group( 1 )
             except:
                 song.website = ""
         # eliminate info block
-        song.lyrics = self.clean_info_regex.sub( "", song.lyrics )
+        song.lyrics = self.regex_clean_info.sub( "", song.lyrics )
         # separate lyrics and time stamps
-        lyrics = self.split_lrc_lyrics_regex.findall( song.lyrics )
+        lyrics = self.regex_split_lrc_lyrics.findall( song.lyrics )
         # auto tag lyrics if not tagged and user preference
         if ( not lyrics and self.Addon.getSetting( "enable_karaoke_mode" ) == "true" and self.Addon.getSetting( "autoscroll_lyrics" ) == "true" ):
             # split lines
@@ -116,7 +116,7 @@ class Lyrics:
             song.lrc_lyrics = lrc_lyrics
             # get any timestamp adjustment
             try:
-                offset = float( self.timestamp_lrc_lyrics_regex.search( song.lyrics ).group( 1 ) ) / 1000
+                offset = float( self.regex_timestamp_lrc_lyrics.search( song.lyrics ).group( 1 ) ) / 1000
             except:
                 offset = 0
             # reset lyrics

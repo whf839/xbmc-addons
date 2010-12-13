@@ -234,8 +234,10 @@ class XBMCPlayer( xbmc.Player ):
     def _fetch_lyrics( self ):
         # set fetching lyrics message
         self._set_properties( message=self.Addon.getLocalizedString( 30800 ) % ( unicode( xbmc.getInfoLabel( "MusicPlayer.Title" ), "UTF-8" ), ) )
+        # if prefetching failed, we go straight to song list
+        songlist = hasattr( self.prefetched_song, "status" ) and self.prefetched_song.status == False
         # fetch lyrics
-        self.song.get_song_info()
+        self.song.get_song_info( songlist=songlist )
         # set lyrics and messages
         self._set_properties( self.song.lyrics, self.song.lyric_tags, self.song.lrc_lyrics, self.song.message, self.song.website, self.song.status, self.song.prefetched )
         # prefetch next song

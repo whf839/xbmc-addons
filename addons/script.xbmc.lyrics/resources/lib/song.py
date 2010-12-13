@@ -32,7 +32,7 @@ class Song:
         self.lyrics_path = None
         self.prefetched = False
 
-    def get_song_info( self ):
+    def get_song_info( self, songlist=False ):
         # clear song info
         self._clear_song_attributes()
         # get song info from infolabels
@@ -74,7 +74,7 @@ class Song:
                 # create path
                 self.lyrics_path = xbmc.makeLegalFilename( os.path.join( folder, self.Addon.getSetting( "lyrics_subfolder" ), file ), fatx )
             # get lyrics
-            self.Lyrics.get_lyrics( self )
+            self.Lyrics.get_lyrics( self, songlist )
 
     def _get_song_info_from_filename( self, file ):
         try:
