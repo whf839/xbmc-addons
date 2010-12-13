@@ -10,18 +10,19 @@ import xbmc
 from random import shuffle
 from urllib import quote_plus
 import datetime
+from pysqlite2 import dbapi2 as sqlite
 
 _A_ = xbmcaddon.Addon('script.cinema.experience')
 
 sys.path.append( os.path.join( _A_.getAddonInfo('path'), "resources" ) )
-from pysqlite2 import dbapi2 as sqlite
+
 
 __useragent__ = "QuickTime/7.2 (qtver=7.2;os=Windows NT 5.1Service Pack 3)"
 
 
 class Main:
     print "Apple Movie Trailers script database scraper"
-    BASE_DATA_PATH = os.path.join( xbmc.translatePath( "special://masterprofile/" ), "addon_data", "Apple Movie Trailers" )
+    BASE_DATA_PATH = os.path.join( xbmc.translatePath( "special://masterprofile/addon_data" ), "script.apple.movie.trailers" )
 
     def __init__( self, mpaa=None, genre=None, settings=None, movie=None ):
         self.mpaa = mpaa
