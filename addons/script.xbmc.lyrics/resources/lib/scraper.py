@@ -58,6 +58,8 @@ class Scraper:
             return
         # variable to hold a new artist alias
         self.new_alias = dict()
+        # variable to hold successful return of song list
+        self.skip_alias = list()
         # used for aliases and song selection
         self.artist = song.artist
         self.title = song.title
@@ -72,20 +74,22 @@ class Scraper:
         status = False
         # loop until we have success or run out of scrapers
         while not status and scraper < len( self.SCRAPERS ):
-            # get current scrapers artist aliases
-            self.artist_aliases = artist_aliases.get( self.SCRAPERS[ scraper ][ "title" ], dict() )
-            # fetch list if scraper only returns a list first or we found no lyrics
-            if ( self.SCRAPERS[ scraper ][ "source" ][ "songlist" ][ "always" ] or songlist ):
-                # initialize to None, so we don't try and fetch lyrics if we are prefetching and we get a song list
-                url = None
-                # do not interrupt user if prefetching
-                if ( ( not self.prefetch or self.SCRAPERS[ scraper ][ "source" ][ "songlist" ][ "autoselect" ] ) ):
-                    url, message = self._fetch_song_list( artist, scraper=scraper, usetitle=not songlist )
-            else:
-                url = artist
-            # fetch lyrics
-            if ( url is not None ):
-                lyrics, message, website, status = self._fetch_lyrics( url, title, scraper=scraper )
+            # skip artist alias if we got a song list, this works as it's not filled until we try song list
+            if ( scraper not in self.skip_alias ):
+                # get current scrapers artist aliases
+                self.artist_aliases = artist_aliases.get( self.SCRAPERS[ scraper ][ "title" ], dict() )
+                # fetch list if scraper only returns a list first or we found no lyrics
+                if ( self.SCRAPERS[ scraper ][ "source" ][ "songlist" ][ "always" ] or songlist ):
+                    # initialize to None, so we don't try and fetch lyrics if we are prefetching and we get a song list
+                    url = None
+                    # do not interrupt user if prefetching
+                    if ( ( not self.prefetch or self.SCRAPERS[ scraper ][ "source" ][ "songlist" ][ "autoselect" ] ) ):
+                        url, message = self._fetch_song_list( artist, scraper=scraper, usetitle=not songlist )
+                else:
+                    url = artist
+                # fetch lyrics
+                if ( url is not None ):
+                    lyrics, message, website, status = self._fetch_lyrics( url, title, scraper=scraper )
             # increment scraper
             scraper += 1
         # if we succeeded or we are prefetching return results
@@ -154,6 +158,8 @@ class Scraper:
             songs = self.SCRAPERS[ scraper ][ "source" ][ "songlist" ][ "regex" ].findall( source )
             # raise an error if no songs found
             if ( not len( songs ) ): raise
+            # add scraper to our skip alias list
+            self.skip_alias += [ scraper ]
             # get user selection
             url = self._get_song_selection( songs, self.SCRAPERS[ scraper ][ "title" ], self.SCRAPERS[ scraper ][ "source" ][ "songlist" ][ "swap" ], self.SCRAPERS[ scraper ][ "source" ][ "songlist" ][ "autoselect" ], not usetitle )
             # if selection, format url
@@ -416,9 +422,9 @@ class Scraper:
 
 
 if ( __name__ == "__main__" ):
-    songno = 13
-    artists = [ u"The Guess Who", u"The Beatles", u"britney spears", u".38 Special", u"The babys", u"4 Non Blondes", u"ABBA", u"AC/DC", u"Blue Öyster Cult", u"The Rolling Stones (feat. Cheryl Crow)", u"38 Special", u"ABBA", u"Enya", u"Enya", u"*NSync", u"Enya", u"ABBA" ]
-    songs = [ u"Proper Stranger", u"Back in the USSR", u"(You Drive Me) Crazy", u"Wild-Eyed Southern Boys", u"Isn't it time", u"Dear Mr. President", u"Gimme! Gimme! Gimme! (A Man After Midnight)", u"Have a Drink on Me", u"Burning for you", u"Get off of my cloud", u"Hold on Loosely", u"Eagle", u"Aniron (I Desire)", u"Book of Days", u"Bye Bye Bye", u"Orinoco Flow", u"S.O.S." ]
+    songno = 0
+    artists = [ u"Wings", u"The Guess Who", u"The Beatles", u"britney spears", u".38 Special", u"The babys", u"4 Non Blondes", u"ABBA", u"AC/DC", u"Blue Öyster Cult", u"The Rolling Stones (feat. Cheryl Crow)", u"38 Special", u"ABBA", u"Enya", u"Enya", u"*NSync", u"Enya", u"ABBA" ]
+    songs = [ u"Live and let Die", u"Proper Stranger", u"Back in the USSR", u"(You Drive Me) Crazy", u"Wild-Eyed Southern Boys", u"Isn't it time", u"Dear Mr. President", u"Gimme! Gimme! Gimme! (A Man After Midnight)", u"Have a Drink on Me", u"Burning for you", u"Get off of my cloud", u"Hold on Loosely", u"Eagle", u"Aniron (I Desire)", u"Book of Days", u"Bye Bye Bye", u"Orinoco Flow", u"S.O.S." ]
 
     class SONG:
         artist = artists[songno]
@@ -426,7 +432,7 @@ if ( __name__ == "__main__" ):
     _song = SONG()
 
     scraper = Scraper( Addon=XBMCADDON().Addon( "python.testing" ), prefetch=False )
-    scraper.fetch_lyrics( _song )
+    scraper.fetch_lyrics( _song, False )
     print [ _song.status, _song.message, _song.website ]
     print
     for lyric in _song.lyrics.splitlines():
