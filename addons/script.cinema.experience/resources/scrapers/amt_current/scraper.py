@@ -139,7 +139,7 @@ class Main:
         # initialize trailers list
         trailers = []
         # fetch source
-        path = os.path.join( self.BASE_CURRENT_SOURCE_PATH, ( "current.xml", "current_480p.xml", "current_720p.xml", "current_720p.xml", )[ self.settings[ "trailer_quality" ] ] )
+        path = os.path.join( self.BASE_CURRENT_SOURCE_PATH, ( "newest.xml", "newest_480p.xml", "newest_720p.xml", "newest_720p.xml", )[ self.settings[ "trailer_quality" ] ] )
         url = self.BASE_CURRENT_URL % ( ( "", "_480p", "_720p", "_720p", )[ self.settings[ "trailer_quality" ] ], )
         xmlSource = self._get_xml_source( path, url )
         # parse source and add our items
