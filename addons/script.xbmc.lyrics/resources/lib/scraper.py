@@ -34,7 +34,7 @@ class Scraper:
         # our we prefetching
         self.prefetch = prefetch
         # regex's
-        self.regex_clean_song = re.compile( "[\[\(]+.+?[\]\)]+" )# FIXME: do we really want to strip inside ()? (seems to work good)
+        self.regex_clean_song = re.compile( "[\[\(]+.+?[\]\)]+" )# FIXME: do we really want to strip inside ()? (mixed results)
         self.regex_clean_br = re.compile( "<br[ /]*>[\s]*", re.IGNORECASE )
         self.regex_clean_lyrics = re.compile( "<.+?>" )
         self.regex_clean_lrc_lyrics = re.compile( "(^\[[0-9]+:[^\]]+\]\s)*(\[(ti|ar|al|re|ve|we):[^\]]+\]\s)*(\[[0-9]+:[^\]]+\]$)*" )
@@ -158,10 +158,11 @@ class Scraper:
             songs = self.SCRAPERS[ scraper ][ "source" ][ "songlist" ][ "regex" ].findall( source )
             # raise an error if no songs found
             if ( not len( songs ) ): raise
-            # add scraper to our skip alias list
-            self.skip_alias += [ scraper ]
             # get user selection
             url = self._get_song_selection( songs, self.SCRAPERS[ scraper ][ "title" ], self.SCRAPERS[ scraper ][ "source" ][ "songlist" ][ "swap" ], self.SCRAPERS[ scraper ][ "source" ][ "songlist" ][ "autoselect" ], not usetitle )
+            # add scraper to our skip alias list FIXME: we need a place that doesn't affect songlist always scrapers
+            if ( not usetitle ):
+                self.skip_alias += [ scraper ]
             # if selection, format url
             if ( url is not None ):
                 url = self.SCRAPERS[ scraper ][ "url" ][ "address" ] + url
