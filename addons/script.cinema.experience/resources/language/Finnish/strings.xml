@@ -30,12 +30,13 @@
     <!-- Trivia quiz settings -->
     <string id="32200">Pelaa visailua ennen esitystä</string>
     <string id="32201">Ei</string>
-    <string id="32202">10 min</string>
-    <string id="32203">15 min</string>
-    <string id="32204">20 min</string>
-    <string id="32205">30 min</string>
-    <string id="32206">45 min</string>
-    <string id="32207">60 min</string>
+    <string id="32202">2 min</string>
+    <string id="32203">5 min</string>
+    <string id="32204">10 min</string>
+    <string id="32205">15 min</string>
+    <string id="32206">20 min</string>
+    <string id="32207">30 min</string>
+    <string id="32208">45 min</string>
     <string id="32210">- Visailun kuvien polku</string>
     <string id="32220">- Näytä kuitakin kuvaa</string>
     <string id="32221">10 s</string>

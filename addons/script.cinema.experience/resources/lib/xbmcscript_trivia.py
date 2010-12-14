@@ -128,7 +128,7 @@ class Trivia( xbmcgui.WindowXML ):
                             question = clue = False
                         self.tmp_slides[ -1 ][ 2 ] = entry
                 # add the file as a question TODO: maybe check for valid picture format?
-                elif ( entry and os.path.splitext( entry )[ 1 ] in xbmc.getSupportedMedia( "picture" ) ):
+                elif ( entry and os.path.splitext( entry )[ 1 ].lower() in xbmc.getSupportedMedia( "picture" ) ):
                     self.tmp_slides += [ [ "", "", entry ] ]
         # if there are folders call again (we want recursive)
         if ( folders ):

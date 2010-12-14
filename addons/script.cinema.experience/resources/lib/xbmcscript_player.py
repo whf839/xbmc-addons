@@ -384,7 +384,7 @@ class Main:
                                                     media_type="video/picture"
                                                 )
             # trivia settings, grab them here so we don't need another _S_() object
-            settings = {  "trivia_total_time": ( 0, 5, 10, 15, 20, 30, 45, 60 )[ int( _S_( "trivia_total_time" ) ) ],
+            settings = {  "trivia_total_time": ( 0, 2, 5, 10, 15, 20, 30, 45 )[ int( _S_( "trivia_total_time" ) ) ],
                                 "trivia_folder":  xbmc.translatePath( _S_( "trivia_folder" ) ),
                                 "trivia_slide_time": ( 5, 10, 15, 20, 30, )[ int( _S_( "trivia_slide_time" ) ) ],
                                 "trivia_intro_playlist": playlist_intro,

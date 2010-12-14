@@ -1,10 +1,10 @@
 # constants
-__script__ = "Home Theater Experience"
+__script__ = "Cinema Experience"
 __author__ = "nuka1195"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/scripts/Home%20Theater%20Experience"
-__version__ = "1.5.1c"
-__svn_revision__ = "$Revision: 1564 $"
+__version__ = "1.0.1"
+__svn_revision__ = "$Revision: 1885 $"
 __XBMC_Revision__ = "34000"
 
 import xbmcgui, xbmc, os

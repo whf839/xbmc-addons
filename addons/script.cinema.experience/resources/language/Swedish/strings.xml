@@ -5,7 +5,7 @@
 <!--Date of translation: 01/07/2010-->
 <!--$Revision$-->
 <strings>
-  <string id="32000">Movie Theater Experience</string>
+  <string id="32000">Cinema Experience</string>
   <string id="32002">blittan</string>
   <string id="32100">Filmtrailers</string>
   <string id="32101">Ingen</string>
@@ -41,13 +41,13 @@
   <string id="32198">- Kommande attraktioner-outro</string>
   <string id="32200">Spela trivia frågor innan föreställning</string>
   <string id="32201">Ingen</string>
-  <string id="32202">5 min</string>
-  <string id="32203">10 min</string>
-  <string id="32204">15 min</string>
-  <string id="32205">20 min</string>
-  <string id="32206">30 min</string>
-  <string id="32207">45 min</string>
-  <string id="32208">60 min</string>
+  <string id="32202">2 min</string>
+  <string id="32203">5 min</string>
+  <string id="32204">10 min</string>
+  <string id="32205">15 min</string>
+  <string id="32206">20 min</string>
+  <string id="32207">30 min</string>
+  <string id="32208">45 min</string>
   <string id="32210">- Bildspelsmapp</string>
   <string id="32220">- Visa varje bildspel för</string>
   <string id="32221">5 sek</string>
