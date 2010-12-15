@@ -398,7 +398,7 @@ class Main:
             print "MPAA", mpaa
             # import trivia module and execute the gui
             from resources.lib.xbmcscript_trivia import Trivia as Trivia
-            ui = Trivia( "script-HTExperience-trivia.xml", _A_.getAddonInfo('path'), "default", "PAL", settings=settings, playlist=self.playlist, dialog=pDialog, mpaa=mpaa )
+            ui = Trivia( "script-CExperience-trivia.xml", _A_.getAddonInfo('path'), "default", "PAL", settings=settings, playlist=self.playlist, dialog=pDialog, mpaa=mpaa )
             #ui.doModal()
             del ui
             # we need to activate the video window

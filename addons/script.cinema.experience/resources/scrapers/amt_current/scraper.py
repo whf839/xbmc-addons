@@ -124,9 +124,9 @@ class _Parser:
 
 
 class Main:
-    print "Apple Movie Trailers current trailers scraper"
+    print "Apple Movie Trailers Newest trailers scraper"
     # base url
-    BASE_CURRENT_URL = "http://www.apple.com/trailers/home/xml/current%s.xml"
+    BASE_CURRENT_URL = "http://www.apple.com/trailers/home/xml/newest%s.xml"
     # base paths
     BASE_CURRENT_SOURCE_PATH = os.path.join( xbmc.translatePath( "special://profile/addon_data" ), os.path.basename( _A_.getAddonInfo('path') ) )
 
