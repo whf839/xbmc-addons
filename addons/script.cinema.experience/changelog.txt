@@ -1,0 +1,17 @@
+1.0.3
+- Disabled MPAA ratings for slides(for the time being, until a more reliable handling is added)
+- Added this change log.
+
+1.0.2
+- changed Apple Movie Trailer scraper to find Newest trailers
+- renamed skin file to follow script name(replace HTE with CE)
+
+1.0.1
+- changed name over to Cinema Experience
+- fixed trivia slides upper/lower case - Thanks Nuka
+- added trivia duration of 2 minutes and removed 60 minutes(now the steps are 2 mins, 5 mins, 10 mins, 20 mins, 30 mins and 45 mins). 
+
+1.0.0 
+- Includes work done by Ilia to get the script working with Dharma
+- fixed settings.xml to stop crashing XBMC
+- various programming changes to work with new XBMC features(pysqlite module)
