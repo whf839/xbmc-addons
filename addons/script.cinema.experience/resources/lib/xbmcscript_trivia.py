@@ -95,9 +95,9 @@ class Trivia( xbmcgui.WindowXML ):
             # get a slides.xml if it exists
             slidesxml_exists, mpaa, question_format, clue_format, answer_format = self._get_slides_xml( path )
             # check if rating is ok
-            if ( slidesxml_exists and mpaa_ratings.get( self.mpaa, -1 ) < mpaa_ratings.get( mpaa, -1 ) ):
-                print "skipping whole folder", path
-                continue
+            #if ( slidesxml_exists and mpaa_ratings.get( self.mpaa, -1 ) < mpaa_ratings.get( mpaa, -1 ) ):
+            #    print "skipping whole folder", path
+            #    continue
             # initialize these to True so we add a new list item to start
             question = clue = answer = True
             # enumerate through our entries list and combine question, clue, answer
