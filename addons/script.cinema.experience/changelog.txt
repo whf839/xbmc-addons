@@ -1,6 +1,7 @@
 1.0.3
 - Disabled MPAA ratings for slides(for the time being, until a more reliable handling is added)
 - Added this change log.
+- Added fanart.jpg
 
 1.0.2
 - changed Apple Movie Trailer scraper to find Newest trailers
