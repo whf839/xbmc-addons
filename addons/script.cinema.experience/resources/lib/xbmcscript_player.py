@@ -179,12 +179,14 @@ class Main:
                                                 items=( 0, 1, 1, 2, 3, 4, 5, )[ int( _S_( "fpv_outro" ) ) ], 
                                                 path=( xbmc.translatePath( _S_( "fpv_outro_file" ) ), xbmc.translatePath( _S_( "fpv_outro_folder" ) ), )[ int( _S_( "fpv_outro" ) ) > 1 ],
                                                 genre=_L_( 32602 ),
+                                                index=0
                                             )
         # get movie theater experience outro videos
         self._get_special_items(    playlist=self.playlist,
                                                 items=( 0, 1, 1, 2, 3, 4, 5, )[ int( _S_( "mte_outro" ) ) ], 
                                                 path=( xbmc.translatePath( _S_( "mte_outro_file" ) ), xbmc.translatePath( _S_( "mte_outro_folder" ) ), )[ int( _S_( "mte_outro" ) ) > 1 ],
                                                 genre=_L_( 32607 ),
+                                                index=0
                                             )
         return mpaa
 
@@ -235,6 +237,7 @@ class Main:
                                                 runtime="", mpaa="", release_date="0 0 0", studio="", writer="",
                                                 director="", index=-1, media_type="video"
                                             ):
+        import traceback
         # return if not user preference
         if ( not items ):
             return
@@ -251,12 +254,13 @@ class Main:
             shuffle( self.tmp_paths )
         # enumerate thru and add our videos/pictures
         for count in range( items ):
-            # set our path
-            path = self.tmp_paths[ count ]
-            # format a title (we don't want the ugly extension)
-            title = title or os.path.splitext( os.path.basename( path ) )[ 0 ]
-            # create the listitem and fill the infolabels
-            listitem = self._get_listitem( title=title,
+            try:
+                # set our path
+                path = self.tmp_paths[ count ]
+                # format a title (we don't want the ugly extension)
+                title = title or os.path.splitext( os.path.basename( path ) )[ 0 ]
+                # create the listitem and fill the infolabels
+                listitem = self._get_listitem( title=title,
                                                         url=path,
                                                         thumbnail=thumbnail,
                                                         plot=plot,
@@ -268,12 +272,14 @@ class Main:
                                                         writer=writer,
                                                         director=director
                                                     )
-            # add our video/picture to the playlist or list
-            if ( isinstance( playlist, list ) ):
-                playlist += [ ( path, listitem, ) ]
-            else:
-                playlist.add( path, listitem, index=index )
-
+                # add our video/picture to the playlist or list
+                if ( isinstance( playlist, list ) ):
+                    playlist += [ ( path, listitem, ) ]
+                else:
+                    playlist.add( path, listitem, index=index )
+            except:
+                traceback.print_exc()
+                
     def _get_items( self, paths, media_type ):
         # reset folders list
         folders = []
@@ -374,14 +380,16 @@ class Main:
                                                     items=( 0, 1, 1, 2, 3, 4, 5, )[ int( _S_( "trivia_intro" ) ) ], 
                                                     path=( xbmc.translatePath( _S_( "trivia_intro_file" ) ), xbmc.translatePath( _S_( "trivia_intro_folder" ) ), )[ int( _S_( "trivia_intro" ) ) > 1 ],
                                                     genre=_L_( 32609 ),
-                                                    media_type="video/picture"
+                                                    index=0
+                                                    #media_type="video/picture"
                                                 )
             # get trivia outro videos
             self._get_special_items(    playlist=playlist_outro,
                                                     items=( 0, 1, 1, 2, 3, 4, 5, )[ int( _S_( "trivia_outro" ) ) ], 
                                                     path=( xbmc.translatePath( _S_( "trivia_outro_file" ) ), xbmc.translatePath( _S_( "trivia_outro_folder" ) ), )[ int( _S_( "trivia_outro" ) ) > 1 ],
                                                     genre=_L_( 32610 ),
-                                                    media_type="video/picture"
+                                                    index=0
+                                                    #media_type="video/picture"
                                                 )
             # trivia settings, grab them here so we don't need another _S_() object
             settings = {  "trivia_total_time": ( 0, 2, 5, 10, 15, 20, 30, 45 )[ int( _S_( "trivia_total_time" ) ) ],
