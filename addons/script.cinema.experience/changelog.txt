@@ -1,4 +1,5 @@
 1.0.4
+- Added German Language files - Thanks Mad-Max
 - Added the ability to have a DTS-MA Audio format Folder
 - Added the ability to disable Trivia Music
 - Fixed Trivia Outro
