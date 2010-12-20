@@ -10,7 +10,7 @@ import re
 
 _A_ = xbmcaddon.Addon('script.cinema.experience')
 _ = xbmc.getLocalizedString
-
+#xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "AudioPlayer.Stop", "id": 1}')
 
 class Trivia( xbmcgui.WindowXML ):
     # base paths
@@ -55,7 +55,12 @@ class Trivia( xbmcgui.WindowXML ):
         # get current screensaver
         self.screensaver = xbmc.executehttpapi( "GetGUISetting(3;screensaver.mode)" ).replace( "<li>", "" )
         # get the current volume
-        self.current_volume = int( xbmc.executehttpapi( "GetVolume" ).replace( "<li>", "" ) )
+        try: # first try jsonrpc
+            result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "XBMC.GetVolume", "id": 1}')
+            match = re.search( '"result" : ([0-9]{1,2})', result )
+            self.current_volume = int(match.group(1))
+        except: # Fall back onto httpapi
+            self.current_volume = int( xbmc.executehttpapi( "GetVolume" ).replace( "<li>", "" ) )
         # our complete shuffled list of slides
         self.slide_playlist = []
         self.tmp_slides = []
@@ -72,15 +77,18 @@ class Trivia( xbmcgui.WindowXML ):
         self._get_global_timer( self.settings[ "trivia_total_time" ] * 60, self._exit_trivia )
 
     def _start_slideshow_music( self ):
+        print "## Starting Trivia Music"
         # did user set this preference
-        if ( self.settings[ "trivia_music_file" ] ):
+        print "trivia music: %s" % self.settings[ "trivia_music" ]
+        if ( self.settings[ "trivia_music" ] == "true" ):
             # calculate the new volume
             volume = self.current_volume * ( float( self.settings[ "trivia_music_volume" ] ) / 100 )
             # set the volume percent of current volume
             xbmc.executebuiltin( "XBMC.SetVolume(%d)" % ( volume, ) )
             # play music
             xbmc.Player( xbmc.PLAYLIST_MUSIC ).play( self.settings[ "trivia_music_file" ] )
-
+            #xbmc.Player().play( self.settings[ "trivia_music_file" ] )
+            
     def _get_slides( self, paths ):
         # reset folders list
         folders = []
@@ -236,25 +244,35 @@ class Trivia( xbmcgui.WindowXML ):
         self.global_timer.start()
 
     def _exit_trivia( self ):
-        # notify we are exiting
+        # stop audio play list
+        #xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "AudioPlayer.Stop", "id": 1}')
+        # notify we are exiting        
         self.exiting = True
         # cancel timers
         self._cancel_timers()
         # save watched slides
         self._save_watched_trivia_file()
         # set the volume back to original
-        xbmc.executebuiltin( "XBMC.SetVolume(%d)" % ( self.current_volume, ) )
+        xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "XBMC.SetVolume", "params": %d, "id": 1}' % self.current_volume)
+        #xbmc.executebuiltin( "XBMC.SetVolume(%d)" % ( self.current_volume, ) )
         # show an end image
         self._show_intro_outro( "outro" )
 
     def _show_intro_outro( self, type="intro" ):
+        is_playing = "True"        
         if ( type == "outro" ):
+            print "## Outro ##"
             self._play_video_playlist()
         else:
-            # start slideshow
-            self._next_slide( 0 )
+            print "## Intro ##"
+            print self.settings[ "trivia_intro_playlist" ]
+            xbmc.Player().play( self.settings[ "trivia_intro_playlist" ] )
+            while is_playing == "True":
+                is_playing=self._check_video_player()
             # start music
             self._start_slideshow_music()
+            # start slideshow
+            self._next_slide( 0 )            
         """
         # set the end of trivia slide show image
         if ( self.settings[ "trivia_outro_file" ] == "" ):
@@ -292,7 +310,12 @@ class Trivia( xbmcgui.WindowXML ):
         if ( self.global_timer is not None ):
             self.global_timer.cancel()
             self.global_timer = None
-
+            
+    def _check_video_player( self ):
+        result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Player.GetActivePlayers", "id": 1}')
+        match = re.search( '"video" : (.*?)', result )
+        return (match.group(1)).title()
+        
     def onClick( self, controlId ):
         pass
 

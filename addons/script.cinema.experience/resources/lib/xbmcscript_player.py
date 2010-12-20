@@ -109,7 +109,7 @@ class Main:
         if ( _S_( "audio_videos_folder" ) ):
             self._get_special_items(    playlist=self.playlist,
                                                     items=1 * ( _S_( "audio_videos_folder" ) != "" ),
-                                                    path=xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "ac3": "Dolby" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ],
+                                                    path=xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "ac3": "Dolby", "dtsma": "DTS-MA" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ],
                                                     genre=_L_( 32606 ),
                                                     ##thumbnail=xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "ac3": "Dolby" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ] + "folder.jpg",
                                                     index=0
@@ -174,19 +174,27 @@ class Main:
                                                 genre=_L_( 32607 ),
                                                 index=0
                                             )
+        # get trivia outro video(s)    
+        self._get_special_items(    playlist=self.playlist,
+                                                    items=( 0, 1, 1, 2, 3, 4, 5, )[ int( _S_( "trivia_outro" ) ) ], 
+                                                    path=( xbmc.translatePath( _S_( "trivia_outro_file" ) ), xbmc.translatePath( _S_( "trivia_outro_folder" ) ), )[ int( _S_( "trivia_outro" ) ) > 1 ],
+                                                    genre=_L_( 32610 ),
+                                                    index=0
+                                                    #media_type="video/picture"
+                                                )
         # get feature presentation outro videos
         self._get_special_items(    playlist=self.playlist,
                                                 items=( 0, 1, 1, 2, 3, 4, 5, )[ int( _S_( "fpv_outro" ) ) ], 
                                                 path=( xbmc.translatePath( _S_( "fpv_outro_file" ) ), xbmc.translatePath( _S_( "fpv_outro_folder" ) ), )[ int( _S_( "fpv_outro" ) ) > 1 ],
                                                 genre=_L_( 32602 ),
-                                                index=0
+                                                
                                             )
         # get movie theater experience outro videos
         self._get_special_items(    playlist=self.playlist,
                                                 items=( 0, 1, 1, 2, 3, 4, 5, )[ int( _S_( "mte_outro" ) ) ], 
                                                 path=( xbmc.translatePath( _S_( "mte_outro_file" ) ), xbmc.translatePath( _S_( "mte_outro_folder" ) ), )[ int( _S_( "mte_outro" ) ) > 1 ],
                                                 genre=_L_( 32607 ),
-                                                index=0
+                                                
                                             )
         return mpaa
 
@@ -228,7 +236,7 @@ class Main:
         xbmc.log( "MPAA: %s" % ( mpaa, ), xbmc.LOGNOTICE )
         xbmc.log( "Audio: %s" % ( audio, ), xbmc.LOGNOTICE )
         if ( _S_( "audio_videos_folder" ) ):
-            xbmc.log( "- Folder: %s" % ( xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "ac3": "Dolby" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ], ), xbmc.LOGNOTICE )
+            xbmc.log( "- Folder: %s" % ( xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "dtsma": "DTS-MA", "ac3": "Dolby" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ], ), xbmc.LOGNOTICE )
         xbmc.log( "-" * 70, xbmc.LOGNOTICE )
         # return results
         return mpaa, audio, genre, movie
@@ -380,23 +388,22 @@ class Main:
                                                     items=( 0, 1, 1, 2, 3, 4, 5, )[ int( _S_( "trivia_intro" ) ) ], 
                                                     path=( xbmc.translatePath( _S_( "trivia_intro_file" ) ), xbmc.translatePath( _S_( "trivia_intro_folder" ) ), )[ int( _S_( "trivia_intro" ) ) > 1 ],
                                                     genre=_L_( 32609 ),
-                                                    index=0
                                                     #media_type="video/picture"
                                                 )
             # get trivia outro videos
-            self._get_special_items(    playlist=playlist_outro,
-                                                    items=( 0, 1, 1, 2, 3, 4, 5, )[ int( _S_( "trivia_outro" ) ) ], 
-                                                    path=( xbmc.translatePath( _S_( "trivia_outro_file" ) ), xbmc.translatePath( _S_( "trivia_outro_folder" ) ), )[ int( _S_( "trivia_outro" ) ) > 1 ],
-                                                    genre=_L_( 32610 ),
-                                                    index=0
+            #self._get_special_items(    playlist=playlist_outro,
+            #                                        items=( 0, 1, 1, 2, 3, 4, 5, )[ int( _S_( "trivia_outro" ) ) ], 
+            #                                        path=( xbmc.translatePath( _S_( "trivia_outro_file" ) ), xbmc.translatePath( _S_( "trivia_outro_folder" ) ), )[ int( _S_( "trivia_outro" ) ) > 1 ],
+            #                                        genre=_L_( 32610 ),
                                                     #media_type="video/picture"
-                                                )
+            #                                    )
             # trivia settings, grab them here so we don't need another _S_() object
             settings = {  "trivia_total_time": ( 0, 2, 5, 10, 15, 20, 30, 45 )[ int( _S_( "trivia_total_time" ) ) ],
                                 "trivia_folder":  xbmc.translatePath( _S_( "trivia_folder" ) ),
                                 "trivia_slide_time": ( 5, 10, 15, 20, 30, )[ int( _S_( "trivia_slide_time" ) ) ],
                                 "trivia_intro_playlist": playlist_intro,
-                                "trivia_outro_playlist": playlist_outro,
+            #                    "trivia_outro_playlist": playlist_outro,
+                                "trivia_music": _S_( "trivia_music" ),
                                 "trivia_music_file":  xbmc.translatePath( _S_( "trivia_music_file" ) ),
                                 "trivia_music_volume": int( _S_( "trivia_music_volume" ).replace( "%", "" ) ),
                                 "trivia_unwatched_only": _S_( "trivia_unwatched_only" ) == "true"

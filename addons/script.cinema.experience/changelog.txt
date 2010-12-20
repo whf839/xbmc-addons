@@ -1,3 +1,8 @@
+1.0.4
+- Added the ability to have a DTS-MA Audio format Folder
+- Added the ability to disable Trivia Music
+- Fixed Trivia Outro
+
 1.0.3
 - Disabled MPAA ratings for slides(for the time being, until a more reliable handling is added)
 - Added this change log.
