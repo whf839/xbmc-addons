@@ -64,6 +64,10 @@
     <string id="32330">Toista esityksen lopetustunnus</string>
     <string id="32340">- Tiedosto</string>
     <string id="32350">- Kansio</string>
+    <string id="32360">Dolby/DTS Folder</string>
+    <string id="32370">Movie Theatre Intro Clips</string>
+    <string id="32380">Movie Theatre Outro Clips</string>
+    <string id="32390">Coundown Video File</string>
 
     <!-- Messages -->
     <string id="32500">Valitaan satunnaista esittelyä...</string>

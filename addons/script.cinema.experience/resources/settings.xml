@@ -37,6 +37,7 @@
         <setting id="fpv_outro_folder" type="folder" visible="gt(-2,1)" source="video" label="32350" default="" />
         <setting id="rating_videos_folder" type="folder" source="video" label="32300" default="" />
         <setting id="audio_videos_folder" type="folder" source="video" label="32360" default="" />
+        <setting id="countdown_video_file" type="video" label="32390" default="" />
     </category>
     <category label="Trailers">
     <!-- Trailers settings -->

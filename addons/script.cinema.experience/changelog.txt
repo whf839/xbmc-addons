@@ -1,3 +1,12 @@
+1.0.5
+- Added the ability to add Countdown Video before movie starts
+- Added Audio Fade(when Trivia is complete) - Thanks for the code Nuka
+- Added Audio Rise(when first video after Trivia is complete) - Thanks for the code Nuka
+- Changed Trivia Volume Setting to percentage of total volume(instead of percentage of current volume)
+- Added Nuka's added code for slide.xml.
+- Oh....  And added myself as one of the authors... :)
+- Trivia Music Playlist - still broken.. :(
+ 
 1.0.4
 - Added German Language files - Thanks Mad-Max
 - Added the ability to have a DTS-MA Audio format Folder

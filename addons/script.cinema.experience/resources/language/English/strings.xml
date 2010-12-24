@@ -91,6 +91,7 @@
     <string id="32360">Dolby/DTS Folder</string>
     <string id="32370">Movie Theatre Intro Clips</string>
     <string id="32380">Movie Theatre Outro Clips</string>
+    <string id="32390">Coundown Video File</string>
 
     <!-- Misc settings -->
     <string id="32400">Run script before videos start</string>
@@ -118,7 +119,8 @@
     <string id="32608">Coming Attractions Outro</string>
     <string id="32609">Trivia Intro</string>
     <string id="32610">Trivia Outro</string>
-
+    <string id="32611">Countdown</string>
+    
     <!-- compatible messages -->
     <string id="32700">Version</string>
     <string id="32701">This version of %s requires an</string>

@@ -92,6 +92,7 @@
     <string id="32360">Dolby/DTS Ordner</string>
     <string id="32370">Kino Intro Clips</string>
     <string id="32380">Kino Outro Clips</string>
+    <string id="32390">Coundown Video File</string>
 
     <!-- Misc settings -->
     <string id="32400">Führe Skript vor Filmstart aus</string>
@@ -119,6 +120,7 @@
     <string id="32608">Neue Werbung Outro</string>
     <string id="32609">Trivia Intro</string>
     <string id="32610">Trivia Outro</string>
+    <string id="32611">Countdown</string>
 
     <!-- compatible messages -->
     <string id="32700">Version</string>

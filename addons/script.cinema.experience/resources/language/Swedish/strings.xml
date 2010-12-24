@@ -89,6 +89,7 @@
   <string id="32360">Dolby/DTS-mapp</string>
   <string id="32370">Movie Theater introklipp</string>
   <string id="32380">Movie Theater outroklipp</string>
+  <string id="32390">Coundown Video File</string>
   <string id="32400">Kör skript innan videor startas</string>
   <string id="32500">Väljer slumpmässiga trailers...</string>
   <string id="32510">Slumpar trivia frågespel...</string>
@@ -110,6 +111,7 @@
   <string id="32608">Kommande attraktionersoutro</string>
   <string id="32609">Trivia-intro</string>
   <string id="32610">Trivia-outro</string>
+  <string id="32611">Countdown</string>
   <string id="32700">Version</string>
   <string id="32701">Denna version av %s kräver en</string>
   <string id="32702">XBMC version lika med %s eller högre.</string>

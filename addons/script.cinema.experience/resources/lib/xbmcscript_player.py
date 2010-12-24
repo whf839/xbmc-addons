@@ -105,6 +105,13 @@ class Main:
         # get the queued video info
         mpaa, audio, genre, movie = self._get_queued_video_info()
         # TODO: try to get a local thumb for special videos?
+        # Add Countdown video
+        self._get_special_items(    playlist=self.playlist,
+                                                items=1 * ( _S_( "countdown_video_file" ) != "" ), 
+                                                path=xbmc.translatePath( xbmc.translatePath( _S_( "countdown_video_file" ) ) ),
+                                                genre=_L_( 32611 ),
+                                                index=0
+                                            )
         # get Dolby/DTS videos
         if ( _S_( "audio_videos_folder" ) ):
             self._get_special_items(    playlist=self.playlist,

@@ -82,7 +82,7 @@ class Trivia( xbmcgui.WindowXML ):
         print "trivia music: %s" % self.settings[ "trivia_music" ]
         if ( self.settings[ "trivia_music" ] == "true" ):
             # calculate the new volume
-            volume = self.current_volume * ( float( self.settings[ "trivia_music_volume" ] ) / 100 )
+            volume = float( self.settings[ "trivia_music_volume" ] ) 
             # set the volume percent of current volume
             xbmc.executebuiltin( "XBMC.SetVolume(%d)" % ( volume, ) )
             # play music
@@ -118,19 +118,19 @@ class Trivia( xbmcgui.WindowXML ):
                 # sliders.xml was included, so check it
                 elif ( slidesxml_exists ):
                     # question
-                    if ( re.search( question_format, os.path.basename( entry ), re.IGNORECASE ) ):
+                    if ( question_format and re.search( question_format, os.path.basename( entry ), re.IGNORECASE ) ):
                         if ( question ):
                             self.tmp_slides += [ [ "", "", "" ] ]
                             clue = answer = False
                         self.tmp_slides[ -1 ][ 0 ] = entry
                     # clue
-                    elif ( re.search( clue_format, os.path.basename( entry ), re.IGNORECASE ) ):
+                    elif ( clue_format and re.search( clue_format, os.path.basename( entry ), re.IGNORECASE ) ):
                         if ( clue ):
                             self.tmp_slides += [ [ "", "", "" ] ]
                             question = answer = False
                         self.tmp_slides[ -1 ][ 1 ] = entry
                     # answer
-                    elif ( re.search( answer_format, os.path.basename( entry ), re.IGNORECASE ) ):
+                    elif ( answer_format and re.search( answer_format, os.path.basename( entry ), re.IGNORECASE ) ):
                         if ( answer ):
                             self.tmp_slides += [ [ "", "", "" ] ]
                             question = clue = False
@@ -147,15 +147,29 @@ class Trivia( xbmcgui.WindowXML ):
         if ( not ( "True" in xbmc.executehttpapi( "FileExists(%sslides.xml)" % ( path, ) ) ) ):
             return False, "", "", "", ""
         # fetch data, with hack for change in xbmc so older revisions still work
-        xml_data = binascii.a2b_base64( xbmc.executehttpapi( "FileDownload(%sslides.xml,bare)" % ( path, ) ).split("\r\n\r\n")[ -1 ] )
-        # read formats and rating
-        try:
-            mpaa = re.findall( "<slide rating=\"([^\"]+)\">", xml_data )[ 0 ]
-        except:
-            mpaa = ""
-        question_format = re.findall( "<question format=\"([^\"]+)\" />", xml_data )[ 0 ]
-        clue_format = re.findall( "<clue format=\"([^\"]+)\" />", xml_data )[ 0 ]
-        answer_format = re.findall( "<answer format=\"([^\"]+)\" />", xml_data )[ 0 ]
+        #xml_data = binascii.a2b_base64( xbmc.executehttpapi( "FileDownload(%sslides.xml,bare)" % ( path, ) ).split("\r\n\r\n")[ -1 ] )
+        ## read formats and rating
+        #try:
+        #    mpaa = re.findall( "<slide rating=\"([^\"]+)\">", xml_data )[ 0 ]
+        #except:
+        #    mpaa = ""
+        #question_format = re.findall( "<question format=\"([^\"]+)\" />", xml_data )[ 0 ]
+        #clue_format = re.findall( "<clue format=\"([^\"]+)\" />", xml_data )[ 0 ]
+        #answer_format = re.findall( "<answer format=\"([^\"]+)\" />", xml_data )[ 0 ]
+        
+        # New Code
+        # fetch data
+        
+        xml = open( os.path.join( path, "slides.xml" ) ).read()
+        # parse info
+        mpaa, theme, question_format, clue_format, answer_format = re.search( "<slides?(?:.+?rating=\"([^\"]*)\")?(?:.+?theme=\"([^\"]*)\")?.*?>.+?<question.+?format=\"([^\"]*)\".*?/>.+?<clue.+?format=\"([^\"]*)\".*?/>.+?<answer.+?format=\"([^\"]*)\".*?/>", xml, re.DOTALL | re.IGNORECASE ).groups()
+        # compile regex's for performance
+        if ( question_format ):
+            question_format = re.compile( question_format )
+        if ( clue_format ):
+            clue_format = re.compile( clue_format )
+        if ( answer_format ):
+            answer_format = re.compile( answer_format )
         # return results
         return True, mpaa, question_format, clue_format, answer_format
 
@@ -178,8 +192,8 @@ class Trivia( xbmcgui.WindowXML ):
                         self.slide_playlist += [ slide ]
 
                 print "included - %s, %s, %s" % ( os.path.basename( slides[ 0 ] ), os.path.basename( slides[ 1 ] ), os.path.basename( slides[ 2 ] ), )
-            else:
                 print "----------------------------------------------------"
+            else:
                 print "skipped - %s, %s, %s" % ( os.path.basename( slides[ 0 ] ), os.path.basename( slides[ 1 ] ), os.path.basename( slides[ 2 ] ), )
                 print "----------------------------------------------------"
         print
@@ -253,7 +267,6 @@ class Trivia( xbmcgui.WindowXML ):
         # save watched slides
         self._save_watched_trivia_file()
         # set the volume back to original
-        xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "XBMC.SetVolume", "params": %d, "id": 1}' % self.current_volume)
         #xbmc.executebuiltin( "XBMC.SetVolume(%d)" % ( self.current_volume, ) )
         # show an end image
         self._show_intro_outro( "outro" )
@@ -262,6 +275,7 @@ class Trivia( xbmcgui.WindowXML ):
         is_playing = "True"        
         if ( type == "outro" ):
             print "## Outro ##"
+            self._fade_volume()
             self._play_video_playlist()
         else:
             print "## Intro ##"
@@ -299,6 +313,7 @@ class Trivia( xbmcgui.WindowXML ):
         xbmc.executehttpapi( "SetGUISetting(3,screensaver.mode,%s)" % self.screensaver )
         # we play the video playlist here so the screen does not flash
         xbmc.Player().play( self.playlist )
+        self._fade_volume( False )
         # close trivia slide show
         self.close()
 
@@ -315,7 +330,27 @@ class Trivia( xbmcgui.WindowXML ):
         result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Player.GetActivePlayers", "id": 1}')
         match = re.search( '"video" : (.*?)', result )
         return (match.group(1)).title()
-        
+    
+    def _fade_volume( self, out=True ):
+        ##############################################
+        #self.settings = { "slideshow_music_volume": ( 1 - abs( float( Addon.getSetting( "trivia_music_volume" ) ) ) / 60 ) * 100 }
+        # set initial start/end values
+        volumes = range( 1, self.current_volume )
+        # calc sleep time, 1 seconds for rise time
+        sleep_time = int( float( 1000 ) / len( volumes ) )
+        # if fading out reverse order
+        if ( out ):
+            volumes = range( 1, self.settings[ "trivia_music_volume" ] )
+            volumes.reverse()
+            # calc sleep time, 2 seconds for fade time
+            sleep_time = int( float( 2000 ) / len( volumes ) )
+        # loop thru and set volume
+        for volume in volumes:
+            print "Volume: %d " % volume
+            xbmc.executebuiltin( "XBMC.SetVolume(%d)" % ( volume, ) )
+            # sleep
+            xbmc.sleep( sleep_time )  
+    
     def onClick( self, controlId ):
         pass
 
