@@ -1,3 +1,7 @@
+1.0.7
+- Fixed a lot of errors in new code.
+- Fix syntax in addon.xml
+
 1.0.6
 - Added the ability to disable volume changes
    - Lowering of Volume during slides

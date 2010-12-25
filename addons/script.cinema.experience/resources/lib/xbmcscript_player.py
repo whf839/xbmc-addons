@@ -404,7 +404,7 @@ class Main:
                                 "trivia_slide_time": ( 5, 10, 15, 20, 30, )[ int( _S_( "trivia_slide_time" ) ) ],
                                 "trivia_intro_playlist": playlist_intro,
                                 "trivia_music": _S_( "trivia_music" ),
-                                "trivia_adjust_volume": _S_( "trivia_adjust_volume" )
+                                "trivia_adjust_volume": _S_( "trivia_adjust_volume" ),
                                 "trivia_fade_volume": _S_( "trivia_fade_volume" ),
                                 "trivia_music_file":  xbmc.translatePath( _S_( "trivia_music_file" ) ),
                                 "trivia_music_volume": int( _S_( "trivia_music_volume" ).replace( "%", "" ) ),

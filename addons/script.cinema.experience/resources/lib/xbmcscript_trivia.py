@@ -279,7 +279,7 @@ class Trivia( xbmcgui.WindowXML ):
         is_playing = "True"        
         if ( type == "outro" ):
             print "## Outro ##"
-            if (self.settings[ "trivia_fade_volume" == "true"):
+            if (self.settings[ "trivia_fade_volume"] == "true"):
                 self._fade_volume()
             self._play_video_playlist()
         else:
@@ -318,7 +318,7 @@ class Trivia( xbmcgui.WindowXML ):
         xbmc.executehttpapi( "SetGUISetting(3,screensaver.mode,%s)" % self.screensaver )
         # we play the video playlist here so the screen does not flash
         xbmc.Player().play( self.playlist )
-        if (self.settings[ "trivia_fade_volume" == "true"):
+        if (self.settings[ "trivia_fade_volume" ] == "true"):
             self._fade_volume( False )
         # close trivia slide show
         self.close()

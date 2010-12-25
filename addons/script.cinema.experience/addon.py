@@ -2,7 +2,7 @@
 __script__ = "Cinema Experience"
 __author__ = "nuka1195-giftie"
 __url__ = "http://code.google.com/p/xbmc-addons/"
-__version__ = "1.0.6"
+__version__ = "1.0.7"
 __XBMC_Revision__ = "34000"
 
 import xbmcgui, xbmc, os
