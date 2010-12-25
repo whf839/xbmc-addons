@@ -57,7 +57,9 @@
     <string id="32225">30 sec</string>
     <string id="32230">- Music Playlist</string>
     <string id="32231">- Play Music During Trivia Slideshow</string>
-    <string id="32240">- Music Volume (% of Master)</string>
+    <string id="32232">   - Adjust Volume During Slideshow?</string>
+    <string id="32240">      - Music Volume (% of Max Volume)</string>
+    <string id="32241">      - Fade Volume After Slideshow?</string>
     <string id="32250">- Trivia Outro</string>
     <string id="32260">- Trivia Outro Music</string>
     <string id="32270">- Select only unwatched Slides</string>

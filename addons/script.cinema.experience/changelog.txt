@@ -1,3 +1,9 @@
+1.0.6
+- Added the ability to disable volume changes
+   - Lowering of Volume during slides
+   - Fade volume during slides
+- Added myself back as an author(removed during troubleshooting)
+
 1.0.5
 - Added the ability to add Countdown Video before movie starts
 - Added Audio Fade(when Trivia is complete) - Thanks for the code Nuka

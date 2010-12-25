@@ -16,7 +16,9 @@
         <setting id="trivia_outro_folder" type="folder" visible="!eq(-10,0) + gt(-2,1)" label="32289" default="" />
         <setting id="trivia_music" type="bool" visible="!eq(-11,0)" enable="!eq(-10,)" label="32231" default="false" />
         <setting id="trivia_music_file" type="audio" visible="!eq(-1,false)" enable="!eq(-1,false)" label="32230" default="" />
-        <setting id="trivia_music_volume" type="labelenum" visible="!eq(-2,false)" enable="!eq(-1,) + !eq(-1,)" values="10%|20%|30%|40%|50%|60%|70%|80%|90%|100%" label="32240" default="50%" />
+        <setting id="trivia_adjust_volume" type="bool" visible="!eq(-2,false)" enable="!eq(-2,false)" lable="32232" default="true" />
+        <setting id="trivia_fade_volume" type="bool" visible="!eq(-3,false)" enable="!eq(-3,false)" lable="32241" default="true" />        
+        <setting id="trivia_music_volume" type="labelenum" visible="!eq(-4,false)" enable="!eq(-1,) + !eq(-1,)" values="10%|20%|30%|40%|50%|60%|70%|80%|90%|100%" label="32240" default="90%" />
         <setting id="trivia_unwatched_only" type="bool" visible="!eq(-14,0)" enable="!eq(-13,)" label="32270" default="false" />
         <setting type="action" label="32271" visible="!eq(-15,0)" enable="!eq(-14,) + eq(-1,true)" default="RunScript($CWD/default.py,ClearWatchedTrivia)" />
     </category>

@@ -397,23 +397,18 @@ class Main:
                                                     genre=_L_( 32609 ),
                                                     #media_type="video/picture"
                                                 )
-            # get trivia outro videos
-            #self._get_special_items(    playlist=playlist_outro,
-            #                                        items=( 0, 1, 1, 2, 3, 4, 5, )[ int( _S_( "trivia_outro" ) ) ], 
-            #                                        path=( xbmc.translatePath( _S_( "trivia_outro_file" ) ), xbmc.translatePath( _S_( "trivia_outro_folder" ) ), )[ int( _S_( "trivia_outro" ) ) > 1 ],
-            #                                        genre=_L_( 32610 ),
-                                                    #media_type="video/picture"
-            #                                    )
+            
             # trivia settings, grab them here so we don't need another _S_() object
             settings = {  "trivia_total_time": ( 0, 2, 5, 10, 15, 20, 30, 45 )[ int( _S_( "trivia_total_time" ) ) ],
                                 "trivia_folder":  xbmc.translatePath( _S_( "trivia_folder" ) ),
                                 "trivia_slide_time": ( 5, 10, 15, 20, 30, )[ int( _S_( "trivia_slide_time" ) ) ],
                                 "trivia_intro_playlist": playlist_intro,
-            #                    "trivia_outro_playlist": playlist_outro,
                                 "trivia_music": _S_( "trivia_music" ),
+                                "trivia_adjust_volume": _S_( "trivia_adjust_volume" )
+                                "trivia_fade_volume": _S_( "trivia_fade_volume" ),
                                 "trivia_music_file":  xbmc.translatePath( _S_( "trivia_music_file" ) ),
                                 "trivia_music_volume": int( _S_( "trivia_music_volume" ).replace( "%", "" ) ),
-                                "trivia_unwatched_only": _S_( "trivia_unwatched_only" ) == "true"
+                                "trivia_unwatched_only": _S_( "trivia_unwatched_only" ) == "true"                                
                             }
             # set the proper mpaa rating user preference
             mpaa = (  _S_( "trivia_rating" ), mpaa, )[ _S_( "trivia_limit_query" ) == "true" ]

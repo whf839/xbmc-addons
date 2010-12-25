@@ -62,7 +62,10 @@
     <string id="32324">2 satunnaista videota</string>
     <string id="32325">3 satunnaista videota</string>
     <string id="32330">Toista esityksen lopetustunnus</string>
-    <string id="32340">- Tiedosto</string>
+    <string id="32231">- Play Music During Trivia Slideshow</string>
+    <string id="32232">   - Adjust Volume During Slideshow?</string>
+    <string id="32240">      - Music Volume (% of Max Volume)</string>
+    <string id="32241">      - Fade Volume After Slideshow?</string>
     <string id="32350">- Kansio</string>
     <string id="32360">Dolby/DTS Folder</string>
     <string id="32370">Movie Theatre Intro Clips</string>

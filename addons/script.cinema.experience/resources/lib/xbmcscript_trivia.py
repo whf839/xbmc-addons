@@ -59,8 +59,10 @@ class Trivia( xbmcgui.WindowXML ):
             result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "XBMC.GetVolume", "id": 1}')
             match = re.search( '"result" : ([0-9]{1,2})', result )
             self.current_volume = int(match.group(1))
+            print "current volume: %d" % self.current_volume
         except: # Fall back onto httpapi
             self.current_volume = int( xbmc.executehttpapi( "GetVolume" ).replace( "<li>", "" ) )
+            print "current volume: %d" % self.current_volume
         # our complete shuffled list of slides
         self.slide_playlist = []
         self.tmp_slides = []
@@ -81,10 +83,12 @@ class Trivia( xbmcgui.WindowXML ):
         # did user set this preference
         print "trivia music: %s" % self.settings[ "trivia_music" ]
         if ( self.settings[ "trivia_music" ] == "true" ):
-            # calculate the new volume
-            volume = float( self.settings[ "trivia_music_volume" ] ) 
-            # set the volume percent of current volume
-            xbmc.executebuiltin( "XBMC.SetVolume(%d)" % ( volume, ) )
+            # check to see if script is to adjust the volume
+            if ( self.settings[ "trivia_adjust_volume" ] == "true" ):
+                # calculate the new volume
+                volume = float( self.settings[ "trivia_music_volume" ] ) 
+                # set the volume percent of current volume
+                xbmc.executebuiltin( "XBMC.SetVolume(%d)" % ( volume, ) )
             # play music
             xbmc.Player( xbmc.PLAYLIST_MUSIC ).play( self.settings[ "trivia_music_file" ] )
             #xbmc.Player().play( self.settings[ "trivia_music_file" ] )
@@ -275,7 +279,8 @@ class Trivia( xbmcgui.WindowXML ):
         is_playing = "True"        
         if ( type == "outro" ):
             print "## Outro ##"
-            self._fade_volume()
+            if (self.settings[ "trivia_fade_volume" == "true"):
+                self._fade_volume()
             self._play_video_playlist()
         else:
             print "## Intro ##"
@@ -313,7 +318,8 @@ class Trivia( xbmcgui.WindowXML ):
         xbmc.executehttpapi( "SetGUISetting(3,screensaver.mode,%s)" % self.screensaver )
         # we play the video playlist here so the screen does not flash
         xbmc.Player().play( self.playlist )
-        self._fade_volume( False )
+        if (self.settings[ "trivia_fade_volume" == "true"):
+            self._fade_volume( False )
         # close trivia slide show
         self.close()
 
