@@ -39,7 +39,7 @@
     <string id="32198">- Coming Attractions Outro</string>
 
     <!-- Trivia quiz settings -->
-    <string id="32200">Trivia Slideshow Duration</string>
+    <string id="32200">Duration(in Minutes)</string>
     <string id="32201">None</string>
     <string id="32202">2 min</string>
     <string id="32203">5 min</string>
@@ -49,7 +49,7 @@
     <string id="32207">30 min</string>
     <string id="32208">45 min</string>
     <string id="32210">- Slides Folder</string>
-    <string id="32220">- Show each Slide for</string>
+    <string id="32220">- Show each Slide for(in Seconds)</string>
     <string id="32221">5 sec</string>
     <string id="32222">10 sec</string>
     <string id="32223">15 sec</string>
@@ -60,11 +60,12 @@
     <string id="32232">   - Adjust Volume During Slideshow?</string>
     <string id="32240">      - Music Volume (% of Max Volume)</string>
     <string id="32241">      - Fade Volume After Slideshow?</string>
-    <string id="32250">- Trivia Outro</string>
-    <string id="32260">- Trivia Outro Music</string>
+    <string id="32242">         - Fade Time(in seconds)</string>
+    <string id="32250">- Outro Video</string>
+    <string id="32260">- Outro Music</string>
     <string id="32270">- Select only unwatched Slides</string>
     <string id="32271">   - Reset Slides watched status</string>
-    <string id="32280">- Trivia Intro</string>
+    <string id="32280">- Intro Video</string>
     <string id="32281">None</string>
     <string id="32282">Single Video/Image</string>
     <string id="32283">1 Random Video/Image</string>
@@ -93,7 +94,7 @@
     <string id="32360">Dolby/DTS Folder</string>
     <string id="32370">Movie Theatre Intro Clips</string>
     <string id="32380">Movie Theatre Outro Clips</string>
-    <string id="32390">Coundown Video File</string>
+    <string id="32390">Movie Coundown Video File</string>
 
     <!-- Misc settings -->
     <string id="32400">Run script before videos start</string>

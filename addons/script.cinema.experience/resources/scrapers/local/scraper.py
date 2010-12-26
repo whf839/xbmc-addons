@@ -65,7 +65,7 @@ class Main:
         # now create our final playlist
         for trailer in self.tmp_trailers:
             # user preference to skip watch trailers
-            if ( self.settings[ "trailer_newest_only" ] and xbmc.getCacheThumbName( trailer ) in self.watched ):
+            if ( self.settings[ "trailer_unwatched_only" ] and xbmc.getCacheThumbName( trailer ) in self.watched ):
                 continue
             # add id to watched file TODO: maybe don't add if not user preference
             self.watched += [ xbmc.getCacheThumbName( trailer ) ]

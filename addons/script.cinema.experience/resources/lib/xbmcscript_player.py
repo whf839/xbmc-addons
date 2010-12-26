@@ -63,7 +63,7 @@ class Main:
                 traceback.print_exc()
 
     def _clear_watched_items( self, clear_type ):
-        xbmc.log( "_clear_watched_items( %s )", ( clear_type, ), xbmc.LOGNOTICE )
+        xbmc.log( "_clear_watched_items( %s )" % clear_type, xbmc.LOGNOTICE )
         # initialize base_path
         base_paths = []
         # clear trivia or trailers

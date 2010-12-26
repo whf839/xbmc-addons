@@ -15,13 +15,11 @@ _ = xbmc.getLocalizedString
 class Trivia( xbmcgui.WindowXML ):
     # base paths
     BASE_CURRENT_SOURCE_PATH = os.path.join( xbmc.translatePath( "special://profile/addon_data/" ), os.path.basename( _A_.getAddonInfo('path') ) )
-    print "BASE CURRENT SOURCE PATH"
-    print BASE_CURRENT_SOURCE_PATH
     # special action codes
     ACTION_NEXT_SLIDE = ( 2, 3, 7, )
     ACTION_PREV_SLIDE = ( 1, 4, )
     ACTION_EXIT_SCRIPT = ( 9, 10, )
-
+    
     def __init__( self, *args, **kwargs ):
         xbmcgui.WindowXML.__init__( self, *args, **kwargs )
         # update dialog
@@ -57,7 +55,7 @@ class Trivia( xbmcgui.WindowXML ):
         # get the current volume
         try: # first try jsonrpc
             result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "XBMC.GetVolume", "id": 1}')
-            match = re.search( '"result" : ([0-9]{1,2})', result )
+            match = re.search( '"result" : ([0-9]{1,3})', result )
             self.current_volume = int(match.group(1))
             print "current volume: %d" % self.current_volume
         except: # Fall back onto httpapi
@@ -75,8 +73,8 @@ class Trivia( xbmcgui.WindowXML ):
         self._get_slides( [ self.settings[ "trivia_folder" ] ] )
         # shuffle and format playlist
         self._shuffle_slides()
-        # start our trvia slideshow timer
-        self._get_global_timer( self.settings[ "trivia_total_time" ] * 60, self._exit_trivia )
+        # start our trvia slideshow timer and add the fade time, 
+        self._get_global_timer( (self.settings[ "trivia_total_time" ] * 60 ) , self._exit_trivia )
 
     def _start_slideshow_music( self ):
         print "## Starting Trivia Music"
@@ -85,8 +83,9 @@ class Trivia( xbmcgui.WindowXML ):
         if ( self.settings[ "trivia_music" ] == "true" ):
             # check to see if script is to adjust the volume
             if ( self.settings[ "trivia_adjust_volume" ] == "true" ):
+                print "Adjusting Volume"
                 # calculate the new volume
-                volume = float( self.settings[ "trivia_music_volume" ] ) 
+                volume = self.settings[ "trivia_music_volume" ]
                 # set the volume percent of current volume
                 xbmc.executebuiltin( "XBMC.SetVolume(%d)" % ( volume, ) )
             # play music
@@ -341,15 +340,18 @@ class Trivia( xbmcgui.WindowXML ):
         ##############################################
         #self.settings = { "slideshow_music_volume": ( 1 - abs( float( Addon.getSetting( "trivia_music_volume" ) ) ) / 60 ) * 100 }
         # set initial start/end values
-        volumes = range( 1, self.current_volume )
+        volumes = range( 1, self.current_volume + 1 )
         # calc sleep time, 1 seconds for rise time
         sleep_time = int( float( 1000 ) / len( volumes ) )
         # if fading out reverse order
         if ( out ):
+            print "Fading Volume"
             volumes = range( 1, self.settings[ "trivia_music_volume" ] )
             volumes.reverse()
-            # calc sleep time, 2 seconds for fade time
-            sleep_time = int( float( 2000 ) / len( volumes ) )
+            # calc sleep time, for fade time
+            sleep_time = int( float( self.settings[ "trivia_fade_time" ] * 1000 ) / len( volumes ) )
+        else:
+            print "Raising Volume"
         # loop thru and set volume
         for volume in volumes:
             print "Volume: %d " % volume

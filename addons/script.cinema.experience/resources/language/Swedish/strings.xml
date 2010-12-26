@@ -60,6 +60,7 @@
   <string id="32232">   - Adjust Volume During Slideshow?</string>
   <string id="32240">      - Music Volume (% of Max Volume)</string>
   <string id="32241">      - Fade Volume After Slideshow?</string>
+  <string id="32242">         - Fade Time(in seconds)</string>
   <string id="32240">- Trivia musikvolym (% av huvudvolym)</string>
   <string id="32250">- Trivia-outro</string>
   <string id="32260">- Trivia-outromusik</string>

@@ -1,3 +1,9 @@
+1.0.8
+- Added an adjustable Fade time for the background music during trivia
+- Fixed Skip Watched Trailers(now it skips the watched ones :) 
+- Fixed Current Volume error(now matching upto 3 digits(ie 100))
+- Fixed ClearWatchedTrivia and ClearWatchedTrailers
+
 1.0.7
 - Fixed a lot of errors in new code.
 - Fix syntax in addon.xml

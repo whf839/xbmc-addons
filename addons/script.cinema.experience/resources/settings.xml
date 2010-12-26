@@ -3,9 +3,15 @@
     <category label="Trivia">
     <!-- Trivia settings -->
         <setting type="lsep" label="32801" />
+        <setting id="trivia_total_time" type="slider" range="1,60" label="32200" default="5" />
+        <!--
         <setting id="trivia_total_time" type="enum" lvalues="32201|32202|32203|32204|32205|32206|32207|32208" label="32200" default="0" />
+        -->
         <setting id="trivia_folder" type="folder" visible="!eq(-1,0)" source="files" label="32210" default="" />
+        <setting id="trivia_slide_time" type="slider" visible="!eq(-2,0)" enable="!eq(-1,)" range="1,30" label="32220" default="15" />
+        <!--
         <setting id="trivia_slide_time" type="enum" visible="!eq(-2,0)" enable="!eq(-1,)" lvalues="32221|32222|32223|32224|32225" label="32220" default="2" />
+        -->
         <setting id="trivia_limit_query" type="bool" visible="!eq(-3,0)" enable="!eq(-2,)" label="32290" default="true" />
         <setting id="trivia_rating" type="labelenum"  visible="!eq(-4,0)" enable="!eq(-3,) + eq(-1,false)" values="G|PG|PG-13|R|NC-17|--" label="32291" default="--" />
         <setting id="trivia_intro" type="enum" visible="!eq(-5,0)"  enable="!eq(-4,)" lvalues="32281|32282|32283|32284|32285|32286|32287" label="32280" default="0" />
@@ -17,10 +23,15 @@
         <setting id="trivia_music" type="bool" visible="!eq(-11,0)" enable="!eq(-10,)" label="32231" default="false" />
         <setting id="trivia_music_file" type="audio" visible="!eq(-1,false)" enable="!eq(-1,false)" label="32230" default="" />
         <setting id="trivia_adjust_volume" type="bool" visible="!eq(-2,false)" enable="!eq(-1,)" label="32232" default="true" />
-        <setting id="trivia_fade_volume" type="bool" visible="!eq(-3,false)" enable="eq(-1,true)" label="32241" default="true" />        
+        <setting id="trivia_music_volume" type="slider" visible="!eq(-1,false)" enable="!eq(-1,false)" range="0,100" label="32240" default="100" />
+        <setting id="trivia_fade_volume" type="bool" visible="!eq(-2,false)" enable="!eq(-2,false)" label="32241" default="true" />
+        <setting id="trivia_fade_time" type="slider" visible="!eq(-3,false)" enable="!eq(-1,false)" range="0,15" label="32242" default="2" />
+        <!--
         <setting id="trivia_music_volume" type="labelenum" visible="!eq(-4,false)" enable="eq(-2,true)" values="10%|20%|30%|40%|50%|60%|70%|80%|90%|100%" label="32240" default="90%" />
+        -->
+        
         <setting id="trivia_unwatched_only" type="bool" visible="!eq(-14,0)" enable="!eq(-13,)" label="32270" default="false" />
-        <setting type="action" label="32271" visible="!eq(-15,0)" enable="!eq(-14,) + eq(-1,true)" default="RunScript($CWD/default.py,ClearWatchedTrivia)" />
+        <setting type="action" label="32271" visible="!eq(-15,0)" enable="!eq(-14,) + eq(-1,true)" action="RunScript($CWD/addon.py,ClearWatchedTrivia)" />
     </category>
     <category label="Special Videos">
     <!-- Special videos settings -->
@@ -61,7 +72,7 @@
         <setting id="trailer_limit_query" type="bool" visible="!eq(-14,0) + !eq(-6,2)" label="32140" default="true" />
         <setting id="trailer_rating" type="labelenum"  visible="!eq(-15,0) + !eq(-7,2)" enable="eq(-1,false)" values="G|PG|PG-13|R|NC-17|--" label="32150" default="--" />
         <setting id="trailer_unwatched_only" type="bool" visible="!eq(-16,0)" label="32190" default="false" />
-        <setting type="action" label="32191" visible="!eq(-17,0)" enable="eq(-1,true)" default="RunScript($CWD/default.py,ClearWatchedTrailers)" />
+        <setting type="action" label="32191" visible="!eq(-17,0)" enable="eq(-1,true)" action="RunScript($CWD/addon.py,ClearWatchedTrailers)" />
     </category>
     <category label="Misc">
     <!-- Misc settings -->
