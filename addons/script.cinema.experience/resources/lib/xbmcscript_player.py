@@ -1,3 +1,5 @@
+__script__ = "Cinema Experience"
+__scriptID__ = "script.cinema.experience"
 ###########################################################
 """
     Main Player Module:
@@ -15,7 +17,7 @@ import xbmcgui
 import xbmc
 import xbmcaddon
 
-_A_ = xbmcaddon.Addon('script.cinema.experience')
+_A_ = xbmcaddon.Addon( __scriptID__ )
 # language method
 _L_ = xbmc.getLocalizedString
 # settings method
@@ -28,7 +30,7 @@ except:
     message = 32520
 
 pDialog = xbmcgui.DialogProgress()
-pDialog.create( sys.modules[ "__main__" ].__script__, _L_( message )  )
+pDialog.create( __script__, _L_( message )  )
 pDialog.update( 0 )
 
 from urllib import quote_plus
@@ -42,7 +44,7 @@ class Main:
 
     def __init__( self ):
         # if an arg was passed check it for ClearWatchedTrivia or ClearWatchedTrailers
-        import traceback
+        import traceback            
         try:
             if ( sys.argv[ 1 ] == "ClearWatchedTrivia" or sys.argv[ 1 ] == "ClearWatchedTrailers" ):
                 self._clear_watched_items( sys.argv[ 1 ] )
@@ -52,7 +54,7 @@ class Main:
                 self._view_readme()
         except:
             try:
-                #traceback.print_exc()
+                traceback.print_exc()
                 # create the playlist
                 mpaa = self._create_playlist()
                 # play the trivia slide show
@@ -100,6 +102,7 @@ class Main:
 
     def _view_readme( self ):
         xbmc.log( "_view_readme()", xbmc.LOGNOTICE )
+                
 
     def _create_playlist( self ):
         # get the queued video info
@@ -384,7 +387,7 @@ class Main:
             pDialog.close()
             return
         # if trivia path and time to play the trivia slides
-        if ( _S_( "trivia_folder" ) and int( _S_( "trivia_total_time" ) ) > 0 ):
+        if ( _S_( "trivia_folder" ) and int( float( _S_( "trivia_total_time" ) ) ) > 0 ):
             # update dialog with new message
             pDialog.update( -1, _L_( 32510 ) )
             # initialize intro/outro lists
@@ -399,20 +402,24 @@ class Main:
                                                 )
             
             # trivia settings, grab them here so we don't need another _S_() object
-            settings = {  "trivia_total_time": ( 0, 2, 5, 10, 15, 20, 30, 45 )[ int( _S_( "trivia_total_time" ) ) ],
+            settings = {  "trivia_total_time": int( float( _S_( "trivia_total_time" ) ) ),
                                 "trivia_folder":  xbmc.translatePath( _S_( "trivia_folder" ) ),
-                                "trivia_slide_time": ( 5, 10, 15, 20, 30, )[ int( _S_( "trivia_slide_time" ) ) ],
+                                "trivia_slide_time": int( float( _S_( "trivia_slide_time" ) ) ),
                                 "trivia_intro_playlist": playlist_intro,
                                 "trivia_music": _S_( "trivia_music" ),
                                 "trivia_adjust_volume": _S_( "trivia_adjust_volume" ),
                                 "trivia_fade_volume": _S_( "trivia_fade_volume" ),
+                                "trivia_fade_time": int( float( _S_( "trivia_fade_time" ) ) ),
                                 "trivia_music_file":  xbmc.translatePath( _S_( "trivia_music_file" ) ),
-                                "trivia_music_volume": int( _S_( "trivia_music_volume" ).replace( "%", "" ) ),
+                                "trivia_music_volume": int( float( _S_( "trivia_music_volume" ) ) ),
                                 "trivia_unwatched_only": _S_( "trivia_unwatched_only" ) == "true"                                
                             }
             # set the proper mpaa rating user preference
             mpaa = (  _S_( "trivia_rating" ), mpaa, )[ _S_( "trivia_limit_query" ) == "true" ]
             print "MPAA", mpaa
+            if ( int(xbmc.executehttpapi( "GetLogLevel" ).replace( "<li>", "" ) ) > 1 ):
+                print "Trivia Settings"
+                print settings
             # import trivia module and execute the gui
             from resources.lib.xbmcscript_trivia import Trivia as Trivia
             ui = Trivia( "script-CExperience-trivia.xml", _A_.getAddonInfo('path'), "default", "PAL", settings=settings, playlist=self.playlist, dialog=pDialog, mpaa=mpaa )
@@ -425,3 +432,5 @@ class Main:
             pDialog.close()
             # play the video playlist
             xbmc.Player().play( self.playlist )
+            
+    
