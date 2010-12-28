@@ -36,7 +36,6 @@ pDialog.update( 0 )
 from urllib import quote_plus
 from random import shuffle
 
-
 class Main:
     # base paths
     BASE_CACHE_PATH = os.path.join( xbmc.translatePath( "special://profile" ), "Thumbnails", "Video" )
@@ -46,63 +45,12 @@ class Main:
         # if an arg was passed check it for ClearWatchedTrivia or ClearWatchedTrailers
         import traceback            
         try:
-            if ( sys.argv[ 1 ] == "ClearWatchedTrivia" or sys.argv[ 1 ] == "ClearWatchedTrailers" ):
-                self._clear_watched_items( sys.argv[ 1 ] )
-            elif ( sys.argv[ 1 ] == "ViewChangelog" ):
-                self._view_changelog()
-            elif ( sys.argv[ 1 ] == "ViewReadme" ):
-                self._view_readme()
+            # create the playlist
+            mpaa, genre = self._create_playlist()
+            # play the trivia slide show
+            self._play_trivia( mpaa=mpaa, genre=genre )
         except:
-            try:
-                traceback.print_exc()
-                # create the playlist
-                mpaa = self._create_playlist()
-                # play the trivia slide show
-                self._play_trivia( mpaa=mpaa )
-            except:
-                traceback.print_exc()
-
-    def _clear_watched_items( self, clear_type ):
-        xbmc.log( "_clear_watched_items( %s )" % clear_type, xbmc.LOGNOTICE )
-        # initialize base_path
-        base_paths = []
-        # clear trivia or trailers
-        if ( clear_type == "ClearWatchedTrailers" ):
-            # trailer settings, grab them here so we don't need another _S_() object
-            settings = { "trailer_amt_db_file":  xbmc.translatePath( _S_( "trailer_amt_db_file" ) ) }
-            # handle AMT db special
-            from resources.scrapers.amt_database import scraper as scraper
-            Scraper = scraper.Main( settings=settings )
-            # update trailers
-            Scraper.clear_watched()
-            # set base watched file path
-            base_paths += [ os.path.join( self.BASE_CURRENT_SOURCE_PATH, "amt_current_watched.txt" ) ]
-            base_paths += [ os.path.join( self.BASE_CURRENT_SOURCE_PATH, "local_watched.txt" ) ]
-        else:
-            # set base watched file path
-            base_paths = [ os.path.join( self.BASE_CURRENT_SOURCE_PATH, "trivia_watched.txt" ) ]
-        try:
-            # set proper message
-            message = ( 32531, 32541, )[ sys.argv[ 1 ] == "ClearWatchedTrailers" ]
-            # remove watched status file(s)
-            for base_path in base_paths:
-                # remove file if it exists
-                if ( os.path.isfile( base_path ) ):
-                    os.remove( base_path )
-        except:
-            # set proper message
-            message = ( 32532, 32542, )[ sys.argv[ 1 ] == "ClearWatchedTrailers" ]
-        # close main dialog
-        pDialog.close()
-        # inform user of result
-        ok = xbmcgui.Dialog().ok( _L_( 32000 ), _L_( message ) )
-
-    def _view_changelog( self ):
-        xbmc.log( "_view_changelog()", xbmc.LOGNOTICE )
-
-    def _view_readme( self ):
-        xbmc.log( "_view_readme()", xbmc.LOGNOTICE )
-                
+            traceback.print_exc()
 
     def _create_playlist( self ):
         # get the queued video info
@@ -206,7 +154,7 @@ class Main:
                                                 genre=_L_( 32607 ),
                                                 
                                             )
-        return mpaa
+        return mpaa, genre
 
     def _get_queued_video_info( self ):
         try:
@@ -381,7 +329,7 @@ class Main:
         # return result
         return thumbnail
 
-    def _play_trivia( self, mpaa ):
+    def _play_trivia( self, mpaa, genre ):
         # if user cancelled dialog return
         if ( pDialog.iscanceled() ):
             pDialog.close()
@@ -422,7 +370,7 @@ class Main:
                 print settings
             # import trivia module and execute the gui
             from resources.lib.xbmcscript_trivia import Trivia as Trivia
-            ui = Trivia( "script-CExperience-trivia.xml", _A_.getAddonInfo('path'), "default", "PAL", settings=settings, playlist=self.playlist, dialog=pDialog, mpaa=mpaa )
+            ui = Trivia( "script-CExperience-trivia.xml", _A_.getAddonInfo('path'), "default", "PAL", settings=settings, playlist=self.playlist, dialog=pDialog, mpaa=mpaa, genre=genre )
             #ui.doModal()
             del ui
             # we need to activate the video window

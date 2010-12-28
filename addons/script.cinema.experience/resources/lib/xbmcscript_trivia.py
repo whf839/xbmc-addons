@@ -27,6 +27,7 @@ class Trivia( xbmcgui.WindowXML ):
         self.settings = kwargs[ "settings" ]
         self.playlist = kwargs[ "playlist" ]
         self.mpaa = kwargs[ "mpaa" ]
+        self.genre = kwargs[ "genre" ]
         # initialize our class variable
         self._init_variables()
         # turn screensaver off
@@ -165,14 +166,14 @@ class Trivia( xbmcgui.WindowXML ):
         
         xml = open( os.path.join( path, "slides.xml" ) ).read()
         # parse info
-        mpaa, theme, question_format, clue_format, answer_format = re.search( "<slides?(?:.+?rating=\"([^\"]*)\")?(?:.+?theme=\"([^\"]*)\")?.*?>.+?<question.+?format=\"([^\"]*)\".*?/>.+?<clue.+?format=\"([^\"]*)\".*?/>.+?<answer.+?format=\"([^\"]*)\".*?/>", xml, re.DOTALL | re.IGNORECASE ).groups()
+        mpaa, theme, question_format, clue_format, answer_format = re.search( "<slides?(?:.+?rating=\"([^\"]*)\")?(?:.+?theme=\"([^\"]*)\")?.*?>.+?<question.+?format=\"([^\"]*)\".*?/>.+?<clue.+?format=\"([^\"]*)\".*?/>.+?<answer.+?format=\"([^\"]*)\".*?/>", xml, re.DOTALL ).groups()
         # compile regex's for performance
         if ( question_format ):
-            question_format = re.compile( question_format )
+            question_format = re.compile( question_format, re.IGNORECASE )
         if ( clue_format ):
-            clue_format = re.compile( clue_format )
+            clue_format = re.compile( clue_format, re.IGNORECASE )
         if ( answer_format ):
-            answer_format = re.compile( answer_format )
+            answer_format = re.compile( answer_format, re.IGNORECASE )
         # return results
         return True, mpaa, question_format, clue_format, answer_format
 
@@ -180,7 +181,6 @@ class Trivia( xbmcgui.WindowXML ):
         # randomize the groups and create our play list
         shuffle( self.tmp_slides )
         # now create our final playlist
-        print "-----------------------------------------"
         # loop thru slide groups and skip already watched groups
         for slides in self.tmp_slides:
             # has this group been watched
@@ -193,13 +193,14 @@ class Trivia( xbmcgui.WindowXML ):
                     if ( slide ):
                         # add slide
                         self.slide_playlist += [ slide ]
-
+                print "------------------Unwatched-------------------------"
                 print "included - %s, %s, %s" % ( os.path.basename( slides[ 0 ] ), os.path.basename( slides[ 1 ] ), os.path.basename( slides[ 2 ] ), )
-                print "----------------------------------------------------"
+                
             else:
+                print "-------------------Watched--------------------------"
                 print "skipped - %s, %s, %s" % ( os.path.basename( slides[ 0 ] ), os.path.basename( slides[ 1 ] ), os.path.basename( slides[ 2 ] ), )
-                print "----------------------------------------------------"
-        print
+                
+        print "-----------------------------------------"
         print "total slides selected: %d" % len( self.slide_playlist )
         print
 
