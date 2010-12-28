@@ -108,7 +108,7 @@ class Trivia( xbmcgui.WindowXML ):
             slidesxml_exists, mpaa, question_format, clue_format, answer_format = self._get_slides_xml( path )
             # check if rating is ok
             #if ( slidesxml_exists and mpaa_ratings.get( self.mpaa, -1 ) < mpaa_ratings.get( mpaa, -1 ) ):
-            #    print "skipping whole folder", path
+            #    xbmc.log( "[script.cinemaexperience] - skipping whole folder", path
             #    continue
             # initialize these to True so we add a new list item to start
             question = clue = answer = True
@@ -178,6 +178,7 @@ class Trivia( xbmcgui.WindowXML ):
         return True, mpaa, question_format, clue_format, answer_format
 
     def _shuffle_slides( self ):
+        xbmc.log( "[script.cinemaexperience] - Sorting Watched/Unwatched and Shuffing Slides ", xbmc.LOGNOTICE)
         # randomize the groups and create our play list
         shuffle( self.tmp_slides )
         # now create our final playlist
@@ -193,16 +194,15 @@ class Trivia( xbmcgui.WindowXML ):
                     if ( slide ):
                         # add slide
                         self.slide_playlist += [ slide ]
-                print "------------------Unwatched-------------------------"
-                print "included - %s, %s, %s" % ( os.path.basename( slides[ 0 ] ), os.path.basename( slides[ 1 ] ), os.path.basename( slides[ 2 ] ), )
+                xbmc.log( "------------------Unwatched-------------------------", xbmc.LOGNOTICE)
+                xbmc.log( "included - %s, %s, %s" % ( os.path.basename( slides[ 0 ] ), os.path.basename( slides[ 1 ] ), os.path.basename( slides[ 2 ] ), ), xbmc.LOGNOTICE)
                 
             else:
-                print "-------------------Watched--------------------------"
-                print "skipped - %s, %s, %s" % ( os.path.basename( slides[ 0 ] ), os.path.basename( slides[ 1 ] ), os.path.basename( slides[ 2 ] ), )
+                xbmc.log( "-------------------Watched--------------------------", xbmc.LOGNOTICE)
+                xbmc.log( "skipped - %s, %s, %s" % ( os.path.basename( slides[ 0 ] ), os.path.basename( slides[ 1 ] ), os.path.basename( slides[ 2 ] ), ), xbmc.LOGNOTICE)
                 
-        print "-----------------------------------------"
-        print "total slides selected: %d" % len( self.slide_playlist )
-        print
+        xbmc.log( "-----------------------------------------", xbmc.LOGNOTICE)
+        xbmc.log( "[script.cinemaexperience] - total slides selected: %d" % len( self.slide_playlist ), xbmc.LOGNOTICE)
 
     def _next_slide( self, slide=1 ):
         # cancel timer if it's running
@@ -278,13 +278,12 @@ class Trivia( xbmcgui.WindowXML ):
     def _show_intro_outro( self, type="intro" ):
         is_playing = "True"        
         if ( type == "outro" ):
-            print "## Outro ##"
+            xbmc.log( "[script.cinemaexperience] - ## Outro ##", xbmc.LOGNOTICE)
             if (self.settings[ "trivia_fade_volume"] == "true"):
                 self._fade_volume()
             self._play_video_playlist()
         else:
-            print "## Intro ##"
-            print self.settings[ "trivia_intro_playlist" ]
+            xbmc.log( "[script.cinemaexperience] - ## Intro ##", xbmc.LOGNOTICE)
             xbmc.Player().play( self.settings[ "trivia_intro_playlist" ] )
             while is_playing == "True":
                 is_playing=self._check_video_player()
@@ -346,16 +345,16 @@ class Trivia( xbmcgui.WindowXML ):
         sleep_time = int( float( 1000 ) / len( volumes ) )
         # if fading out reverse order
         if ( out ):
-            print "Fading Volume"
+            xbmc.log( "[script.cinemaexperience] - Fading Volume", xbmc.LOGNOTICE)
             volumes = range( 1, self.settings[ "trivia_music_volume" ] )
             volumes.reverse()
             # calc sleep time, for fade time
             sleep_time = int( float( self.settings[ "trivia_fade_time" ] * 1000 ) / len( volumes ) )
         else:
-            print "Raising Volume"
+            xbmc.log( "[script.cinemaexperience] - Raising Volume", xbmc.LOGNOTICE)
         # loop thru and set volume
         for volume in volumes:
-            print "Volume: %d " % volume
+            xbmc.log( "[script.cinemaexperience] - Volume: %d " % (volume), xbmc.LOGNOTICE)
             xbmc.executebuiltin( "XBMC.SetVolume(%d)" % ( volume, ) )
             # sleep
             xbmc.sleep( sleep_time )  

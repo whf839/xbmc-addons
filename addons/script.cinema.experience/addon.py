@@ -2,7 +2,7 @@
 __script__ = "Cinema Experience"
 __author__ = "nuka1195-giftie"
 __url__ = "http://code.google.com/p/xbmc-addons/"
-__version__ = "1.0.8"
+__version__ = "1.0.9"
 __XBMC_Revision__ = "34000"
 __scriptID__ = "script.cinema.experience"
 
@@ -19,7 +19,7 @@ BASE_CACHE_PATH = os.path.join( xbmc.translatePath( "special://profile" ), "Thum
 BASE_CURRENT_SOURCE_PATH = os.path.join( xbmc.translatePath( "special://profile/addon_data/" ), os.path.basename( _A_.getAddonInfo('path') ) )
 
 def _clear_watched_items( clear_type ):
-    xbmc.log( "_clear_watched_items( %s )" % ( clear_type ), xbmc.LOGNOTICE )
+    xbmc.log( "[script.cinemaexperience] - _clear_watched_items( %s )" % ( clear_type ), xbmc.LOGNOTICE )
     # initialize base_path
     base_paths = []
     # clear trivia or trailers
@@ -52,15 +52,15 @@ def _clear_watched_items( clear_type ):
     ok = xbmcgui.Dialog().ok( _L_( 32000 ), _L_( message ) )
 
 def _view_changelog( ):
-    xbmc.log( "_view_changelog()", xbmc.LOGNOTICE )
+    xbmc.log( "[script.cinemaexperience] - _view_changelog()", xbmc.LOGNOTICE )
 
 def _view_readme( ):
-    xbmc.log( "_view_readme()", xbmc.LOGNOTICE )
+    xbmc.log( "[script.cinemaexperience] - _view_readme()", xbmc.LOGNOTICE )
 
 def _check_compatible():
     try:
         # spam plugin statistics to log
-        xbmc.log( "[SCRIPT] '%s: Version - %s-r%s' initialized!" % ( __script__, __version__, __svn_revision__.replace( "$", "" ).replace( "Revision", "" ).replace( ":", "" ).strip() ), xbmc.LOGNOTICE )
+        xbmc.log( "[script.cinemaexperience]: Version - %s-r%s' initialized!" % ( __version__, __svn_revision__.replace( "$", "" ).replace( "Revision", "" ).replace( ":", "" ).strip() ), xbmc.LOGNOTICE )
         # get xbmc revision
         xbmc_rev = int( xbmc.getInfoLabel( "System.BuildVersion" ).split( " r" )[ -1 ][ : 5 ] )
         # compatible?
@@ -70,8 +70,8 @@ def _check_compatible():
         xbmc_rev = 0
         ok = 2
     # spam revision info
-    xbmc.log( "     ** Required XBMC Revision: r%s **" % ( __XBMC_Revision__, ), xbmc.LOGNOTICE )
-    xbmc.log( "     ** Found XBMC Revision: r%d [%s] **" % ( xbmc_rev, ( "Not Compatible", "Compatible", "Unknown", )[ ok ], ), xbmc.LOGNOTICE )
+    xbmc.log( "[script.cinemaexperience] -     ** Required XBMC Revision: r%s **" % ( __XBMC_Revision__, ), xbmc.LOGNOTICE )
+    xbmc.log( "[script.cinemaexperience] -     ** Found XBMC Revision: r%d [%s] **" % ( xbmc_rev, ( "Not Compatible", "Compatible", "Unknown", )[ ok ], ), xbmc.LOGNOTICE )
     # TODO: maybe remove this notification
     # if not compatible, inform user
     if ( not ok ):

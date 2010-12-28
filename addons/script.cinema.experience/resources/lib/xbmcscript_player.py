@@ -36,6 +36,8 @@ pDialog.update( 0 )
 from urllib import quote_plus
 from random import shuffle
 
+log_sep = "-"*70
+
 class Main:
     # base paths
     BASE_CACHE_PATH = os.path.join( xbmc.translatePath( "special://profile" ), "Thumbnails", "Video" )
@@ -43,7 +45,7 @@ class Main:
 
     def __init__( self ):
         # if an arg was passed check it for ClearWatchedTrivia or ClearWatchedTrailers
-        import traceback            
+        import traceback  
         try:
             # create the playlist
             mpaa, genre = self._create_playlist()
@@ -87,7 +89,7 @@ class Main:
                                                 index=0
                                             )
         # get trailers
-        xbmc.log(_S_( "trailer_count" ),xbmc.LOGNOTICE )
+        xbmc.log("[script.cinemaexperience] - Trailer Count: %s" % _S_( "trailer_count" ),xbmc.LOGNOTICE )
         trailers = self._get_trailers(  items=( 0, 1, 2, 3, 4, 5, 10, )[ int( _S_( "trailer_count" ) ) ],
                                                    mpaa=mpaa,
                                                    genre=genre,
@@ -158,11 +160,11 @@ class Main:
 
     def _get_queued_video_info( self ):
         try:
-            xbmc.log( "_get_queued_video_info()", xbmc.LOGNOTICE )
+            xbmc.log( "[script.cinemaexperience] - _get_queued_video_info()", xbmc.LOGNOTICE )
             # clear then queue the currently selected video
             xbmc.executebuiltin( "Playlist.Clear" )
             xbmc.executebuiltin( "Action(Queue,%d)" % ( xbmcgui.getCurrentWindowId() - 10000, ) )
-            xbmc.log( "Action(Queue,%d)" % ( xbmcgui.getCurrentWindowId() - 10000, ), xbmc.LOGNOTICE )
+            xbmc.log( "[script.cinemaexperience] - Action(Queue,%d)" % ( xbmcgui.getCurrentWindowId() - 10000, ), xbmc.LOGNOTICE )
             # we need to sleep so the video gets queued properly
             xbmc.sleep( 300 )
             # create a video playlist
@@ -177,7 +179,7 @@ class Main:
             # TODO: verify the first is the best audio
             # setup the sql, we limit to 1 record as there can be multiple entries in streamdetails
             sql = "SELECT movie.c12, movie.c14, streamdetails.strAudioCodec FROM movie, streamdetails WHERE movie.idFile=streamdetails.idFile AND streamdetails.iStreamType=1 AND c00='%s' LIMIT 1" % ( movie_title.replace( "'", "''", ), )
-            xbmc.log( "SQL: %s" % ( sql, ), xbmc.LOGNOTICE )
+            xbmc.log( "[script.cinemaexperience] - SQL: %s" % ( sql, ), xbmc.LOGNOTICE )
             # query database for info dummy is needed as there are two </field> formatters
             mpaa, genre, audio, dummy = xbmc.executehttpapi( "QueryVideoDatabase(%s)" % quote_plus( sql ), ).split( "</field>" )
             # TODO: add a check and new sql for videos queued from files mode, or try an nfo
@@ -187,15 +189,16 @@ class Main:
         except:
             movie_title = mpaa = audio = genre = movie = ""
         # spew queued video info to log
-        xbmc.log( "-" * 70, xbmc.LOGNOTICE )
-        xbmc.log( "Title: %s" % ( movie_title, ), xbmc.LOGNOTICE )
-        xbmc.log( "Path: %s" % ( movie, ), xbmc.LOGNOTICE )
-        xbmc.log( "Genre: %s" % ( genre, ), xbmc.LOGNOTICE )
-        xbmc.log( "MPAA: %s" % ( mpaa, ), xbmc.LOGNOTICE )
-        xbmc.log( "Audio: %s" % ( audio, ), xbmc.LOGNOTICE )
+        xbmc.log( "[script.cinemaexperience] - Queued Movie Information", xbmc.LOGNOTICE )
+        xbmc.log( "[script.cinemaexperience] " + log_sep, xbmc.LOGNOTICE )
+        xbmc.log( "[script.cinemaexperience] - Title: %s" % ( movie_title, ), xbmc.LOGNOTICE )
+        xbmc.log( "[script.cinemaexperience] - Path: %s" % ( movie, ), xbmc.LOGNOTICE )
+        xbmc.log( "[script.cinemaexperience] - Genre: %s" % ( genre, ), xbmc.LOGNOTICE )
+        xbmc.log( "[script.cinemaexperience] - MPAA: %s" % ( mpaa, ), xbmc.LOGNOTICE )
+        xbmc.log( "[script.cinemaexperience] - Audio: %s" % ( audio, ), xbmc.LOGNOTICE )
         if ( _S_( "audio_videos_folder" ) ):
-            xbmc.log( "- Folder: %s" % ( xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "dtsma": "DTS-MA", "ac3": "Dolby" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ], ), xbmc.LOGNOTICE )
-        xbmc.log( "-" * 70, xbmc.LOGNOTICE )
+            xbmc.log( "[script.cinemaexperience] - Folder: %s" % ( xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "dtsma": "DTS-MA", "ac3": "Dolby" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ], ), xbmc.LOGNOTICE )
+        xbmc.log( "[script.cinemaexperience] %s" % log_sep, xbmc.LOGNOTICE )
         # return results
         return mpaa, audio, genre, movie
 
@@ -227,24 +230,28 @@ class Main:
                 title = title or os.path.splitext( os.path.basename( path ) )[ 0 ]
                 # create the listitem and fill the infolabels
                 listitem = self._get_listitem( title=title,
-                                                        url=path,
-                                                        thumbnail=thumbnail,
-                                                        plot=plot,
-                                                        runtime=runtime,
-                                                        mpaa=mpaa,
-                                                        release_date=release_date,
-                                                        studio=studio or _L_( 32604 ),
-                                                        genre=genre or _L_( 32605 ),
-                                                        writer=writer,
-                                                        director=director
-                                                    )
+                                                    url=path,
+                                                    thumbnail=thumbnail,
+                                                    plot=plot,
+                                                    runtime=runtime,
+                                                    mpaa=mpaa,
+                                                    release_date=release_date,
+                                                    studio=studio or _L_( 32604 ),
+                                                    genre=genre or _L_( 32605 ),
+                                                    writer=writer,
+                                                    director=director
+                                                )
                 # add our video/picture to the playlist or list
                 if ( isinstance( playlist, list ) ):
                     playlist += [ ( path, listitem, ) ]
                 else:
                     playlist.add( path, listitem, index=index )
             except:
-                traceback.print_exc()
+                if items > count:
+                    xbmc.log("[script.cinemaexperience] - Looking for %d files, but only found %d" % (items, count), level=xbmc.LOGNOTICE)
+                    break
+                else:
+                    traceback.print_exc()
                 
     def _get_items( self, paths, media_type ):
         # reset folders list

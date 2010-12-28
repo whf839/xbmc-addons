@@ -1,3 +1,6 @@
+1.0.9
+- fixed log information
+
 1.0.8
 - Added an adjustable Fade time for the background music during trivia
 - Fixed Skip Watched Trailers(now it skips the watched ones :) 
@@ -18,7 +21,7 @@
 - Added the ability to add Countdown Video before movie starts
 - Added Audio Fade(when Trivia is complete) - Thanks for the code Nuka
 - Added Audio Rise(when first video after Trivia is complete) - Thanks for the code Nuka
-- Changed Trivia Volume Setting to percentage of total volume(instead of percentage of current volume)
+- Changed Trivia Volume Setting to percentage of maximum volume(instead of percentage of current volume)
 - Added Nuka's added code for slide.xml.
 - Oh....  And added myself as one of the authors... :)
 - Trivia Music Playlist - still broken.. :(
