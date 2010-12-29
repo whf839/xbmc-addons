@@ -15,10 +15,10 @@
         <setting id="trivia_limit_query" type="bool" visible="!eq(-3,0)" enable="!eq(-2,)" label="32290" default="true" />
         <setting id="trivia_rating" type="labelenum"  visible="!eq(-4,0)" enable="!eq(-3,) + eq(-1,false)" values="G|PG|PG-13|R|NC-17|--" label="32291" default="--" />
         <setting id="trivia_intro" type="enum" visible="!eq(-5,0)"  enable="!eq(-4,)" lvalues="32281|32282|32283|32284|32285|32286|32287" label="32280" default="0" />
-        <setting id="trivia_intro_file" type="file" visible="!eq(-6,0) + eq(-1,1)" enable="!eq(-5,)" label="32288" default="" />
+        <setting id="trivia_intro_file" type="video" visible="!eq(-6,0) + eq(-1,1)" enable="!eq(-5,)" label="32288" default="" />
         <setting id="trivia_intro_folder" type="folder" visible="!eq(-7,0) + gt(-2,1)" enable="!eq(-6,)" label="32289" default="" />
         <setting id="trivia_outro" type="enum" visible="!eq(-8,0)"  enable="!eq(-7,)" lvalues="32281|32282|32283|32284|32285|32286|32287" label="32250" default="0" />
-        <setting id="trivia_outro_file" type="file" visible="!eq(-9,0) + eq(-1,1)" label="32288" default="" />
+        <setting id="trivia_outro_file" type="video" visible="!eq(-9,0) + eq(-1,1)" label="32288" default="" />
         <setting id="trivia_outro_folder" type="folder" visible="!eq(-10,0) + gt(-2,1)" label="32289" default="" />
         <setting id="trivia_music" type="bool" visible="!eq(-11,0)" enable="!eq(-10,)" label="32231" default="false" />
         <setting id="trivia_music_file" type="audio" visible="!eq(-1,false)" enable="!eq(-1,false)" label="32230" default="" />
