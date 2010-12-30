@@ -1,4 +1,4 @@
-#summary How to add support for Cinema Experience to your skin
+#summary How to add support for [CinemaExperienceIntro Cinema Experience] to your skin
 #labels Phase-Support,Cinema.Experience
 
 = Introduction =
