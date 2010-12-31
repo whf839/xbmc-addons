@@ -1,0 +1,26 @@
+#summary A collection of video and trivia sources for Cinema Experience
+#labels Phase-Support,Cinema.Experience
+
+= Introduction =
+Now that you have installed the Cinema Experience add-on, now you need some trivia slides and video clips that can be played in front of your movie
+
+= Trailers =
+While Cinema Experience can play trailers you have in your movie library, it can also play current trailers. You can configure the script to use trailers available in the Apple Movie Trailers Lite add-on, but if your internet connection is choppy the experience is ruined.
+
+These programs download the latest trailers from the internet and store them on your server.
+
+== Downloaders ==
+  * [http://blog.contriving.net/2009/12/26/apple-trailer-downloader/ ATD (Apple Trailer Downloader)] - Downloads trailers available on http://trailers.apple.com/. Written in python, so works on a variety of platforms *Currently Broken*
+  * [http://hdtrailersdler.codeplex.com/ HD-Trailers.net Downloader] - Downloads trailers from HD-Trailers.net. Written in .NET, works only on Windows
+
+== Other Sources ==
+  * [http://www.youtube.com/trailers Youtube]
+  * [http://www.imdb.com IMDB.com]
+  * [http://www.themoviedb.com The Movie Database]
+
+
+= Trivia =
+
+= Videos =
+
+= Other Ideas =
