@@ -12,7 +12,7 @@ We recommend that you add a button to DialogVideoInfo.xml similar to this (taken
 <control type="button" id="13">
     <description>Home Theatre</description>
     <include>ButtonInfoDialogsCommonValues</include>
-    <label>$LOCALIZE[31212]</label>
+    <label>Cinema</label>
     <onclick>Playlist.Clear</onclick>
     <onclick>Dialog.Close(MovieInformation)</onclick>
     <onclick>XBMC.RunScript(script.cinema.experience)</onclick>
