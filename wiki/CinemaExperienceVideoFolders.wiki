@@ -9,19 +9,17 @@ http://www.mediafire.com/imgbnc.php/8d2afc99db5cacef4297ce58b4ec113cefd9d06c7c6a
 
 = Playback order =
 Videos are played in the following order:
-  # Trivia Intro
+  # Trivia Intro Video(s)
   # Slides w/ music playlist
-  # Trivia Outro
-  # Movie Theater Intro Clips
-  # Coming Attractions Intro
-  # Trailer
-  # Coming Attractions Outro
-  # Feature Presentation Intro
+  # Trivia Outro Video(s)
+  # Movie Theater Intro Video(s)
+  # Coming Attractions Intro Video(s)
+  # Trailer(s)
+  # Coming Attractions Outro Video(s)
+  # Feature Presentation Intro Video(s)
   # Rating
   # Audio (DD/DTS/THX etc)
   # Movie Starts
-  # Feature Presentation Outro
-
-
-
+  # Feature Presentation Outro Video(s)
+  # Movie Theatre Outro Video(s)
 
