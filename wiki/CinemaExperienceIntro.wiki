@@ -23,3 +23,7 @@ It integrates with the script Apple Movie Trailers to stream trailers directly f
 
 ==How to get It==
 In XBMC v10 or later, install using the add-on manager. Download and install the [http://xbmc-addons.googlecode.com/svn/packages/repository.googlecode.xbmc-addons.zip xbmc-addons custom repository], then look for *Cinema Experience* under _Program Addons_
+
+==Configuration==
+  * [CinemaExperienceSkinSupport How to add support in your skin]
+  * [CinemaExperienceVideoFolders Recommended folder structure]
