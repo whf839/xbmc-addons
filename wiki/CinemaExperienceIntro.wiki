@@ -1,8 +1,9 @@
 #summary An Introduction to the Cinema Experience Script for XBMC
 #labels Cinema.Experience,Phase-Deploy
-
+<img src="http://xbmc-addons.googlecode.com/svn/addons/script.cinema.experience/icon.png" align="right" />
 ==What is Cinema Experience?==
 ===Or How I Stopped Worrying and Loved my Home Theater===
+
 This script will add the wow factor to your home theater and give you the true cinema experience you deserve (except you still have to supply the popcorn and drinks).
 
 This script allows you to play slides, previews(trailers) and other videos that give the full cinema feel(Intro's and Outro's) Slides can consist in almost any jpg picture(many Movie Q&A, Movie Stills, Movie Fact packs already exist) 
