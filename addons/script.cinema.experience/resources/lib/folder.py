@@ -10,7 +10,7 @@ def dirEntries( dir_name, media_type="files", recursive="False" ):
             recursive  - Setting to "True" searches Parent and subdirectories, Setting to "False" only search Parent Directory
     '''
     fileList = []
-    json_query = '{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "%s", "recursive": "%s"}, "id": 1}' % ( dir_name, media_type, recursive )
+    json_query = '{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "%s", "recursive": "%s"}, "id": 1}' % ( escapeDirJSON( dir_name ), media_type, recursive )
     json_folder_detail = xbmc.executeJSONRPC(json_query)
     file_detail = re.compile( "{(.*?)}", re.DOTALL ).findall(json_folder_detail)
     for f in file_detail:
@@ -23,3 +23,14 @@ def dirEntries( dir_name, media_type="files", recursive="False" ):
         else:
             continue
     return fileList
+
+def escapeDirJSON ( dir_name ):
+    ''' escapes characters in a directory path for use in JSON RPC calls
+        
+        Method to call:
+        escapeDirJSON( dir_name )
+            dir_name    - the name of the directory
+    '''
+    if (dir_name.find(":")):
+        dir_name = dir_name.replace("\\", "\\\\")
+    return dir_name

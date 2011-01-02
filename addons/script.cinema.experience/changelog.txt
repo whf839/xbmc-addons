@@ -1,8 +1,8 @@
 1.0.9
-- fixed log information
-- fixed music playlist in trivia
-- Added the ability to play music from a folder
-
+- Bug Fix: #67 Music playback over trivia breaks script
+- Enhancement: #69 Trivia Music playback from folder
+- Enhancement: #72 Reset watched trivia automatically if all watched
+- Enhancement: Log Entries now prefixed with [script.cinemaexperience]
 
 1.0.8
 - Added an adjustable Fade time for the background music during trivia
