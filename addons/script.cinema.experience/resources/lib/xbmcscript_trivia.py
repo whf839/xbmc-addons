@@ -1,5 +1,5 @@
 # main imports
-import os
+import os, sys
 import xbmcgui
 import xbmc
 import xbmcaddon
@@ -9,8 +9,13 @@ from random import shuffle
 import re
 
 _A_ = xbmcaddon.Addon('script.cinema.experience')
-_ = xbmc.getLocalizedString
-#xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "AudioPlayer.Stop", "id": 1}')
+_ = _A_.getLocalizedString
+
+#xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "AudioPlaylist.Clear", "id": 1}')
+BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( _A_.getAddonInfo('path'), 'resources' ) )
+sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
+from music import parse_playlist
+from folder import dirEntries
 
 class Trivia( xbmcgui.WindowXML ):
     # base paths
@@ -34,13 +39,17 @@ class Trivia( xbmcgui.WindowXML ):
         xbmc.executehttpapi( "SetGUISetting(3,screensaver.mode,None)" )
         try: ##TODO: remove this try block when done
             # fetch the slides
+            kwargs[ "dialog" ].update( -1, _( 32510 )  )
             self._fetch_slides()
+            if ( int(self.settings[ "trivia_music" ]) > 0):
+                kwargs[ "dialog" ].update( -1, _( 32511 )  )
+                self.build_playlist()                
         except:
             import traceback
             traceback.print_exc()
             raise
         # close dialog
-        kwargs[ "dialog" ].close()
+        kwargs[ "dialog" ].close()        
         #display slideshow
         self.doModal()
 
@@ -61,11 +70,37 @@ class Trivia( xbmcgui.WindowXML ):
             print "current volume: %d" % self.current_volume
         except: # Fall back onto httpapi
             self.current_volume = int( xbmc.executehttpapi( "GetVolume" ).replace( "<li>", "" ) )
-            print "current volume: %d" % self.current_volume
+            print "current volume: %d" % self.current_volume      
         # our complete shuffled list of slides
         self.slide_playlist = []
         self.tmp_slides = []
         self.image_count = 0
+        
+    def build_playlist( self ):
+        xbmc.log( "[script.cinemaexperience] - Building Music Playlist", xbmc.LOGNOTICE)
+        xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "AudioPlaylist.Clear", "id": 1}')
+        track_location =[]
+        self.music_playlist = xbmc.PlayList( xbmc.PLAYLIST_MUSIC )
+        # check to see if playlist or music file is selected
+        if ( int(self.settings[ "trivia_music" ]) == 1 ):
+            if (self.settings[ "trivia_music_file" ].endswith(".m3u")):
+                playlist_file = open( self.settings[ "trivia_music_file" ], 'rb')
+                saved_playlist = playlist_file.readlines()
+                track_info, track_location = parse_playlist( saved_playlist, xbmc.getSupportedMedia('music') )            
+            elif ( os.path.splitext( self.settings[ "trivia_music_file" ] )[1] in xbmc.getSupportedMedia('music') ):
+                count = 0
+                for count in range(100):
+                    track_location.append( self.settings[ "trivia_music_file" ] )
+        # otherwise 
+        else:
+            if ( self.settings[ "trivia_music_folder" ] ):
+                # search given folder and subfolders for files
+                track_location = dirEntries( self.settings[ "trivia_music_folder" ], "music", "True" )
+                # track_location = dirEntries( self.settings[ "trivia_music_folder" ], True, xbmc.getSupportedMedia('music') ) 
+        # shuffle playlist
+        shuffle( track_location )
+        for track in track_location:
+            self.music_playlist.add( track,  )
 
     def _fetch_slides( self ):
         # get watched list
@@ -81,7 +116,7 @@ class Trivia( xbmcgui.WindowXML ):
         print "## Starting Trivia Music"
         # did user set this preference
         print "trivia music: %s" % self.settings[ "trivia_music" ]
-        if ( self.settings[ "trivia_music" ] == "true" ):
+        if ( int(self.settings[ "trivia_music" ]) > 0):
             # check to see if script is to adjust the volume
             if ( self.settings[ "trivia_adjust_volume" ] == "true" ):
                 print "Adjusting Volume"
@@ -90,7 +125,10 @@ class Trivia( xbmcgui.WindowXML ):
                 # set the volume percent of current volume
                 xbmc.executebuiltin( "XBMC.SetVolume(%d)" % ( volume, ) )
             # play music
-            xbmc.Player( xbmc.PLAYLIST_MUSIC ).play( self.settings[ "trivia_music_file" ] )
+            if (self.settings[ "trivia_music_file" ].endswith(".m3u")):
+                xbmc.Player().play( self.music_playlist )
+            #play_list = xbmc.PlayList(xbmc.PLAYLIST_AUDIO)
+            #play_list.add(self.settings[ "trivia_music_file" ])
             #xbmc.Player().play( self.settings[ "trivia_music_file" ] )
             
     def _get_slides( self, paths ):
@@ -217,6 +255,10 @@ class Trivia( xbmcgui.WindowXML ):
         if ( self.image_count > len( self.slide_playlist ) -1 ):
             self._exit_trivia()
         else:
+            # check to see if playlist has come to an end
+            if not ( xbmc.Player().isPlayingAudio() and ( int(self.settings[ "trivia_music" ]) > 0) ): 
+                self.build_playlist()
+                xbmc.Player().play( self.music_playlist )
             # set the property the image control uses
             xbmcgui.Window( xbmcgui.getCurrentWindowId() ).setProperty( "Slide", self.slide_playlist[ self.image_count ] )
             # add id to watched file TODO: maybe don't add if not user preference

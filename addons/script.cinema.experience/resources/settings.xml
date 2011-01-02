@@ -20,12 +20,13 @@
         <setting id="trivia_outro" type="enum" visible="!eq(-8,0)"  enable="!eq(-7,)" lvalues="32281|32282|32283|32284|32285|32286|32287" label="32250" default="0" />
         <setting id="trivia_outro_file" type="video" visible="!eq(-9,0) + eq(-1,1)" label="32288" default="" />
         <setting id="trivia_outro_folder" type="folder" visible="!eq(-10,0) + gt(-2,1)" label="32289" default="" />
-        <setting id="trivia_music" type="bool" visible="!eq(-11,0)" enable="!eq(-10,)" label="32231" default="false" />
-        <setting id="trivia_music_file" type="audio" visible="!eq(-1,false)" enable="!eq(-1,false)" label="32230" default="" />
-        <setting id="trivia_adjust_volume" type="bool" visible="!eq(-2,false)" enable="!eq(-1,)" label="32232" default="true" />
-        <setting id="trivia_music_volume" type="slider" visible="!eq(-1,false)" enable="!eq(-1,false)" range="0,100" label="32240" default="100" />
-        <setting id="trivia_fade_volume" type="bool" visible="!eq(-2,false)" enable="!eq(-2,false)" label="32241" default="true" />
-        <setting id="trivia_fade_time" type="slider" visible="!eq(-3,false)" enable="!eq(-1,false)" range="0,15" label="32242" default="2" />
+        <setting id="trivia_music" type="enum" visible="!eq(-11,0)" enable="!eq(-10,)" lvalues="32281|32243|32244" label="32231" default="0" />
+        <setting id="trivia_music_file" type="audio" visible="!eq(-1,false) + eq(-1,1)" enable="!eq(-1,0)" label="32230" default="" />
+        <setting id="trivia_music_folder" type="folder" visible="!eq(-2,false) + gt(-2,1)" enable="!eq(-2,0)" label="32230" default="" />
+        <setting id="trivia_adjust_volume" type="bool" visible="gt(-3,0)" enable="!eq(-3,0)" label="32232" default="true" />
+        <setting id="trivia_music_volume" type="slider" visible="!eq(-1,false) + gt(-4,0)" enable="!eq(-1,false) + gt(-4,0)" range="0,100" label="32240" default="100" />
+        <setting id="trivia_fade_volume" type="bool" visible="!eq(-2,false) + gt(-5,0)" enable="!eq(-2,false) + gt(-5,0)" label="32241" default="true" />
+        <setting id="trivia_fade_time" type="slider" visible="!eq(-3,false) + gt(-6,0)" enable="!eq(-1,false) + gt(-6,0)" range="0,15" label="32242" default="2" />
         <!--
         <setting id="trivia_music_volume" type="labelenum" visible="!eq(-4,false)" enable="eq(-2,true)" values="10%|20%|30%|40%|50%|60%|70%|80%|90%|100%" label="32240" default="90%" />
         -->

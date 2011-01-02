@@ -1,5 +1,8 @@
 1.0.9
 - fixed log information
+- fixed music playlist in trivia
+- Added the ability to play music from a folder
+
 
 1.0.8
 - Added an adjustable Fade time for the background music during trivia

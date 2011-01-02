@@ -55,28 +55,30 @@
     <string id="32223">15 sec</string>
     <string id="32224">20 sec</string>
     <string id="32225">30 sec</string>
-    <string id="32230">- Music Playlist</string>
+    <string id="32230">- Music</string>
     <string id="32231">- Play Music During Trivia Slideshow</string>
     <string id="32232">   - Adjust Volume During Slideshow?</string>
     <string id="32240">      - Music Volume (% of Max Volume)</string>
     <string id="32241">      - Fade Volume After Slideshow?</string>
     <string id="32242">         - Fade Time(in seconds)</string>
+    <string id="32243">Music File/Playlist</string>
+    <string id="32244">Music Folder</string>
     <string id="32250">- Outro Video</string>
     <string id="32260">- Outro Music</string>
     <string id="32270">- Select only unwatched Slides</string>
     <string id="32271">   - Reset Slides watched status</string>
     <string id="32280">- Intro Video</string>
     <string id="32281">None</string>
-    <string id="32282">Single Video/Image</string>
-    <string id="32283">1 Random Video/Image</string>
-    <string id="32284">2 Random Videos/Images</string>
-    <string id="32285">3 Random Videos/Images</string>
-    <string id="32286">4 Random Videos/Images</string>
-    <string id="32287">5 Random Videos/Images</string>
-    <string id="32288">   - Video/Image File</string>
-    <string id="32289">   - Video/Image Folder</string>
-    <string id="32290">- Limit Slides by MPAA Rating of Movie [I](requires slides.xml)[/I]</string>
-    <string id="32291">- MPAA Rating Limit for Slides [I](requires slides.xml)[/I]</string>
+    <string id="32282">Single Video</string>
+    <string id="32283">1 Random Video</string>
+    <string id="32284">2 Random Videos</string>
+    <string id="32285">3 Random Videos</string>
+    <string id="32286">4 Random Videos</string>
+    <string id="32287">5 Random Videos</string>
+    <string id="32288">   - Video File</string>
+    <string id="32289">   - Video Folder</string>
+    <string id="32290">- Limit Slides by Rating of Movie [I](requires slides.xml)[/I]</string>
+    <string id="32291">- Rating Limit for Slides [I](requires slides.xml)[/I]</string>
 
     <!-- Special videos settings -->
     <string id="32300">Movie Ratings Folder</string>
@@ -102,6 +104,7 @@
     <!-- Messages -->
     <string id="32500">Choosing random trailers...</string>
     <string id="32510">Randomizing trivia slideshow...</string>
+    <string id="32511">Building Music Playlist...</string>
     <string id="32520">Setting up playlist...</string>
     <string id="32530">Resetting watched trivia slides list...</string>
     <string id="32531">Watched trivia slides list reset!</string>

@@ -19,7 +19,7 @@ import xbmcaddon
 
 _A_ = xbmcaddon.Addon( __scriptID__ )
 # language method
-_L_ = xbmc.getLocalizedString
+_L_ = _A_.getLocalizedString
 # settings method
 _S_ = _A_.getSetting
 
@@ -366,6 +366,7 @@ class Main:
                                 "trivia_fade_volume": _S_( "trivia_fade_volume" ),
                                 "trivia_fade_time": int( float( _S_( "trivia_fade_time" ) ) ),
                                 "trivia_music_file":  xbmc.translatePath( _S_( "trivia_music_file" ) ),
+                                "trivia_music_folder":  xbmc.translatePath( _S_( "trivia_music_folder" ) ),
                                 "trivia_music_volume": int( float( _S_( "trivia_music_volume" ) ) ),
                                 "trivia_unwatched_only": _S_( "trivia_unwatched_only" ) == "true"                                
                             }
