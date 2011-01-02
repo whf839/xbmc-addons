@@ -142,7 +142,7 @@
     </extension>
 </addon>
 
-<addon id="script.cinema.experience" name="Cinema Experience" version="1.0.8" provider-name="nuka1195-giftie">
+<addon id="script.cinema.experience" name="Cinema Experience" version="1.0.9" provider-name="nuka1195-giftie-ackbar">
     <requires>
         <import addon="xbmc.python" version="1.0"/>
         <import addon="script.module.pysqlite" version="2.5.6"/>
