@@ -241,6 +241,12 @@ class Trivia( xbmcgui.WindowXML ):
                 
         xbmc.log( "-----------------------------------------", xbmc.LOGNOTICE)
         xbmc.log( "[script.cinemaexperience] - total slides selected: %d" % len( self.slide_playlist ), xbmc.LOGNOTICE)
+        
+        # reset watched automatically if no slides are left
+        if ( len( self.slide_playlist ) == 0 and self.settings[ "trivia_unwatched_only" ] and len( self.watched ) > 0 ):
+            self._reset_watched()
+            #attempt to load our playlist again
+            self._shuffle_slides()
 
     def _next_slide( self, slide=1 ):
         # cancel timer if it's running
@@ -294,7 +300,13 @@ class Trivia( xbmcgui.WindowXML ):
             file_object.close()
         except:
             pass
-
+    
+    def _reset_watched( self ):
+        base_path = os.path.join( self.BASE_CURRENT_SOURCE_PATH, "trivia_watched.txt" )
+        if ( os.path.isfile( base_path ) ):
+            os.remove( base_path )
+            self.watched = []
+    
     def _get_slide_timer( self ):
         self.slide_timer = threading.Timer( self.settings[ "trivia_slide_time" ], self._next_slide,() )
         self.slide_timer.start()
