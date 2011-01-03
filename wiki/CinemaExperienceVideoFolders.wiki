@@ -19,7 +19,7 @@ Videos are played in the following order:
   # Feature Presentation Intro Video(s)
   # Rating
   # Audio (DD/DTS/THX etc)
+  # Countdown Video
   # Movie Starts
   # Feature Presentation Outro Video(s)
   # Movie Theatre Outro Video(s)
-
