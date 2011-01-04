@@ -10,7 +10,7 @@
     <string id="32002">nuka1195</string>
 
     <!-- Movie Avances settings -->
-    <string id="32100">Avances de Peliculas</string>
+    <string id="32100">Avances de Películas</string>
     <string id="32101">Ninguno</string>
     <string id="32102">1 Avance</string>
     <string id="32103">2 Avances</string>
@@ -24,24 +24,24 @@
     <string id="32113">Carpeta Local</string>
     <string id="32120">   - Ruta a datos</string>
     <string id="32130">   - Carpeta</string>
-    <string id="32140">   - Limitar Avances por Genero y Clasificación MPAA de la Pelicula</string>
-    <string id="32150">   - Limitar Avances segun Clasificación MPAA</string>
-    <string id="32160">   - Seleccionar Avances segun el Genero mas nuevo</string>
+    <string id="32140">   - Limitar Avances por Genero y Clasificación MPAA de la Película</string>
+    <string id="32150">   - Limitar Avances según Clasificación MPAA</string>
+    <string id="32160">   - Seleccionar Avances según el Genero mas nuevo</string>
     <string id="32170">   - Calidad preferida de Avances</string>
-    <string id="32171">Estandard</string>
+    <string id="32171">Estándar</string>
     <string id="32172">480p</string>
     <string id="32173">720p</string>
     <string id="32174">1080p</string>
     <string id="32180">      - Seleccionar solamente Avances en 720p/1080p</string>
-    <string id="32185">- Modo de reprodución de Avances</string>
+    <string id="32185">- Modo de reproducción de Avances</string>
     <string id="32186">Stream</string>
     <string id="32187">Descargar</string>
-    <string id="32190">- Seleccionar unicamente Avances no vistos</string>
+    <string id="32190">- Seleccionar únicamente Avances no vistos</string>
     <string id="32191">   - Resetear estado de Avances vistos</string>
-    <string id="32195">- Intro Proximanete</string>
+    <string id="32195">- Intro Próximamente</string>
     <string id="32196">   - Archivo</string>
     <string id="32197">   - Carpeta</string>
-    <string id="32198">- Proximanete Outro</string>
+    <string id="32198">- Próximamente Outro</string>
 
     <!-- Trivia quiz settings -->
     <string id="32200">Duración (en Minutos)</string>
@@ -60,56 +60,56 @@
     <string id="32223">15 sec</string>
     <string id="32224">20 sec</string>
     <string id="32225">30 sec</string>
-    <string id="32230">- Musica</string>
-    <string id="32231">- Reproducir Musica Durante la Presentación Trivia</string>
-    <string id="32232">   - Adjustar Volumen Durante la Presentación?</string>
-    <string id="32240">      - Volumen de Musica (% del Volumen Max)</string>
+    <string id="32230">- Música</string>
+    <string id="32231">- Reproducir Música Durante la Presentación Trivia</string>
+    <string id="32232">   - Ajustar Volumen Durante la Presentación?</string>
+    <string id="32240">      - Volumen de Música (% del Volumen Max)</string>
     <string id="32241">      - Atenuar Volumen tras Presentación?</string>
     <string id="32242">         - Tiempo de atenuación(en segundos)</string>
-    <string id="32243">Archivo/Playlist de Musica</string>
-    <string id="32244">Carpeta de Musica</string>
-    <string id="32250">- Outro Video</string>
-    <string id="32260">- Outro Musica</string>
-    <string id="32270">- Seleccionar unicamente Diapositivas no vistas</string>
+    <string id="32243">Archivo/Playlist de Música</string>
+    <string id="32244">Carpeta de Música</string>
+    <string id="32250">- Outro Vídeo</string>
+    <string id="32260">- Outro Música</string>
+    <string id="32270">- Seleccionar únicamente Diapositivas no vistas</string>
     <string id="32271">   - Resetear estado de Diapositivas vistas</string>
-    <string id="32280">- Intro Video</string>
+    <string id="32280">- Intro Vídeo</string>
     <string id="32281">Ninguno</string>
-    <string id="32282">Un solo Video</string>
-    <string id="32283">1 Video Aleatorio</string>
-    <string id="32284">2 Videos Aleatorios</string>
-    <string id="32285">3 Videos Aleatorios</string>
-    <string id="32286">4 Videos Aleatorios</string>
-    <string id="32287">5 Videos Aleatorios</string>
-    <string id="32288">   - Archivo de Video</string>
-    <string id="32289">   - Carpeta de Videos</string>
-    <string id="32290">- Limitar Diapositivas segun Clasificación de la Pelicula [I](requiere slides.xml)[/I]</string>
+    <string id="32282">Un solo Vídeo</string>
+    <string id="32283">1 Vídeo Aleatorio</string>
+    <string id="32284">2 Vídeos Aleatorios</string>
+    <string id="32285">3 Vídeos Aleatorios</string>
+    <string id="32286">4 Vídeos Aleatorios</string>
+    <string id="32287">5 Vídeos Aleatorios</string>
+    <string id="32288">   - Archivo de Vídeo</string>
+    <string id="32289">   - Carpeta de Vídeos</string>
+    <string id="32290">- Limitar Diapositivas según Clasificación de la Película [I](requiere slides.xml)[/I]</string>
     <string id="32291">- Limite de Calificaciones para Diapositivas [I](requiere slides.xml)[/I]</string>
 
     <!-- Special videos settings -->
-    <string id="32300">Carpeta de Calificaciones para Peliculas</string>
+    <string id="32300">Carpeta de Calificaciones para Películas</string>
     <string id="32320">Intro Presentación Estelar</string>
-    <string id="32321">Nignuna</string>
-    <string id="32322">Un unico Video/Playlist</string>
-    <string id="32323">1 Random Video</string>
-    <string id="32324">2 Videos Aleatorios</string>
-    <string id="32325">3 Videos Aleatorios</string>
-    <string id="32326">4 Videos Aleatorios</string>
-    <string id="32327">5 Videos Aleatorios</string>
+    <string id="32321">Ninguna</string>
+    <string id="32322">Un único Vídeo/Playlist</string>
+    <string id="32323">1 Video Aleatorio</string>
+    <string id="32324">2 Vídeos Aleatorios</string>
+    <string id="32325">3 Vídeos Aleatorios</string>
+    <string id="32326">4 Vídeos Aleatorios</string>
+    <string id="32327">5 Vídeos Aleatorios</string>
     <string id="32330">Presentación Estelar Outro</string>
     <string id="32340">- Archivo</string>
     <string id="32350">- Carpeta</string>
     <string id="32360">Carpeta Dolby/DTS</string>
     <string id="32370">Cortos Intro Sala de Cine</string>
     <string id="32380">Cortos Outro Sala de Cine</string>
-    <string id="32390">Archivo/Video Cuenta Regresiva para Pelicula</string>
+    <string id="32390">Archivo/Vídeo Cuenta Regresiva para Película</string>
 
     <!-- Misc settings -->
-    <string id="32400">Ejecutar script antes de videos</string>
+    <string id="32400">Ejecutar script antes de vídeos</string>
 
     <!-- Messages -->
     <string id="32500">Eligiendo avances aleatoreos...</string>
     <string id="32510">Mezclando presentación trivia...</string>
-    <string id="32511">Caragando Playlist para musica...</string>
+    <string id="32511">Cargando Playlist para musica...</string>
     <string id="32520">Configurando playlist...</string>
     <string id="32530">Reseteando lista de diapositivas vistas...</string>
     <string id="32531">Lista de diapositivas vistas reseteada!</string>
@@ -119,15 +119,15 @@
     <string id="32542">Reseteado de lista de avances vistos fallo!</string>
 
     <!-- Genre/Studio labels -->
-    <string id="32600">Intro Proximamente</string>
+    <string id="32600">Intro Próximamente</string>
     <string id="32601">Intro Presentación Estelar</string>
     <string id="32602">Presentación Estelar Outro</string>
     <string id="32603">Calificación MPAA</string>
     <string id="32604">Home Theatre</string>
-    <string id="32605">Avance de Pelicula</string>
+    <string id="32605">Avance de Película</string>
     <string id="32606">Dolby/DTS</string>
     <string id="32607">Cortos Sala de Cine</string>
-    <string id="32608">Proximamente Outro</string>
+    <string id="32608">Próximamente Outro</string>
     <string id="32609">Intro Trivia</string>
     <string id="32610">Trivia Outro</string>
     <string id="32611">Cuenta Regresiva</string>
@@ -139,9 +139,9 @@
     <string id="32703">Actualizar XBMC por favor.</string>
 
     <!-- Label separators -->
-    <string id="32800">Avances de Peliculas</string>
+    <string id="32800">Avances de Películas</string>
     <string id="32801">Presentación Trivia</string>
-    <string id="32802">Videos Especiales</string>
+    <string id="32802">Vídeos Especiales</string>
     <string id="32803">Ajustes Variados</string>
 
 </strings>
