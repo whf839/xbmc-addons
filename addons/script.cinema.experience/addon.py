@@ -1,6 +1,6 @@
 # constants
 __script__ = "Cinema Experience"
-__author__ = "nuka1195-giftie"
+__author__ = "nuka1195-giftie-ackbarr"
 __url__ = "http://code.google.com/p/xbmc-addons/"
 __version__ = "1.0.9"
 __XBMC_Revision__ = "34000"

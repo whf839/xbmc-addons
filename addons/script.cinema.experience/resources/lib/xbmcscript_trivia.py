@@ -95,8 +95,7 @@ class Trivia( xbmcgui.WindowXML ):
         else:
             if ( self.settings[ "trivia_music_folder" ] ):
                 # search given folder and subfolders for files
-                track_location = dirEntries( self.settings[ "trivia_music_folder" ], "music", "True" )
-                # track_location = dirEntries( self.settings[ "trivia_music_folder" ], True, xbmc.getSupportedMedia('music') ) 
+                track_location = dirEntries( self.settings[ "trivia_music_folder" ], "music", "TRUE" )
         # shuffle playlist
         shuffle( track_location )
         for track in track_location:
