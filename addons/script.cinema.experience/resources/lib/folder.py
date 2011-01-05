@@ -10,7 +10,6 @@ def dirEntries( dir_name, media_type="files", recursive="FALSE", contains="" ):
             recursive  - Setting to "TRUE" searches Parent and subdirectories, Setting to "FALSE" only search Parent Directory
     '''
     fileList = []
-    print xbmc.validatePath(dir_name)
     json_query = '{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "%s", "recursive": "%s"}, "id": 1}' % ( escapeDirJSON( dir_name ), media_type, recursive )
     json_folder_detail = xbmc.executeJSONRPC(json_query)
     file_detail = re.compile( "{(.*?)}", re.DOTALL ).findall(json_folder_detail)
@@ -19,8 +18,8 @@ def dirEntries( dir_name, media_type="files", recursive="FALSE", contains="" ):
         if match:
             if ( match.group(1).endswith( "/" ) or match.group(1).endswith( "\\" ) ):
                 if ( recursive == "TRUE" ):
-                    fileList.extend( dirEntries( match.group(1), media_type, recursive ) )
-            elif ( ( contains in match.group(1) and not contains=="" ) or contains=="" ):
+                    fileList.extend( dirEntries( match.group(1), media_type, recursive, contains ) )
+            elif not contains or ( contains and (contains in match.group(1) ) ):
                 fileList.append( match.group(1) )
         else:
             continue
