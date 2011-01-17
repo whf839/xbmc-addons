@@ -4,8 +4,8 @@ import xbmc, xbmcgui, xbmcplugin, urllib2, urllib, re, string, sys, os, tracebac
 __plugin__ =  'Revision3'
 __author__ = 'stacked <stacked.xbmc@gmail.com>'
 __url__ = 'http://code.google.com/p/plugin/'
-__date__ = '01-05-2011'
-__version__ = '1.0.4'
+__date__ = '01-17-2011'
+__version__ = '1.0.5'
 
 def open_url(url):
 	req = urllib2.Request(url)
