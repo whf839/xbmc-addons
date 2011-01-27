@@ -1,24 +1,27 @@
-import sys, os
+import sys, os, time
 import urllib, cgi, re, htmlentitydefs, xml.dom.minidom
 import xbmc, xbmcgui, xbmcplugin
 
-# plugin constants
+# plugin constants (used for svn repo installer on xbmc4xbox)
 __plugin__     = "Modland"
 __author__     = "BuZz [buzz@exotica.org.uk] / http://www.exotica.org.uk"
 __svn_url__    = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/music/modland"
-__version__    = "0.7"
+__version__    = "0.12"
+
+__settings__ = xbmcplugin
+__language__ = xbmc.getLocalizedString
 
 MODLAND_URL = "http://www.exotica.org.uk/mediawiki/extensions/ExoticASearch/Modland_xbmc.php"
 #MODLAND_URL = 'http://exotica.travelmate/mediawiki/extensions/ExoticASearch/Modland_xbmc.php'
 
-# try and get xbmc revision
-rev_re = re.compile('r(\d+)')
-try:
-  xbmc_rev = int(rev_re.search(xbmc.getInfoLabel( 'System.BuildVersion' )).group(1))
-except:
-  xbmc_rev = 0
+try: __xbmc_version__ = xbmc.getInfoLabel('System.BuildVersion')
+except: __xbmc_version__ = 'Unknown'
+class AppURLopener(urllib.FancyURLopener):
+    version = 'XBMC/' + __xbmc_version__ + ' - Download and play (' + os.name + ')'
 
-PLUGIN_DATA = xbmc.translatePath("special://masterprofile/plugin_data/" + __plugin__ )
+urllib._urlopener = AppURLopener()
+
+PLUGIN_DATA = xbmc.translatePath("special://masterprofile/plugin_data/" + __plugin__)
 SEARCH_FILE = os.path.join(PLUGIN_DATA, "search.txt")
 
 if not os.path.isdir(PLUGIN_DATA):
@@ -46,7 +49,7 @@ def get_params(defaults):
 
 def show_options():
   url =  sys.argv[0] + '?' + urllib.urlencode( { 'mode': "search" } )
-  li = xbmcgui.ListItem("Search for game/demo music on Modland")
+  li = xbmcgui.ListItem(__language__(30000))
   ok = xbmcplugin.addDirectoryItem(handle, url, listitem = li, isFolder = True)
 
   # get list of saved searches
@@ -54,14 +57,18 @@ def show_options():
   for search in search_list:
     li = xbmcgui.ListItem(search)
     url = sys.argv[0] + '?' + urllib.urlencode( { 'mode': "search", 'search': search } )
-    cmd = "XBMC.RunPlugin(%s?mode=deletesearch&search=%s)" % (sys.argv[0], urllib.quote_plus(search) )
-    li.addContextMenuItems( [ ("Delete saved search", cmd) ] )
+    search_q = urllib.quote_plus(search)
+    menu_items = [
+      ( __language__(30006), "XBMC.RunPlugin(%s?mode=edit&search=%s)" % (sys.argv[0], search_q ) ),
+      ( __language__(30001), "XBMC.RunPlugin(%s?mode=delete&search=%s)" % (sys.argv[0], search_q ) ),
+      ]
+    li.addContextMenuItems( menu_items )
     ok = xbmcplugin.addDirectoryItem(handle, url, listitem = li, isFolder = True)
 
   xbmcplugin.endOfDirectory(handle, succeeded = True, updateListing = False, cacheToDisc = False )
 
-def get_search():
-  kb = xbmc.Keyboard("", "Enter search string")
+def get_search(search = ''):
+  kb = xbmc.Keyboard(search, __language__(30002))
   kb.doModal()
   if not kb.isConfirmed():
     return None
@@ -71,6 +78,11 @@ def get_search():
   save_list(SEARCH_FILE, search_list)
   return search
 
+def delete_search(search):
+  search_list = load_list(SEARCH_FILE)
+  search_list.remove(search)
+  save_list(SEARCH_FILE, search_list)
+  
 def get_results(search):
 
   url = MODLAND_URL + '?' + urllib.urlencode( { 'qs': search } )
@@ -97,16 +109,13 @@ def get_results(search):
 
     li = xbmcgui.ListItem( label )
     li.setInfo( type = 'music', infoLabels = { 'title': label, 'genre': format, 'artist': artist, 'album': collect } )
+    li.setProperty('mimetype', 'audio/ogg')
+    # download context menu
+    file = make_filename(artist + ' - ' + title)
+    cmd = "XBMC.RunPlugin(%s?mode=download&url=%s&file=%s)" % (sys.argv[0], urllib.quote_plus(stream_url), urllib.quote_plus(file.encode('utf-8')) )
+    li.addContextMenuItems( [ (__language__(30003), cmd) ] )
 
-    # revision 26603 adds my patch with support for ogg mime types for paplayer so we can pass
-    # the url directly, otherwise we pass back to the plugin and force an alternative player
-    if xbmc_rev >= 26603:
-      url = stream_url
-    else:
-      url = sys.argv[0] + '?'
-      url += urllib.urlencode( { 'mode': 'play', 'title': title, 'artist': artist, 'genre': format, 'album': collection, 'url': stream_url } )
-
-    ok = xbmcplugin.addDirectoryItem(handle, url, listitem = li, isFolder = False, totalItems = count)
+    ok = xbmcplugin.addDirectoryItem(handle, stream_url, listitem = li, isFolder = False, totalItems = count)
 
   xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_TITLE)
   xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_ARTIST)
@@ -114,11 +123,35 @@ def get_results(search):
   xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_ALBUM)
   xbmcplugin.endOfDirectory(handle = handle, succeeded = True)
 
-def play_stream(url, title, info):
-  listitem = xbmcgui.ListItem(title)
-  listitem.setInfo ( 'music', info )
-  player = xbmc.Player(xbmc.PLAYER_CORE_MPLAYER)
-  player.play(url, listitem)
+def download_and_play(url, file):
+  path = __settings__.getSetting('download_path')
+  if path == '': __settings__.openSettings(sys.argv[0])
+  path = __settings__.getSetting('download_path')
+  if path == '':
+      d = xbmcgui.Dialog()
+      d.ok(__language__(30004), __language__(30005))
+      return
+
+  filepath = os.path.join(path, file + '.ogg')
+  xbmc.executebuiltin('Notification(Modland - Downloading...,' + file + ', -1)')
+  urllib.urlretrieve (url, filepath)
+  urllib.urlcleanup()
+  xbmc.executebuiltin('Notification(Modland - Downloaded,' + file + ', 1)')
+  player = xbmc.Player(xbmc.PLAYER_CORE_PAPLAYER)
+  player.play( filepath )
+
+def make_filename(name):
+    import unicodedata
+    # remove extension
+    name = os.path.splitext(name)[0]
+    # normalise and strip non valid chars
+    name = unicodedata.normalize('NFKD', name).encode('ascii', 'ignore')
+    name = re.sub('[^a-zA-Z0-9_\-.() ]+', '', name)
+    try: xbmc_os = os.environ.get('OS')
+    except: xbmc_os = "unknown"
+    # limit length on xbox (excluding .xxx extension)
+    if xbmc_os == 'xbox': name = name[:38]
+    return name
 
 # load a list from a file, removing any duplicates and stripped wihtespace/linefeeds
 def load_list(file):
@@ -146,14 +179,16 @@ search = params['search']
 if mode == None:
   show_options()
 
-elif mode == 'deletesearch':
-  search_list = load_list(SEARCH_FILE)
-  search_list.remove(search)
-  save_list(SEARCH_FILE, search_list)
+elif mode == 'edit':
+  delete_search(search)
+  get_search(search)
+  xbmc.executebuiltin('Container.Refresh')
+
+elif mode == 'delete':
+  delete_search(search)
   xbmc.executebuiltin('Container.Refresh')
 
 elif mode == 'search':
-
   if search == None:
     search = get_search()
   else:
@@ -164,12 +199,7 @@ elif mode == 'search':
   else:
     show_options()
 
-elif mode == 'play':
-  title = urllib.unquote_plus(params['title'])
-  artist = urllib.unquote_plus(params['artist'])
-  genre = urllib.unquote_plus(params['genre'])
-  album = urllib.unquote_plus(params['album'])
-  url = urllib.unquote_plus(params['url'])
-
-  info = { 'title': title, 'artist': artist, 'genre': genre, 'album': album }
-  play_stream(url, title, info)
+elif mode == 'download':
+  url = params['url']
+  file = params['file']
+  download_and_play(url, file)
