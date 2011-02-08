@@ -1,7 +1,7 @@
 <window>
 	<animation effect="fade" time="200">WindowOpen</animation>
 	<animation effect="fade" time="200">WindowClose</animation>
-    <allowoverlays>false</allowoverlays>
+    <allowoverlay>false</allowoverlay>
 	<controls>
 		<control type="image">
 			<posx>0</posx>
