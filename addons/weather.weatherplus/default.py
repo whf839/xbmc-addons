@@ -7,12 +7,12 @@ import sys
 import urllib, os.path, xbmc, re, htmlentitydefs, time
 
 # Script constants
-__plugin__ = "weather.com plus"
-__pluginname__ = "weather.com+"
-__author__ = "nuka1195"
+__plugin__ = "weather.com+ for Dharma"
+__pluginname__ = "weather.com plus"
+__author__ = "brightsr (original sources by nuka1195)"
 __url__ = "http://code.google.com/p/xbmc-addons/"
-__svn_url__ = "http://xbmc-addons.googlecode.com/svn/trunk/plugins/weather/weather.com%20plus"
-__version__ = "1.3.1"
+__svn_url__ = "http://xbmc-addons.googlecode.com/svn/addons/weather.weather.plus"
+__version__ = "1.1.6"
 __svn_revision__ = "$Revision$"
 __XBMC_Revision__ = "21010"
 
@@ -30,7 +30,7 @@ def _check_compatible():
         ok = 2
     # spam revision info
     # xbmc.log( "     ** Required XBMC Revision: r%s **" % ( __XBMC_Revision__, ), xbmc.LOGNOTICE )
-    # xbmc.log( "     ** Found XBMC Revision: r%d [%s] **" % ( xbmc_rev, ( "Not Compatible", "Compatible", "Unknown", )[ ok ], ), xbmc.LOGNOTICE )
+    xbmc.log( "     ** Found XBMC Revision: r%d [%s] **" % ( xbmc_rev, ( "Not Compatible", "Compatible", "Unknown", )[ ok ], ), xbmc.LOGNOTICE )
     #return result
     return ok
 
