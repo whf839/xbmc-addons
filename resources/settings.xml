@@ -2,7 +2,7 @@
 <settings>
 <!-- Trivia settings -->
 
-    <category label="Trivia">
+    <category label="32801">
         <setting type="lsep" label="32801" />
         <setting id="trivia_total_time" type="slider" range="0,60" label="32200" default="5" />
         <setting id="trivia_folder" type="folder" visible="!eq(-1,0)" source="files" label="32210" default="" />
@@ -28,7 +28,7 @@
     
 <!-- Special videos settings -->
 
-    <category label="Special Videos">    
+    <category label="32802">    
         <setting type="lsep" label="32802" />
         <setting id="mte_intro" type="enum" lvalues="32321|32322|32323|32324|32325|32326|32327" label="32370" default="0" />
         <setting id="mte_intro_file" type="video" visible="eq(-1,1)" label="32340" default="" />
@@ -53,7 +53,7 @@
     
 <!-- Trailers settings -->
 
-    <category label="Trailers">
+    <category label="32800">
         <setting type="lsep" label="32800" />
         <setting id="trailer_count" type="enum" lvalues="32101|32102|32103|32104|32105|32106|32107" label="32100" default="0" />
         <setting id="cav_intro" type="enum" visible="!eq(-1,0)" lvalues="32321|32322|32323|32324|32325|32326|32327" label="32195" default="0" />
@@ -77,16 +77,17 @@
     
 <!-- Feature Presentations -->
 
-    <category label="Feature Presentation">    
+    <category label="32803">    
         <setting type="lsep" label="32803" />
         <setting id="number_of_features" type="enum" lvalues="32411|32412|32413|32414|32415" label="32410" default="0" />
         <setting id="intermission_video" type="enum" lvalues="32321|32322|32323|32324|32325|32326|32327" label="32418" default="0" />
         <setting id="intermission_video_file" type="video" visible="eq(-1,1)" label="32419" default="" />
         <setting id="intermission_video_folder" type="folder" visible="gt(-2,1)" source="video" label="32420" default="" />
         <setting id="intermission_audio" type="bool" label="32430" default="true" />
+        <setting id="intermission_ratings" type="bool" label="32440" default="true" />
     </category>
     
-    <category label="Misc">    
+    <category label="32804">    
         <setting type="lsep" label="32803" />
         <setting id="autorefresh" type="bool" label="32401" default="true" />
         <setting id="autorefresh_movie" type="bool" visible="eq(-1,true)" enable="eq(-1,true)" label="32402" default="false" />

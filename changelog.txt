@@ -1,3 +1,7 @@
+1.0.17 
+- Enhancement: Added Intermission Rating Video
+- Removed version testing(doesn't work with lastest and source code)
+
 1.0.16
 - Enhancement: Turn Auto refresh back on for Movie !! Audio Format Videos need to be used for this to work !!
 
