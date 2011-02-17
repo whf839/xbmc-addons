@@ -104,18 +104,21 @@
   <string id="32540">Återställer listan av sedda trailers...</string>
   <string id="32541">Sedda trailerslistsåterställning!</string>
   <string id="32542">Återställning av sedda trailerslistan misslyckades!</string>
-  <string id="32600">Kommande attraktioner intro</string>
-  <string id="32601">Föreställningspresentationsintro</string>
-  <string id="32602">Slut på föreställningspresentationen</string>
-  <string id="32603">MPAA betyg</string>
-  <string id="32604">Hemmabio</string>
-  <string id="32605">Filmtrailer</string>
-  <string id="32606">Dolby/DTS</string>
-  <string id="32607">Movie Theater klipp</string>
-  <string id="32608">Kommande attraktionersoutro</string>
-  <string id="32609">Trivia-intro</string>
-  <string id="32610">Trivia-outro</string>
-  <string id="32611">Countdown</string>
+    <!-- Do not Translate -->
+    <string id="32600">Coming Attractions Intro</string>
+    <string id="32601">Feature Presentation Intro</string>
+    <string id="32602">Feature Presentation Outro</string>
+    <string id="32603">MPAA Rating</string>
+    <string id="32604">Home Theatre</string>
+    <string id="32605">Movie Trailer</string>
+    <string id="32606">Audio Format</string>
+    <string id="32607">Movie Theater Clips</string>
+    <string id="32608">Coming Attractions Outro</string>
+    <string id="32609">Trivia Intro</string>
+    <string id="32610">Trivia Outro</string>
+    <string id="32611">Countdown</string>
+    <string id="32612">Intermission</string>
+    <!-- Start Translating Again -->
   <string id="32700">Version</string>
   <string id="32701">Denna version av %s kräver en</string>
   <string id="32702">XBMC version lika med %s eller högre.</string>

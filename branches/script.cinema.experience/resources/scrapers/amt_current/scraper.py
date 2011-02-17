@@ -15,6 +15,7 @@ from xml.sax.saxutils import unescape
 
 __useragent__ = "QuickTime/7.2 (qtver=7.2;os=Windows NT 5.1Service Pack 3)"
 _A_ = xbmcaddon.Addon('script.cinema.experience')
+_L_ = _A_.getLocalizedString
 
 class _urlopener( urllib.FancyURLopener ):
     version = __useragent__
@@ -112,7 +113,7 @@ class _Parser:
                 # size
                 #size = long( re.findall( "filesize=\"([0-9]*)", preview[ 0 ] )[ 0 ] )
                 # add the item to our media list
-                self.trailers += [ ( id, title, trailer, poster, plot, runtime, mpaa, releasedate, studio, genre, "", director, ) ]
+                self.trailers += [ ( id, title, trailer, poster, plot, runtime, mpaa, releasedate, studio, genre, _L_( 32605 ), director, ) ]
                 # increment counter
                 count += 1
                 # if we have enough exit

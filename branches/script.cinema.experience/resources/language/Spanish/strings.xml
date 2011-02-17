@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 
 <!--Translator: KiSUAN-->
-<!--Date of translation: 03/01/2011-->
+<!--Update: 02/02/2011 v1.2-->
 
 
 <strings>
+    <!-- Spanish Strings-->
     <!-- Title/Credit strings -->
     <string id="32000">Cinema Experience</string>
-    <string id="32002">nuka1195</string>
+    <string id="32002">nuka1195, Giftie, ackbarr</string>
 
     <!-- Movie Avances settings -->
     <string id="32100">Avances de Películas</string>
@@ -87,10 +88,11 @@
 
     <!-- Special videos settings -->
     <string id="32300">Carpeta de Calificaciones para Películas</string>
+    <string id="32301">Activar Vídeo de Ratings</string>
     <string id="32320">Intro Presentación Estelar</string>
     <string id="32321">Ninguna</string>
     <string id="32322">Un único Vídeo/Playlist</string>
-    <string id="32323">1 Video Aleatorio</string>
+    <string id="32323">1 Vídeo Aleatorio</string>
     <string id="32324">2 Vídeos Aleatorios</string>
     <string id="32325">3 Vídeos Aleatorios</string>
     <string id="32326">4 Vídeos Aleatorios</string>
@@ -98,13 +100,30 @@
     <string id="32330">Presentación Estelar Outro</string>
     <string id="32340">- Archivo</string>
     <string id="32350">- Carpeta</string>
-    <string id="32360">Carpeta Dolby/DTS</string>
-    <string id="32370">Cortos Intro Sala de Cine</string>
-    <string id="32380">Cortos Outro Sala de Cine</string>
-    <string id="32390">Archivo/Vídeo Cuenta Regresiva para Película</string>
+    <string id="32360">Carpeta de Videos para Formato de Audio</string>
+    <string id="32361">Activar Videos sobre Formato de Audio</string>
+    <string id="32370">Cortos Intro para Sala de Cine</string>
+    <string id="32380">Cortos Outro para Sala de Cine</string>
+    <string id="32390">Archivo de Vídeo para Cuenta Regresiva de Película</string>
+    <string id="32391">Carpeta de Vídeo para Cuenta Regresiva de Película</string>
+    <string id="32392">Vídeo para Cuenta Regresiva de Película</string>
 
     <!-- Misc settings -->
     <string id="32400">Ejecutar script antes de vídeos</string>
+    <string id="32401">Disable Auto Refresh Setting</string>
+    <string id="32402">  - Re-Enable Auto Refresh For Movie</string>
+    
+    <!-- Feature Options -->
+    <string id="32410">Numero de Presentaciones Próximas</string>
+    <string id="32411">1 </string>
+    <string id="32412">2 Presentaciones</string>
+    <string id="32413">3 Presentaciones</string>
+    <string id="32414">4 Presentaciones</string>
+    <string id="32415">5 Presentaciones</string>
+    <string id="32418">Videos Intermedio</string>
+    <string id="32419">Archivo de Vídeo de Intermedio</string>
+    <string id="32420">Carpeta de Vídeos de Intermedio</string>
+    <string id="32430">Usar Intros de Formato de Audio</string>
 
     <!-- Messages -->
     <string id="32500">Eligiendo avances aleatoreos...</string>
@@ -119,18 +138,21 @@
     <string id="32542">Reseteado de lista de avances vistos fallo!</string>
 
     <!-- Genre/Studio labels -->
-    <string id="32600">Intro Próximamente</string>
-    <string id="32601">Intro Presentación Estelar</string>
-    <string id="32602">Presentación Estelar Outro</string>
-    <string id="32603">Calificación MPAA</string>
+    <!-- Do not Translate -->
+    <string id="32600">Coming Attractions Intro</string>
+    <string id="32601">Feature Presentation Intro</string>
+    <string id="32602">Feature Presentation Outro</string>
+    <string id="32603">MPAA Rating</string>
     <string id="32604">Home Theatre</string>
-    <string id="32605">Avance de Película</string>
-    <string id="32606">Dolby/DTS</string>
-    <string id="32607">Cortos Sala de Cine</string>
-    <string id="32608">Próximamente Outro</string>
-    <string id="32609">Intro Trivia</string>
+    <string id="32605">Movie Trailer</string>
+    <string id="32606">Audio Format</string>
+    <string id="32607">Movie Theater Clips</string>
+    <string id="32608">Coming Attractions Outro</string>
+    <string id="32609">Trivia Intro</string>
     <string id="32610">Trivia Outro</string>
-    <string id="32611">Cuenta Regresiva</string>
+    <string id="32611">Countdown</string>
+    <string id="32612">Intermission</string>
+    <!-- Start Translating Again -->
     
     <!-- compatible messages -->
     <string id="32700">Versión</string>
@@ -142,6 +164,7 @@
     <string id="32800">Avances de Películas</string>
     <string id="32801">Presentación Trivia</string>
     <string id="32802">Vídeos Especiales</string>
-    <string id="32803">Ajustes Variados</string>
-
+    <string id="32803">Ajustes de Presentaciones Próximas</string>
+    <string id="32804">Ajustes Variados</string>
+    
 </strings>
