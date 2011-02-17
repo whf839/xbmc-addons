@@ -12,8 +12,8 @@ Special skin settings used by plugin: (added: 12/12/2009)
 Video:
 -------
  
-"Video": url of weather video. empty if not avaialble
-"Video.local" : local forecast video url (empty if not available)
+"Video": url of national or regional forecast video. empty if not avaialble
+"Video.local" : url of local forecast video. empty if not available (added : 02/13/2011)
 
 Alerts:
 -------
