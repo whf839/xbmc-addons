@@ -202,6 +202,8 @@ def start_script( library_view = "movietitles" ):
         if not xbmc.getCondVisibility( "Container.Content(movies)" ):
             break
     xbmc.log( "[script.cinema.experience] - User queued %s Feature films" % xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size(), xbmc.LOGNOTICE )
+    message = "Queued - " + xbmc.PlayList( xbmc.PLAYLIST_VIDEO )[xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() -1].getdescription()
+    xbmc.executebuiltin("Notification( %s, %s, %d, %s)" % (header1, message, time_delay, image) )
     # If for some reason the limit does not get reached and the window changed, cancel script
     if xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() < ( number_of_features ):
         xbmc.executebuiltin("Notification( %s, %s, %d, %s)" % (header, "Script Canceled", time_delay, image) )

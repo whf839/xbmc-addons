@@ -79,11 +79,11 @@ class Trivia( xbmcgui.WindowXML ):
             volume = int(match.group(1))
         except: # Fall back onto httpapi
             volume = int( xbmc.executehttpapi( "GetVolume" ).replace( "<li>", "" ) )
-        #xbmc.log( "[script.cinema.experience]  - Current Volume: %d" % volume, xbmc.LOGNOTICE)
+        #xbmc.log( "[script.cinema.experience] - Current Volume: %d" % volume, xbmc.LOGNOTICE)
         return volume
         
     def build_playlist( self ):
-        xbmc.log( "[script.cinema.experience]  - Building Music Playlist", xbmc.LOGNOTICE)
+        xbmc.log( "[script.cinema.experience] - Building Music Playlist", xbmc.LOGNOTICE)
         xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "AudioPlaylist.Clear", "id": 1}')
         track_location =[]
         self.music_playlist = xbmc.PlayList( xbmc.PLAYLIST_MUSIC )
@@ -120,7 +120,7 @@ class Trivia( xbmcgui.WindowXML ):
     def _start_slideshow_music( self ):
         xbmc.log( "[script.cinema.experience] - Starting Tivia Music", xbmc.LOGNOTICE)
         # did user set this preference
-        xbmc.log( "[script.cinema.experience]  - Setting - trivia_music: %s"  % self.settings[ "trivia_music" ], xbmc.LOGNOTICE)
+        xbmc.log( "[script.cinema.experience] - Setting - trivia_music: %s"  % self.settings[ "trivia_music" ], xbmc.LOGNOTICE)
         if ( int(self.settings[ "trivia_music" ]) > 0):
             # check to see if script is to adjust the volume
             if ( self.settings[ "trivia_adjust_volume" ] == "true" ):
@@ -151,7 +151,7 @@ class Trivia( xbmcgui.WindowXML ):
             slidesxml_exists, mpaa, question_format, clue_format, answer_format = self._get_slides_xml( path )
             # check if rating is ok
             #if ( slidesxml_exists and mpaa_ratings.get( self.mpaa, -1 ) < mpaa_ratings.get( mpaa, -1 ) ):
-            #    xbmc.log( "[script.cinema.experience]  - skipping whole folder", path
+            #    xbmc.log( "[script.cinema.experience] - skipping whole folder", xbmc.LOGNOTICE)
             #    continue
             # initialize these to True so we add a new list item to start
             question = clue = answer = True
@@ -208,7 +208,7 @@ class Trivia( xbmcgui.WindowXML ):
         return True, mpaa, question_format, clue_format, answer_format
 
     def _shuffle_slides( self ):
-        xbmc.log( "[script.cinema.experience]  - Sorting Watched/Unwatched and Shuffing Slides ", xbmc.LOGNOTICE)
+        xbmc.log( "[script.cinema.experience] - Sorting Watched/Unwatched and Shuffing Slides ", xbmc.LOGNOTICE)
         # randomize the groups and create our play list
         shuffle( self.tmp_slides )
         # now create our final playlist
@@ -224,15 +224,15 @@ class Trivia( xbmcgui.WindowXML ):
                     if ( slide ):
                         # add slide
                         self.slide_playlist += [ slide ]
-                xbmc.log( "------------------Unwatched-------------------------", xbmc.LOGNOTICE)
-                xbmc.log( "included - %s, %s, %s" % ( os.path.basename( slides[ 0 ] ), os.path.basename( slides[ 1 ] ), os.path.basename( slides[ 2 ] ), ), xbmc.LOGNOTICE)
+                xbmc.log( "------------------Unwatched-------------------------     included - %s, %s, %s" % ( os.path.basename( slides[ 0 ] ), os.path.basename( slides[ 1 ] ), os.path.basename( slides[ 2 ] ), ), xbmc.LOGNOTICE)
+                #xbmc.log( "included - %s, %s, %s" % ( os.path.basename( slides[ 0 ] ), os.path.basename( slides[ 1 ] ), os.path.basename( slides[ 2 ] ), ), xbmc.LOGNOTICE)
                 
             else:
-                xbmc.log( "-------------------Watched--------------------------", xbmc.LOGNOTICE)
-                xbmc.log( "skipped - %s, %s, %s" % ( os.path.basename( slides[ 0 ] ), os.path.basename( slides[ 1 ] ), os.path.basename( slides[ 2 ] ), ), xbmc.LOGNOTICE)
+                xbmc.log( "-------------------Watched--------------------------     skipped - %s, %s, %s" % ( os.path.basename( slides[ 0 ] ), os.path.basename( slides[ 1 ] ), os.path.basename( slides[ 2 ] ), ), xbmc.LOGNOTICE)
+                #xbmc.log( "skipped - %s, %s, %s" % ( os.path.basename( slides[ 0 ] ), os.path.basename( slides[ 1 ] ), os.path.basename( slides[ 2 ] ), ), xbmc.LOGNOTICE)
                 
         xbmc.log( "-----------------------------------------", xbmc.LOGNOTICE)
-        xbmc.log( "[script.cinema.experience]  - total slides selected: %d" % len( self.slide_playlist ), xbmc.LOGNOTICE)
+        xbmc.log( "[script.cinema.experience] - total slides selected: %d" % len( self.slide_playlist ), xbmc.LOGNOTICE)
         
         # reset watched automatically if no slides are left
         if ( len( self.slide_playlist ) == 0 and self.settings[ "trivia_unwatched_only" ] and len( self.watched ) > 0 ):
@@ -265,7 +265,7 @@ class Trivia( xbmcgui.WindowXML ):
             self._get_slide_timer()
 
     def _load_watched_trivia_file( self ):
-        xbmc.log( "[script.cinema.experience]  - Loading Watch Slide List", xbmc.LOGNOTICE)
+        xbmc.log( "[script.cinema.experience] - Loading Watch Slide List", xbmc.LOGNOTICE)
         try:
             # set base watched file path
             base_path = os.path.join( self.BASE_CURRENT_SOURCE_PATH, "trivia_watched.txt" )
@@ -279,7 +279,7 @@ class Trivia( xbmcgui.WindowXML ):
             self.watched = []
 
     def _save_watched_trivia_file( self ):
-        xbmc.log( "[script.cinema.experience]  - Saving Watch Slide List", xbmc.LOGNOTICE)
+        xbmc.log( "[script.cinema.experience] - Saving Watch Slide List", xbmc.LOGNOTICE)
         try:
             # base path to watched file
             base_path = os.path.join( self.BASE_CURRENT_SOURCE_PATH, "trivia_watched.txt" )
@@ -323,12 +323,12 @@ class Trivia( xbmcgui.WindowXML ):
     def _show_intro_outro( self, type="intro" ):
         is_playing = "True"        
         if ( type == "outro" ):
-            xbmc.log( "[script.cinema.experience]  - ## Outro ##", xbmc.LOGNOTICE)
+            xbmc.log( "[script.cinema.experience] - ## Outro ##", xbmc.LOGNOTICE)
             if (self.settings[ "trivia_fade_volume" ] == "true" and self.settings[ "trivia_adjust_volume"] == "true" ):
                 self._fade_volume()
             self._play_video_playlist()
         else:
-            xbmc.log( "[script.cinema.experience]  - ## Intro ##", xbmc.LOGNOTICE)
+            xbmc.log( "[script.cinema.experience] - ## Intro ##", xbmc.LOGNOTICE)
             #xbmc.Player().play( self.settings[ "trivia_intro_playlist" ] )
             #while is_playing == "True":
             #    is_playing=self._check_video_player()
@@ -394,21 +394,21 @@ class Trivia( xbmcgui.WindowXML ):
         sleep_time = 0.5 / len( volumes ) 
         # if fading out reverse order
         if ( out ):
-            xbmc.log( "[script.cinema.experience]  - Fading Volume", xbmc.LOGNOTICE)
+            xbmc.log( "[script.cinema.experience] - Fading Volume", xbmc.LOGNOTICE)
             volumes = range( 1, self.settings[ "trivia_music_volume" ] )
             volumes.reverse()
             # calc sleep time, for fade time
             sleep_time = ( self.settings[ "trivia_fade_time" ] * 1.0 ) / len( volumes )
         else:
-            xbmc.log( "[script.cinema.experience]  - Raising Volume", xbmc.LOGNOTICE)
+            xbmc.log( "[script.cinema.experience] - Raising Volume", xbmc.LOGNOTICE)
         # loop thru and set volume
-        xbmc.log( "[script.cinema.experience]  - Start Volume: %d " % ( self._get_current_volume() ), xbmc.LOGNOTICE)            
+        xbmc.log( "[script.cinema.experience] - Start Volume: %d " % ( self._get_current_volume() ), xbmc.LOGNOTICE)            
         for volume in volumes:
             xbmc.executebuiltin( "XBMC.SetVolume(%d)" % ( volume ) )
             # sleep
             #time.sleep( sleep_time )
             xbmc.sleep( int( sleep_time * 1000 ) )
-        xbmc.log( "[script.cinema.experience]  - Finish Volume: %d " % ( self._get_current_volume() ), xbmc.LOGNOTICE)
+        xbmc.log( "[script.cinema.experience] - Finish Volume: %d " % ( self._get_current_volume() ), xbmc.LOGNOTICE)
             
     def onClick( self, controlId ):
         pass
