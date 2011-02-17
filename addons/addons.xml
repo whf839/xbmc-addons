@@ -1,3 +1,217 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
+<addon
+  id="plugin.audio.listenliveeu"
+  version="0.4.3"
+  name="ListenLiveEU"
+  provider-name="bootsy [bootsy82@gmail.com]">
+  <requires>
+   <import addon="xbmc.python" version="1.0"/>
+  </requires>
+  <extension
+    point="xbmc.python.pluginsource"
+    library="default.py">
+   <provides>audio</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">European radio stations streaming live on the internet</summary>
+    <summary lang="hu">Európai internetes rádiók</summary>
+    <description lang="en">Welcome to listenlive.eu, a web radio directory showcasing over 4000 radio stations from across Europe streaming live on the internet.</description>
+    <description lang="hu">A listenlive.eu több mint 4000 élo rádióadást tartalmaz Európából, melyeket az interneten keresztül érhetsz el.</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="plugin.video.apple.movie.trailers.lite" name="Apple Movie Trailers - Lite" version="2.0.1" provider-name="nuka1195">
+    <requires>
+        <import addon="xbmc.python" version="1.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="addon.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <summary>Watch current movie trailers from apple.com.</summary>
+        <disclaimer>Only the most recent 100 or so trailers are listed.</disclaimer>
+        <description>Watch current movie trailers from http://trailers.apple.com/.[CR][CR]Check movie showtimes for theaters in your area.</description>
+    </extension>
+</addon>
+
+<addon id="plugin.video.cnn.video" name="CNN Video" version="2.0.5" provider-name="nuka1195">
+    <requires>
+        <import addon="xbmc.python" version="1.0"/>
+        <import addon="script.module.pysvn" version="2.4.0"/>
+        <import addon="script.module.xbmcaddon" version="1.0.3"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="addon.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <nochangelog>true</nochangelog>
+        <summary lang="en">View videos of the latest news from CNN.</summary>
+        <disclaimer lang="en">CNN slants their views liberally. (Obama media)</disclaimer>
+        <description lang="en">View videos of the latest news from CNN.</description>
+    </extension>
+</addon>
+
+<addon id="plugin.video.karaokeplay"
+       name="KaraokePlay"
+       version="1.0"
+       provider-name="dagur">
+  <requires>
+    <import addon="xbmc.python" version="1.0"/>
+    <import addon="script.module.beautifulsoup" version="3.0.8"/>
+    <import addon="plugin.video.youtube" version="1.8.1"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>audio video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Play Karaoke videos from KaraokePlay.com</summary>
+    <description lang="en">KaraokePlay has thousands of karaoke videos from youtube indexed. This allows you to browse and play them from xbmc.</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="plugin.video.nos.journaal" name="NOS Journaal" version="0.3" provider-name="Frank Spierings">
+    <requires>
+        <import addon="xbmc.python" version="1.0"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="default.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <summary>Stream NOS Journaal (www.nos.nl)</summary>
+        <disclaimer></disclaimer>
+        <description>Stream NOS Journaal (www.nos.nl)</description>
+    </extension>
+</addon>
+
+<addon
+  id="plugin.video.videomonkey"
+  version="1.4.2"
+  name="VideoMonkey"
+  provider-name="sfaxman / bootsy">
+  <requires>
+   <import addon="xbmc.python" version="1.0"/>
+  </requires>
+  <extension
+    point="xbmc.python.pluginsource"
+    library="default.py">
+   <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Stream videos from different sites</summary>
+    <description>Stream videos from YouTube, Clipfish, Kino.de, Computerclub², ARD &amp; ZDF Mediathek, 3sat, Schweizer Fernsehen etc. Also live channels from different regions (DE, EN, FR, NL, SE, SP, THA, VN) and categories (kids, sports, music) are supported.</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="repository.googlecode.xbmc-addons" name="googlecode.xbmc-addons Add-ons" version="1.0.1" provider-name="nuka1195">
+	<extension point="xbmc.addon.repository" name="googlecode.xbmc-addons Add-on Repository">
+		<info compressed="false">http://xbmc-addons.googlecode.com/svn/addons/addons.xml</info>
+		<checksum>http://xbmc-addons.googlecode.com/svn/addons/addons.xml.md5</checksum>
+		<datadir zip="false">http://xbmc-addons.googlecode.com/svn/addons</datadir>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<summary>Install Add-ons from googlecode.xbmc-addons</summary>
+		<description>Download and install add-ons from googlecode.xbmc-addons addon repository.[CR][CR]By using this Repository you will be able to take advantage of our cutting edge features.</description>
+		<disclaimer>Nuka1195 did not make all the add-ons on this repository and is not responsible for their content</disclaimer>
+		<platform>all</platform>
+	</extension>
+</addon>
+
+<addon id="script.apple.movie.trailers" name="Apple Movie Trailers" version="2.0.0" provider-name="nuka1195">
+    <requires>
+        <import addon="xbmc.python" version="1.0"/>
+        <import addon="script.module.pysqlite" version="2.5.6"/>
+        <import addon="script.module.elementtree" version="1.2.7"/>
+        <import addon="script.module.pil" version="1.1.7"/>
+    </requires>
+    <extension point="xbmc.python.script" library="addon.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <summary>Watch movie trailers.</summary>
+        <disclaimer></disclaimer>
+        <description>Watch movie trailers from http://trailers.apple.com/. Check movie showtimes for theaters in your area.</description>
+    </extension>
+</addon>
+
+<addon id="script.cinema.experience" name="Cinema Experience" version="1.0.9" provider-name="nuka1195-giftie-ackbarr">
+    <requires>
+        <import addon="xbmc.python" version="1.0"/>
+        <import addon="script.module.pysqlite" version="2.5.6"/>
+    </requires>
+    <extension point="xbmc.python.script" library="addon.py"/>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <summary>Re-create a full movie theater experience.</summary>
+        <disclaimer>This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License *see license.txt</disclaimer>
+        <description>Play trailers, slideshows, intro videos, outro videos: To re-create a movie theater experience in the comfort of your home.</description>
+    </extension>
+</addon>
+
+<addon id="script.module.xbmcaddon" name="xbmcaddon emulator" version="1.0.4" provider-name="nuka1195">
+    <requires>
+        <import addon="xbmc.python" version="1.0"/>
+    </requires>
+    <extension point="xbmc.python.module" library="lib"/>
+    <extension point="xbmc.addon.metadata">
+        <platform>xbox</platform>
+        <summary lang="en">Module emulates XBMC xbmcaddon module.</summary>
+        <description lang="en">Module emulates XBMC xbmcaddon module.</description>
+    </extension>
+</addon>
+
+<addon id="script.pydocs" name="PyDocs Printer" version="2.0.5" provider-name="nuka1195">
+    <requires>
+        <import addon="xbmc.python" version="1.0"/>
+        <import addon="script.module.pysvn" version="2.4.0"/>
+        <import addon="script.module.xbmcaddon" version="1.0.3"/>
+    </requires>
+    <extension point="xbmc.python.script" library="addon.py">
+        <provides>executable</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <nochangelog>true</nochangelog>
+        <summary lang="en">Creates html python help docs.</summary>
+        <disclaimer lang="en">Only accurate for the version of xbmc this addon was run in.</disclaimer>
+        <description lang="en">Creates html python help docs for xbmc, xbmcgui, xbmcplugin and xbmcaddon modules.</description>
+    </extension>
+</addon>
+
+<addon id="script.xbmc.lyrics" name="XBMC Lyrics" version="2.1.7" provider-name="nuka1195">
+    <requires>
+        <import addon="xbmc.python" version="1.0"/>
+        <import addon="script.module.pysvn" version="2.4.0"/>
+        <import addon="script.module.xbmcaddon" version="1.0.4"/>
+    </requires>
+    <extension point="xbmc.python.lyrics" library="addon.py"/>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <nofanart>true</nofanart>
+        <nochangelog>true</nochangelog>
+        <summary lang="en">Find and display song lyrics including LRC (simple format).</summary>
+        <disclaimer lang="en">This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License *see license.txt</disclaimer>
+        <description lang="en">Find and display song lyrics from the internet. Uses embedded lyrics if available. Abilty to play and tag LRC (simple format) lyrics. Can be set to autoscroll untagged lyrics.[CR][CR]Primary and fallback scrapers. Artist's song lists if no song match was found. Artist aliases if no artist match was found.[CR][CR]Can run as a stand alone script (gui mode) or in the background.[CR][CR]*See readme.txt for a full description (can be viewed from settings).</description>
+    </extension>
+</addon>
+
+<addon id="weather.weatherplus"
+       name="Weather.com+ for Dharma"
+       version="1.1.6"
+       provider-name="Brightsr (Original Sources from Nuka1195)">
+  <extension point="xbmc.python.weather" library="default.py"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Current weather conditions and colorful forecasts.</summary>
+    <description lang="en">This is the advanced weather source.[CR][CR]It provides current weather conditions as well as colorful forecasts including forecast videos and weather alerts. </description>
+    <platform>all</platform>
+  </extension>
+</addon>
 </addons>
