@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
+<!-- Trivia settings -->
+
     <category label="Trivia">
-    <!-- Trivia settings -->
         <setting type="lsep" label="32801" />
-        <setting id="trivia_total_time" type="slider" range="1,60" label="32200" default="5" />
-        <!--
-        <setting id="trivia_total_time" type="enum" lvalues="32201|32202|32203|32204|32205|32206|32207|32208" label="32200" default="0" />
-        -->
+        <setting id="trivia_total_time" type="slider" range="0,60" label="32200" default="5" />
         <setting id="trivia_folder" type="folder" visible="!eq(-1,0)" source="files" label="32210" default="" />
         <setting id="trivia_slide_time" type="slider" visible="!eq(-2,0)" enable="!eq(-1,)" range="1,30" label="32220" default="15" />
-        <!--
-        <setting id="trivia_slide_time" type="enum" visible="!eq(-2,0)" enable="!eq(-1,)" lvalues="32221|32222|32223|32224|32225" label="32220" default="2" />
-        -->
         <setting id="trivia_limit_query" type="bool" visible="!eq(-3,0)" enable="!eq(-2,)" label="32290" default="true" />
         <setting id="trivia_rating" type="labelenum"  visible="!eq(-4,0)" enable="!eq(-3,) + eq(-1,false)" values="G|PG|PG-13|R|NC-17|--" label="32291" default="--" />
         <setting id="trivia_intro" type="enum" visible="!eq(-5,0)"  enable="!eq(-4,)" lvalues="32281|32282|32283|32284|32285|32286|32287" label="32280" default="0" />
@@ -27,15 +22,13 @@
         <setting id="trivia_music_volume" type="slider" visible="!eq(-1,false) + gt(-4,0)" enable="!eq(-1,false) + gt(-4,0)" range="0,100" label="32240" default="100" />
         <setting id="trivia_fade_volume" type="bool" visible="!eq(-2,false) + gt(-5,0)" enable="!eq(-2,false) + gt(-5,0)" label="32241" default="true" />
         <setting id="trivia_fade_time" type="slider" visible="!eq(-3,false) + gt(-6,0)" enable="!eq(-1,false) + gt(-6,0)" range="0,15" label="32242" default="2" />
-        <!--
-        <setting id="trivia_music_volume" type="labelenum" visible="!eq(-4,false)" enable="eq(-2,true)" values="10%|20%|30%|40%|50%|60%|70%|80%|90%|100%" label="32240" default="90%" />
-        -->
-        
         <setting id="trivia_unwatched_only" type="bool" visible="!eq(-14,0)" enable="!eq(-13,)" label="32270" default="false" />
         <setting type="action" label="32271" visible="!eq(-15,0)" enable="!eq(-14,) + eq(-1,true)" action="RunScript($CWD/addon.py,ClearWatchedTrivia)" />
     </category>
-    <category label="Special Videos">
-    <!-- Special videos settings -->
+    
+<!-- Special videos settings -->
+
+    <category label="Special Videos">    
         <setting type="lsep" label="32802" />
         <setting id="mte_intro" type="enum" lvalues="32321|32322|32323|32324|32325|32326|32327" label="32370" default="0" />
         <setting id="mte_intro_file" type="video" visible="eq(-1,1)" label="32340" default="" />
@@ -49,12 +42,18 @@
         <setting id="fpv_outro" type="enum" lvalues="32321|32322|32323|32324|32325|32326|32327" label="32330" default="0" />
         <setting id="fpv_outro_file" type="video" visible="eq(-1,1)" label="32340" default="" />
         <setting id="fpv_outro_folder" type="folder" visible="gt(-2,1)" source="video" label="32350" default="" />
-        <setting id="rating_videos_folder" type="folder" source="video" label="32300" default="" />
-        <setting id="audio_videos_folder" type="folder" source="video" label="32360" default="" />
-        <setting id="countdown_video_file" type="video" label="32390" default="" />
+        <setting id="enable_ratings" type="bool" label="32301" default="true" />
+        <setting id="rating_videos_folder" type="folder" visible="eq(-1,true)" source="video" label="32300" default="" />
+        <setting id="enable_audio" type="bool" label="32361" default="true" />
+        <setting id="audio_videos_folder" type="folder" visible="eq(-1,true)" source="video" label="32360" default="" />
+        <setting id="countdown_video" type="enum" lvalues="32321|32322|32323|32324|32325|32326|32327" label="32392" default="0" />
+        <setting id="countdown_video_file" type="video" visible="eq(-1,1)" label="32390" default="" />
+        <setting id="countdown_video_folder" type="folder" visible="gt(-2,1)" source="video" label="32391" default="" />
     </category>
+    
+<!-- Trailers settings -->
+
     <category label="Trailers">
-    <!-- Trailers settings -->
         <setting type="lsep" label="32800" />
         <setting id="trailer_count" type="enum" lvalues="32101|32102|32103|32104|32105|32106|32107" label="32100" default="0" />
         <setting id="cav_intro" type="enum" visible="!eq(-1,0)" lvalues="32321|32322|32323|32324|32325|32326|32327" label="32195" default="0" />
@@ -75,10 +74,25 @@
         <setting id="trailer_unwatched_only" type="bool" visible="!eq(-16,0)" label="32190" default="false" />
         <setting type="action" label="32191" visible="!eq(-17,0)" enable="eq(-1,true)" action="RunScript($CWD/addon.py,ClearWatchedTrailers)" />
     </category>
-    <category label="Misc">
-    <!-- Misc settings -->
+    
+<!-- Feature Presentations -->
 
+    <category label="Feature Presentation">    
         <setting type="lsep" label="32803" />
-        <setting id="script_path" type="file" source="local" mask=".py"  label="32400" default="" />
+        <setting id="number_of_features" type="enum" lvalues="32411|32412|32413|32414|32415" label="32410" default="0" />
+        <setting id="intermission_video" type="enum" lvalues="32321|32322|32323|32324|32325|32326|32327" label="32418" default="0" />
+        <setting id="intermission_video_file" type="video" visible="eq(-1,1)" label="32419" default="" />
+        <setting id="intermission_video_folder" type="folder" visible="gt(-2,1)" source="video" label="32420" default="" />
+        <setting id="intermission_audio" type="bool" label="32430" default="true" />
     </category>
+    
+    <category label="Misc">    
+        <setting type="lsep" label="32803" />
+        <setting id="autorefresh" type="bool" label="32401" default="true" />
+        <setting id="autorefresh_movie" type="bool" visible="eq(-1,true)" enable="eq(-1,true)" label="32402" default="false" />
+        <!-- Disabled until it is working again
+        <setting id="script_path" type="file" source="local" mask=".py"  label="32400" default="" />
+        -->
+    </category>
+
 </settings>

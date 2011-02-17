@@ -9,7 +9,7 @@
 			<width>720</width>
 			<height>576</height>
 			<texture background="true">$INFO[Window.Property(Slide)]</texture>
-            <aspectratio>keep</aspectratio>
+            <aspectratio>stretch</aspectratio>
             <fadetime>1000</fadetime>
             <visible>!Player.HasVideo</visible>
 		</control>

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <strings>
+    <!-- English Strings-->
     <!-- Title/Credit strings -->
     <string id="32000">Cinema Experience</string>
-    <string id="32002">nuka1195</string>
+    <string id="32002">nuka1195, Giftie, ackbarr</string>
 
     <!-- Movie Trailers settings -->
     <string id="32100">Movie Trailers</string>
@@ -82,6 +83,7 @@
 
     <!-- Special videos settings -->
     <string id="32300">Movie Ratings Folder</string>
+    <string id="32301">Enable Rating Video</string>
     <string id="32320">Feature Presentation Intro</string>
     <string id="32321">None</string>
     <string id="32322">Single Video/Playlist</string>
@@ -93,13 +95,30 @@
     <string id="32330">Feature Presentation Outro</string>
     <string id="32340">- File</string>
     <string id="32350">- Folder</string>
-    <string id="32360">Dolby/DTS Folder</string>
+    <string id="32360">Audio Format Folder</string>
+    <string id="32361">Enable Audio Format Video</string>
     <string id="32370">Movie Theatre Intro Clips</string>
     <string id="32380">Movie Theatre Outro Clips</string>
     <string id="32390">Movie Coundown Video File</string>
+    <string id="32391">Movie Coundown Video Folder</string>
+    <string id="32392">Movie Coundown Video</string>
 
     <!-- Misc settings -->
     <string id="32400">Run script before videos start</string>
+    <string id="32401">Disable Auto Refresh Setting</string>
+    <string id="32402">  - Re-Enable Auto Refresh For Movie</string>
+    
+    <!-- Feature Options -->
+    <string id="32410">Number Of Features</string>
+    <string id="32411">1 Feature</string>
+    <string id="32412">2 Features</string>
+    <string id="32413">3 Features</string>
+    <string id="32414">4 Features</string>
+    <string id="32415">5 Features</string>
+    <string id="32418">Intermission Video(s)</string>
+    <string id="32419">Intermission Video File</string>
+    <string id="32420">Intermission Video Folder</string>
+    <string id="32430">Use Audio Format Intros</string>
 
     <!-- Messages -->
     <string id="32500">Choosing random trailers...</string>
@@ -114,18 +133,21 @@
     <string id="32542">Resetting watched trailers list failed!</string>
 
     <!-- Genre/Studio labels -->
+    <!-- Do not Translate -->
     <string id="32600">Coming Attractions Intro</string>
     <string id="32601">Feature Presentation Intro</string>
     <string id="32602">Feature Presentation Outro</string>
     <string id="32603">MPAA Rating</string>
     <string id="32604">Home Theatre</string>
     <string id="32605">Movie Trailer</string>
-    <string id="32606">Dolby/DTS</string>
+    <string id="32606">Audio Format</string>
     <string id="32607">Movie Theater Clips</string>
     <string id="32608">Coming Attractions Outro</string>
     <string id="32609">Trivia Intro</string>
     <string id="32610">Trivia Outro</string>
     <string id="32611">Countdown</string>
+    <string id="32612">Intermission</string>
+    <!-- Start Translating Again -->
     
     <!-- compatible messages -->
     <string id="32700">Version</string>
@@ -137,6 +159,7 @@
     <string id="32800">Movie Trailers</string>
     <string id="32801">Trivia Slideshow</string>
     <string id="32802">Special Videos</string>
-    <string id="32803">Misc Settings</string>
-
+    <string id="32803">Feature Presentation Settings</string>
+    <string id="32804">Misc Settings</string>
+    
 </strings>
