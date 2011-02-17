@@ -6,7 +6,7 @@
   <extension point="xbmc.python.weather" library="default.py"/>
   <extension point="xbmc.addon.metadata">
     <summary lang="en">Current weather conditions and colorful forecasts.</summary>
-    <description lang="en">This is the advanced weather source.[CR][CR]It provides current weather conditions as weel as colorful forecasts including forecast videos and weather alerts. </description>
+    <description lang="en">This is the advanced weather source.[CR][CR]It provides current weather conditions as well as colorful forecasts including forecast videos and weather alerts. </description>
     <platform>all</platform>
   </extension>
 </addon>
