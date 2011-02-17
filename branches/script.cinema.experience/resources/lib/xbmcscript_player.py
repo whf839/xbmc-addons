@@ -53,7 +53,7 @@ class Main:
             # Check to see if multiple features have been set in settings
             # if multiple features is greater than 1(not a single feature) 
             # add the intermission videos and audio files for the 2, third, etc movies
-            if self.playlistsize > 1 and ( int( _S_( "intermission_video") ) > 0) : 
+            if self.playlistsize > 1 and ( int( _S_( "intermission_video") ) > 0 or _S_( "intermission_audio") or _S_( "intermission_ratings") ): 
                 mpaa, audio, genre, movie = self._add_intermission_videos()
             # otherwise just build for a single video
             else:
@@ -67,32 +67,45 @@ class Main:
 
     def _add_intermission_videos( self ):
         xbmc.log("[script.cinema.experience]  - Adding intermission Video(s)", xbmc.LOGNOTICE )
-        count = 1
+        count = 0
+        index_count = 1
         for feature in range( 1, self.playlistsize ):
             mpaa, audio, genre, movie = self._get_queued_video_info( count )
-            # add intermission video            
-            self._get_special_items(    playlist=self.playlist,
+            # add intermission video
+            if ( int( _S_( "intermission_video") ) > 0 ):    
+                self._get_special_items(    playlist=self.playlist,
                                                     items=( 0, 1, 1, 2, 3, 4, 5, )[ int( _S_( "intermission_video" ) ) ], 
                                                     path=( xbmc.translatePath( _S_( "intermission_video_file" ) ), xbmc.translatePath( _S_( "intermission_video_folder" ) ), )[ int( _S_( "intermission_video" ) ) > 1 ],
                                                     genre=_L_( 32612 ),
                                                     writer=_L_( 32612 ),
-                                                    index=count
-                                    )
+                                                    index=index_count
+                                        )
+                index_count = count + int( _S_( "intermission_video" ) ) + 1
             # get Dolby/DTS videos
-            xbmc.log("[script.cinema.experience]  - Adding Audio Format Video",xbmc.LOGNOTICE )
             if ( _S_( "enable_audio" ) ) == "true"  and (_S_( "intermission_audio") ) == "true":
+                xbmc.log("[script.cinema.experience]  - Adding Audio Format Video",xbmc.LOGNOTICE )
                 self._get_special_items(    playlist=self.playlist,
                                                     items=1 * ( _S_( "audio_videos_folder" ) != "" ),
                                                     path=xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "ac3": "Dolby", "dtsma": "DTS-MA" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ],
                                                     genre=_L_( 32606 ),
                                                     writer=_L_( 32606 ),
-                                                    index=count + 1
+                                                    index = index_count
                                                     )
                 # Move to the next feature + 1 - if we insert 2 videos, the next feature is 3 away from the first video, then prepare for the next intro(+1)
-                count = feature * 3 + 1
-            else:
-                # Move to the next feature + 1 - if we insert 1 videos, the next feature is 2 away from the first video, then prepare for the next intro(+1)
-                count = feature * 2 + 1 
+                # count = feature * 3 + 1
+                index_count = index_count + 1
+            # get rating video
+            if ( _S_( "enable_ratings" ) ) == "true"  and (_S_( "intermission_ratings") ) == "true":
+                xbmc.log("[script.cinema.experience]  - Adding Rating Video",xbmc.LOGNOTICE )
+                self._get_special_items(    playlist=self.playlist,
+                                                    items=1 * ( _S_( "rating_videos_folder" ) != "" ),
+                                                    path=xbmc.translatePath( _S_( "rating_videos_folder" ) ) + mpaa + ".avi",
+                                                    genre=_L_( 32603 ),
+                                                    writer=_L_( 32603 ),
+                                                    index = index_count
+                                                    )
+                index_count = index_count + 1
+            count = index_count 
         # return info from first movie in playlist                                        
         mpaa, audio, genre, movie = self._get_queued_video_info( 0 )
         return mpaa, audio, genre, movie

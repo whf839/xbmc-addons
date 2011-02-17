@@ -118,7 +118,8 @@
     <string id="32418">Intermission Video(s)</string>
     <string id="32419">Intermission Video File</string>
     <string id="32420">Intermission Video Folder</string>
-    <string id="32430">Use Audio Format Intros</string>
+    <string id="32430">Insert Audio Format Video</string>
+    <string id="32440">Insert Rating Video</string>
 
     <!-- Messages -->
     <string id="32500">Choosing random trailers...</string>
@@ -159,7 +160,7 @@
     <string id="32800">Movie Trailers</string>
     <string id="32801">Trivia Slideshow</string>
     <string id="32802">Special Videos</string>
-    <string id="32803">Feature Presentation Settings</string>
-    <string id="32804">Misc Settings</string>
+    <string id="32803">Feature Presentation</string>
+    <string id="32804">Miscellaneous</string>
     
 </strings>
