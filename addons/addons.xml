@@ -209,32 +209,8 @@
        provider-name="Brightsr (Original Sources from Nuka1195)">
   <extension point="xbmc.python.weather" library="default.py"/>
   <extension point="xbmc.addon.metadata">
-    <summary lang="br">Condi??es meteorol?gicas atuais.</summary>
-    <summary lang="en">Current weather conditions.</summary>
-    <summary lang="de">Aktuelle Wetterbedingungen</summary>
-    <summary lang="fr">Conditions m?t?orologiques en cours.</summary>
-    <summary lang="hu">A jelenlegi id?j?r?s.</summary>
-    <summary lang="ko">현재 날씨</summary>
-    <summary lang="nl">Huidige weersomstandigheden.</summary>
-    <summary lang="pl">Aktualne warunki pogodowe.</summary>
-    <summary lang="pt">Condi??es meteorol?gicas actuais.</summary>
-    <summary lang="ro">Condi?ii meteo curente.</summary>
-    <summary lang="ru">Текущие погодные условия.</summary>
-    <summary lang="se">Aktuella v?derf?rh?llanden.</summary>
-    <summary lang="zh">?前天???</summary>
-    <description lang="br">Esta ? a origem padr?o de informa??o meteorol?gicas.[CR][CR]Ela prov? as condi??es atuais e previs?o para quatro dias.</description>
-    <description lang="en">This is the default weather source.[CR][CR]It provides current weather conditions and a four day outlook.</description>
-    <description lang="de">Standardquelle f?r Wetterinformationen[CR][CR]Das aktuelle Wetter sowie eine 4 t?gige Vorausschau werden angezeigt</description>
-    <description lang="fr">C'est la source m?t?o par d?faut.[CR][CR]Fournit les conditions climatiques en cours et les pr?visions sur 4 jours.</description>
-    <description lang="hu">Ez az alap?rtelmezett id?j?r?s inform?ci?forr?s.[CR][CR]T?j?koztat a jelenlegi id?j?r?sr?l, valamint n?gynapos el?rejelz?st ad.</description>
-    <description lang="ko">기본 날씨 정보입니다.[CR][CR] 현재날씨와 4일치 예보를 제공합니다.</description>
-    <description lang="nl">Dit is de standaardbron voor weersinformatie.[CR][CR]Het toont de huidige weersomstandigheden en de voorspellingen voor de vier volgende dagen.</description>
-    <description lang="pl">Jest to domy?lne ?r?dło pogody.[CR][CR]Dostarcza aktualn? pogod? oraz prognoz? na cztery dni.</description>
-    <description lang="pt">Fonte padr?o das condi??es meteorol?gicas.[CR][CR]Providencia as condi??es meteorol?gicas actuais e previs?o para quatro dias.</description>
-    <description lang="ro">Surs? implicit? pentru informa?ii meteorologice.[CR][CR]Furnizeaz? condi?ii meteo curente plus prognoza pe 4 zile.</description>
-    <description lang="ru">Это источник информации о погоде.[CR][CR]Он предоставляет текущие погодные условия и прогноза на четыре дня.</description>
-    <description lang="se">Detta ?r standardk?llan f?r v?der.[CR][CR]Det tillhandah?ller nuvarande v?derf?rh?llanden och en fyra dagars prognos.</description>
-    <description lang="zh">?是默?的天???信息?源。[CR][CR]?提供了?前的天???和未?4天的天???。</description>
+    <summary lang="en">Current weather conditions and colorful forecasts.</summary>
+    <description lang="en">This is the advanced weather source.[CR][CR]It provides current weather conditions as weel as colorful forecasts including forecast videos and weather alerts. </description>
     <platform>all</platform>
   </extension>
 </addon>
