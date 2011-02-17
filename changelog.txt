@@ -1,0 +1,58 @@
+1.0.10
+- Bug Fix: #81 Overlays displayed over trivia slides
+
+1.0.9
+- Bug Fix: #67 Music playback over trivia breaks script
+- Enhancement: #69 Trivia Music playback from folder
+- Enhancement: #72 Reset watched trivia automatically if all watched
+- Enhancement: Log Entries now prefixed with [script.cinemaexperience]
+
+1.0.8
+- Added an adjustable Fade time for the background music during trivia
+- Fixed Skip Watched Trailers(now it skips the watched ones :) 
+- Fixed Current Volume error(now matching upto 3 digits(ie 100))
+- Fixed ClearWatchedTrivia and ClearWatchedTrailers
+
+1.0.7
+- Fixed a lot of errors in new code.
+- Fix syntax in addon.xml
+
+1.0.6
+- Added the ability to disable volume changes
+   - Lowering of Volume during slides
+   - Fade volume during slides
+- Added myself back as an author(removed during troubleshooting)
+
+1.0.5
+- Added the ability to add Countdown Video before movie starts
+- Added Audio Fade(when Trivia is complete) - Thanks for the code Nuka
+- Added Audio Rise(when first video after Trivia is complete) - Thanks for the code Nuka
+- Changed Trivia Volume Setting to percentage of maximum volume(instead of percentage of current volume)
+- Added Nuka's added code for slide.xml.
+- Oh....  And added myself as one of the authors... :)
+- Trivia Music Playlist - still broken.. :(
+ 
+1.0.4
+- Added German Language files - Thanks Mad-Max
+- Added the ability to have a DTS-MA Audio format Folder
+- Added the ability to disable Trivia Music
+- Fixed Trivia Outro
+
+1.0.3
+- Disabled MPAA ratings for slides(for the time being, until a more reliable handling is added)
+- Added this change log.
+- Added fanart.jpg
+
+1.0.2
+- changed Apple Movie Trailer scraper to find Newest trailers
+- renamed skin file to follow script name(replace HTE with CE)
+
+1.0.1
+- changed name over to Cinema Experience
+- fixed trivia slides upper/lower case - Thanks Nuka
+- added trivia duration of 2 minutes and removed 60 minutes(now the steps are 2 mins, 5 mins, 10 mins, 20 mins, 30 mins and 45 mins). 
+
+1.0.0 
+- Includes work done by Ilia to get the script working with Dharma
+- fixed settings.xml to stop crashing XBMC
+- various programming changes to work with new XBMC features(pysqlite module)

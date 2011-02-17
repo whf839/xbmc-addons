@@ -1,6 +1,0 @@
-<!-- Basics-Vision skin revision: 1400 - built with build.bat version 1.0 -->
-<includes>
-    <include name="Revision">
-        <label>Basics-Vision $LOCALIZE[31013] 2.1 - r1400 (06.28.2008)</label>
-    </include>
-</includes>

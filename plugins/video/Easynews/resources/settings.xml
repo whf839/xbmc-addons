@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<settings>
-	<setting id="username" type="text" label="30000" default="" />
-	<setting id="password" type="text" label="30001" default="" />
-    <setting id="download_mode" type="enum" lvalues="30031|30032" label="30030" default="0" />
-    <setting id="download_path" type="folder" source="video" enable="eq(-1,1)" option="writeable" label="30040" default="F:\videos" />
-    <setting id="use_title" type="bool" enable="eq(-2,1)" label="30080" default="true" />   
-</settings>
