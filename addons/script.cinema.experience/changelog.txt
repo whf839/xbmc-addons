@@ -1,5 +1,6 @@
 1.0.10
 - Bug Fix: #81 Overlays displayed over trivia slides
+- Fix giftie's big oops... :)
 
 1.0.9
 - Bug Fix: #67 Music playback over trivia breaks script
