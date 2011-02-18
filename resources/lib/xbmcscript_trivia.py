@@ -5,7 +5,7 @@ import xbmc
 import xbmcaddon
 import threading
 import binascii
-from random import shuffle
+from random import shuffle, random
 import re
 import time
 
@@ -103,7 +103,10 @@ class Trivia( xbmcgui.WindowXML ):
                 # search given folder and subfolders for files
                 track_location = dirEntries( self.settings[ "trivia_music_folder" ], "music", "TRUE" )
         # shuffle playlist
-        shuffle( track_location )
+        count = 0
+        while count <6:
+            shuffle( track_location, random )
+            count=count+1        
         for track in track_location:
             self.music_playlist.add( track,  )
 
@@ -210,7 +213,10 @@ class Trivia( xbmcgui.WindowXML ):
     def _shuffle_slides( self ):
         xbmc.log( "[script.cinema.experience] - Sorting Watched/Unwatched and Shuffing Slides ", xbmc.LOGNOTICE)
         # randomize the groups and create our play list
-        shuffle( self.tmp_slides )
+        count = 0
+        while count <6:
+            shuffle( self.tmp_slides, random )
+            count=count+1
         # now create our final playlist
         # loop thru slide groups and skip already watched groups
         for slides in self.tmp_slides:

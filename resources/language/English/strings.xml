@@ -132,6 +132,10 @@
     <string id="32540">Resetting watched trailers list...</string>
     <string id="32541">Watched trailers list reset!</string>
     <string id="32542">Resetting watched trailers list failed!</string>
+    <string id="32543">Queued - </string>
+    <string id="32544">Script Canceled</string>
+    <string id="32545">Script Exiting</string>
+    <string id="32546">Press 'Q' or '0'(ZERO) to Queue Movie(s)</string>
 
     <!-- Genre/Studio labels -->
     <!-- Do not Translate -->

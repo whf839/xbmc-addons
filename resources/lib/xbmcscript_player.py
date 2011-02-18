@@ -2,12 +2,9 @@ __script__ = "Cinema Experience"
 __scriptID__ = "script.cinema.experience"
 ###########################################################
 """
-    Main Player Module:
-    - plays # of optional Movie Theater intro videos
-    - plays optional trivia slide show w/ optional music, intro/outro videos/still images
-    - plays # of optional random trailers w/ optional intro/outro videos
-    - plays highlighted video w/ optional intro/outro videos, rating video and dolby/dts video
-    - plays # optional Movie Theater outro videos
+    Video Playlist Module:
+    - Assembles Video Playlist based on user settings
+    - When playlist complete, calls xbmcscript_trivia.py to perform trivia and start playlist
 """
 ############################################################
 # main imports
@@ -35,7 +32,7 @@ pDialog.create( __script__, _L_( message )  )
 pDialog.update( 0 )
 
 from urllib import quote_plus
-from random import shuffle
+from random import shuffle, random
 
 log_sep = "-"*70
 
@@ -306,7 +303,10 @@ class Main:
             # initialize our lists
             self.tmp_paths = []
             self._get_items( [ path ], media_type )
-            shuffle( self.tmp_paths )
+            count = 0
+            while count <6:
+                shuffle( self.tmp_paths, random )
+                count=count+1
         # enumerate thru and add our videos/pictures
         for count in range( items ):
             try:
