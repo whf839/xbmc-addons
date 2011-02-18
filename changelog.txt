@@ -1,3 +1,8 @@
+1.0.18
+- Fixed - Added strings for hard coded words(allows for translation
+- Fixed - Close Notification after movie(s) are queued
+- Cosmetics - Cleaned up logging.
+
 1.0.17 
 - Enhancement: Added Intermission Rating Video
 - Removed version testing(doesn't work with lastest and source code)
