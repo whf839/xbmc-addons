@@ -267,10 +267,11 @@ class Main:
         print "Weather Video = "+self.WEATHER_WINDOW.getProperty ("Video")
     def _set_extra_current_info( self, extras ):
         if ( extras ):
-            self.WEATHER_WINDOW.setProperty( "Current.Pressure", extras[ 0 ] )
-            self.WEATHER_WINDOW.setProperty( "Current.Visibility", "%s %s" % ( extras[ 1 ].split( " " )[ 0 ], { "mile": self._( 32300 ), "miles": self._( 32301 ), "kilometer": self._( 32302 ), "kilometers": self._( 32303 ) }[ extras[ 1 ].split( " " )[ 1 ] ], ) )
-            self.WEATHER_WINDOW.setProperty( "Current.Sunrise", extras[ 2 ] )
-            self.WEATHER_WINDOW.setProperty( "Current.Sunset", extras[ 3 ] )
+            self.WEATHER_WINDOW.setProperty( "Current.Pressure", extras[ 0 ][0] )
+            self.WEATHER_WINDOW.setProperty( "Current.Visibility", "%s %s" % ( extras[ 0 ][1].split( " " )[ 0 ], { "mile": self._( 32300 ), "miles": self._( 32301 ), "kilometer": self._( 32302 ), "kilometers": self._( 32303 ) }[ extras[ 0 ][1].split( " " )[ 1 ] ], ) )
+            self.WEATHER_WINDOW.setProperty( "Current.Sunrise", extras[ 0 ][ 2 ] )
+            self.WEATHER_WINDOW.setProperty( "Current.Sunset", extras[ 0 ][ 3 ])
+            # print self.WEATHER_WINDOW.getProperty( "Current.Pressure" )
         else:
             self.WEATHER_WINDOW.clearProperty( "Current.Pressure" )
             self.WEATHER_WINDOW.clearProperty( "Current.Visibility" )

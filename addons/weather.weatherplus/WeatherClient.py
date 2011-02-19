@@ -267,18 +267,19 @@ class WeatherAlert:
             self.alert_rss = ""
 
 class Forecast36HourParser:
-    def __init__( self, htmlSource, translate=None ):
+    def __init__( self, htmlSource, htmlSource_5, translate=None ):
         self.forecast = []
         self.extras = []
         self.alerts = []
         self.alertscolor = []
         self.video_location = []
         self.translate = translate
+        self.sun = []
         # only need to parse source if there is source
         if ( htmlSource ):
-            self._get_forecast( htmlSource )
+            self._get_forecast( htmlSource, htmlSource_5 )
 
-    def _get_forecast( self, htmlSource ):
+    def _get_forecast( self, htmlSource, htmlSource_5 ):
         # regex patterns
         pattern_locstate = "wx.config.loc.state=\"([^\"]+)\""
         pattern_video_location = "Current_Weather:(.+?)\" from=\"today_media_maplink1\">Current Weather"
@@ -294,11 +295,13 @@ class Forecast36HourParser:
         pattern_precip_amount = "<br><strong>(.+?)</strong></td>"
         #pattern_outlook = "</td><!-- Column [0-9]+ -->\n\s<td class=\"twc-col-[0-9]+\">(.+?)</td>"
         pattern_daylight = "<td class=\"twc-col-[0-9]+ twc-line-daylight\">(.+?)<strong>\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n\s(.+?)\n"
-        pattern_extra_info = "<div class=\"crow\"><div class=\"crowli\">Pressure:</div><div class=\"crowval\">([^<]+)<[^<]+<IMG SRC=\"http://image.weather.com/web/common/icons/([^\"]+)\"></div></div>.*?\
-.+?\
-[^<]+<div class=\"crow\"><div class=\"crowli\">Visibility:</div><div class=\"crowval\">([^<]+)</div></div>\
-[^<]+<div class=\"crow\"><div class=\"crowli\">Sunrise:</div><div class=\"crowval\">([^<]+)</div></div>\
-[^<]+<div class=\"crow\"><div class=\"crowli\">Sunset:</div><div class=\"crowval\">([^<]+)</div></div>"
+        pattern_pressure = "Pressure:</span>(.+?)<img src=\"http://s.imwx.com/v.20100719.135915/img/common/icon-(.+?).gif\""	                     
+        pattern_visibility = "Visibility:</span>(.+?)</td>"	        
+        # pattern_sunrise_now = "Time Until Sunrise: <strong>(.+?)</strong>"
+        # pattern_sunset_now = "Daylight Remaining: <strong>(.+?)</strong>"
+        pattern_sunrise_now = "Sunrise:</span> <br><strong>\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n\s(.+?)\n"
+        pattern_sunset_now = "Sunset:</span> <br><strong>\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n\s(.+?)\n"
+					
         # fetch days
         days = re.findall( pattern_days, htmlSource )
         # print "Tonight = "+days[0]+" Tomorrow = "+days[1]
@@ -346,14 +349,40 @@ class Forecast36HourParser:
             #outlook = re.findall( pattern_outlook, htmlSource )
             # fetch daylight
             daylight = re.findall( pattern_daylight, htmlSource )
+            sunrise_ = re.findall( pattern_sunrise_now, htmlSource_5)
+            sunset_ =  re.findall( pattern_sunset_now, htmlSource_5)
+            print sunrise_, sunset_
             # fetch extra info
-            extras = re.findall( pattern_extra_info, htmlSource, re.DOTALL )
+            pressure_ = re.findall( pattern_pressure, htmlSource, re.DOTALL )
+            visibility_ = re.findall( pattern_visibility, htmlSource, re.DOTALL )
+            # sun_ = re.findall( pattern_sun, htmlSource, re.DOTALL )
+            # sun = []
+            pressure = "N/A"
+            visibility = "N/A"
+            sunrise = "N/A"
+            sunset = "N/A"
+            if ( pressure_ ) :
+                    pressure = "".join(pressure_[0][0].split("\n"))
+                    pressure = "".join(pressure.split("\t"))
+                    pressure = pressure.replace("in", "")
+                    # pressure = pressure + { "pressure-up": u"\u2191", "pressure-down": u"\u2193", "pressure-steady": u"\u2192" }[ pressure_[0][1] ]
+                    # print pressure
+            if ( visibility_ ) :
+                   visibility = "".join(visibility_[0].split("\n"))
+                   visibility = "".join(visibility.split("\t"))
+                   visibility = visibility.replace("mi", "")
+                   # print visibility
+            if ( sunrise_ ) :
+                   sunrise = "".join(sunrise_[0].split("\n"))
+                   sunrise = "".join(sunrise.split("\t"))
+                   sunrise = _localize_unit( sunrise.split(" ")[3], "time" )
+            if ( sunset_ ) :
+                   sunset = "".join(sunset_[0].split("\n"))
+                   sunset = "".join(sunset.split("\t"))
+                   sunset = _localize_unit( sunset.split(" ")[3], "time" )
+
+            self.extras += [(_localize_unit(pressure, "pressure") + { "pressure-up": u"\u2191", "pressure-down": u"\u2193", "pressure-steady": u"\u2192" }[ pressure_[0][1] ], _localize_unit(visibility, "distance"), sunrise, sunset)]
             # localize our extra info
-            if ( extras ):
-                self.extras += [ u"%s %s" % ( _localize_unit( extras[ 0 ][ 0 ].replace( "&nbsp;", " " ), "pressure" ), { "up_pressure.gif": u"\u2191", "down_pressure.gif": u"\u2193", "steady_pressure.gif": u"\u2192" }[ extras[ 0 ][ 1 ] ], ) ]
-                self.extras += [ _localize_unit( extras[ 0 ][ 2 ], "distance" ) ]
-                self.extras += [ _localize_unit( extras[ 0 ][ 3 ], "time" ) ]
-                self.extras += [ _localize_unit( extras[ 0 ][ 4 ], "time" ) ]
             # convert outlook wind/temp values
             # outlook = _normalize_outlook( outlook )
             # translate brief and outlook if user preference
@@ -879,9 +908,10 @@ class WeatherClient:
     def fetch_36_forecast( self, video ):
         # fetch source
         htmlSource = self._fetch_data( self.BASE_FORECAST_URL % ( "local", self.code, "", ), 15 )
+        htmlSource_5 = self._fetch_data( self.BASE_URL + "/weather/5-day/"+ self.code, 15 )
         print "self.code = "+self.code
         # parse source for forecast
-        parser = Forecast36HourParser( htmlSource, self.translate )
+        parser = Forecast36HourParser( htmlSource, htmlSource_5, self.translate )
         # print parser.alertscolor[0]
         # fetch any alerts
         alerts, alertsrss, alertsnotify = self._fetch_alerts( parser.alerts )
@@ -934,11 +964,11 @@ class WeatherClient:
     def _create_video( self, location, local_location, local_number, video ):
         url = ""
         local_url = ""
+        # video = location
         # US
         if ( len( location ) and (self.code.startswith( "US" ) or len(self.code) == 5) and video == "" ):
             # Regional Video
-            if ( location == "NE" or location == "MW" or location == "SE" or location == "W" or location == "S" or location == "SW" or location == "NW" ):
-                # video = location
+            if ( location == "NE" or location == "MW" or location == "SE" or location == "W" or location == "S" or location == "SW" or location == "NW" or location == "NC" or location == "CN" ):               
                 if ( location == "NE" ):
                     video = "northeast"
                 elif ( location == "MW" ):
@@ -953,8 +983,9 @@ class WeatherClient:
                     video = "southwest"
                 elif ( location == "NW" ):
                     video = "northwest"
-           
-                # create the url
+                elif ( location == "NC" or location == "CN" ):
+                    video="midwest"        
+               # create the url
                 url = self.BASE_VIDEO_URL % ( video, )
                 print "url : "+url
                            
@@ -977,7 +1008,6 @@ class WeatherClient:
             # all failed use national
             if ( url == "" ) : 
                 url = self.BASE_VIDEO_URL % ( "national", )
-            print url, local_url
             return url, local_url
 
         # already have a video or non US
