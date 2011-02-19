@@ -1,5 +1,10 @@
+1.0.19
+- Enhancement - Added code for BBFC
+- Removed - Notification of script ending
+- Enhancement - Improved randomization of videos and slides
+
 1.0.18
-- Fixed - Added strings for hard coded words(allows for translation
+- Fixed - Added strings for hard coded words(allows for translation)
 - Fixed - Close Notification after movie(s) are queued
 - Cosmetics - Cleaned up logging.
 

@@ -2,7 +2,7 @@
 __script__ = "Cinema Experience"
 __author__ = "nuka1195-giftie-ackbarr"
 __url__ = "http://code.google.com/p/xbmc-addons/"
-__version__ = "1.0.18"
+__version__ = "1.0.19"
 __scriptID__ = "script.cinema.experience"
 
 import xbmcgui, xbmc, xbmcaddon, os, re
@@ -217,8 +217,8 @@ def start_script( library_view = "movietitles" ):
         while xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition() < ( xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() - 1 ):
             if xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition() > count:
                 xbmc.sleep( 2000 )
-                video_label = xbmc.executehttpapi( "GetVideoLabel(280)").strip("<li>")
-                video_label2 = xbmc.executehttpapi( "GetVideoLabel(251)").strip("<li>")
+                video_label = repr( xbmc.executehttpapi( "GetVideoLabel(280)").strip("<li>") )
+                video_label2 = repr( xbmc.executehttpapi( "GetVideoLabel(251)").strip("<li>") )
                 xbmc.log( "[script.cinema.experience] - video_label(280): %s" % video_label, xbmc.LOGNOTICE )
                 xbmc.log( "[script.cinema.experience] - video_label(251): %s" % video_label2, xbmc.LOGNOTICE )
                 xbmc.log( "[script.cinema.experience] - Playlist Position: %s  Playlist Size: %s " % ( xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition(), (xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() - 1) ), xbmc.LOGNOTICE )               
@@ -278,7 +278,7 @@ if ( __name__ == "__main__" ):
         # only run if compatible
         start_script( "movietitles" )
     # turn on autorefresh if script turned it off
-    xbmc.executebuiltin("Notification( %s, %s, %d, %s)" % (header, _L_( 32545 ), time_delay, image) )
+    #xbmc.executebuiltin("Notification( %s, %s, %d, %s)" % (header, _L_( 32545 ), time_delay, image) )
     _clear_playlists()
     if _S_( "autorefresh" ) == "true":
         auto_refresh( autorefresh, "enable" )

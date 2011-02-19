@@ -267,8 +267,13 @@ class Main:
             mpaa, genre, audio, dummy = xbmc.executehttpapi( "QueryVideoDatabase(%s)" % quote_plus( sql ), ).split( "</field>" )
             # TODO: add a check and new sql for videos queued from files mode, or try an nfo
             # calculate rating
-            mpaa = mpaa.split( " " )[ 1 - ( len( mpaa.split( " " ) ) == 1 ) ]
-            mpaa = ( mpaa, "NR", )[ mpaa not in ( "G", "PG", "PG-13", "R", "NC-17", "Unrated", ) ]
+            if mpaa == "":
+                mpaa = "NR"
+            elif mpaa.startswith("Rated"):
+                mpaa = mpaa.split( " " )[ 1 - ( len( mpaa.split( " " ) ) == 1 ) ]
+                mpaa = ( mpaa, "NR", )[ mpaa not in ( "G", "PG", "PG-13", "R", "NC-17", "Unrated", ) ]
+            else:
+                mpaa = ( mpaa, "NR", )[ mpaa not in ( "12", "12A", "PG", "18", "MA", "U", ) ]
         except:
             movie_title = mpaa = audio = genre = movie = ""
         # spew queued video info to log
