@@ -107,6 +107,7 @@
     <string id="32400">Run script before videos start</string>
     <string id="32401">Disable Auto Refresh Setting</string>
     <string id="32402">  - Re-Enable Auto Refresh For Movie</string>
+    <string id="32403">Enable Output to VoxCommando</string>
     
     <!-- Feature Options -->
     <string id="32410">Number Of Features</string>
