@@ -219,10 +219,16 @@ def start_script( library_view = "movietitles" ):
             if xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition() > count:
                 xbmc.sleep( 2000 )
                 if movie_next == "True":
-                    movie_title = repr( xbmc.executehttpapi( "GetVideoLabel(250)").strip("<li>") )
-                    xbmc.log( "[script.cinema.experience] - Movie Title: %s" % movie_title, xbmc.LOGNOTICE )
-                    if voxcommando == "true":
-                        xbmc.executehttpapi( "Broadcast(<b>CElaunch<li>"+ movie_title +"</b>;33000)" )
+                    try:
+                        movie_title = xbmc.executehttpapi( "GetVideoLabel(250)").strip("<li>")
+                        xbmc.log( "[script.cinema.experience] - Movie Title: %s" % movie_title, xbmc.LOGNOTICE )
+                        if voxcommando == "true":
+                            xbmc.executehttpapi( "Broadcast(<b>CElaunch<li>"+ movie_title +"</b>;33000)" )
+                    except:
+                        movie_title = repr( xbmc.executehttpapi( "GetVideoLabel(250)").strip("<li>") )
+                        xbmc.log( "[script.cinema.experience] - Movie Title: %s" % movie_title, xbmc.LOGNOTICE )
+                        if voxcommando == "true":
+                            xbmc.executehttpapi( "Broadcast(<b>CElaunch<li>"+ movie_title +"</b>;33000)" )
                     movie_next="False"
                 video_label = repr( xbmc.executehttpapi( "GetVideoLabel(280)").strip("<li>") )
                 video_label2 = repr( xbmc.executehttpapi( "GetVideoLabel(251)").strip("<li>") )
