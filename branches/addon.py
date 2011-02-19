@@ -2,7 +2,7 @@
 __script__ = "Cinema Experience"
 __author__ = "nuka1195-giftie-ackbarr"
 __url__ = "http://code.google.com/p/xbmc-addons/"
-__version__ = "1.0.20"
+__version__ = "1.0.21"
 __scriptID__ = "script.cinema.experience"
 
 import xbmcgui, xbmc, xbmcaddon, os, re
@@ -181,6 +181,7 @@ def auto_refresh( before, mode ):
     
 def start_script( library_view = "movietitles" ):
     # turn off autorefresh
+    early_exit = ""
     autorefresh_movie = "False"
     movie_next="False"
     auto_refresh( autorefresh, "disable" )
@@ -201,10 +202,14 @@ def start_script( library_view = "movietitles" ):
             count = xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size()
             xbmc.sleep(time_delay*2)
         if not xbmc.getCondVisibility( "Container.Content(movies)" ):
+            early_exit = "True"
             break
     xbmc.log( "[script.cinema.experience] - User queued %s Feature films" % xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size(), xbmc.LOGNOTICE )
-    message = _L_( 32543 ) + xbmc.PlayList( xbmc.PLAYLIST_VIDEO )[xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() -1].getdescription()
-    xbmc.executebuiltin("Notification( %s, %s, %d, %s)" % (header1, message, time_delay, image) )
+    if not exit == "True":
+        header1 = header + " - Feature " + "%d" % xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size()
+        message = _L_( 32543 ) + xbmc.PlayList( xbmc.PLAYLIST_VIDEO )[xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() -1].getdescription()
+        xbmc.executebuiltin("Notification( %s, %s, %d, %s)" % (header1, message, time_delay, image) )
+        early_exit = ""
     # If for some reason the limit does not get reached and the window changed, cancel script
     if xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() < ( number_of_features ):
         xbmc.executebuiltin("Notification( %s, %s, %d, %s)" % (header, _L_( 32544 ), time_delay, image) )
