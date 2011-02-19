@@ -218,25 +218,26 @@ def start_script( library_view = "movietitles" ):
         while xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition() < ( xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() - 1 ):
             if xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition() > count:
                 xbmc.sleep( 2000 )
+                xbmc.log( "[script.cinema.experience] - movie_next: %s" % movie_next, xbmc.LOGNOTICE )
                 if movie_next == "True":
                     try:
                         movie_title = xbmc.executehttpapi( "GetVideoLabel(250)").strip("<li>")
                         xbmc.log( "[script.cinema.experience] - Movie Title: %s" % movie_title, xbmc.LOGNOTICE )
-                        if voxcommando == "true":
+                        if _S_( "voxcommando" ) == "true":
                             xbmc.executehttpapi( "Broadcast(<b>CElaunch<li>"+ movie_title +"</b>;33000)" )
                     except:
                         movie_title = repr( xbmc.executehttpapi( "GetVideoLabel(250)").strip("<li>") )
                         xbmc.log( "[script.cinema.experience] - Movie Title: %s" % movie_title, xbmc.LOGNOTICE )
-                        if voxcommando == "true":
+                        if _S_( "voxcommando" ) == "true":
                             xbmc.executehttpapi( "Broadcast(<b>CElaunch<li>"+ movie_title +"</b>;33000)" )
                     movie_next="False"
-                video_label = repr( xbmc.executehttpapi( "GetVideoLabel(280)").strip("<li>") )
-                video_label2 = repr( xbmc.executehttpapi( "GetVideoLabel(251)").strip("<li>") )
+                video_label = ( xbmc.executehttpapi( "GetVideoLabel(280)").strip("<li>") )
+                video_label2 = (repr( xbmc.executehttpapi( "GetVideoLabel(251)").strip("<li>") ) ).strip("'")
                 xbmc.log( "[script.cinema.experience] - video_label(280): %s" % video_label, xbmc.LOGNOTICE )
                 xbmc.log( "[script.cinema.experience] - video_label(251): %s" % video_label2, xbmc.LOGNOTICE )
                 xbmc.log( "[script.cinema.experience] - Playlist Position: %s  Playlist Size: %s " % ( xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition(), (xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() - 1) ), xbmc.LOGNOTICE )               
                 if ( video_label == _L_( 32606 ) ):
-                    movie_next="True"
+                    movie_next = "True"
                     if _S_( "autorefresh" ) == "true" and _S_( "autorefresh_movie" ) == "true":
                         auto_refresh( autorefresh, "enable" )
                         autorefresh_movie = "True"
