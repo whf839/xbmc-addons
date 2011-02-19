@@ -273,7 +273,7 @@ class Main:
                 mpaa = mpaa.split( " " )[ 1 - ( len( mpaa.split( " " ) ) == 1 ) ]
                 mpaa = ( mpaa, "NR", )[ mpaa not in ( "G", "PG", "PG-13", "R", "NC-17", "Unrated", ) ]
             else:
-                mpaa = ( mpaa, "NR", )[ mpaa not in ( "12", "12A", "PG", "18", "MA", "U", ) ]
+                mpaa = ( mpaa, "NR", )[ mpaa not in ( "12", "12A", "PG", "15", "18", "MA", "U", ) ]
         except:
             movie_title = mpaa = audio = genre = movie = ""
         # spew queued video info to log
