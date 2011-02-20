@@ -14,10 +14,6 @@ from socket import timeout as SocketTimeoutError
 import xbmcgui
 
 # external libs
-try:
-    import httplib2
-except:
-    pass
 import listparser
 import stations
 import addoncompat
@@ -27,8 +23,9 @@ try:
 except:
     # python 2.4 has to use the plugin's version of elementtree
     from elementtree import ElementTree as ET
-
-IMG_DIR = os.path.join(os.getcwd(), 'resources', 'media')
+import httplib2
+sys.path.append(os.path.join(os.getcwd(), 'lib', 'socksipy'))
+import socks
 
 #print "iplayer2 logging to stdout"
 logging.basicConfig(
@@ -41,7 +38,6 @@ def any(iterable):
          if element:
              return True
      return False
-
 
 # http://colinm.org/blog/on-demand-loading-of-flickr-photo-metadata
 # returns immediately for all previously-called functions
@@ -69,7 +65,14 @@ self_closing_tags = ['alternate', 'mediator']
 
 http = None
 try:
-    http = httplib2.Http()
+    if addoncompat.get_setting('proxy_use') == 'true':
+
+        server = addoncompat.get_setting('proxy_server')
+        port = int(addoncompat.get_setting('proxy_port'))
+        logging.info("Using proxy %s port %s", server, port )
+        http = httplib2.Http(proxy_info = httplib2.ProxyInfo(socks.PROXY_TYPE_HTTP, server, port))
+    else:
+        http = httplib2.Http()
 except:
     logging.error('Failed to initialize httplib2 module')
 
@@ -122,9 +125,7 @@ def httpget(url):
         if http:
             resp, data = http.request(url, 'GET')
         else:
-            f = urllib.urlopen(url)
-            data = f.read()
-            f.close()
+            raise
         
         sec = time.clock() - start_time
         logging.info('URL Fetch took %2.2f sec for %s', sec, url)            
@@ -132,19 +133,18 @@ def httpget(url):
         return data
     except:
         traceback.print_exc(file=sys.stdout)
-        try:
-            # fallback to urllib to avoid a bug in httplib which often
-            # occurs during searches
-            f = urllib.urlopen(url)
-            data = f.read()
-            f.close()
-            return data
-        except:
-            #print "Response for status %s for %s" % (resp.status, data)
-            dialog = xbmcgui.Dialog()
-            dialog.ok('Network Error', 'Failed to fetch URL', url)
-            logging.error( 'Network Error. Failed to fetch URL %s' % url )
-            raise
+        # disabling this for now - want to know if it is still needed with current xbmc
+        #try:
+        #    # fallback to urllib to avoid a bug in httplib which often
+        #    # occurs during searches
+        #    f = urllib.urlopen(url)
+        #    data = f.read()
+        #    f.close()
+        #    return data
+        #except:
+        dialog = xbmcgui.Dialog()
+        dialog.ok('Network Error', 'Failed to fetch URL', url)
+        logging.error( 'Network Error. Failed to fetch URL %s' % url )
     
     return data
 
@@ -170,6 +170,7 @@ def get_provider():
 
     if   provider_id == '1': provider = 'akamai'
     elif provider_id == '2': provider = 'limelight'
+    elif provider_id == '3': provider = 'level3'
 
     return provider
 
@@ -180,7 +181,7 @@ def get_protocol():
     except:
         pass
 
-    if   protocol_id == '1': protocol = 'rtmpt'
+    if protocol_id == '1': protocol = 'rtmpt'
 
     return protocol
 
@@ -190,6 +191,12 @@ def get_port():
     if protocol == 'rtmpt': port = 80
     return port
 
+def get_thumb_dir():
+    thumb_dir = os.path.join(os.getcwd(), 'resources', 'media')
+    if addoncompat.get_os() == "xbox":
+        thumb_dir = os.path.join(thumb_dir, 'xbox')
+    return thumb_dir
+
 class media(object):
     def __init__(self, item, media_node):
         self.item      = item
@@ -198,10 +205,6 @@ class media(object):
         self.method    = None
         self.width, self.height = None, None
         self.bitrate   = None
-        self.SWFPlayer = None
-        self.PlayPath  = None
-        #self.tcUrl     = None
-        self.PageURL   = None
         self.read_media_node(media_node)
 
     @property
@@ -268,10 +271,11 @@ class media(object):
         conn = None
         provider = get_provider()
 
-        for c in media.findall('connection'):
-            if provider != "" and c.get('kind') == provider:
-                conn = c
-                break
+        if provider != "":
+            for c in media.findall('connection'):
+                if c.get('kind') == provider:
+                    conn = c
+                    break
         if conn == None:
             conn = media.find('connection')
         if conn == None:
@@ -300,7 +304,7 @@ class media(object):
                 self.connection_method = None                
             else:
                 self.connection_method = 'resolve' 
-        elif self.connection_kind in ['akamai', 'limelight']:
+        elif self.connection_kind in ['akamai', 'limelight', 'level3']:
 
             if self.connection_live:
                 logging.error("No support for live streams!")   
@@ -319,7 +323,7 @@ class media(object):
             swfplayer = 'http://www.bbc.co.uk/emp/10player.swf'       
             params = dict(protocol = get_protocol(), port = get_port(), server = server, auth = auth, ident = identifier, app = application)
 
-            if self.connection_kind == 'akamai':
+            if self.connection_kind == 'akamai' or self.connection_kind == 'level3':
                 self.connection_href = "%(protocol)s://%(server)s:%(port)s/%(app)s?%(auth)s playpath=%(ident)s" % params
             elif self.connection_kind == 'limelight':
                 # note that librtmp has a small issue with constructing the tcurl here. we construct it ourselves for now (fixed in later librtmp)
@@ -550,7 +554,7 @@ class programme(object):
         elif size in ['150x84', '150x', 'x84', 'smallest']:
             return "http://www.bbc.co.uk/iplayer/images/episode/%s_150_84.jpg" % (self.pid)
         else:
-            return os.path.join(IMG_DIR, '%s.png' % tvradio)
+            return os.path.join(get_thumb_dir(), '%s.png' % tvradio)
        
 
     def get_url(self):
@@ -649,7 +653,7 @@ class programme_simple(object):
         elif size in ['150x84', '150x', 'x84', 'smallest']:
             return "http://www.bbc.co.uk/iplayer/images/episode/%s_150_84.jpg" % (self.pid)
         else:
-            return os.path.join(IMG_DIR, '%s.png' % tvradio)
+            return os.path.join(get_thumb_dir(), '%s.png' % tvradio)
 
 
     def get_url(self):

@@ -14,7 +14,7 @@ import xbmc, xbmcgui, xbmcplugin
 __scriptname__ = "IPlayer"
 __author__     = 'Dink [dink12345@googlemail.com] / BuZz [buzz@exotica.org.uk]'
 __svn_url__    = "http://xbmc-iplayerv2.googlecode.com/svn/trunk/IPlayer"
-__version__    = "2.3.2"
+__version__    = "2.4.1"
 
 sys.path.insert(0, os.path.join(os.getcwd(), 'lib'))
 
@@ -39,22 +39,10 @@ logging.basicConfig(
 DIR_USERDATA   = xbmc.translatePath(os.path.join( "T:"+os.sep,"plugin_data", __scriptname__ ))    
 HTTP_CACHE_DIR = os.path.join(DIR_USERDATA, 'iplayer_http_cache')
 SUBTITLES_DIR  = os.path.join(DIR_USERDATA, 'Subtitles')
-THUMB_DIR      = os.path.join(os.getcwd(), 'resources', 'media')
 SEARCH_FILE    = os.path.join(DIR_USERDATA, 'search.txt')
 VERSION_FILE   = os.path.join(DIR_USERDATA, 'version.txt')
 
 PLUGIN_HANDLE = int(sys.argv[1])
-
-def is_old_xbmc():
-   xbmc_rev = addoncompat.get_revision()
-   return ( addoncompat.get_os() != "xbox" and xbmc_rev < 31519) or xbmc_rev < 30366 
-
-def show_version_warning():
-    # on xbmc mainline we need a new version for librtmp support (using 31519 for now until dharma) is released)
-    # on xbmc4xbox we need at least revision 30366
-    xbmc_rev = addoncompat.get_revision()
-    d = xbmcgui.Dialog()
-    d.ok('XBMC version warning', 'Your XBMC version (r%s) may be too old to use' % xbmc_rev, 'this plugin fully. Please upgrade to a new version', 'if you have any trouble playing streams')
 
 def file_read(filename):
     text = ''
@@ -81,10 +69,10 @@ def sort_by_attr(seq, attr):
 def get_plugin_thumbnail(image):
 
     # support user supplied .png files
-    userpng = os.path.join(THUMB_DIR, xbmc.getSkinDir(), image + '.png')
+    userpng = os.path.join(iplayer.get_thumb_dir(), xbmc.getSkinDir(), image + '.png')
     if os.path.isfile(userpng):
         return userpng
-    userpng = os.path.join(THUMB_DIR, image + '.png')
+    userpng = os.path.join(iplayer.get_thumb_dir(), image + '.png')
     if os.path.isfile(userpng):
         return userpng
     
@@ -103,7 +91,7 @@ def get_feed_thumbnail(feed):
     if iplayer.stations.channels_logos.has_key(feed.channel):
         url = iplayer.stations.channels_logos[feed.channel]
         if url == None:
-            url = os.path.join(THUMB_DIR, 'bbc_local_radio.png')
+            url = os.path.join(iplayer.get_thumb_dir(), 'bbc_local_radio.png')
         return url
         
     # national TV and Radio stations have easy to find online logos
@@ -146,12 +134,18 @@ def read_url():
     label        = args.get('label', [None])[0]
     deletesearch = args.get('deletesearch', [None])[0]
     radio        = args.get('radio', [None])[0]
-    
+
     feed = None
     if feed_channel:
         feed = iplayer.feed('auto', channel=feed_channel, atoz=feed_atoz, radio=radio)
     elif feed_atoz:
         feed = iplayer.feed(tvradio or 'auto', atoz=feed_atoz, radio=radio)
+
+    if not (feed or listing):
+        section = addoncompat.get_setting('start_section')
+        if   section == '1': tvradio = 'tv'
+        elif section == '2': tvradio = 'radio'
+
     return (feed, listing, pid, tvradio, category, series, url, label, deletesearch, radio)
     
 def list_feeds(feeds, tvradio='tv', radio=None):
@@ -264,8 +258,6 @@ def list_tvradio():
     folders.append(('TV', 'tv', make_url(tvradio='tv')))
     folders.append(('Radio', 'radio', make_url(tvradio='radio')))
     folders.append(('Settings', 'settings', make_url(tvradio='Settings')))
-    if is_old_xbmc():
-        folders.append(('Old XBMC Warning', 'old_xbmc', make_url(tvradio='old_xbmc')))
 
     for i, (label, tn, url) in enumerate(folders):
         listitem = xbmcgui.ListItem(label=label)
@@ -274,7 +266,7 @@ def list_tvradio():
         if thumbnail:
             listitem.setThumbnailImage(get_plugin_thumbnail(tn))
         folder=True
-        if label == 'Settings' or label == 'Old XBMC Warning':
+        if label == 'Settings':
             # fix for reported bug where loading dialog would overlay settings dialog 
             folder = False
         ok = xbmcplugin.addDirectoryItem(
@@ -310,49 +302,50 @@ def list_radio_types():
         )
     
     xbmcplugin.endOfDirectory(handle=PLUGIN_HANDLE, succeeded=True)
-    
 
-def get_setting_videostream(feed=None,default='h264 800'):  
+def get_setting_videostream(default='h264 1500'):  
 
-    # check for xbox as it can't do HD
     environment = os.environ.get( "OS", "xbox" )
-    
-    # If viewing BBC HD on an xbmc build that supports it play full HD if the screen is large enough 
-    if environment != 'xbox' and feed and feed == 'BBC HD':   
+ 
+    # check for xbox as we set a lower default for xbox (although it can do 1500kbit streams)
+    if environment == 'xbox':
+        return 'h264 800'
+    else:
+        # play full HD if the screen is large enough (not all programmes have this resolution)
         Y = int(xbmc.getInfoLabel('System.ScreenHeight'))
         X = int(xbmc.getInfoLabel('System.ScreenWidth'))
-        if Y > 576 and X > 720:
+        if Y > 832 and X > 468:
             # The screen is large enough for HD
             return 'h264 3200'
         else:
             # The screen is not large enough for HD
             return 'h264 1500'
-        
+
     videostream = addoncompat.get_setting('video_stream')
-    #Auto|H.264 (480kb)|H.264 (800kb)|H.264 (1500kb)|H.264 (3200kb)
+    # Auto|H.264 (480kb)|H.264 (800kb)|H.264 (1500kb)|H.264 (3200kb)
     if videostream:
-        if videostream == 'H.264 (480kb)' or videostream == '1':
+        if videostream == '1':
             return 'h264 480'
-        elif videostream == 'H.264 (800kb)' or videostream == '2':
+        elif videostream == '2':
             return 'h264 800'        
-        elif videostream == 'H.264 (1500kb)' or videostream == '3':
+        elif videostream == '3':
             return 'h264 1500'        
-        elif videostream == 'H.264 (3200kb)' or videostream == '4':
+        elif videostream == '4':
             return 'h264 3200'
     
     return default
 
 def get_setting_audiostream(default='wma'):
-    videostream = addoncompat.get_setting('audio_stream')
+    audiostream = addoncompat.get_setting('audio_stream')
     #Auto|MP3|Real|AAC|WMA
-    if videostream:
-        if videostream == 'MP3' or videostream == '1':
+    if audiostream:
+        if audiostream == '1': 
             return 'mp3'
-        elif videostream == 'Real' or videostream == '2':
+        elif audiostream == '2':
             return 'real'
-        elif videostream == 'AAC' or videostream == '3':
+        elif audiostream == '3':
             return 'aac'        
-        elif videostream == 'WMA' or videostream == '4':
+        elif audiostream == '4':
             return 'wma'
     return default
 
@@ -361,15 +354,15 @@ def get_setting_thumbnail_size():
     size = addoncompat.get_setting('thumbnail_size')
     #Biggest|Large|Small|Smallest|None
     if size:
-        if size == 'Biggest' or size == '0':
+        if size == '0':
             return 'biggest'
-        elif size == 'Large' or size == '1':
+        elif size == '1':
             return 'large'
-        elif size == 'Small' or size == '2':
+        elif size == '2':
             return 'small'
-        elif size =='Smallest' or size == '3':
+        elif size == '3':
             return 'smallest'
-        elif size == 'None' or size == '4':
+        elif size == '4':
             return 'none'
     # default
     return 'large'
@@ -838,7 +831,7 @@ def watch(feed, pid, showDialog):
             pDialog.update(50, 'Fetching video stream info')
             if pDialog.iscanceled(): raise
             times.append(['update dialog',time.clock()])
-        pref = get_setting_videostream(channel)        
+        pref = get_setting_videostream()        
         times.append(['get_setting_videostream',time.clock()])
         opref = pref
         if showDialog:
@@ -858,7 +851,7 @@ def watch(feed, pid, showDialog):
 
         while not media and i < len(streams)-1:
             i += 1
-            logging.info('Steam %s not available, falling back to flash %s stream' % (pref, streams[i]) )
+            logging.info('Stream %s not available, falling back to flash %s stream' % (pref, streams[i]) )
             pref = streams[i]
             media = item.get_media_for(pref)
 
@@ -962,20 +955,6 @@ def watch(feed, pid, showDialog):
 
     logging.info('Playing preference %s' % pref)
     times.append(['logging.info',time.clock()])
-    
-    if media.connection_protocol == 'rtmp':
-        if media.SWFPlayer:
-            listitem.setProperty("SWFPlayer", media.SWFPlayer)
-            logging.info("SWFPlayer : " + media.SWFPlayer)
-        if media.PlayPath:
-            listitem.setProperty("PlayPath", media.PlayPath)
-            logging.info("PlayPath  : " + media.PlayPath)
-        if media.PageURL:
-            listitem.setProperty("PageURL", media.PageURL)
-            logging.info("PageURL  : " + media.PageURL)
-        #if media.tcUrl:
-        #    listitem.setProperty("tcUrl", media.tcUrl)
-        #    print "tcUrl  : " + media.tcUrl
     times.append(['listitem.setproperty x 3',time.clock()])
 
     if thumbfile: 
@@ -1077,11 +1056,6 @@ if old_version != __version__:
     d = xbmcgui.Dialog()
     d.ok('Welcome to BBC IPlayer plugin', 'Please be aware this plugin only works in the UK.', 'The IPlayer service checks to ensure UK IP addresses.')
 
-    if is_old_xbmc():
-         show_version_warning()
-
-
-
 if __name__ == "__main__":
     try:
 
@@ -1113,7 +1087,7 @@ if __name__ == "__main__":
             if not label:
                 watch(feed, pid, showDialog)
             else:
-                pref = get_setting_videostream(label)
+                pref = get_setting_videostream()
                 bitrate = pref.split(' ')[1]
                 live_tv.play_stream(label, bitrate, showDialog)
         elif url:
@@ -1125,9 +1099,7 @@ if __name__ == "__main__":
                 list_tvradio()
             elif tvradio == 'Settings':
                 addoncompat.open_settings()
-            elif tvradio == 'old_xbmc':
-                show_version_warning()
-            elif tvradio == 'radio' and radio == None:
+            elif (tvradio == 'radio' and radio == None):
                 list_radio_types()
             elif tvradio:
                 feed = iplayer.feed(tvradio, radio=radio).channels_feed()
