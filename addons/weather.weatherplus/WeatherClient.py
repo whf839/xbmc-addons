@@ -18,6 +18,7 @@ import md5
 import re
 import time
 
+
 # TODO: maybe use xbmc language strings for brief outlook translation
 def _translate_text( text, translate ):
     # base babelfish url
@@ -101,15 +102,33 @@ def _localize_unit( value, unit="temp" ):
         # if we're debugging xbmc module is not available
         if ( not DEBUG and unit == "time" ):
             id = xbmc.getRegion( id="time" )
+            print id
         # 24 hour ?
-        if ( id.startswith( "H" ) ):
+        if ( id.startswith( "%H" ) ):
             hour = int( value.split( ":" )[ 0 ] )
+            if (hour < 0 ):
+               hour += 12
             hour += ( 12 * ( value_specifier == "PM" and int( value.split( ":" )[ 0 ] ) != 12 ) )
             hour -= ( 12 * ( value_specifier == "AM" and int( value.split( ":" )[ 0 ] ) == 12 ) )
             time = "%d:%s" % ( hour, value.split( ":" )[ 1 ], )
+        else : 
+            hour = int( value.split( ":" )[ 0 ] )
+            if (hour < 0 ):
+               hour += 24
+
+            if ( hour > 12 ) :
+                 value_specifier = "PM"
+            else :
+                 value_specifier = "AM"
+            hour -= ( 12 * ( value_specifier == "PM" and int( value.split( ":" )[ 0 ] ) != 12 ) )
+           
+            time = "%d:%s" % ( hour, value.split( ":" )[ 1 ], )
+            if (unit == "time") :
+                 time = "%s %s" % ( time, value_specifier, ) 
+
         # add am/pm if used
-        if ( id.endswith( "xx" ) ):
-            time = "%s %s" % ( time, value_specifier, ) 
+        # if ( id.endswith( "xx" ) ):
+            # time = "%s %s" % ( time, value_specifier, ) 
         # return localized time
         return time
     else:
@@ -267,7 +286,7 @@ class WeatherAlert:
             self.alert_rss = ""
 
 class Forecast36HourParser:
-    def __init__( self, htmlSource, htmlSource_5, translate=None ):
+    def __init__( self, htmlSource, htmlSource_5, localtime, translate=None ):
         self.forecast = []
         self.extras = []
         self.alerts = []
@@ -275,11 +294,12 @@ class Forecast36HourParser:
         self.video_location = []
         self.translate = translate
         self.sun = []
+
         # only need to parse source if there is source
         if ( htmlSource ):
-            self._get_forecast( htmlSource, htmlSource_5 )
+            self._get_forecast( htmlSource, htmlSource_5, localtime )
 
-    def _get_forecast( self, htmlSource, htmlSource_5 ):
+    def _get_forecast( self, htmlSource, htmlSource_5, localtime ):
         # regex patterns
         pattern_locstate = "wx.config.loc.state=\"([^\"]+)\""
         pattern_video_location = "Current_Weather:(.+?)\" from=\"today_media_maplink1\">Current Weather"
@@ -351,7 +371,9 @@ class Forecast36HourParser:
             daylight = re.findall( pattern_daylight, htmlSource )
             sunrise_ = re.findall( pattern_sunrise_now, htmlSource_5)
             sunset_ =  re.findall( pattern_sunset_now, htmlSource_5)
-            print sunrise_, sunset_
+            time_diff = int(sunrise_[ 0 ].split( " " )[ 3 ][:2])-localtime
+            
+            
             # fetch extra info
             pressure_ = re.findall( pattern_pressure, htmlSource, re.DOTALL )
             visibility_ = re.findall( pattern_visibility, htmlSource, re.DOTALL )
@@ -361,6 +383,7 @@ class Forecast36HourParser:
             visibility = "N/A"
             sunrise = "N/A"
             sunset = "N/A"
+            
             if ( pressure_ ) :
                     pressure = "".join(pressure_[0][0].split("\n"))
                     pressure = "".join(pressure.split("\t"))
@@ -375,11 +398,11 @@ class Forecast36HourParser:
             if ( sunrise_ ) :
                    sunrise = "".join(sunrise_[0].split("\n"))
                    sunrise = "".join(sunrise.split("\t"))
-                   sunrise = _localize_unit( sunrise.split(" ")[3], "time" )
+                   sunrise = _localize_unit( str(int(sunrise.split(" ")[3].split(":")[0])-time_diff) + ":" + sunrise.split(" ")[3].split(":")[1], "time" )
             if ( sunset_ ) :
                    sunset = "".join(sunset_[0].split("\n"))
                    sunset = "".join(sunset.split("\t"))
-                   sunset = _localize_unit( sunset.split(" ")[3], "time" )
+                   sunset = _localize_unit( str(int(sunset.split(" ")[3].split(":")[0])-time_diff) + ":" + sunset.split(" ")[3].split(":")[1], "time" )
 
             self.extras += [(_localize_unit(pressure, "pressure") + { "pressure-up": u"\u2191", "pressure-down": u"\u2193", "pressure-steady": u"\u2192" }[ pressure_[0][1] ], _localize_unit(visibility, "distance"), sunrise, sunset)]
             # localize our extra info
@@ -405,7 +428,7 @@ class Forecast36HourParser:
                 # print days, iconpath, brief[count], _localize_unit(temperature[count]), precip_title[count], precip_amount[count].replace("%",""), brief[count+4], _localize_unit(daylight[count][1].split(" ")[3], "time")
                 # add result to our class variable
                 # self.forecast += [ ( days, iconpath, brief[ count ], temperature[ count ][ 0 ], _localize_unit( temperature[ count ][ 1 ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), outlook[ count ].strip(), daylight[ count ].split( ": " )[ 0 ], _localize_unit( daylight[ count ].split( ": " )[ 1 ], "time" ), ) ]
-                self.forecast += [ ( days[count], iconpath, brief[ count+1 ], temperature_info[ count ], _localize_unit( temperature[ count ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), brief[ count+4 ], daylight[ count ][ 0 ], _localize_unit( daylight[ count ][ 1 ].split(" ")[3], "time" ), ) ]
+                self.forecast += [ ( days[count], iconpath, brief[ count+1 ], temperature_info[ count ], _localize_unit( temperature[ count ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), brief[ count+4 ], daylight[ count ][ 0 ], _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  ), ) ]
 
 
 class ForecastHourlyParser:
@@ -909,9 +932,13 @@ class WeatherClient:
         # fetch source
         htmlSource = self._fetch_data( self.BASE_FORECAST_URL % ( "local", self.code, "", ), 15 )
         htmlSource_5 = self._fetch_data( self.BASE_URL + "/weather/5-day/"+ self.code, 15 )
+        _localtime_source_ =self._fetch_data ( "http://xoap.weather.com/weather/local/"+self.code+"?cc=*&dayf=1&par=1126833389&key=11405f5127bcfa06" )
+        _localtime_ = int(re.findall ("([0-9]+):([0-9]+)", _localtime_source_)[1][0])
+        
+
         print "self.code = "+self.code
         # parse source for forecast
-        parser = Forecast36HourParser( htmlSource, htmlSource_5, self.translate )
+        parser = Forecast36HourParser( htmlSource, htmlSource_5, _localtime_, self.translate )
         # print parser.alertscolor[0]
         # fetch any alerts
         alerts, alertsrss, alertsnotify = self._fetch_alerts( parser.alerts )
@@ -973,7 +1000,7 @@ class WeatherClient:
                     video = "northeast"
                 elif ( location == "MW" ):
                     video = "midwest"
-                elif ( location == "SE" ):
+                elif ( location == "SE" or location == "SC" ):
                     video = "southeast"
                 elif ( location == "W" ):
                     video = "west"
