@@ -28,7 +28,11 @@ else:
     opener = urllib2.build_opener()
     urllib2.install_opener(opener)
 
-enable_debug = True
+if xbmcplugin.getSetting('enable_debug') == 'true':
+    enable_debug = True
+    xbmc.output('VideoDevil debug logging enabled')
+else:
+    enable_debug = False
 
 entitydefs = {
     'AElig':    u'\u00C6', # latin capital letter AE = latin capital ligature AE, U+00C6 ISOlat1'
@@ -592,6 +596,8 @@ class CCurrentList:
         url = ''
         info_idx = 0
         firstInfo = True
+        #this is added for handling the stupid &nbsp;
+        item.infos_values[url_idx] = item.infos_values[url_idx].replace(u'\xa0', ' ')
         for info_name in item.infos_names:
             if info_idx != url_idx and item.infos_names[info_idx].find('.once') == -1:
                 #info_value = urllib.quote(item.infos_values[info_idx])
@@ -872,6 +878,8 @@ class CCurrentList:
                 info_value = '...'
             elif cfg_file.find('youtube') != -1: # youtube
                 info_value = info_value.replace('<b>', '').replace('</b>', '')
+            elif cfg_file.find('xhamster') != -1:
+                info_value = info_value.replace('<span style="background-color:#E9E9E9;">', '').replace('</span>', '')
             elif cfg_file.find('boysfood') != -1: # boysfood
                 info_value = info_value.replace('<font style="color:#c00000;font-weight:bold;">', '').replace('</font>', '')
         elif info_name == 'icon':
@@ -1164,6 +1172,8 @@ class Main:
                 match = urlsearch.group(1).replace('\r\n', '').replace('\n', '').lstrip().rstrip()
                 if source.rule.action.find('unquote') != -1:
                     match = unquote_safe(match)
+                elif source.rule.action.find('decode') != -1:
+		    match = decode(match)
                 if source.rule.build.find('%s') != -1:
                     match = source.rule.build % match
                 if source.ext_rule != None:
