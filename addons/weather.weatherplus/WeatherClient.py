@@ -98,11 +98,11 @@ def _localize_unit( value, unit="temp" ):
         # set default time
         time = value
         # set our default temp unit
-        id = ( "H:mm", "h:mm:ss xx", )[ unit == "time" ]
+        id = ( "%H:%M", "%I:%M:%S %p", )[ unit == "time" ]
         # if we're debugging xbmc module is not available
         if ( not DEBUG and unit == "time" ):
             id = xbmc.getRegion( id="time" )
-            print id
+            # print id
         # 24 hour ?
         if ( id.startswith( "%H" ) ):
             hour = int( value.split( ":" )[ 0 ] )
@@ -116,15 +116,17 @@ def _localize_unit( value, unit="temp" ):
             if (hour < 0 ):
                hour += 24
 
-            if ( hour > 12 ) :
+            if ( hour > 12 and value_specifier == value) :
                  value_specifier = "PM"
-            else :
+                 hour -= 12
+            elif (value_specifier == value) :
                  value_specifier = "AM"
-            hour -= ( 12 * ( value_specifier == "PM" and int( value.split( ":" )[ 0 ] ) != 12 ) )
-           
-            time = "%d:%s" % ( hour, value.split( ":" )[ 1 ], )
+            # hour -= ( 12 * ( value_specifier == "PM" and int( value.split( ":" )[ 0 ] ) != 12 ) )
+            time = "%d:%s" % ( hour, value.split( ":" )[ 1 ], )            
             if (unit == "time") :
-                 time = "%s %s" % ( time, value_specifier, ) 
+                 time = "%s %s" % ( time, value_specifier.upper(), ) 
+                 # print value + " -> " + time
+
 
         # add am/pm if used
         # if ( id.endswith( "xx" ) ):
@@ -1000,7 +1002,7 @@ class WeatherClient:
                     video = "northeast"
                 elif ( location == "MW" ):
                     video = "midwest"
-                elif ( location == "SE" or location == "SC" ):
+                elif ( location == "SE"):
                     video = "southeast"
                 elif ( location == "W" ):
                     video = "west"
