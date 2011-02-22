@@ -84,7 +84,7 @@ def _normalize_outlook( outlook ):
 
 def _localize_unit( value, unit="temp" ):
     # grab the specifier
-    value_specifier = value.split( " " )[ -1 ]
+    value_specifier = value.split( " " )[ -1 ].upper()
     # replace any invalid characters
     value = value.replace( chr(176), "" ).replace( "&deg;", "" ).replace( "mph", "" ).replace( "miles", "" ).replace( "mile", "" ).replace( "in.", "" ).replace( "F", "" ).replace( "AM", "" ).replace( "PM", "" ).replace( "am", "" ).replace( "pm", "" ).strip()
     # do not convert invalid values
@@ -111,6 +111,7 @@ def _localize_unit( value, unit="temp" ):
             hour += ( 12 * ( value_specifier == "PM" and int( value.split( ":" )[ 0 ] ) != 12 ) )
             hour -= ( 12 * ( value_specifier == "AM" and int( value.split( ":" )[ 0 ] ) == 12 ) )
             time = "%d:%s" % ( hour, value.split( ":" )[ 1 ], )
+            print value +value_specifier+ " -> " + time
         else : 
             hour = int( value.split( ":" )[ 0 ] )
             if (hour < 0 ):
@@ -124,7 +125,7 @@ def _localize_unit( value, unit="temp" ):
             # hour -= ( 12 * ( value_specifier == "PM" and int( value.split( ":" )[ 0 ] ) != 12 ) )
             time = "%d:%s" % ( hour, value.split( ":" )[ 1 ], )            
             if (unit == "time") :
-                 time = "%s %s" % ( time, value_specifier.upper(), ) 
+                 time = "%s %s" % ( time, value_specifier, ) 
                  # print value + " -> " + time
 
 
