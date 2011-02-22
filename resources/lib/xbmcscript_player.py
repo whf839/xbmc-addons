@@ -13,6 +13,7 @@ import os
 import xbmcgui
 import xbmc
 import xbmcaddon
+import traceback 
 
 _A_ = xbmcaddon.Addon( __scriptID__ )
 # language method
@@ -22,10 +23,7 @@ _S_ = _A_.getSetting
 
 
 # set proper message
-try:
-    message = ( 32530, 32540, )[ sys.argv[ 1 ] == "ClearWatchedTrailers" ]
-except:
-    message = 32520
+message = 32520
 
 pDialog = xbmcgui.DialogProgress()
 pDialog.create( __script__, _L_( message )  )
@@ -41,9 +39,11 @@ class Main:
     BASE_CACHE_PATH = os.path.join( xbmc.translatePath( "special://profile" ), "Thumbnails", "Video" )
     BASE_CURRENT_SOURCE_PATH = os.path.join( xbmc.translatePath( "special://profile/addon_data/" ), os.path.basename( _A_.getAddonInfo('path') ) )
     def __init__( self ):
-        import traceback 
         self.number_of_features = int( _S_( "number_of_features") ) + 1
         self.playlistsize = xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size()
+        self._start()
+        
+    def _start( self ):
         try:
             # create the playlist
             self.playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
@@ -64,7 +64,7 @@ class Main:
             self._play_trivia( mpaa=mpaa, genre=genre )
         except:
             traceback.print_exc()
-
+    
     def _add_intermission_videos( self ):
         xbmc.log( "[script.cinema.experience] - Adding intermission Video(s)", xbmc.LOGNOTICE )
         count = 0
@@ -74,7 +74,7 @@ class Main:
             #count = index_count
             # add intermission video
             if ( int( _S_( "intermission_video") ) > 0 ):
-                xbmc.log( "[script.cinema.experience] - Inserting intermission Video(s): %s" % int( _S_( "intermission_video" ) ), xbmc.LOGNOTICE )
+                xbmc.log( "[script.cinema.experience] - Inserting intermission Video(s): %s" % _S_( "intermission_video" ), xbmc.LOGNOTICE )
                 xbmc.log( "[script.cinema.experience] -     playlist Position: %d" % index_count, xbmc.LOGNOTICE )
                 p_size = xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size()
                 xbmc.log( "[script.cinema.experience] -     p_size: %d" % p_size, xbmc.LOGNOTICE )
@@ -273,7 +273,7 @@ class Main:
                 mpaa = mpaa.split( " " )[ 1 - ( len( mpaa.split( " " ) ) == 1 ) ]
                 mpaa = ( mpaa, "NR", )[ mpaa not in ( "G", "PG", "PG-13", "R", "NC-17", "Unrated", ) ]
             else:
-                mpaa = ( mpaa, "NR", )[ mpaa not in ( "12", "12A", "PG", "15", "18", "MA", "U", ) ]
+                mpaa = ( mpaa, "NR", )[ mpaa not in ( "12", "12A", "PG", "15", "18", "R18", "MA", "U", ) ]
         except:
             movie_title = mpaa = audio = genre = movie = ""
         # spew queued video info to log
@@ -285,7 +285,7 @@ class Main:
         xbmc.log( "[script.cinema.experience] - MPAA: %s" % ( mpaa, ), xbmc.LOGNOTICE )
         xbmc.log( "[script.cinema.experience] - Audio: %s" % ( audio, ), xbmc.LOGNOTICE )
         if ( _S_( "audio_videos_folder" ) ):
-            xbmc.log( "[script.cinema.experience] - Folder: %s" % ( xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "dtsma": "DTS-MA", "ac3": "Dolby" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ], ), xbmc.LOGNOTICE )
+            xbmc.log( "[script.cinema.experience] - Folder: %s" % ( xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "dtsma": "DTSHD-MA", "dtshd-ma": "DTSHD-MA", "a_truehd": "Dolby TrueHD", "ac3": "Dolby" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ], ), xbmc.LOGNOTICE )
         xbmc.log( "[script.cinema.experience]  %s" % log_sep, xbmc.LOGNOTICE )
         # return results
         return mpaa, audio, genre, movie

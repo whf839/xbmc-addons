@@ -1,5 +1,6 @@
 1.0.21
 - Fixed Notification error
+- Enhancement - Added detection for Dolby TrueHD and DTSHD-MA Audio Codecs(plays proper Audio Format Video)
 
 1.0.20
 - Enhancement - Added Broadcast to VoxCommando - turn on in settings -> Miscellaneous
