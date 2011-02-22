@@ -13,6 +13,7 @@ import datetime
 from pysqlite2 import dbapi2 as sqlite
 
 _A_ = xbmcaddon.Addon('script.cinema.experience')
+_L_ = _A_.getLocalizedString
 
 sys.path.append( os.path.join( _A_.getAddonInfo('path'), "resources" ) )
 
@@ -93,8 +94,8 @@ class Main:
                                     trailer[ 9 ], # release date
                                     trailer[ 15 ], # studio
                                     trailer[ 16 ], # genre
-                                    "", # writer
-                                    "", # director
+                                    _L_( 32605 ), # writer
+                                    _L_( 32605 ), # director
                                     ) ]
                 # mark trailer watched
                 self._mark_watched( trailer[ 0 ] )

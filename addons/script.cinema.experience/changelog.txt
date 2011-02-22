@@ -1,6 +1,49 @@
-1.0.10
+1.0.21
+- Fixed Notification error
+- Enhancement - Added detection for Dolby TrueHD and DTSHD-MA Audio Codecs(plays proper Audio Format Video)
+
+1.0.20
+- Enhancement - Added Broadcast to VoxCommando - turn on in settings -> Miscellaneous
+
+1.0.19
+- Enhancement - Added code for BBFC
+- Removed - Notification of script ending
+- Enhancement - Improved randomization of videos and slides
+
+1.0.18
+- Fixed - Added strings for hard coded words(allows for translation)
+- Fixed - Close Notification after movie(s) are queued
+- Cosmetics - Cleaned up logging.
+
+1.0.17 
+- Enhancement: Added Intermission Rating Video
+- Removed version testing(doesn't work with lastest and source code)
+
+1.0.16
+- Enhancement: Turn Auto refresh back on for Movie !! Audio Format Videos need to be used for this to work !!
+
+1.0.15
+- Enhancement: Added Ability for skin activate from a sub menu(Genre, Titles, Years, etc.)
+
+1.0.14
+- Enhancement: Added Ability to disable Auto Refresh - should re-enable before movie playback
+- Enhancement: Re-arranged addon.py allowing script to run from Home Window.
+
+1.0.13
+- changed Playlist playing in Trivia(move fade to before playlist)
+- changed logging in fade volume
+
+1.0.12 
+- add Testing to determine what video is playing
+
+1.0.11 
+- Enhancement: More proper logging
+- Enhancement: Multiple Features
+- Enhancement: Added ability to disable videos
+- Enhancement: Added 720p version of the trivia skin
+
+1.0.10 
 - Bug Fix: #81 Overlays displayed over trivia slides
-- Fix giftie's big oops... :)
 
 1.0.9
 - Bug Fix: #67 Music playback over trivia breaks script
