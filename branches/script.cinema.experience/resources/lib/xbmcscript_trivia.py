@@ -12,7 +12,6 @@ import time
 _A_ = xbmcaddon.Addon('script.cinema.experience')
 _ = _A_.getLocalizedString
 
-#xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "AudioPlaylist.Clear", "id": 1}')
 BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( _A_.getAddonInfo('path'), 'resources' ) )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 from music import parse_playlist
@@ -230,14 +229,14 @@ class Trivia( xbmcgui.WindowXML ):
                     if ( slide ):
                         # add slide
                         self.slide_playlist += [ slide ]
-                xbmc.log( "------------------Unwatched-------------------------     included - %s, %s, %s" % ( os.path.basename( slides[ 0 ] ), os.path.basename( slides[ 1 ] ), os.path.basename( slides[ 2 ] ), ), xbmc.LOGNOTICE)
+                xbmc.log( "[script.cinema.experience] ------------------Unwatched-------------------------     included - %s, %s, %s" % ( os.path.basename( slides[ 0 ] ), os.path.basename( slides[ 1 ] ), os.path.basename( slides[ 2 ] ), ), xbmc.LOGNOTICE)
                 #xbmc.log( "included - %s, %s, %s" % ( os.path.basename( slides[ 0 ] ), os.path.basename( slides[ 1 ] ), os.path.basename( slides[ 2 ] ), ), xbmc.LOGNOTICE)
                 
             else:
-                xbmc.log( "-------------------Watched--------------------------     skipped - %s, %s, %s" % ( os.path.basename( slides[ 0 ] ), os.path.basename( slides[ 1 ] ), os.path.basename( slides[ 2 ] ), ), xbmc.LOGNOTICE)
+                xbmc.log( "[script.cinema.experience] -------------------Watched--------------------------     skipped - %s, %s, %s" % ( os.path.basename( slides[ 0 ] ), os.path.basename( slides[ 1 ] ), os.path.basename( slides[ 2 ] ), ), xbmc.LOGNOTICE)
                 #xbmc.log( "skipped - %s, %s, %s" % ( os.path.basename( slides[ 0 ] ), os.path.basename( slides[ 1 ] ), os.path.basename( slides[ 2 ] ), ), xbmc.LOGNOTICE)
                 
-        xbmc.log( "-----------------------------------------", xbmc.LOGNOTICE)
+        xbmc.log( "[script.cinema.experience] -----------------------------------------", xbmc.LOGNOTICE)
         xbmc.log( "[script.cinema.experience] - total slides selected: %d" % len( self.slide_playlist ), xbmc.LOGNOTICE)
         
         # reset watched automatically if no slides are left
@@ -387,11 +386,16 @@ class Trivia( xbmcgui.WindowXML ):
             self.global_timer = None
             
     def _check_video_player( self ):
+        playing = ""
         result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Player.GetActivePlayers", "id": 1}')
         match = re.search( '"video" : (.*?)', result )
         if not match:
-            match = re.search( '"video":(.*?)', result )        
-        return ( match.group(1) ).title()
+            match = re.search( '"video":(.*?)', result )
+        if match:
+            playing="True"
+        else:
+            playing="False"
+        return playing
     
     def _fade_volume( self, out=True ):
         # set initial start/end values

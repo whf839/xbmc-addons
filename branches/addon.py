@@ -26,8 +26,12 @@ time_delay = 200
 image = xbmc.translatePath( os.path.join( _A_.getAddonInfo("path"), "icon.png") )
 autorefresh = xbmc.executehttpapi( "GetGuiSetting(1; videoplayer.adjustrefreshrate)" ).strip("<li>")
 xbmc.log( "[script.cinema.experience] - Autorefresh - Before Script: %s" % autorefresh, xbmc.LOGNOTICE )
+
+def footprints():
+    xbmc.log( "[script.cinema.experience] - Script Name: %s" % __script__, xbmc.LOGNOTICE )
+    xbmc.log( "[script.cinema.experience] - Script ID: %s" % __scriptID__, xbmc.LOGNOTICE )
+    xbmc.log( "[script.cinema.experience] - Script Version: %s" % __version__, xbmc.LOGNOTICE )
     
-                
 def _clear_watched_items( clear_type ):
     xbmc.log( "[script.cinema.experience] - _clear_watched_items( %s )" % ( clear_type ), xbmc.LOGNOTICE )
     # initialize base_path
@@ -181,7 +185,7 @@ def auto_refresh( before, mode ):
     
 def start_script( library_view = "movietitles" ):
     # turn off autorefresh
-    early_exit = ""
+    early_exit = "False"
     autorefresh_movie = "False"
     movie_next="False"
     auto_refresh( autorefresh, "disable" )
@@ -205,16 +209,17 @@ def start_script( library_view = "movietitles" ):
             early_exit = "True"
             break
     xbmc.log( "[script.cinema.experience] - User queued %s Feature films" % xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size(), xbmc.LOGNOTICE )
-    if not exit == "True":
+    if early_exit == "False":
         header1 = header + " - Feature " + "%d" % xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size()
         message = _L_( 32543 ) + xbmc.PlayList( xbmc.PLAYLIST_VIDEO )[xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() -1].getdescription()
         xbmc.executebuiltin("Notification( %s, %s, %d, %s)" % (header1, message, time_delay, image) )
-        early_exit = ""
+        early_exit = "False"
     # If for some reason the limit does not get reached and the window changed, cancel script
     if xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() < ( number_of_features ):
         xbmc.executebuiltin("Notification( %s, %s, %d, %s)" % (header, _L_( 32544 ), time_delay, image) )
         _clear_playlists()
     else:
+        #video_tag = xbmc.InfoTagVideo()
         from resources.lib import xbmcscript_player as script
         script.Main()
         _clear_playlists( "music" )
@@ -223,7 +228,13 @@ def start_script( library_view = "movietitles" ):
         while xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition() < ( xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() - 1 ):
             if xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition() > count:
                 xbmc.sleep( 2000 )
-                xbmc.log( "[script.cinema.experience] - movie_next: %s" % movie_next, xbmc.LOGNOTICE )
+                #movie_title = video_tag.getTitle()
+                #movie_writer = video_tag.getWritingCredits()
+                #movie_genre = video_tag.getGenre()
+                #xbmc.log( "[script.cinema.experience] - movie_title: %s" % movie_title, xbmc.LOGNOTICE )
+                #xbmc.log( "[script.cinema.experience] - movie_writer: %s" % movie_writer, xbmc.LOGNOTICE )
+                #xbmc.log( "[script.cinema.experience] - movie_genre: %s" % movie_genre, xbmc.LOGNOTICE )
+                #xbmc.log( "[script.cinema.experience] - movie_next: %s" % movie_next, xbmc.LOGNOTICE )
                 if movie_next == "True":
                     try:
                         movie_title = xbmc.executehttpapi( "GetVideoLabel(250)").strip("<li>")
@@ -273,6 +284,7 @@ def start_script( library_view = "movietitles" ):
                 autorefresh_movie == "False"   
 
 if ( __name__ == "__main__" ):
+    footprints()
     # check to see if an argv has been passed to script
     if ( int(xbmc.executehttpapi( "GetLogLevel" ).replace( "<li>", "" ) ) > 1 ):
         log_settings()
