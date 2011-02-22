@@ -1,3 +1,6 @@
+1.0.22
+- Added Checking for BBFC ratings with UK: in front
+
 1.0.21
 - Fixed Notification error
 - Enhancement - Added detection for Dolby TrueHD and DTSHD-MA Audio Codecs(plays proper Audio Format Video)
