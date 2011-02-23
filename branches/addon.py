@@ -2,7 +2,7 @@
 __script__ = "Cinema Experience"
 __author__ = "nuka1195-giftie-ackbarr"
 __url__ = "http://code.google.com/p/xbmc-addons/"
-__version__ = "1.0.22"
+__version__ = "1.0.23"
 __scriptID__ = "script.cinema.experience"
 
 import xbmcgui, xbmc, xbmcaddon, os, re
@@ -183,39 +183,41 @@ def auto_refresh( before, mode ):
     status = xbmc.executehttpapi( "GetGuiSetting(1; videoplayer.adjustrefreshrate)" ).strip("<li>")
     xbmc.log( "[script.cinema.experience] - Autorefresh Status: %s" % status, xbmc.LOGNOTICE )
     
-def start_script( library_view = "movietitles" ):
+def start_script( library_view = "oldway" ):
+    xbmc.log( "[script.cinema.experience] - Library_view: %s" % library_view, xbmc.LOGNOTICE )
     # turn off autorefresh
     early_exit = "False"
     autorefresh_movie = "False"
     movie_next="False"
     auto_refresh( autorefresh, "disable" )
-    xbmc.executebuiltin( "ActivateWindow(videolibrary,%s,return)" % library_view )
-    # wait until Video Library shows
-    while not xbmc.getCondVisibility( "Container.Content(movies)" ):
-        pass
-    xbmc.executebuiltin("Notification( %s, %s, %d, %s)" % (header, _L_( 32546 ), 300000, image) )
-    # wait until playlist is full to the required number of features
-    xbmc.log( "[script.cinema.experience] - Waiting for queue to be filled with %s Feature films" % number_of_features, xbmc.LOGNOTICE )
-    count = 0
-    while xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() < ( number_of_features ):                
-        if xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() > count:
-            xbmc.log( "[script.cinema.experience] - User queued %s of %s Feature films" % (xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size(), number_of_features), xbmc.LOGNOTICE )
+    if library_view != "oldway":
+        xbmc.executebuiltin( "ActivateWindow(videolibrary,%s,return)" % library_view )
+        # wait until Video Library shows
+        while not xbmc.getCondVisibility( "Container.Content(movies)" ):
+            pass
+        xbmc.executebuiltin("Notification( %s, %s, %d, %s)" % (header, _L_( 32546 ), 300000, image) )
+        # wait until playlist is full to the required number of features
+        xbmc.log( "[script.cinema.experience] - Waiting for queue to be filled with %s Feature films" % number_of_features, xbmc.LOGNOTICE )
+        count = 0
+        while xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() < ( number_of_features ):                
+            if xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() > count:
+                xbmc.log( "[script.cinema.experience] - User queued %s of %s Feature films" % (xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size(), number_of_features), xbmc.LOGNOTICE )
+                header1 = header + " - Feature " + "%d" % xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size()
+                message = _L_( 32543 ) + xbmc.PlayList( xbmc.PLAYLIST_VIDEO )[xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() -1].getdescription()
+                xbmc.executebuiltin("Notification( %s, %s, %d, %s)" % (header1, message, time_delay, image) )
+                count = xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size()
+                xbmc.sleep(time_delay*2)
+            if not xbmc.getCondVisibility( "Container.Content(movies)" ):
+                early_exit = "True"
+                break
+        xbmc.log( "[script.cinema.experience] - User queued %s Feature films" % xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size(), xbmc.LOGNOTICE )
+        if early_exit == "False":
             header1 = header + " - Feature " + "%d" % xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size()
             message = _L_( 32543 ) + xbmc.PlayList( xbmc.PLAYLIST_VIDEO )[xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() -1].getdescription()
             xbmc.executebuiltin("Notification( %s, %s, %d, %s)" % (header1, message, time_delay, image) )
-            count = xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size()
-            xbmc.sleep(time_delay*2)
-        if not xbmc.getCondVisibility( "Container.Content(movies)" ):
-            early_exit = "True"
-            break
-    xbmc.log( "[script.cinema.experience] - User queued %s Feature films" % xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size(), xbmc.LOGNOTICE )
-    if early_exit == "False":
-        header1 = header + " - Feature " + "%d" % xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size()
-        message = _L_( 32543 ) + xbmc.PlayList( xbmc.PLAYLIST_VIDEO )[xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() -1].getdescription()
-        xbmc.executebuiltin("Notification( %s, %s, %d, %s)" % (header1, message, time_delay, image) )
-        early_exit = "False"
-    # If for some reason the limit does not get reached and the window changed, cancel script
-    if xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() < ( number_of_features ):
+            early_exit = "False"
+        # If for some reason the limit does not get reached and the window changed, cancel script
+    if xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() < ( number_of_features ) and library_view != "oldway":
         xbmc.executebuiltin("Notification( %s, %s, %d, %s)" % (header, _L_( 32544 ), time_delay, image) )
         _clear_playlists()
     else:
@@ -299,16 +301,30 @@ if ( __name__ == "__main__" ):
                     _view_changelog()
                 elif ( sys.argv[ 1 ] == "ViewReadme" ):
                     _view_readme()
+                elif ( sys.argv[ 1 ] == "oldway" ):
+                    _A_.setSetting( id="number_of_features", value=1 ) # set number of features to 1
+                    _clear_playlists()
+                    xbmc.executebuiltin( "Action(Queue,%d)" % ( xbmcgui.getCurrentWindowId() - 10000, ) )
+                    xbmc.log( "[script.cinema.experience] - Action(Queue,%d)" % ( xbmcgui.getCurrentWindowId() - 10000, ), xbmc.LOGNOTICE )
+                    # we need to sleep so the video gets queued properly
+                    xbmc.sleep( 300 )
+                    autorefresh_movie = "False"
+                    start_script( "oldway" )
                 else:
                     _clear_playlists()
                     start_script( sys.argv[ 1 ].lower() )
             except:
                 traceback.print_exc()       
     except:
+        #start script in 'Old Way' if the script is called with out argv... queue the movie the old way
+        _A_.setSetting( id='number_of_features', value='1' ) # set number of features to 1
         _clear_playlists()
+        xbmc.executebuiltin( "Action(Queue,%d)" % ( xbmcgui.getCurrentWindowId() - 10000, ) )
+        xbmc.log( "[script.cinemaexperience] - Action(Queue,%d)" % ( xbmcgui.getCurrentWindowId() - 10000, ), xbmc.LOGNOTICE )
+        # we need to sleep so the video gets queued properly
+        xbmc.sleep( 300 )
         autorefresh_movie = "False"
-        # only run if compatible
-        start_script( "movietitles" )
+        start_script( "oldway" )
     # turn on autorefresh if script turned it off
     #xbmc.executebuiltin("Notification( %s, %s, %d, %s)" % (header, _L_( 32545 ), time_delay, image) )
     _clear_playlists()
