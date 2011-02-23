@@ -1,3 +1,6 @@
+1.0.23
+- Added code for the old way to still work.
+
 1.0.22
 - Added Checking for BBFC ratings with UK: in front
 
