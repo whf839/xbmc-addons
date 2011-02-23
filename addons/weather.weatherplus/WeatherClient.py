@@ -111,7 +111,7 @@ def _localize_unit( value, unit="temp" ):
             hour += ( 12 * ( value_specifier == "PM" and int( value.split( ":" )[ 0 ] ) != 12 ) )
             hour -= ( 12 * ( value_specifier == "AM" and int( value.split( ":" )[ 0 ] ) == 12 ) )
             time = "%d:%s" % ( hour, value.split( ":" )[ 1 ], )
-            print value +value_specifier+ " -> " + time
+            print "[Weather.com+] Converting Time : "+value + " " + value_specifier+ " -> " + time
         else : 
             hour = int( value.split( ":" )[ 0 ] )
             if (hour < 0 ):
@@ -410,25 +410,24 @@ class Forecast36HourParser:
             self.extras += [(_localize_unit(pressure, "pressure") + { "pressure-up": u"\u2191", "pressure-down": u"\u2193", "pressure-steady": u"\u2192" }[ pressure_[0][1] ], _localize_unit(visibility, "distance"), sunrise, sunset)]
             # localize our extra info
             # convert outlook wind/temp values
-            # outlook = _normalize_outlook( outlook )
+            brief = _normalize_outlook( brief )
             # translate brief and outlook if user preference
             if ( self.translate is not None ):
                 # we only need outlook and brief. the rest the skins or xbmc language file can handle
                 # we separate each item with single pipe
-                text = "|".join( outlook )
+                # text = "|".join( outlook )
                 # separator for different info
-                text += "|||||"
+                # text += "|||||"
                 # we separate each item with single pipe
-                text += "|".join( brief )
+                text = "|".join( brief )
                 # translate text
                 text = _translate_text( text, self.translate )
                 # split text into it's original list
-                outlook = text.split( "|||||" )[ 0 ].split( "|" )
-                brief = text.split( "|||||" )[ 1 ].split( "|" )
+                # outlook = text.split( "|||||" )[ 0 ].split( "|" )
+                brief = text.split( "|" )
             for count, day in enumerate( days ):
                 # make icon path
                 iconpath = "/".join( [ "special://temp", "weather", "128x128", icon[ count ] + ".png" ] )
-                # print days, iconpath, brief[count], _localize_unit(temperature[count]), precip_title[count], precip_amount[count].replace("%",""), brief[count+4], _localize_unit(daylight[count][1].split(" ")[3], "time")
                 # add result to our class variable
                 # self.forecast += [ ( days, iconpath, brief[ count ], temperature[ count ][ 0 ], _localize_unit( temperature[ count ][ 1 ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), outlook[ count ].strip(), daylight[ count ].split( ": " )[ 0 ], _localize_unit( daylight[ count ].split( ": " )[ 1 ], "time" ), ) ]
                 self.forecast += [ ( days[count], iconpath, brief[ count+1 ], temperature_info[ count ], _localize_unit( temperature[ count ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), brief[ count+4 ], daylight[ count ][ 0 ], _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  ), ) ]
@@ -667,7 +666,9 @@ class ForecastWeekendParser:
             brief += [ item[ 1 ] ]
             icon += [ item[ 0 ] ]
         # convert outlook wind/temp values
-        outlooks = _normalize_outlook( outlooks )
+        # normalize turned off due to variety of expressions : 'upper', 'single digits', etc.
+        # TODO : getting most expressions covered
+        # outlooks = _normalize_outlook( outlooks )
         # translate brief and outlook if user preference
         if ( self.translate is not None ):
             # we only need outlook and brief. the rest the skins or xbmc language file can handle
