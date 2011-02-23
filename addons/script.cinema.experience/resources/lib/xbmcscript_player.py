@@ -52,12 +52,18 @@ class Main:
             # add the intermission videos and audio files for the 2, third, etc movies
             if self.playlistsize > 1 and ( int( _S_( "intermission_video") ) > 0 or _S_( "intermission_audio") or _S_( "intermission_ratings") ): 
                 for feature_count in range (1, self.playlistsize + 1):
-                    xbmc.log( "[script.cinema.experience] - Feature #%-2d - %s" % ( feature_count, self.playlist[ feature_count - 1 ].getdescription() ), xbmc.LOGNOTICE )
+                    movie_title = self.playlist[ feature_count - 1 ].getdescription()
+                    if _S_( "voxcommando" ) == "true":
+                            xbmc.executehttpapi( "Broadcast(<b>CElaunch<li>"+ movie_title +"</b>;33000)" )
+                    xbmc.log( "[script.cinema.experience] - Feature #%-2d - %s" % ( feature_count, movie_title ), xbmc.LOGNOTICE )
                 mpaa, audio, genre, movie = self._add_intermission_videos()
             # otherwise just build for a single video
             else:
                 # get the queued video info
-                xbmc.log( "[script.cinema.experience] - Feature - %s" % self.playlist[ 0 ].getdescription(), xbmc.LOGNOTICE )
+                movie_title = self.playlist[ 0 ].getdescription()
+                if _S_( "voxcommando" ) == "true":
+                            xbmc.executehttpapi( "Broadcast(<b>CElaunch<li>"+ movie_title +"</b>;33000)" )
+                xbmc.log( "[script.cinema.experience] - Feature - %s" % movie_title, xbmc.LOGNOTICE )
                 mpaa, audio, genre, movie = self._get_queued_video_info()
             self._create_playlist( mpaa, audio, genre, movie)
             # play the trivia slide show

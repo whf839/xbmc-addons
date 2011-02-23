@@ -2,7 +2,7 @@
 __script__ = "Cinema Experience"
 __author__ = "nuka1195-giftie-ackbarr"
 __url__ = "http://code.google.com/p/xbmc-addons/"
-__version__ = "1.0.23"
+__version__ = "1.0.24"
 __scriptID__ = "script.cinema.experience"
 
 import xbmcgui, xbmc, xbmcaddon, os, re
@@ -241,16 +241,16 @@ def start_script( library_view = "oldway" ):
                     try:
                         movie_title = xbmc.executehttpapi( "GetVideoLabel(250)").strip("<li>")
                         xbmc.log( "[script.cinema.experience] - Movie Title: %s" % movie_title, xbmc.LOGNOTICE )
-                        if _S_( "voxcommando" ) == "true":
-                            xbmc.executehttpapi( "Broadcast(<b>CElaunch<li>"+ movie_title +"</b>;33000)" )
                     except:
                         movie_title = repr( xbmc.executehttpapi( "GetVideoLabel(250)").strip("<li>") )
                         xbmc.log( "[script.cinema.experience] - Movie Title: %s" % movie_title, xbmc.LOGNOTICE )
-                        if _S_( "voxcommando" ) == "true":
-                            xbmc.executehttpapi( "Broadcast(<b>CElaunch<li>"+ movie_title +"</b>;33000)" )
                     movie_next="False"
-                video_label = ( xbmc.executehttpapi( "GetVideoLabel(280)").strip("<li>") )
-                video_label2 = (repr( xbmc.executehttpapi( "GetVideoLabel(251)").strip("<li>") ) ).strip("'")
+                try:
+                    video_label = ( xbmc.executehttpapi( "GetVideoLabel(280)").strip("<li>") )
+                    video_label2 = ( xbmc.executehttpapi( "GetVideoLabel(251)").strip("<li>") ) 
+                except:
+                    video_label = ( repr( xbmc.executehttpapi( "GetVideoLabel(280)").strip("<li>") ) ).strip("'")
+                    video_label2 = (repr( xbmc.executehttpapi( "GetVideoLabel(251)").strip("<li>") ) ).strip("'")
                 xbmc.log( "[script.cinema.experience] - video_label(280): %s" % video_label, xbmc.LOGNOTICE )
                 xbmc.log( "[script.cinema.experience] - video_label(251): %s" % video_label2, xbmc.LOGNOTICE )
                 xbmc.log( "[script.cinema.experience] - Playlist Position: %s  Playlist Size: %s " % ( xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition(), (xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() - 1) ), xbmc.LOGNOTICE )               
