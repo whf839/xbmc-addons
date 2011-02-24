@@ -221,39 +221,50 @@ class WeatherAlert:
         self.alert = ""
         self.title = ""
         self.alert_rss = ""
-        try:
+        try:            
             self._get_alert( htmlSource )
         except:
             pass
 
     def _get_alert( self, htmlSource ):
         # regex patterns
-        pattern_alert = "<h1>([^<]+)</h1>"
-        pattern_expires = "<p>(<b>.+?</b>[^<]+)</p>"
-        pattern_issuedby = "<p class=\"alIssuedBy\">(.+?)</p>"
-        pattern_narrative = "<p class=\"alNarrative\">(.*?)</p>"
+
+        # pattern_alert = "<h1>([^<]+)</h1>"      
+        # pattern_issuedby = "<p class=\"alIssuedBy\">(.+?)</p>"
+        # pattern_narrative = "<p class=\"alNarrative\">(.*?)</p>"
+        # pattern_expires = "<p>(<b>.+?</b>[^<]+)</p>" 
+        
         pattern_moreinfo = "<h2>([^<]+)</h2>\n.+?<p class=\"alSynopsis\">"
         pattern_synopsis = "<p class=\"alSynopsis\">(.+?)</p>"
+        
+        pattern_alert_ = "</span>([^<]+)</h2>"
+        pattern_issuedby_ = "Issued by (.+?)</h3>"
+        pattern_narrative_ = "<div class=\"wx-alert-body\">(.*?)</div>"
+        pattern_expires_ = "<h3 class=\"twc-module-sub-header twc-timestamp twc-alert-timestamp\">([^<]+)</h3>"
+
         # fetch alert
-        alert = re.findall( pattern_alert, htmlSource )[ 0 ]
+        alert = re.findall( pattern_alert_, htmlSource )[ 0 ].replace("\n", "").replace("\t","")
+
         # fetch expires
         try:
-            expires = re.findall( pattern_expires, htmlSource )[ 0 ].replace( "<b>", "" ).replace( "</b>", "" )
+            expires = re.findall( pattern_expires_, htmlSource )[ 0 ].replace( "\n", "" ).replace( "\t", "" )
         except:
             expires = ""
+        # TODO : localizing expire time?
+        expires = ""
         # fetch issued by
         try:
-            issuedby_list = re.findall( pattern_issuedby, htmlSource, re.DOTALL )[ 0 ].split( "<br>" )
+            issuedby_list = re.findall( pattern_issuedby_, htmlSource, re.DOTALL )[ 0 ].split( "<br>" )
             issuedby = "[I]"
             for item in issuedby_list:
                 issuedby += item.strip()
                 issuedby += "\n"
             issuedby += "[/I]"
             # fetch narrative
-            description_list = re.findall( pattern_narrative, htmlSource, re.DOTALL )
+            description_list = re.findall( pattern_narrative_, htmlSource, re.DOTALL )
             narrative = ""
             for item in description_list:
-                narrative += "%s\n\n" % ( item.strip(), )
+                narrative += "%s\n\n" % ( item.strip().replace("\n", "").replace("\t","").replace("</p>","\n\n").replace("<p>",""), )
             try:
                 # fetch more info
                 moreinfo = re.findall( pattern_moreinfo, htmlSource )[ 0 ]
@@ -946,6 +957,7 @@ class WeatherClient:
         # print parser.alertscolor[0]
         # fetch any alerts
         alerts, alertsrss, alertsnotify = self._fetch_alerts( parser.alerts )
+        print alerts, alertsrss, alertsnotify
         # create video url
         video, video_local = self._create_video( parser.video_location, parser.video_local_location, parser.video_local_number, video )
         print "Weather Video = "+video, "Local Video = "+video_local
@@ -964,6 +976,7 @@ class WeatherClient:
         #alertscolor = ""
         alertsrss = ""
         alertsnotify = ""
+        
         if ( urls ):
             #alertscolor = urls[ 0 ][ 0 ]
             titles = []
