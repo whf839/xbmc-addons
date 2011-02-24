@@ -1048,7 +1048,9 @@ class WeatherClient:
             return url, local_url
         # Canada
         if (len( location ) and self.code.startswith("CA") and video == "" ):
-            htmlSource = self._fetch_data( "http://www.accuweather.com/video/1681759716/canadian-national-weather-fore.asp?channel=world", 15 )
+            print "Location : Canada"
+            accu_canada = "http://www.accuweather.com/video/1681759716/canadian-national-weather-fore.asp?channel=world"
+            htmlSource = self._fetch_data( accu_canada, 15 )
             pattern_video = "http://brightcove.vo.llnwd.net/d14/unsecured/media/1612802193/1612802193_([0-9]+)_(.+?)-thumb.jpg"
             pattern_playerID = "name=\"playerID\" value=\"(.+?)\""
             pattern_publisherID = "name=\"publisherID\" value=\"(.+?)\""
@@ -1067,7 +1069,9 @@ class WeatherClient:
 
         # Europe
         if (len( location ) and (self.code.startswith("FR") or self.code.startswith("SP") or self.code.startswith("IT") or self.code.startswith("GM") or self.code.startswith("NL") or self.code.startswith("GR") or self.code.startswith("PO")) and video == "" ):
-            htmlSource = self._fetch_data( "http://www.accuweather.com/video/1681759717/europe-weather-forecast.asp?channel=world", 15 )
+            print "Location : Europe"
+            accu_europe = "http://www.accuweather.com/video/1681759717/europe-weather-forecast.asp?channel=world"
+            htmlSource = self._fetch_data( accu_europe, 15 )
             pattern_video = "http://brightcove.vo.llnwd.net/d14/unsecured/media/1612802193/1612802193_([0-9]+)_(.+?)-thumb.jpg"
             pattern_playerID = "name=\"playerID\" value=\"(.+?)\""
             pattern_publisherID = "name=\"publisherID\" value=\"(.+?)\""
