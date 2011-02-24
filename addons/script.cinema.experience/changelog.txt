@@ -1,3 +1,6 @@
+1.0.25
+- Fixed - Correctly retrieving Audio Format Videos
+
 1.0.24
 - Move VoxCommando broadcast to a different location
 - Fixed special character error

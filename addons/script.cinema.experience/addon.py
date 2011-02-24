@@ -2,12 +2,13 @@
 __script__ = "Cinema Experience"
 __author__ = "nuka1195-giftie-ackbarr"
 __url__ = "http://code.google.com/p/xbmc-addons/"
-__version__ = "1.0.24"
+__version__ = "1.0.25"
 __scriptID__ = "script.cinema.experience"
 
 import xbmcgui, xbmc, xbmcaddon, os, re
 import traceback 
-import time         
+import time
+from urllib import quote_plus       
 
 _A_ = xbmcaddon.Addon( __scriptID__ )
 # language method
@@ -307,9 +308,23 @@ if ( __name__ == "__main__" ):
                     xbmc.executebuiltin( "Action(Queue,%d)" % ( xbmcgui.getCurrentWindowId() - 10000, ) )
                     xbmc.log( "[script.cinema.experience] - Action(Queue,%d)" % ( xbmcgui.getCurrentWindowId() - 10000, ), xbmc.LOGNOTICE )
                     # we need to sleep so the video gets queued properly
-                    xbmc.sleep( 300 )
+                    xbmc.sleep( 500 )
                     autorefresh_movie = "False"
                     start_script( "oldway" )
+                elif ( sys.argv[ 1 ].startswith( "voxcommando" ) ):
+                    voxcommando_command = sys.argv[ 1 ].split( "&")[1]
+                    xbmc.log( "[script.cinema.experience] - VoxCommando Call: %s" % voxcommando_command, xbmc.LOGNOTICE )
+                    if voxcommando_command.startswith( "movie_title" ):
+                        movie = voxcommando_command.split( "=" )[1]
+                        xbmc.log( "[script.cinema.experience] - Movie Title: %s" % movie, xbmc.LOGNOTICE )
+                        xbmc.executehttpapi( "SetResponseFormat()" )
+                        xbmc.executehttpapi( "SetResponseFormat(OpenField,)" )
+                        # select Movie path from movieview Limit 1
+                        sql = "SELECT movieview.StrPath FROM movieview WHERE c00='%s' LIMIT 1" % ( movie.replace( "'", "''", ), )
+                        xbmc.log( "[script.cinema.experience]  - SQL: %s" % ( sql, ), xbmc.LOGNOTICE )
+                        # query database for info dummy is needed as there are two </field> formatters
+                        movie_path, dummy = xbmc.executehttpapi( "QueryVideoDatabase(%s)" % quote_plus( sql ), ).split( "</field>" )
+                        xbmc.log( "[script.cinema.experience] - Movie Path: %s" % movie_path, xbmc.LOGNOTICE )
                 else:
                     _clear_playlists()
                     start_script( sys.argv[ 1 ].lower() )
@@ -322,7 +337,7 @@ if ( __name__ == "__main__" ):
         xbmc.executebuiltin( "Action(Queue,%d)" % ( xbmcgui.getCurrentWindowId() - 10000, ) )
         xbmc.log( "[script.cinemaexperience] - Action(Queue,%d)" % ( xbmcgui.getCurrentWindowId() - 10000, ), xbmc.LOGNOTICE )
         # we need to sleep so the video gets queued properly
-        xbmc.sleep( 300 )
+        xbmc.sleep( 500 )
         autorefresh_movie = "False"
         start_script( "oldway" )
     # turn on autorefresh if script turned it off
