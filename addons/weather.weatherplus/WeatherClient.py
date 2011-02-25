@@ -324,7 +324,7 @@ class Forecast36HourParser:
         pattern_icon = "<img src=\"http://s\.imwx\.com/v\.20100719\.135915/img/wxicon/[0-9]+/([0-9]+)\.png\" width=\"72\""
         pattern_forecast_brief = "<td class=\"twc-col-[0-9]+\">(.+?)</td>"
         pattern_temp_info = "<td class=\"twc-col-[0-9]+ twc-forecast-temperature-info\">(.+?)</td>"
-        pattern_temp = "<td class=\"twc-col-[0-9]+ twc-forecast-temperature\"><strong>([0-9]+)\&deg;</strong>"
+        pattern_temp = "<td class=\"twc-col-[0-9]+ twc-forecast-temperature\"><strong>(.+?)\&deg;</strong>"
         pattern_precip_title = "<td class=\"twc-col-[0-9]+ twc-line-precip\">(.+?)<br>"
         pattern_precip_amount = "<br><strong>(.+?)</strong></td>"
         #pattern_outlook = "</td><!-- Column [0-9]+ -->\n\s<td class=\"twc-col-[0-9]+\">(.+?)</td>"
@@ -441,6 +441,16 @@ class Forecast36HourParser:
                 iconpath = "/".join( [ "special://temp", "weather", "128x128", icon[ count ] + ".png" ] )
                 # add result to our class variable
                 # self.forecast += [ ( days, iconpath, brief[ count ], temperature[ count ][ 0 ], _localize_unit( temperature[ count ][ 1 ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), outlook[ count ].strip(), daylight[ count ].split( ": " )[ 0 ], _localize_unit( daylight[ count ].split( ": " )[ 1 ], "time" ), ) ]
+                print days[count]
+                print iconpath
+                print brief[ count+1 ]
+                print temperature_info[ count ]
+                print _localize_unit( temperature[ count ] )
+                print precip_title[ count ]
+                print precip_amount[ count ].replace( "%", "" )
+                print brief[ count+4 ]
+                print daylight[ count ][ 0 ]
+                print _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  )
                 self.forecast += [ ( days[count], iconpath, brief[ count+1 ], temperature_info[ count ], _localize_unit( temperature[ count ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), brief[ count+4 ], daylight[ count ][ 0 ], _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  ), ) ]
 
 
