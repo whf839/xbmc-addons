@@ -1,3 +1,6 @@
+1.0.26
+- Fixed - Corrected proper folder for DTSHD-MA videos - Thanks D-tyme
+
 1.0.25
 - Fixed - Correctly retrieving Audio Format Videos
 

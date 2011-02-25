@@ -2,7 +2,7 @@
 __script__ = "Cinema Experience"
 __author__ = "nuka1195-giftie-ackbarr"
 __url__ = "http://code.google.com/p/xbmc-addons/"
-__version__ = "1.0.25"
+__version__ = "1.0.26"
 __scriptID__ = "script.cinema.experience"
 
 import xbmcgui, xbmc, xbmcaddon, os, re
@@ -311,20 +311,29 @@ if ( __name__ == "__main__" ):
                     xbmc.sleep( 500 )
                     autorefresh_movie = "False"
                     start_script( "oldway" )
-                elif ( sys.argv[ 1 ].startswith( "voxcommando" ) ):
-                    voxcommando_command = sys.argv[ 1 ].split( "&")[1]
-                    xbmc.log( "[script.cinema.experience] - VoxCommando Call: %s" % voxcommando_command, xbmc.LOGNOTICE )
-                    if voxcommando_command.startswith( "movie_title" ):
-                        movie = voxcommando_command.split( "=" )[1]
+                elif ( sys.argv[ 1 ].startswith( "command" ) ):
+                    _clear_playlists()
+                    command = sys.argv[ 1 ].split( "&")[1]
+                    xbmc.log( "[script.cinema.experience] - Command Call: %s" % command, xbmc.LOGNOTICE )
+                    if command.startswith( "movie_title" ):
+                        movie = command.split( "=" )[1].title()
                         xbmc.log( "[script.cinema.experience] - Movie Title: %s" % movie, xbmc.LOGNOTICE )
                         xbmc.executehttpapi( "SetResponseFormat()" )
                         xbmc.executehttpapi( "SetResponseFormat(OpenField,)" )
                         # select Movie path from movieview Limit 1
-                        sql = "SELECT movieview.StrPath FROM movieview WHERE c00='%s' LIMIT 1" % ( movie.replace( "'", "''", ), )
+                        sql = "SELECT movieview.c16, movieview.strPath, movieview.strFileName FROM movieview WHERE c00='%s' LIMIT 1" % ( movie.replace( "'", "''", ), )
                         xbmc.log( "[script.cinema.experience]  - SQL: %s" % ( sql, ), xbmc.LOGNOTICE )
                         # query database for info dummy is needed as there are two </field> formatters
-                        movie_path, dummy = xbmc.executehttpapi( "QueryVideoDatabase(%s)" % quote_plus( sql ), ).split( "</field>" )
+                        movie_title, movie_path, movie_filename, dummy = xbmc.executehttpapi( "QueryVideoDatabase(%s)" % quote_plus( sql ), ).split( "</field>" )
+                        movie_full_path = os.path.join(movie_path, movie_filename).replace("\\\\" , "\\")
+                        xbmc.log( "[script.cinema.experience] - Movie Title: %s" % movie_title, xbmc.LOGNOTICE )
                         xbmc.log( "[script.cinema.experience] - Movie Path: %s" % movie_path, xbmc.LOGNOTICE )
+                        xbmc.log( "[script.cinema.experience] - Movie Filename: %s" % movie_filename, xbmc.LOGNOTICE )
+                        xbmc.log( "[script.cinema.experience] - Full Movie Path: %s" % movie_full_path, xbmc.LOGNOTICE )
+                        playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
+                        playlist.add(url=movie_full_path)
+                        autorefresh_movie = "False"
+                        start_script( "oldway" )
                 else:
                     _clear_playlists()
                     start_script( sys.argv[ 1 ].lower() )

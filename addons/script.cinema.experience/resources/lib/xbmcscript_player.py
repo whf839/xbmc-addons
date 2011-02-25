@@ -116,7 +116,7 @@ class Main:
                 xbmc.log( "[script.cinema.experience] -     p_size: %d" % p_size, xbmc.LOGNOTICE )
                 self._get_special_items(    playlist=self.playlist,
                                                     items=1 * ( _S_( "audio_videos_folder" ) != "" ),
-                                                    path=xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "ac3": "Dolby", "dtsma": "DTSHD-MA", "dtshd_ma": "DTSHD_MA", "a_truehd": "Dolby TrueHD", "truehd": "Dolby TrueHD" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ],
+                                                    path=xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "ac3": "Dolby", "dtsma": "DTSHD-MA", "dtshd_ma": "DTSHD-MA", "a_truehd": "Dolby TrueHD", "truehd": "Dolby TrueHD" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ],
                                                     genre=_L_( 32606 ),
                                                     writer=_L_( 32606 ),
                                                     index = index_count
@@ -138,7 +138,7 @@ class Main:
         if ( _S_( "enable_audio" ) ) == "true" and ( _S_( "audio_videos_folder" ) ):
                 self._get_special_items(    playlist=self.playlist,
                                                     items=1 * ( _S_( "audio_videos_folder" ) != "" ),
-                                                    path=xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "ac3": "Dolby", "dtsma": "DTSHD-MA", "dtshd_ma": "DTSHD_MA", "a_truehd": "Dolby TrueHD", "truehd": "Dolby TrueHD"  }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ],
+                                                    path=xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "ac3": "Dolby", "dtsma": "DTSHD-MA", "dtshd_ma": "DTSHD-MA", "a_truehd": "Dolby TrueHD", "truehd": "Dolby TrueHD"  }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ],
                                                     genre=_L_( 32606 ),
                                                     writer=_L_( 32606 ),
                                                     index=0
@@ -294,7 +294,7 @@ class Main:
         xbmc.log( "[script.cinema.experience] - MPAA: %s" % ( mpaa, ), xbmc.LOGNOTICE )
         xbmc.log( "[script.cinema.experience] - Audio: %s" % ( audio, ), xbmc.LOGNOTICE )
         if ( _S_( "audio_videos_folder" ) ):
-            xbmc.log( "[script.cinema.experience] - Folder: %s" % ( xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "dtsma": "DTSHD-MA", "dtshd-ma": "DTSHD-MA", "a_truehd": "Dolby TrueHD", "ac3": "Dolby" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ], ), xbmc.LOGNOTICE )
+            xbmc.log( "[script.cinema.experience] - Folder: %s" % ( xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "ac3": "Dolby", "dtsma": "DTSHD-MA", "dtshd_ma": "DTSHD-MA", "a_truehd": "Dolby TrueHD", "truehd": "Dolby TrueHD" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ], ), xbmc.LOGNOTICE )
         xbmc.log( "[script.cinema.experience]  %s" % log_sep, xbmc.LOGNOTICE )
         # return results
         return mpaa, audio, genre, movie
