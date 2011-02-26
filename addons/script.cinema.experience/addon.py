@@ -2,7 +2,7 @@
 __script__ = "Cinema Experience"
 __author__ = "nuka1195-giftie-ackbarr"
 __url__ = "http://code.google.com/p/xbmc-addons/"
-__version__ = "1.0.27"
+__version__ = "1.0.28"
 __scriptID__ = "script.cinema.experience"
 
 import xbmcgui, xbmc, xbmcaddon, os, re
@@ -312,7 +312,7 @@ if ( __name__ == "__main__" ):
                 elif ( sys.argv[ 1 ] == "ViewReadme" ):
                     _view_readme()
                 elif ( sys.argv[ 1 ] == "oldway" ):
-                    _A_.setSetting( id="number_of_features", value=1 ) # set number of features to 1
+                    _A_.setSetting( id='number_of_features', value='0' ) # set number of features to 1
                     _clear_playlists()
                     xbmc.executebuiltin( "Action(Queue,%d)" % ( xbmcgui.getCurrentWindowId() - 10000, ) )
                     xbmc.log( "[script.cinema.experience] - Action(Queue,%d)" % ( xbmcgui.getCurrentWindowId() - 10000, ), xbmc.LOGNOTICE )
@@ -347,6 +347,7 @@ if ( __name__ == "__main__" ):
                             listitem = xbmcgui.ListItem(movie_title, )
                             listitem.setInfo('video', {'Title': movie_title,})
                             playlist.add(url=movie_full_path, listitem=listitem, )
+                            xbmc.sleep( 150 )
                         autorefresh_movie = "False"
                         exit = start_script( "oldway" )
                 else:
@@ -356,7 +357,7 @@ if ( __name__ == "__main__" ):
                 traceback.print_exc()       
     except:
         #start script in 'Old Way' if the script is called with out argv... queue the movie the old way
-        _A_.setSetting( id='number_of_features', value='1' ) # set number of features to 1
+        _A_.setSetting( id='number_of_features', value='0' ) # set number of features to 1
         _clear_playlists()
         xbmc.executebuiltin( "Action(Queue,%d)" % ( xbmcgui.getCurrentWindowId() - 10000, ) )
         xbmc.log( "[script.cinemaexperience] - Action(Queue,%d)" % ( xbmcgui.getCurrentWindowId() - 10000, ), xbmc.LOGNOTICE )
