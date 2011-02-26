@@ -2,7 +2,7 @@
 __script__ = "Cinema Experience"
 __author__ = "nuka1195-giftie-ackbarr"
 __url__ = "http://code.google.com/p/xbmc-addons/"
-__version__ = "1.0.26"
+__version__ = "1.0.27"
 __scriptID__ = "script.cinema.experience"
 
 import xbmcgui, xbmc, xbmcaddon, os, re
@@ -26,13 +26,14 @@ header = "Cinema Experience"
 time_delay = 200
 image = xbmc.translatePath( os.path.join( _A_.getAddonInfo("path"), "icon.png") )
 autorefresh = xbmc.executehttpapi( "GetGuiSetting(1; videoplayer.adjustrefreshrate)" ).strip("<li>")
-xbmc.log( "[script.cinema.experience] - Autorefresh - Before Script: %s" % autorefresh, xbmc.LOGNOTICE )
+
 
 def footprints():
     xbmc.log( "[script.cinema.experience] - Script Name: %s" % __script__, xbmc.LOGNOTICE )
     xbmc.log( "[script.cinema.experience] - Script ID: %s" % __scriptID__, xbmc.LOGNOTICE )
     xbmc.log( "[script.cinema.experience] - Script Version: %s" % __version__, xbmc.LOGNOTICE )
-    
+    xbmc.log( "[script.cinema.experience] - Autorefresh - Before Script: %s" % autorefresh, xbmc.LOGNOTICE )
+
 def _clear_watched_items( clear_type ):
     xbmc.log( "[script.cinema.experience] - _clear_watched_items( %s )" % ( clear_type ), xbmc.LOGNOTICE )
     # initialize base_path
@@ -185,6 +186,7 @@ def auto_refresh( before, mode ):
     xbmc.log( "[script.cinema.experience] - Autorefresh Status: %s" % status, xbmc.LOGNOTICE )
     
 def start_script( library_view = "oldway" ):
+    messy_exit = "False"
     xbmc.log( "[script.cinema.experience] - Library_view: %s" % library_view, xbmc.LOGNOTICE )
     # turn off autorefresh
     early_exit = "False"
@@ -268,24 +270,31 @@ def start_script( library_view = "oldway" ):
                 xbmc.log( "[script.cinema.experience] - autorefresh_movie: %s" % autorefresh_movie, xbmc.LOGNOTICE )
                 count = xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition()                    
             #xbmc.sleep( 2000 )
-        video_label = xbmc.executehttpapi( "GetVideoLabel(280)").strip("<li>")
-        video_label2 = xbmc.executehttpapi( "GetVideoLabel(251)").strip("<li>")
-        xbmc.log( "[script.cinema.experience] - Playlist Position: %s  Playlist Size: %s " % ( xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition(), (xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() - 1) ), xbmc.LOGNOTICE )
-        if (video_label not in headings):
-            xbmc.log( "[script.cinema.experience] - video_label(280): %s" % video_label, xbmc.LOGNOTICE )
-            xbmc.log( "[script.cinema.experience] - video_label(251): %s" % video_label2, xbmc.LOGNOTICE )
-            #xbmc.Player().pause()
-            if _S_( "autorefresh" ) == "true":
-                auto_refresh( autorefresh, "enable" )
-                autorefresh_movie == "True"
-                xbmc.sleep( 300 )
-                #xbmc.Player().play()
+        if not xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() < 1: # To catch an already running script when a new instance started
+            video_label = xbmc.executehttpapi( "GetVideoLabel(280)").strip("<li>")
+            video_label2 = xbmc.executehttpapi( "GetVideoLabel(251)").strip("<li>")
+            xbmc.log( "[script.cinema.experience] - Playlist Position: %s  Playlist Size: %s " % ( xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition(), (xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() - 1) ), xbmc.LOGNOTICE )
+            if (video_label not in headings):
+                xbmc.log( "[script.cinema.experience] - video_label(280): %s" % video_label, xbmc.LOGNOTICE )
+                xbmc.log( "[script.cinema.experience] - video_label(251): %s" % video_label2, xbmc.LOGNOTICE )
+                #xbmc.Player().pause()
+                if _S_( "autorefresh" ) == "true":
+                    auto_refresh( autorefresh, "enable" )
+                    autorefresh_movie == "True"
+                    xbmc.sleep( 300 )
+                    #xbmc.Player().play()
+            else:
+                xbmc.log( "[script.cinema.experience] - video_label(280): %s" % video_label, xbmc.LOGNOTICE )
+                if autorefresh_movie == "True":
+                    auto_refresh( autorefresh, "disable" )
+                    autorefresh_movie == "False"
+            messy_exit = "False"
         else:
-            xbmc.log( "[script.cinema.experience] - video_label(280): %s" % video_label, xbmc.LOGNOTICE )
-            if autorefresh_movie == "True":
-                auto_refresh( autorefresh, "disable" )
-                autorefresh_movie == "False"   
-
+            xbmc.log( "[script.cinema.experience] - Playlist Size: %s   User must have restarted script after pressing stop" % xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size(), xbmc.LOGNOTICE )
+            xbmc.log( "[script.cinema.experience] - Stopping Script", xbmc.LOGNOTICE )
+            messy_exit = "True"
+    return(messy_exit)
+    
 if ( __name__ == "__main__" ):
     footprints()
     # check to see if an argv has been passed to script
@@ -310,33 +319,39 @@ if ( __name__ == "__main__" ):
                     # we need to sleep so the video gets queued properly
                     xbmc.sleep( 500 )
                     autorefresh_movie = "False"
-                    start_script( "oldway" )
+                    exit = start_script( "oldway" )
                 elif ( sys.argv[ 1 ].startswith( "command" ) ):
-                    _clear_playlists()
-                    command = sys.argv[ 1 ].split( "&")[1]
+                    sys_argv = sys.argv[ 1 ].replace("<li>","&")
+                    command = sys_argv.split( "&")[1]   # command sent by skin(or XBMC.RunScript)
                     xbmc.log( "[script.cinema.experience] - Command Call: %s" % command, xbmc.LOGNOTICE )
                     if command.startswith( "movie_title" ):
-                        movie = command.split( "=" )[1].title()
-                        xbmc.log( "[script.cinema.experience] - Movie Title: %s" % movie, xbmc.LOGNOTICE )
-                        xbmc.executehttpapi( "SetResponseFormat()" )
-                        xbmc.executehttpapi( "SetResponseFormat(OpenField,)" )
-                        # select Movie path from movieview Limit 1
-                        sql = "SELECT movieview.c16, movieview.strPath, movieview.strFileName FROM movieview WHERE c00='%s' LIMIT 1" % ( movie.replace( "'", "''", ), )
-                        xbmc.log( "[script.cinema.experience]  - SQL: %s" % ( sql, ), xbmc.LOGNOTICE )
-                        # query database for info dummy is needed as there are two </field> formatters
-                        movie_title, movie_path, movie_filename, dummy = xbmc.executehttpapi( "QueryVideoDatabase(%s)" % quote_plus( sql ), ).split( "</field>" )
-                        movie_full_path = os.path.join(movie_path, movie_filename).replace("\\\\" , "\\")
-                        xbmc.log( "[script.cinema.experience] - Movie Title: %s" % movie_title, xbmc.LOGNOTICE )
-                        xbmc.log( "[script.cinema.experience] - Movie Path: %s" % movie_path, xbmc.LOGNOTICE )
-                        xbmc.log( "[script.cinema.experience] - Movie Filename: %s" % movie_filename, xbmc.LOGNOTICE )
-                        xbmc.log( "[script.cinema.experience] - Full Movie Path: %s" % movie_full_path, xbmc.LOGNOTICE )
-                        playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
-                        playlist.add(url=movie_full_path)
+                        _clear_playlists()
+                        titles = command.split( "=" )[ 1 ]
+                        movie_titles = titles.split( ";" )
+                        for movie in movie_titles:
+                            movie = movie.title()
+                            xbmc.log( "[script.cinema.experience] - Movie Title: %s" % movie, xbmc.LOGNOTICE )
+                            xbmc.executehttpapi( "SetResponseFormat()" )
+                            xbmc.executehttpapi( "SetResponseFormat(OpenField,)" )
+                            # select Movie path from movieview Limit 1
+                            sql = "SELECT movieview.c16, movieview.strPath, movieview.strFileName FROM movieview WHERE c00='%s' LIMIT 1" % ( movie.replace( "'", "''", ), )
+                            xbmc.log( "[script.cinema.experience]  - SQL: %s" % ( sql, ), xbmc.LOGNOTICE )
+                            # query database for info dummy is needed as there are two </field> formatters
+                            movie_title, movie_path, movie_filename, dummy = xbmc.executehttpapi( "QueryVideoDatabase(%s)" % quote_plus( sql ), ).split( "</field>" )
+                            movie_full_path = os.path.join(movie_path, movie_filename).replace("\\\\" , "\\")
+                            xbmc.log( "[script.cinema.experience] - Movie Title: %s" % movie_title, xbmc.LOGNOTICE )
+                            xbmc.log( "[script.cinema.experience] - Movie Path: %s" % movie_path, xbmc.LOGNOTICE )
+                            xbmc.log( "[script.cinema.experience] - Movie Filename: %s" % movie_filename, xbmc.LOGNOTICE )
+                            xbmc.log( "[script.cinema.experience] - Full Movie Path: %s" % movie_full_path, xbmc.LOGNOTICE )
+                            playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
+                            listitem = xbmcgui.ListItem(movie_title, )
+                            listitem.setInfo('video', {'Title': movie_title,})
+                            playlist.add(url=movie_full_path, listitem=listitem, )
                         autorefresh_movie = "False"
-                        start_script( "oldway" )
+                        exit = start_script( "oldway" )
                 else:
                     _clear_playlists()
-                    start_script( sys.argv[ 1 ].lower() )
+                    exit = start_script( sys.argv[ 1 ].lower() )
             except:
                 traceback.print_exc()       
     except:
@@ -351,7 +366,11 @@ if ( __name__ == "__main__" ):
         start_script( "oldway" )
     # turn on autorefresh if script turned it off
     #xbmc.executebuiltin("Notification( %s, %s, %d, %s)" % (header, _L_( 32545 ), time_delay, image) )
-    _clear_playlists()
-    if _S_( "autorefresh" ) == "true":
-        auto_refresh( autorefresh, "enable" )
+    xbmc.log( "[script.cinemaexperience] - messy_exit: %s" % exit, xbmc.LOGNOTICE )
+    if exit == "True":
+        pass
+    else:
+        _clear_playlists()
+        if _S_( "autorefresh" ) == "true":
+            auto_refresh( autorefresh, "enable" )
     #sys.modules.clear()

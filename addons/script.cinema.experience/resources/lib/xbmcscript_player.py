@@ -116,7 +116,7 @@ class Main:
                 xbmc.log( "[script.cinema.experience] -     p_size: %d" % p_size, xbmc.LOGNOTICE )
                 self._get_special_items(    playlist=self.playlist,
                                                     items=1 * ( _S_( "audio_videos_folder" ) != "" ),
-                                                    path=xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "ac3": "Dolby", "dtsma": "DTSHD-MA", "dtshd_ma": "DTSHD-MA", "a_truehd": "Dolby TrueHD", "truehd": "Dolby TrueHD" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ],
+                                                    path = xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "ac3": "Dolby", "dtsma": "DTSHD-MA", "dtshd_ma": "DTSHD-MA", "a_truehd": "Dolby TrueHD", "truehd": "Dolby TrueHD" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ],
                                                     genre=_L_( 32606 ),
                                                     writer=_L_( 32606 ),
                                                     index = index_count

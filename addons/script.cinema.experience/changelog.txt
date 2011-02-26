@@ -1,3 +1,15 @@
+1.0.27
+- Enhancement - Added system arguments to script
+                    - Allows a single call to queue a specific movie
+                        ie: XBMC.RunScript(script.cinema.experience,command&movie_title=Avatar) will Queue Avatar and start the script
+                            to use as a web commnand replace the '&' with <li>
+                            XBMC.RunScript(script.cinema.experience,command<li>movie_title=Avatar)
+                    - Added a single call to queue multiple movies(no limit except XBMC's playlist limit)
+                        ie: XBMC.RunScript(script.cinema.experience,command&movie_title=Avatar;Hitch;Hellboy) will Queue Avatar, Hitch and Hellboy then start the script
+                            to use as a web commnand replace the '&' with <li>
+                            XBMC.RunScript(script.cinema.experience,command<li>movie_title=Avatar;Hitch;Hellboy)
+- Fixed - Added code to try to capture if a user has stopped the movie(or videos) and then restart the script(keeps new playlist intact)
+
 1.0.26
 - Fixed - Corrected proper folder for DTSHD-MA videos - Thanks D-tyme
 
