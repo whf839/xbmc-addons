@@ -322,12 +322,12 @@ if ( __name__ == "__main__" ):
                     exit = start_script( "oldway" )
                 elif ( sys.argv[ 1 ].startswith( "command" ) ):
                     sys_argv = sys.argv[ 1 ].replace("<li>","&")
-                    command = sys_argv.split( "&")[1]   # command sent by skin(or XBMC.RunScript)
+                    command = sys_argv.replace( "command&","")   # command sent by skin(or XBMC.RunScript)
                     xbmc.log( "[script.cinema.experience] - Command Call: %s" % command, xbmc.LOGNOTICE )
                     if command.startswith( "movie_title" ):
                         _clear_playlists()
                         titles = command.split( "=" )[ 1 ]
-                        movie_titles = titles.split( ";" )
+                        movie_titles = titles.split( "&" )
                         for movie in movie_titles:
                             movie = movie.title()
                             xbmc.log( "[script.cinema.experience] - Movie Title: %s" % movie, xbmc.LOGNOTICE )
