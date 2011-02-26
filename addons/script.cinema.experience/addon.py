@@ -2,7 +2,7 @@
 __script__ = "Cinema Experience"
 __author__ = "nuka1195-giftie-ackbarr"
 __url__ = "http://code.google.com/p/xbmc-addons/"
-__version__ = "1.0.28"
+__version__ = "1.0.29"
 __scriptID__ = "script.cinema.experience"
 
 import xbmcgui, xbmc, xbmcaddon, os, re
@@ -321,13 +321,13 @@ if ( __name__ == "__main__" ):
                     autorefresh_movie = "False"
                     exit = start_script( "oldway" )
                 elif ( sys.argv[ 1 ].startswith( "command" ) ):
-                    sys_argv = sys.argv[ 1 ].replace("<li>","&")
-                    command = sys_argv.replace( "command&","")   # command sent by skin(or XBMC.RunScript)
+                    sys_argv = sys.argv[ 1 ].replace("<li>",";")
+                    command = sys_argv.replace( "command;","")   # command sent by skin(or XBMC.RunScript)
                     xbmc.log( "[script.cinema.experience] - Command Call: %s" % command, xbmc.LOGNOTICE )
                     if command.startswith( "movie_title" ):
                         _clear_playlists()
                         titles = command.split( "=" )[ 1 ]
-                        movie_titles = titles.split( "&" )
+                        movie_titles = titles.split( ";" )
                         for movie in movie_titles:
                             movie = movie.title()
                             xbmc.log( "[script.cinema.experience] - Movie Title: %s" % movie, xbmc.LOGNOTICE )

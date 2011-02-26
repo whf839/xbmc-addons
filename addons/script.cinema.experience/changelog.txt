@@ -1,3 +1,14 @@
+1.0.29
+- Enhancement - Added system arguments to script
+                    - Allows a single call to queue a specific movie
+                        ie: XBMC.RunScript(script.cinema.experience,command;movie_title=Avatar) will Queue Avatar and start the script
+                            to use as a web commnand replace the ';' with <li>
+                            XBMC.RunScript(script.cinema.experience,command<li>movie_title=Avatar)
+                    - Added a single call to queue multiple movies(no limit except XBMC's playlist limit)
+                        ie: XBMC.RunScript(script.cinema.experience,command;movie_title=Avatar;Hitch;Hellboy) will Queue Avatar, Hitch and Hellboy then start the script
+                            to use as a web commnand replace the ';' with <li>
+                            XBMC.RunScript(script.cinema.experience,command<li>movie_title=Avatar;Hitch;Hellboy)
+
 1.0.28
 - Fix - script was changing Feature Presentations to 2 when the old way was used.
 
