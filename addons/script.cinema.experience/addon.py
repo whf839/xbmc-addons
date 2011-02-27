@@ -2,7 +2,7 @@
 __script__ = "Cinema Experience"
 __author__ = "nuka1195-giftie-ackbarr"
 __url__ = "http://code.google.com/p/xbmc-addons/"
-__version__ = "1.0.29"
+__version__ = "1.0.30"
 __scriptID__ = "script.cinema.experience"
 
 import xbmcgui, xbmc, xbmcaddon, os, re
@@ -329,12 +329,11 @@ if ( __name__ == "__main__" ):
                         titles = command.split( "=" )[ 1 ]
                         movie_titles = titles.split( ";" )
                         for movie in movie_titles:
-                            movie = movie.title()
                             xbmc.log( "[script.cinema.experience] - Movie Title: %s" % movie, xbmc.LOGNOTICE )
                             xbmc.executehttpapi( "SetResponseFormat()" )
                             xbmc.executehttpapi( "SetResponseFormat(OpenField,)" )
                             # select Movie path from movieview Limit 1
-                            sql = "SELECT movieview.c16, movieview.strPath, movieview.strFileName FROM movieview WHERE c00='%s' LIMIT 1" % ( movie.replace( "'", "''", ), )
+                            sql = "SELECT movieview.c16, movieview.strPath, movieview.strFileName FROM movieview WHERE c00 LIKE '%s' LIMIT 1" % ( movie.replace( "'", "''", ), )
                             xbmc.log( "[script.cinema.experience]  - SQL: %s" % ( sql, ), xbmc.LOGNOTICE )
                             # query database for info dummy is needed as there are two </field> formatters
                             movie_title, movie_path, movie_filename, dummy = xbmc.executehttpapi( "QueryVideoDatabase(%s)" % quote_plus( sql ), ).split( "</field>" )
@@ -374,4 +373,5 @@ if ( __name__ == "__main__" ):
         _clear_playlists()
         if _S_( "autorefresh" ) == "true":
             auto_refresh( autorefresh, "enable" )
+    _A_.setSetting( id='number_of_features', value='%d' % (number_of_features - 1) )
     #sys.modules.clear()

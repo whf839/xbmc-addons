@@ -50,13 +50,17 @@ class Main:
             # Check to see if multiple features have been set in settings
             # if multiple features is greater than 1(not a single feature) 
             # add the intermission videos and audio files for the 2, third, etc movies
-            if self.playlistsize > 1 and ( int( _S_( "intermission_video") ) > 0 or _S_( "intermission_audio") or _S_( "intermission_ratings") ): 
+            if self.playlistsize > 1:
+                movie_titles = ""
                 for feature_count in range (1, self.playlistsize + 1):
                     movie_title = self.playlist[ feature_count - 1 ].getdescription()
-                    if _S_( "voxcommando" ) == "true":
-                            xbmc.executehttpapi( "Broadcast(<b>CElaunch<li>"+ movie_title +"</b>;33000)" )
                     xbmc.log( "[script.cinema.experience] - Feature #%-2d - %s" % ( feature_count, movie_title ), xbmc.LOGNOTICE )
-                mpaa, audio, genre, movie = self._add_intermission_videos()
+                    movie_titles = movie_titles + movie_title + "<li>"
+                movie_titles = movie_title.rstrip("<li>")
+                if _S_( "voxcommando" ) == "true":
+                    xbmc.executehttpapi( "Broadcast(<b>CElaunch<li>"+ movie_titles +"</b>;33000)" )            
+                if ( int( _S_( "intermission_video") ) > 0 or _S_( "intermission_audio") or _S_( "intermission_ratings") ):
+                    mpaa, audio, genre, movie = self._add_intermission_videos()
             # otherwise just build for a single video
             else:
                 # get the queued video info

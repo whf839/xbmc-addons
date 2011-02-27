@@ -1,3 +1,8 @@
+1.0.30
+- Fixed - Changed HTTP API Broadcast
+- Fixed - Corrected database search for multiple movie command
+- Fixed - Updated Spanish Language
+
 1.0.29
 - Enhancement - Added system arguments to script
                     - Allows a single call to queue a specific movie

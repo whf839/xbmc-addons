@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 
 <!--Translator: KiSUAN-->
-<!--Update: 02/02/2011 v1.2-->
+<!--Update: 26/02/2011 v1.0.29-->
 
 
 <strings>
@@ -112,6 +112,7 @@
     <string id="32400">Ejecutar script antes de vídeos</string>
     <string id="32401">Disable Auto Refresh Setting</string>
     <string id="32402">  - Re-Enable Auto Refresh For Movie</string>
+    <string id="32403">Habilitar Salida para VoxCommando</string>
     
     <!-- Feature Options -->
     <string id="32410">Numero de Presentaciones Próximas</string>
@@ -124,6 +125,7 @@
     <string id="32419">Archivo de Vídeo de Intermedio</string>
     <string id="32420">Carpeta de Vídeos de Intermedio</string>
     <string id="32430">Usar Intros de Formato de Audio</string>
+    <string id="32440">Insert Rating Video</string>
 
     <!-- Messages -->
     <string id="32500">Eligiendo avances aleatoreos...</string>
@@ -136,6 +138,10 @@
     <string id="32540">Reseteando lista de avances vistos...</string>
     <string id="32541">Lista de avances vistos reseteada!</string>
     <string id="32542">Reseteado de lista de avances vistos fallo!</string>
+    <string id="32543">En Cola - </string>
+    <string id="32544">Script Cancelado</string>
+    <string id="32545">Script Existente</string>
+    <string id="32546">Presionar 'Q' o '0'(CERO) para Pausar Pelicula(s)</string>
 
     <!-- Genre/Studio labels -->
     <!-- Do not Translate -->
