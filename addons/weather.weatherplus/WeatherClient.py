@@ -417,8 +417,12 @@ class Forecast36HourParser:
                    sunset = "".join(sunset_[0].split("\n"))
                    sunset = "".join(sunset.split("\t"))
                    sunset = _localize_unit( str(int(sunset.split(" ")[3].split(":")[0])-time_diff) + ":" + sunset.split(" ")[3].split(":")[1], "time" )
+            print "[Weather.com+] pressure : "+pressure
+            if ( pressure == "N/A" ) :
+                   self.extras += [(_localize_unit(pressure, "pressure"), _localize_unit(visibility, "distance"), sunrise, sunset)]
+            else :
+                   self.extras += [(_localize_unit(pressure, "pressure") + { "pressure-up": u"\u2191", "pressure-down": u"\u2193", "pressure-steady": u"\u2192" }[ pressure_[0][1] ], _localize_unit(visibility, "distance"), sunrise, sunset)]
 
-            self.extras += [(_localize_unit(pressure, "pressure") + { "pressure-up": u"\u2191", "pressure-down": u"\u2193", "pressure-steady": u"\u2192" }[ pressure_[0][1] ], _localize_unit(visibility, "distance"), sunrise, sunset)]
             # localize our extra info
             # convert outlook wind/temp values
             brief = _normalize_outlook( brief )
@@ -1082,8 +1086,11 @@ class WeatherClient:
             playerID = re.findall( pattern_playerID, htmlSource )
             publisherID = re.findall( pattern_publisherID, htmlSource )
             videoID = re.findall( pattern_videoID, htmlSource )
-            video= video_[0][0][:7] + str(int(video_[0][0][7:])-1000) 
-            if (video is not None) :
+            if (int(video_[0][0][7:])-1000 < 10000) :
+                  video= video_[0][0][:7] + "0" + str(int(video_[0][0][7:])-1000)
+            else :
+                  video= video_[0][0][:7] + str(int(video_[0][0][7:])-1000)
+            if (video is not None and video_[0][1][15:] == "cnnational") :
                 url = "http://brightcove.vo.llnwd.net/d14/unsecured/media/1612802193/1612802193_" + video + "_" + video_[0][1] + ".mp4" + "?videoId="+videoID[0]+"&pubId="+publisherID[0]+"&playerId="+playerID[0]
             else : 
                 url = ""
@@ -1103,11 +1110,17 @@ class WeatherClient:
             playerID = re.findall( pattern_playerID, htmlSource )
             publisherID = re.findall( pattern_publisherID, htmlSource )
             videoID = re.findall( pattern_videoID, htmlSource )
-            video= video_[0][0][:7] + str(int(video_[0][0][7:])-1000) 
-            if (video is not None) :
-                url = "http://brightcove.vo.llnwd.net/d14/unsecured/media/1612802193/1612802193_" + video + "_" + video_[0][1] + ".mp4" + "?videoId="+videoID[0]+"&pubId="+publisherID[0]+"&playerId="+playerID[0]
-            else : 
-                url = "http://static1.sky.com/feeds/skynews/latest/weather/europeweather.flv"
+            if (int(video_[0][0][7:])-1000 < 10000) :
+                  video= video_[0][0][:7] + "0" + str(int(video_[0][0][7:])-1000)
+            else :
+                  video= video_[0][0][:7] + str(int(video_[0][0][7:])-1000)
+            try: 
+	            if (video_[0][1][15:] == "europe") :
+          	      url = "http://brightcove.vo.llnwd.net/d14/unsecured/media/1612802193/1612802193_" + video + "_" + video_[0][1] + ".mp4" + "?videoId="+videoID[0]+"&pubId="+publisherID[0]+"&playerId="+playerID[0]
+	            else : 
+	                url = "http://static1.sky.com/feeds/skynews/latest/weather/europeweather.flv"
+            except:
+                      url = "http://static1.sky.com/feeds/skynews/latest/weather/europeweather.flv"
             print url
             return url, local_url
         # No available video
