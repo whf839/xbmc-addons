@@ -256,7 +256,7 @@ def start_script( library_view = "oldway" ):
                     video_label2 = (repr( xbmc.executehttpapi( "GetVideoLabel(251)").strip("<li>") ) ).strip("'")
                 xbmc.log( "[script.cinema.experience] - video_label(280): %s" % video_label, xbmc.LOGNOTICE )
                 xbmc.log( "[script.cinema.experience] - video_label(251): %s" % video_label2, xbmc.LOGNOTICE )
-                xbmc.log( "[script.cinema.experience] - Playlist Position: %s  Playlist Size: %s " % ( xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition(), (xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() - 1) ), xbmc.LOGNOTICE )               
+                xbmc.log( "[script.cinema.experience] - Playlist Position: %s  Playlist Size: %s " % ( ( xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition() + 1 ), (xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() ) ), xbmc.LOGNOTICE )               
                 if ( video_label == _L_( 32606 ) ):
                     movie_next = "True"
                     if _S_( "autorefresh" ) == "true" and _S_( "autorefresh_movie" ) == "true":

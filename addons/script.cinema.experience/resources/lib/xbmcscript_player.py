@@ -56,9 +56,9 @@ class Main:
                     movie_title = self.playlist[ feature_count - 1 ].getdescription()
                     xbmc.log( "[script.cinema.experience] - Feature #%-2d - %s" % ( feature_count, movie_title ), xbmc.LOGNOTICE )
                     movie_titles = movie_titles + movie_title + "<li>"
-                movie_titles = movie_title.rstrip("<li>")
+                movie_titles = movie_titles.rstrip("<li>")
                 if _S_( "voxcommando" ) == "true":
-                    xbmc.executehttpapi( "Broadcast(<b>CElaunch<li>"+ movie_titles +"</b>;33000)" )            
+                    xbmc.executehttpapi( "Broadcast(<b>CElaunch."+str(self.playlistsize)+"<li>"+ movie_titles +"</b>;33000)" )             
                 if ( int( _S_( "intermission_video") ) > 0 or _S_( "intermission_audio") or _S_( "intermission_ratings") ):
                     mpaa, audio, genre, movie = self._add_intermission_videos()
             # otherwise just build for a single video
