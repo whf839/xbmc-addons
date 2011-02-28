@@ -111,7 +111,7 @@ def _localize_unit( value, unit="temp" ):
             hour += ( 12 * ( value_specifier == "PM" and int( value.split( ":" )[ 0 ] ) != 12 ) )
             hour -= ( 12 * ( value_specifier == "AM" and int( value.split( ":" )[ 0 ] ) == 12 ) )
             time = "%d:%s" % ( hour, value.split( ":" )[ 1 ], )
-            print "[Weather.com+] Converting Time : "+value + " " + value_specifier+ " -> " + time
+            # print "[Weather.com+] Converting Time : "+value + " " + value_specifier+ " -> " + time
         else : 
             hour = int( value.split( ":" )[ 0 ] )
             if (hour < 0 ):
@@ -351,19 +351,22 @@ class Forecast36HourParser:
             # fetch video location
             vl = re.findall( pattern_video_location, htmlSource )
             vl2 = re.findall( pattern_video_local_location, htmlSource )
-            if (vl2 is not None) : 
-                try :
+            try :
+                if (vl2 is not None) : 
                    self.video_local_location = vl2[0][0]
                    self.video_local_number = vl2[0][1]
-                except :
+                else :
                    self.video_local_location = "Not Available"
                    self.video_local_number = ""
-            if (vl is not None) :
-                try: 
+                if (vl is not None) :
                    self.video_location = vl [0]
-                except:
+                else :
                    self.video_location = "Non US"
-            print "video_location : "+self.video_location + " Local_location : " + self.video_local_location
+            except :
+                self.video_local_location = "Not Available"
+                self.video_local_number = ""
+                self.video_location = "Non US"
+            print "[Weather.com+] video_location : "+self.video_location + " Local_location : " + self.video_local_location
             # fetch alerts
             self.alertscolor += re.findall(pattern_alert_color, htmlSource)
             self.alerts = re.findall( pattern_alerts, htmlSource )
@@ -386,7 +389,8 @@ class Forecast36HourParser:
             sunrise_ = re.findall( pattern_sunrise_now, htmlSource_5)
             sunset_ =  re.findall( pattern_sunset_now, htmlSource_5)
             time_diff = int(sunrise_[ 0 ].split( " " )[ 3 ][:2])-localtime
-            
+            # print str(int(sunrise_[ 0 ].split( " " )[ 3 ][:2]))+" asdasd "+ str(localtime)
+            print "[Weather.com+] Timezone : " + str(time_diff)
             
             # fetch extra info
             pressure_ = re.findall( pattern_pressure, htmlSource, re.DOTALL )
@@ -445,16 +449,16 @@ class Forecast36HourParser:
                 iconpath = "/".join( [ "special://temp", "weather", "128x128", icon[ count ] + ".png" ] )
                 # add result to our class variable
                 # self.forecast += [ ( days, iconpath, brief[ count ], temperature[ count ][ 0 ], _localize_unit( temperature[ count ][ 1 ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), outlook[ count ].strip(), daylight[ count ].split( ": " )[ 0 ], _localize_unit( daylight[ count ].split( ": " )[ 1 ], "time" ), ) ]
-                print days[count]
-                print iconpath
-                print brief[ count+1 ]
-                print temperature_info[ count ]
-                print _localize_unit( temperature[ count ] )
-                print precip_title[ count ]
-                print precip_amount[ count ].replace( "%", "" )
-                print brief[ count+4 ]
-                print daylight[ count ][ 0 ]
-                print _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  )
+                # print days[count]
+                # print iconpath
+                # print brief[ count+1 ]
+                # print temperature_info[ count ]
+                # print _localize_unit( temperature[ count ] )
+                # print precip_title[ count ]
+                # print precip_amount[ count ].replace( "%", "" )
+                # print brief[ count+4 ]
+                # print daylight[ count ][ 0 ]
+                # print _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  )
                 self.forecast += [ ( days[count], iconpath, brief[ count+1 ], temperature_info[ count ], _localize_unit( temperature[ count ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), brief[ count+4 ], daylight[ count ][ 0 ], _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  ), ) ]
 
 
@@ -961,9 +965,9 @@ class WeatherClient:
         # fetch source
         htmlSource = self._fetch_data( self.BASE_FORECAST_URL % ( "local", self.code, "", ), 15 )
         htmlSource_5 = self._fetch_data( self.BASE_URL + "/weather/5-day/"+ self.code, 15 )
-        _localtime_source_ =self._fetch_data ( "http://xoap.weather.com/weather/local/"+self.code+"?cc=*&dayf=1&par=1126833389&key=11405f5127bcfa06" )
+        _localtime_source_ =self._fetch_data ( "http://xoap.weather.com/weather/local/"+self.code+"?cc=f&dayf=1&par=1126833389&key=11405f5127bcfa06" )
         _localtime_ = int(re.findall ("([0-9]+):([0-9]+)", _localtime_source_)[1][0])
-        
+        # print "localtime_source = "+_localtime_source_
 
         print "self.code = "+self.code
         # parse source for forecast
@@ -971,10 +975,11 @@ class WeatherClient:
         # print parser.alertscolor[0]
         # fetch any alerts
         alerts, alertsrss, alertsnotify = self._fetch_alerts( parser.alerts )
-        print alerts, alertsrss, alertsnotify
+        # print alerts, alertsrss, alertsnotify
         # create video url
         video, video_local = self._create_video( parser.video_location, parser.video_local_location, parser.video_local_number, video )
-        print "Weather Video = "+video, "Local Video = "+video_local
+        print "[Weather.com+] Weather Video = "+video
+        print "[Weather.com+] Local Video = "+video_local
         # return forecast
         if ( parser.alertscolor is not None ) :
              try : 
@@ -1062,6 +1067,7 @@ class WeatherClient:
                 # print local_location, htmlSource
                 if (local_location is not None) :
                    local_url = self.BASE_VIDEO_URL % ( local_location[0].replace(" ", "").lower(), )
+                   print "[Weather.com+] Local Video Location : " + local_location[0].replace(" ", "").lower()
             
             # all failed use national
             if ( url == "" ) : 
@@ -1072,10 +1078,11 @@ class WeatherClient:
         # UK
         if (len( location ) and self.code.startswith( "UK" ) and video == "" ):
             url = "http://static1.sky.com/feeds/skynews/latest/daily/ukweather.flv"
+            print "[Weather.com+] Local Video Location : UK"
             return url, local_url
         # Canada
         if (len( location ) and self.code.startswith("CA") and video == "" ):
-            print "Location : Canada"
+            print "[Weather.com+] Local Video Location : Canada"
             accu_canada = "http://www.accuweather.com/video/1681759716/canadian-national-weather-fore.asp?channel=world"
             htmlSource = self._fetch_data( accu_canada, 15 )
             pattern_video = "http://brightcove.vo.llnwd.net/d14/unsecured/media/1612802193/1612802193_([0-9]+)_(.+?)-thumb.jpg"
@@ -1099,7 +1106,7 @@ class WeatherClient:
 
         # Europe
         if (len( location ) and (self.code.startswith("FR") or self.code.startswith("SP") or self.code.startswith("IT") or self.code.startswith("GM") or self.code.startswith("NL") or self.code.startswith("GR") or self.code.startswith("PO")) and video == "" ):
-            print "Location : Europe"
+            print "[Weather.com+] Local Video Location : Europe"
             accu_europe = "http://www.accuweather.com/video/1681759717/europe-weather-forecast.asp?channel=world"
             htmlSource = self._fetch_data( accu_europe, 15 )
             pattern_video = "http://brightcove.vo.llnwd.net/d14/unsecured/media/1612802193/1612802193_([0-9]+)_(.+?)-thumb.jpg"

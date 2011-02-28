@@ -264,7 +264,7 @@ class Main:
     def _set_video( self, video_url, video_local_url ):
         self.WEATHER_WINDOW.setProperty( "Video", video_url )
         self.WEATHER_WINDOW.setProperty( "Video.local", video_local_url )
-        print "Weather Video = "+self.WEATHER_WINDOW.getProperty ("Video")
+        # print "Weather Video = "+self.WEATHER_WINDOW.getProperty ("Video")
     def _set_extra_current_info( self, extras ):
         if ( extras ):
             self.WEATHER_WINDOW.setProperty( "Current.Pressure", extras[ 0 ][0] )
