@@ -24,14 +24,15 @@ except:
     # python 2.4 has to use the plugin's version of elementtree
     from elementtree import ElementTree as ET
 import httplib2
-sys.path.append(os.path.join(os.getcwd(), 'lib', 'socksipy'))
+sys.path.append(os.path.join(os.getcwd(), 'lib', 'httplib2'))
 import socks
 
 #print "iplayer2 logging to stdout"
 logging.basicConfig(
     stream=sys.stdout,
     level=logging.DEBUG,
-    format='iplayer2.py: %(levelname)4s %(message)s',)    
+    format='iplayer2.py: %(levelname)4s %(message)s',)
+
 # me want 2.5!!!
 def any(iterable):
      for element in iterable:
@@ -63,20 +64,48 @@ rss_cache = {}
 
 self_closing_tags = ['alternate', 'mediator']
 
-http = None
-try:
-    if addoncompat.get_setting('proxy_use') == 'true':
-
-        server = addoncompat.get_setting('proxy_server')
-        port = int(addoncompat.get_setting('proxy_port'))
-        logging.info("Using proxy %s port %s", server, port )
-        http = httplib2.Http(proxy_info = httplib2.ProxyInfo(socks.PROXY_TYPE_HTTP, server, port))
-    else:
-        http = httplib2.Http()
-except:
-    logging.error('Failed to initialize httplib2 module')
-
 re_selfclose = re.compile('<([a-zA-Z0-9]+)( ?.*)/>', re.M | re.S)
+
+def get_proxy():
+    proxy_server = None
+    proxy_type_id = 0
+    proxy_port = 8080
+    proxy_user = None
+    proxy_pass = None
+    try:
+        proxy_server = addoncompat.get_setting('proxy_server')
+        proxy_type_id = addoncompat.get_setting('proxy_type')
+        proxy_port = int(addoncompat.get_setting('proxy_port'))
+        proxy_user = addoncompat.get_setting('proxy_user')
+        proxy_pass = addoncompat.get_setting('proxy_pass')
+    except:
+        pass
+
+    if   proxy_type_id == '0': proxy_type = socks.PROXY_TYPE_HTTP_NO_TUNNEL
+    elif proxy_type_id == '1': proxy_type = socks.PROXY_TYPE_HTTP
+    elif proxy_type_id == '2': proxy_type = socks.PROXY_TYPE_SOCKS4
+    elif proxy_type_id == '3': proxy_type = socks.PROXY_TYPE_SOCKS5
+
+    proxy_dns = True
+    
+    return (proxy_type, proxy_server, proxy_port, proxy_dns, proxy_user, proxy_pass)
+
+def get_httplib():
+    http = None
+    try:
+        if addoncompat.get_setting('proxy_use') == 'true':
+            (proxy_type, proxy_server, proxy_port, proxy_dns, proxy_user, proxy_pass) = get_proxy()
+            logging.info("Using proxy: type %i rdns: %i server: %s port: %s user: %s pass: %s", proxy_type, proxy_dns, proxy_server, proxy_port, "***", "***")
+            http = httplib2.Http(proxy_info = httplib2.ProxyInfo(proxy_type, proxy_server, proxy_port, proxy_dns, proxy_user, proxy_pass))
+        else:
+          http = httplib2.Http()
+    except:
+        raise
+        logging.error('Failed to initialize httplib2 module')
+
+    return http
+
+http = get_httplib()
 
 def fix_selfclosing(xml):
     return re_selfclose.sub('<\\1\\2></\\1>', xml)
@@ -209,6 +238,7 @@ class media(object):
 
     @property
     def url(self):
+        # no longer used. will remove later
         if self.connection_method == 'resolve':
             logging.info("Resolving URL %s", self.connection_href)
             page = urllib2.urlopen(self.connection_href)
@@ -236,14 +266,13 @@ class media(object):
         tep['video', 'video/x-flv', 'spark', 'rtmp', 800] = 'flashwii'
         tep['video', 'video/mpeg', 'h264', 'http', 184]   = 'mobile'
         tep['audio', 'audio/mpeg', 'mp3', 'rtmp', None]   = 'mp3'
-        tep['audio', 'audio/real', 'real', 'http', None]  = 'real'
         tep['audio', 'audio/mp4',  'aac', 'rtmp', None]   = 'aac'
         tep['audio', 'audio/wma',  'wma', 'http', None]   = 'wma'
         tep['video', 'video/mp4', 'h264', 'http', 516]    = 'iphonemp3'
         me = (self.kind, self.mimetype, self.encoding, self.connection_protocol, self.bitrate)
         return tep.get(me, None)
 
-    def read_media_node(self, media, resolve=False):
+    def read_media_node(self, media):
         """
         Reads media info from a media XML node
         media: media node from BeautifulStoneSoup
@@ -280,54 +309,42 @@ class media(object):
             conn = media.find('connection')
         if conn == None:
             return
-            
+        
         self.connection_kind = conn.get('kind')
-        self.connection_live = conn.get('live') == 'true'
+        self.connection_protocol = conn.get('protocol')
 
-        if self.mimetype == 'audio/wma':
-            self.connection_href = conn.get('href')
-            self.connection_protocol = 'http'
+        if self.mimetype[:5] == 'audio':
             self.kind = 'audio'
             self.bitrate = None
-        if self.mimetype == 'audio/real':
-            self.connection_href = conn.get('href')
-            self.connection_protocol = 'http'
-            self.kind = 'audio'
-            self.bitrate = None            
-        elif self.connection_kind in ['http', 'sis']: # http
-            self.connection_href = conn.get('href')
-            self.connection_protocol = 'http'
-            if self.mimetype == 'video/mp4' and self.encoding == 'h264':
-                # iPhone, don't redirect or it goes to license failure page
-                self.connection_method = 'iphone'
-            elif self.kind == 'captions':
-                self.connection_method = None                
-            else:
-                self.connection_method = 'resolve' 
-        elif self.connection_kind in ['akamai', 'limelight', 'level3']:
 
-            if self.connection_live:
-                logging.error("No support for live streams!")   
-                return
-
+        # some akamai rtmp streams (radio) don't specify rtmp protocol
+        if self.connection_protocol == None and self.connection_kind == 'akamai':
             self.connection_protocol = 'rtmp'
+
+        if self.connection_kind in ['http', 'sis']:
+            self.connection_href = conn.get('href')
+            self.connection_protocol = 'http'
+            if self.kind == 'captions':
+                self.connection_method = None
+
+        elif self.connection_protocol == 'rtmp':
             server = conn.get('server')
             identifier = conn.get('identifier')
             auth = conn.get('authString')
             application = conn.get('application')
-
-            if application == None:
-                application = 'ondemand'
+            # sometimes we don't get a rtmp application for akamai
+            if application == None and self.connection_kind == 'akamai':
+                application = "ondemand"
 
             timeout = addoncompat.get_setting('stream_timeout')
             swfplayer = 'http://www.bbc.co.uk/emp/10player.swf'       
             params = dict(protocol = get_protocol(), port = get_port(), server = server, auth = auth, ident = identifier, app = application)
 
-            if self.connection_kind == 'akamai' or self.connection_kind == 'level3':
-                self.connection_href = "%(protocol)s://%(server)s:%(port)s/%(app)s?%(auth)s playpath=%(ident)s" % params
-            elif self.connection_kind == 'limelight':
+            if self.connection_kind == 'limelight':
                 # note that librtmp has a small issue with constructing the tcurl here. we construct it ourselves for now (fixed in later librtmp)
                 self.connection_href = "%(protocol)s://%(server)s:%(port)s/ app=%(app)s?%(auth)s tcurl=%(protocol)s://%(server)s:%(port)s/%(app)s?%(auth)s playpath=%(ident)s" % params
+            else:
+                self.connection_href = "%(protocol)s://%(server)s:%(port)s/%(app)s?%(auth)s playpath=%(ident)s" % params
 
             self.connection_href += " swfurl=%s swfvfy=true timeout=%s" % (swfplayer, timeout)
 
