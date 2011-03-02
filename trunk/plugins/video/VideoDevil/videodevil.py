@@ -1,3 +1,5 @@
+# -*- coding: latin-1 -*-
+
 from string import *
 import xbmcplugin
 import sys, os.path
@@ -1365,14 +1367,14 @@ class Main:
     def downloadMovie(self, url, title):
         if enable_debug:
             xbmc.output('Trying to download video ' + str(url))
-	if xbmcplugin.getSetting('download_Path') == '':
+	if xbmcplugin.getSetting('download_path') == '':
 	    try:
 		dl_path = xbmcgui.Dialog().browse(0, xbmc.getLocalizedString(30017),'files', '', False, False)
 		xbmcplugin.setSetting(id='download_path', value=dl_path)
 		if not os.path.exists(dl_path):
 		    os.mkdir(dl_path)
 	    except:pass
-        file_path = xbmc.makeLegalFilename(os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension))
+        file_path = xbmc.makeLegalFilename(os.path.join(xbmcplugin.getSetting('download_path'), title + self.videoExtension))
         if os.path.isfile(file_path):
             file_path = xbmc.makeLegalFilename(self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '&', suffix = self.videoExtension))
         try:
@@ -1382,7 +1384,7 @@ class Main:
             return file_path
         except IOError:
             title = first_clean_filename(title)
-            file_path = xbmc.makeLegalFilename(os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension))
+            file_path = xbmc.makeLegalFilename(os.path.join(xbmcplugin.getSetting('download_path'), title + self.videoExtension))
             if os.path.isfile(file_path):
                 file_path = xbmc.makeLegalFilename(self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '&', suffix = self.videoExtension))
             try:
@@ -1392,7 +1394,7 @@ class Main:
                 return file_path
             except IOError:
                 title = second_clean_filename(title)
-                file_path = xbmc.makeLegalFilename(os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension))
+                file_path = xbmc.makeLegalFilename(os.path.join(xbmcplugin.getSetting('download_path'), title + self.videoExtension))
                 if os.path.isfile(file_path):
                     file_path = xbmc.makeLegalFilename(self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '&', suffix = self.videoExtension))
                 try:
@@ -1402,9 +1404,9 @@ class Main:
                     return file_path
                 except IOError:
                     title = third_clean_filename(title)
-                    file_path = xbmc.makeLegalFilename(os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension))
+                    file_path = xbmc.makeLegalFilename(os.path.join(xbmcplugin.getSetting('download_path'), title + self.videoExtension))
                     if os.path.isfile(file_path):
-                        file_path = xbmc.makeLegalFilename(self.currentlist.randomFilename(dir = xbmcplugin.getSetting('download_Path'), suffix = self.videoExtension))
+                        file_path = xbmc.makeLegalFilename(self.currentlist.randomFilename(dir = xbmcplugin.getSetting('download_path'), suffix = self.videoExtension))
                     try:
                         urllib.urlretrieve(url, file_path, self.video_report_hook)
                         if enable_debug:
@@ -1412,7 +1414,7 @@ class Main:
                         return file_path
                     except IOError:
                         title = self.currentlist.randomFilename()
-                        file_path = xbmc.makeLegalFilename(os.path.join(xbmcplugin.getSetting('download_Path'), title + self.videoExtension))
+                        file_path = xbmc.makeLegalFilename(os.path.join(xbmcplugin.getSetting('download_path'), title + self.videoExtension))
                         if os.path.isfile(file_path):
                             file_path = xbmc.makeLegalFilename(self.currentlist.randomFilename(prefix = file_path[:file_path.rfind('.')] + '&', suffix = self.videoExtension))
                         try:
