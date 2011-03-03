@@ -215,7 +215,7 @@ class Trivia( xbmcgui.WindowXML ):
         count = 0
         while count <6:
             shuffle( self.tmp_slides, random )
-            count=count+1
+            count += 1
         # now create our final playlist
         # loop thru slide groups and skip already watched groups
         for slides in self.tmp_slides:

@@ -58,7 +58,7 @@ class Main:
                     movie_titles = movie_titles + movie_title + "<li>"
                 movie_titles = movie_titles.rstrip("<li>")
                 if _S_( "voxcommando" ) == "true":
-                    xbmc.executehttpapi( "Broadcast(<b>CElaunch."+str(self.playlistsize)+"<li>"+ movie_titles +"</b>;33000)" )             
+                    xbmc.executehttpapi( "Broadcast(<b>CElaunch." + str(self.playlistsize ) + "<li>" + movie_titles + "</b>;33000)" )             
                 if ( int( _S_( "intermission_video") ) > 0 or _S_( "intermission_audio") or _S_( "intermission_ratings") ):
                     mpaa, audio, genre, movie = self._add_intermission_videos()
             # otherwise just build for a single video
@@ -66,7 +66,7 @@ class Main:
                 # get the queued video info
                 movie_title = self.playlist[ 0 ].getdescription()
                 if _S_( "voxcommando" ) == "true":
-                            xbmc.executehttpapi( "Broadcast(<b>CElaunch<li>"+ movie_title +"</b>;33000)" )
+                    xbmc.executehttpapi( "Broadcast(<b>CElaunch<li>" + movie_title + "</b>;33000)" )
                 xbmc.log( "[script.cinema.experience] - Feature - %s" % movie_title, xbmc.LOGNOTICE )
                 mpaa, audio, genre, movie = self._get_queued_video_info()
             self._create_playlist( mpaa, audio, genre, movie)
@@ -95,8 +95,10 @@ class Main:
                                                     writer=_L_( 32612 ),
                                                     index=index_count
                                         )
-                if xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() > p_size: 
+                if xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() > p_size and int( _S_( "intermission_video" ) ) > 1: 
                     index_count = index_count + int( _S_( "intermission_video" ) ) - 1
+                elif xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() > p_size and int( _S_( "intermission_video" ) ) == 1:
+                    index_count += int( _S_( "intermission_video" ) )
             # get rating video
             if ( _S_( "enable_ratings" ) ) == "true"  and (_S_( "intermission_ratings") ) == "true":
                 xbmc.log( "[script.cinema.experience] - Inserting Intermission Rating Video",xbmc.LOGNOTICE )
@@ -111,7 +113,7 @@ class Main:
                                                     index = index_count
                                                     )
                 if xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() > p_size:
-                    index_count = index_count + 1
+                    index_count += 1
             # get Dolby/DTS videos
             if ( _S_( "enable_audio" ) ) == "true"  and (_S_( "intermission_audio") ) == "true":
                 xbmc.log( "[script.cinema.experience] - Inserting Intermission Audio Format Video",xbmc.LOGNOTICE )
@@ -128,8 +130,8 @@ class Main:
                 # Move to the next feature + 1 - if we insert 2 videos, the next feature is 3 away from the first video, then prepare for the next intro(+1)
                 # count = feature * 3 + 1
                 if xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() > p_size:
-                    index_count = index_count + 1
-            index_count = index_count + 1 
+                    index_count += 1
+            index_count += 1 
         # return info from first movie in playlist                                        
         mpaa, audio, genre, movie = self._get_queued_video_info( 0 )
         return mpaa, audio, genre, movie
@@ -259,7 +261,7 @@ class Main:
         xbmc.log( "[script.cinema.experience] - Playlist Size: %s" % xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size(), xbmc.LOGNOTICE )
         return
         
-    def _get_queued_video_info( self, feature=0 ):
+    def _get_queued_video_info( self, feature = 0 ):
         xbmc.log( "[script.cinema.experience] - _get_queued_video_info()", xbmc.LOGNOTICE )
         try:            
             # get movie name
@@ -324,7 +326,7 @@ class Main:
             count = 0
             while count <6:
                 shuffle( self.tmp_paths, random )
-                count=count+1
+                count += 1
         # enumerate thru and add our videos/pictures
         for count in range( items ):
             try:
