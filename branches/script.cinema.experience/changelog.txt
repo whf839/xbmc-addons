@@ -1,3 +1,75 @@
+1.0.33 
+- Rearranged script to start fixing Trivia Intro, Trailer Downloader
+
+1.0.32
+- Fixed - Corrected placement of Intermission Videos when set to Single File/Playlist
+- Fixed - Corrected use of boolean tests
+
+1.0.31
+- Enhancement - Added sqlquery command
+                    - use: 
+                        RunScript(script.cinema.experience,command<li>sqlquery<li> .. your query ..)
+                        test your queries out before trying them with the script(SQLiteSpy is a great tool for XBMC's default database)
+                        example:
+                            HTTP API -> RunScript(script.cinema.experience,command<li>sqlquery<li>SELECT movieview.c00 FROM movieview WHERE c14 LIKE '%%action%%' ORDER BY RANDOM() LIMIT 10)
+                            Skin -> RunScript(script.cinema.experience,command;sqlquery;SELECT movieview.c00 FROM movieview WHERE c14 LIKE '%%action%%' ORDER BY RANDOM() LIMIT 10)
+                            
+                        A couple of SQL Queries:
+                            
+                            5 Random Movies from the Genre Comedy
+                                SELECT movieview.c00 FROM movieview WHERE c14 LIKE '%%comedy%%' ORDER BY RANDOM() LIMIT 5
+                            
+                            5 Random Movies Based on actor Adam Sandler:
+                                SELECT movieview.c00 FROM movieview JOIN actorlinkmovie ON actorlinkmovie.idMovie=movieview.idMovie JOIN actors ON actorlinkmovie.idActor=actors.idActor WHERE strActor="Adam Sandler" ORDER BY RANDOM() LIMIT 5
+              - Some thanks goes to jitterjames and others on the VoxCommando forum
+                                
+- Fixed - Changed Format for queuing movies with RunScript:
+            Old Format: RunScript(script.cinema.experience,command;movie_title=Avatar) or RunScript(script.cinema.experience,command<li>movie_title=Avatar) - <li> for HTTP API calls
+            New Format: RunScript(script.cinema.experience,command;movie_title;Avatar) or RunScript(script.cinema.experience,command<li>movie_title<li>Avatar) - <li> for HTTP API calls
+
+            Old Format still works
+
+1.0.30
+- Fixed - Changed HTTP API Broadcast
+- Fixed - Corrected database search for multiple movie command
+- Fixed - Updated Spanish Language
+
+1.0.29
+- Enhancement - Added system arguments to script
+                    - Allows a single call to queue a specific movie
+                        ie: XBMC.RunScript(script.cinema.experience,command;movie_title=Avatar) will Queue Avatar and start the script
+                            to use as a web commnand replace the ';' with <li>
+                            XBMC.RunScript(script.cinema.experience,command<li>movie_title=Avatar)
+                    - Added a single call to queue multiple movies(no limit except XBMC's playlist limit)
+                        ie: XBMC.RunScript(script.cinema.experience,command;movie_title=Avatar;Hitch;Hellboy) will Queue Avatar, Hitch and Hellboy then start the script
+                            to use as a web commnand replace the ';' with <li>
+                            XBMC.RunScript(script.cinema.experience,command<li>movie_title=Avatar;Hitch;Hellboy)
+
+1.0.28
+- Fix - script was changing Feature Presentations to 2 when the old way was used.
+
+1.0.27
+- Enhancement - Added system arguments to script
+                    - Allows a single call to queue a specific movie
+                        ie: XBMC.RunScript(script.cinema.experience,command&movie_title=Avatar) will Queue Avatar and start the script
+                            to use as a web commnand replace the '&' with <li>
+                            XBMC.RunScript(script.cinema.experience,command<li>movie_title=Avatar)
+                    - Added a single call to queue multiple movies(no limit except XBMC's playlist limit)
+                        ie: XBMC.RunScript(script.cinema.experience,command&movie_title=Avatar;Hitch;Hellboy) will Queue Avatar, Hitch and Hellboy then start the script
+                            to use as a web commnand replace the '&' with <li>
+                            XBMC.RunScript(script.cinema.experience,command<li>movie_title=Avatar;Hitch;Hellboy)
+- Fixed - Added code to try to capture if a user has stopped the movie(or videos) and then restart the script(keeps new playlist intact)
+
+1.0.26
+- Fixed - Corrected proper folder for DTSHD-MA videos - Thanks D-tyme
+
+1.0.25
+- Fixed - Correctly retrieving Audio Format Videos
+
+1.0.24
+- Move VoxCommando broadcast to a different location
+- Fixed special character error
+
 1.0.23
 - Added code for the old way to still work.
 
