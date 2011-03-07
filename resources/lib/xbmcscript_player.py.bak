@@ -13,7 +13,7 @@ import os
 import xbmcgui
 import xbmc
 import xbmcaddon
-import traceback, threading, re
+import traceback, threading
 
 _A_ = xbmcaddon.Addon( __scriptID__ )
 # language method
@@ -34,13 +34,13 @@ from random import shuffle, random
 
 log_sep = "-"*70
 
-BASE_CACHE_PATH = os.path.join( xbmc.translatePath( "special://profile" ), "Thumbnails", "Video" )
-BASE_CURRENT_SOURCE_PATH = os.path.join( xbmc.translatePath( "special://profile/addon_data/" ), os.path.basename( _A_.getAddonInfo('path') ) )
+downloaded_trailers = []
+
 BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( _A_.getAddonInfo('path'), 'resources' ) )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
-
 from ce_playlist import _get_special_items
 from ce_playlist import _get_queued_video_info
+from download import download
 
 def _get_trailers( items, mpaa, genre, movie ):
     # return if not user preference
@@ -67,95 +67,16 @@ def _get_trailers( items, mpaa, genre, movie ):
     # return results
     return trailers
 
-    
 class Main:
     # base paths
-    
+    BASE_CACHE_PATH = os.path.join( xbmc.translatePath( "special://profile" ), "Thumbnails", "Video" )
+    BASE_CURRENT_SOURCE_PATH = os.path.join( xbmc.translatePath( "special://profile/addon_data/" ), os.path.basename( _A_.getAddonInfo('path') ) )
         
     def __init__( self ):
-        self._play_mode = _S_( "trailer_play_mode" )
+        self.download_trailers = downloaded_trailers
         self.number_of_features = int( _S_( "number_of_features") ) + 1
         self.playlistsize = xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size()
-        self._check_trailers()
         self._start()
-        _A_.setSetting( id='trailer_play_mode', value='%d' % int( self._play_mode ) )
-    
-    def _check_trailers( self ):
-        if int( _S_( "trailer_play_mode" ) ) == 1:
-            path = os.path.join( BASE_CURRENT_SOURCE_PATH, "downloaded_trailers.txt" )
-            if ( xbmc.executehttpapi( "FileExists(%s)" % ( path, ) ) == "<li>True" ):
-                xbmc.log( "[script.cinema.experience] - File Exists: downloaded_trailers.txt", xbmc.LOGNOTICE )
-                trailer_list = self._load_trailer_list()
-                print "trailer_list"
-                print trailer_list
-                if trailer_list:
-                    for trailer in trailer_list:
-                        trailer_detail = self._load_trailer_nfo( trailer )
-                        self.downloaded_trailers += trailer_detail
-                else:
-                    xbmc.log( "[script.cinema.experience] - Empty File: downloaded_trailers.txt", xbmc.LOGNOTICE )
-                    _A_.setSetting( id='trailer_play_mode', value='%d' % 0 )
-            else:
-                xbmc.log( "[script.cinema.experience] - File Does Not Exists: downloaded_trailers.txt", xbmc.LOGNOTICE )
-                _A_.setSetting( id='trailer_play_mode', value='%d' % 0 )
-        else:
-            pass
-    
-    def _load_trailer_list( self ):
-        xbmc.log( "[script.cinema.experience] - Loading Downloaded Trailer List", xbmc.LOGNOTICE)
-        try:
-            # set base watched file path
-            base_path = os.path.join( BASE_CURRENT_SOURCE_PATH, "downloaded_trailers.txt" )
-            # open path
-            usock = open( base_path, "r" )
-            # read source
-            trailer_list = eval( usock.read() )
-            # close socket
-            usock.close()
-        except:
-            trailer_list = []
-        return trailer_list
-    
-    def _load_trailer_nfo( self, path ):
-        '''
-            id=trailer[ 0 ]
-            path=trailer[ 2 ],
-            genre=trailer[ 9 ],
-            title=trailer[ 1 ],
-            thumbnail=trailer[ 3 ],
-            plot=trailer[ 4 ],
-            runtime=trailer[ 5 ],
-            mpaa=trailer[ 6 ],
-            release_date=trailer[ 7 ],
-            studio=trailer[ 8 ],
-            director=trailer[ 11 ]
-        '''
-        try:
-            path = os.path.splitext()[0] + ".nfo"
-            print "path"
-            print path
-            usock = open( path, "r" )
-            # read source
-            xmlSource =  usock.read()
-            # close socket
-            usock.close()
-        except:
-            xmlSource = ""
-        xmlSource = xmlSource.replace("\n    ","")
-        # if only 
-        xmlSource = xmlSource.replace('<movieinfo>','<movieinfo id="0">')
-        # gather all trailer records <movieinfo>
-        trailer = re.findall( '<movieinfo id="(.*?)"><title>(.*?)</title><quality>(.*?)</quality><runtime>(.*?)</runtime><releasedate>(.*?)</releasedate><mpaa>(.*?)</mpaa><genre>(.*?)</genre><studio>(.*?)</studio><director>(.*?)</director><cast>(.*?)</cast><plot>(.*?)</plot><thumb>(.*?)</thumb>', xmlSource )
-        print "xmlSource"
-        print xmlSource
-        print "trailer"
-        print trailer
-        if not trailer:
-            for item in trailer:
-                new_trailer += item
-        else:
-            new_trailer=[]
-        return new_trailer
         
     def _start( self ):
         try:
@@ -374,3 +295,126 @@ class Main:
                                             )
         xbmc.log( "[script.cinema.experience] - Playlist Size: %s" % xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size(), xbmc.LOGNOTICE )
         return
+
+class Downloader( threading.Thread ):
+    def __init__( self ):
+        threading.Thread.__init__( self )
+
+            
+    def run( self, *args, **kwargs ):
+        self.mpaa  = kwargs[ "mpaa" ]
+        self.genre = kwargs[ "genre" ]
+        self.movie = ""
+        downloaded_trailers =  self._download_trailers()
+    
+    def save_download_list( self, download_trailers ):
+        xbmc.log( "[script.cinema.experience] - Saving List of Downloaded Trailers", xbmc.LOGNOTICE )
+        try:
+            # base path to watched file
+            base_path = os.path.join( self.BASE_CURRENT_SOURCE_PATH, "downloaded_trailers.txt" )
+            # if the path to the source file does not exist create it
+            if ( not os.path.isdir( os.path.dirname( base_path ) ) ):
+                os.makedirs( os.path.dirname( base_path ) )
+            # open source path for writing
+            file_object = open( base_path, "w" )
+            for trailer in download_trailers:
+                # write list
+                file_object.write( repr( trailer[ 2 ] ) )
+            # close file object
+            file_object.close()
+        except:
+            pass
+           
+        
+    def _download_trailers( self ):
+        updated_trailers = []
+        xbmc.log( "[script.cinema.experience] - Downloading Trailers: %s Trailers" % ( 0, 1, 2, 3, 4, 5, 10, )[ int( _S_( "trailer_count" ) ) ], xbmc.LOGNOTICE )
+        trailers = _get_trailers(  items=( 0, 1, 2, 3, 4, 5, 10, )[ int( _S_( "trailer_count" ) ) ],
+                                    mpaa=self.mpaa,
+                                   genre=self.genre,
+                                   movie=self.movie
+                                   )
+        for trailer in trailers:
+            updated_trailer={}
+            xbmc.log( "[script.cinema.experience] - Attempting To Download Trailer: %s" % trailer[ 1 ], xbmc.LOGNOTICE )
+            filename, ext = os.path.splitext( os.path.basename( (trailer[ 2 ].split("|")[0] ).replace( "?","" ) ) )
+            filename = filename + "-trailer" + ext
+            file_path = os.path.join( _S_( "trailer_download_folder" ), filename ).replace( "\\\\", "\\" )
+            # check to see if trailer is already downloaded
+            if os.path.isfile( file_path ): 
+                success = True
+            else:
+                success, destination = download( trailer[ 2 ], _S_( "trailer_download_folder" ), file_tag="-trailer" )
+            if success:
+                xbmc.log( "[script.cinema.experience] - Downloaded Trailer: %s" % trailer[ 1 ], xbmc.LOGNOTICE )
+                updated_trailer[ 0 ] = trailer[ 0 ]
+                updated_trailer[ 1 ] = trailer[ 1 ]
+                updated_trailer[ 2 ] = destination
+                updated_trailer[ 3 ] = trailer[ 3 ]
+                updated_trailer[ 4 ] = trailer[ 4 ]
+                updated_trailer[ 5 ] = trailer[ 5 ]
+                updated_trailer[ 6 ] = trailer[ 6 ]
+                updated_trailer[ 7 ] = trailer[ 7 ]
+                updated_trailer[ 8 ] = trailer[ 8 ]
+                updated_trailer[ 9 ] = trailer[ 9 ]
+                updated_trailer[ 10 ] = trailer[ 10 ]
+                updated_trailer[ 11 ] = trailer[ 11 ]
+                self._create_nfo_file( updated_trailer, destination )
+            else:
+                xbmc.log( "[script.cinema.experience] - Failed to Download Trailer: %s" % trailer[ 1 ], xbmc.LOGNOTICE )
+                updated_trailer=[]
+            updated_trailers += [ updated_trailer ]
+        return updated_trailers
+    
+    def _create_nfo_file( self, trailer, trailer_nfopath ):
+        '''
+            path=trailer[ 2 ],
+            genre=trailer[ 9 ],
+            title=trailer[ 1 ],
+            thumbnail=trailer[ 3 ],
+            plot=trailer[ 4 ],
+            runtime=trailer[ 5 ],
+            mpaa=trailer[ 6 ],
+            release_date=trailer[ 7 ],
+            studio=trailer[ 8 ],
+            director=trailer[ 11 ]
+        '''
+        xbmc.log( "[script.cinema.experience] - Creating Trailer NFO file", xbmc.LOGNOTICE )
+        # set quality, we do this since not all resolutions have trailers
+        quality = ( "Standard", "480p", "720p", "1080p" )[ _S_( "trailer_quality" ) ]
+        # set movie info
+        nfoSource = """<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<movieinfo>
+    <title>%s</title>
+    <quality>%s</quality>
+    <runtime>%s</runtime>
+    <releasedate>%s</releasedate>
+    <mpaa>%s</mpaa>
+    <genre>%s</genre>
+    <studio>%s</studio>
+    <director>%s</director>
+    <cast>%s</cast>
+    <plot>%s</plot>
+    <thumb>%s</thumb>
+</movieinfo>
+""" % ( trailer[ 1 ], quality, trailer[ 5 ], trailer[ 7 ], trailer[ 6 ], trailer[ 9 ], trailer[ 8 ], trailer[ 11 ], "", trailer[ 4 ], trailer[ 3 ] )
+        # save nfo file
+        return self._save_nfo_file( nfoSource, trailer_nfopath )
+
+    def _save_nfo_file( self, nfoSource, trailer_nfopath ):
+        xbmc.log( "[script.cinema.experience] - Saving Trailer NFO file", xbmc.LOGNOTICE )
+        destination = os.path.splitext( trailer_nfopath )[0] + ".nfo"
+        try:
+            # open source path for writing
+            file_object = open( destination.encode( "utf-8" ), "w" )
+            # write xmlSource
+            file_object.write( nfoSource.encode( "utf-8" ) )
+            # close file object
+            file_object.close()
+            # return successful
+            return True
+        except Exception, e:
+            # oops, notify user what error occurred
+            xbmc.log( "[script.cinema.experience] - %s" % str( e ), xbmc.LOGERROR )
+            # return failed
+            return False
