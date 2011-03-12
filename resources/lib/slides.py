@@ -25,12 +25,12 @@ def _fetch_slides( movie_mpaa ):
     # shuffle and format playlist
     slide_playlist = _shuffle_slides( tmp_slides, watched )
     return slide_playlist
-    
+
 def _load_watched_trivia_file():
     xbmc.log( "[script.cinema.experience] - Loading Watch Slide List", xbmc.LOGNOTICE)
     try:
         # set base watched file path
-        base_path = os.path.join( self.BASE_CURRENT_SOURCE_PATH, "trivia_watched.txt" )
+        base_path = os.path.join( BASE_CURRENT_SOURCE_PATH, "trivia_watched.txt" )
         # open path
         usock = open( base_path, "r" )
         # read source
@@ -40,7 +40,7 @@ def _load_watched_trivia_file():
     except:
         watched = []
     return watched
-    
+
 def _reset_watched( self ):
     base_path = os.path.join( BASE_CURRENT_SOURCE_PATH, "trivia_watched.txt" )
     if ( os.path.isfile( base_path ) ):
@@ -102,7 +102,7 @@ def _get_slides( paths, movie_mpaa ):
     if ( folders ):
         tmp_slides.extend( _get_slides( folders, movie_mpaa ) )
     return tmp_slides
-    
+
 def _get_slides_xml( path ):
     # if no slides.xml exists return false
     if ( not ( "True" in xbmc.executehttpapi( "FileExists(%sslides.xml)" % ( path, ) ) ) ):
@@ -143,13 +143,13 @@ def _shuffle_slides( tmp_slides, watched ):
                     # add slide
                     slide_playlist += [ slide ]
             xbmc.log( "[script.cinema.experience] ------------------Unwatched-------------------------     included - %s, %s, %s" % ( os.path.basename( slides[ 0 ] ), os.path.basename( slides[ 1 ] ), os.path.basename( slides[ 2 ] ), ), xbmc.LOGNOTICE)
-            
+
         else:
             xbmc.log( "[script.cinema.experience] -------------------Watched--------------------------     skipped - %s, %s, %s" % ( os.path.basename( slides[ 0 ] ), os.path.basename( slides[ 1 ] ), os.path.basename( slides[ 2 ] ), ), xbmc.LOGNOTICE)
-                
+
     xbmc.log( "[script.cinema.experience] -----------------------------------------", xbmc.LOGNOTICE)
     xbmc.log( "[script.cinema.experience] - total slides selected: %d" % len( slide_playlist ), xbmc.LOGNOTICE)
-       
+
     # reset watched automatically if no slides are left
     if ( len( slide_playlist ) == 0 and _S_( "trivia_unwatched_only" ) and len( watched ) > 0 ):
         watched = _reset_watched()

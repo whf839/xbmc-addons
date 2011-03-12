@@ -1,5 +1,7 @@
 """
-Apple Movie Trailers current trailers scraper
+MovieMaze Current Trailer scraper
+
+uses the MovieMaze Trailer Plugin to retrieve videos
 """
 
 import sys
@@ -9,128 +11,176 @@ import xbmc
 import xbmcaddon
 import time
 import re
-import urllib
+import urllib, urllib2
 from random import shuffle, random
-from xml.sax.saxutils import unescape
 
 __useragent__ = "QuickTime/7.2 (qtver=7.2;os=Windows NT 5.1Service Pack 3)"
 _A_ = xbmcaddon.Addon('script.cinema.experience')
 _L_ = _A_.getLocalizedString
+_S_ = _A_.getSetting
+__url__ = "http://www.moviemaze.de/rss/trailer.phtml"
+
+#Moviemazer files
+_AM_ = xbmcaddon.Addon('plugin.video.moviemazer')
+_LM_ = _AM_.getLocalizedString
+_SM_ = _AM_.getSetting
+mainurl = 'http://www.moviemaze.de'
+
+_id = _AM_.getAddonInfo('id')
+_cachedir = 'special://profile/addon_data/%s/cache/' %(_id)
+_imagedir = 'special://home/addons/%s/resources/images/' %(_id)
+
+movieid = ''
 
 class _urlopener( urllib.FancyURLopener ):
     version = __useragent__
 # set for user agent
 urllib._urlopener = _urlopener()
 
+def set_movieid( movieid ):
+    movieid = movieid
 
-class _Parser:
-    """
-        Parses an xml document for videos
-    """
+def getCurrent():
+    returnmovies = []
+    fullurl = '%s/media/trailer/' % mainurl
+    link = getCachedURL(fullurl, 'mainpage.cache', _SM_('cache_movies_list'))
+    matchtacttrailers = re.compile('<tr><td(?: valign="top"><b>[A-Z0-9]</b)?></td><td style="text-align:left;"><a href="/media/trailer/([0-9]+),(?:[0-9]+?,)?([^",]+?)">([^<]+)</a></td></tr>').findall(link)
+    for movieid, urlend, title in matchtacttrailers:
+        movie = {'movieid': movieid,
+                 'title': title,
+                 'urlend': urlend,
+                 'rank':'',
+                 'date':''}
+        returnmovies.append(movie)
+    return returnmovies
 
-    def __init__( self, xmlSource, mpaa, genre, settings, watched ):
-        self.mpaa = mpaa
-        self.genre = genre.replace( "Sci-Fi", "Science Fiction" ).replace( "Action", "Action and ADV" ).replace( "Adventure", "ACT and Adventure" ).replace( "ACT",  "Action" ).replace( "ADV",  "Adventure" ).split( " / " )
-        self.settings = settings
-        self.watched = watched
-        self.trailers = []
-        # get our regions format
-        self.date_format = xbmc.getRegion( "datelong" ).replace( "DDDD,", "" ).replace( "MMMM", "%B" ).replace( "D", "%d" ).replace( "YYYY", "%Y" ).strip()
-        # get the list
-        self._parse_source( xmlSource )
 
-    def _parse_source( self, xmlSource ):
-        try:
-            # counter to limit results
-            count = 0
-            # mpaa ratings
-            mpaa_ratings = { "G": 0, "PG": 1, "PG-13": 2, "R": 3, "NC-17": 4, "--": 5, "Not yet rated": -1 }
-            # set the proper mpaa rating user preference
-            self.mpaa = ( self.settings[ "trailer_rating" ], self.mpaa, )[ self.settings[ "trailer_limit_query" ] ]
-            # encoding
-            encoding = re.findall( "<\?xml version=\"[^\"]*\" encoding=\"([^\"]*)\"\?>", xmlSource )[ 0 ]
-            # gather all video records <movieinfo>
-            movies = re.findall( "<movieinfo id=\"(.+?)\">(.*?)</movieinfo>", xmlSource )
-            # randomize the trailers and create our play list
-            while count <6:
-                shuffle( movies, random )
-                count += 1
-            count = 0
-            # enumerate thru the movies list and gather info
-            for id, movie in movies:
-                # user preference to skip watch trailers
-                if ( self.settings[ "trailer_unwatched_only" ] and id in self.watched ):
-                    continue
-                # find info
-                info = re.findall( "<info>(.*?)</info>", movie )
-                # check if rating is ok
-                mpaa = re.findall( "<rating>(.*?)</rating>", info[ 0 ] )[ 0 ]
-                if ( mpaa_ratings.get( self.mpaa, -1 ) < mpaa_ratings.get( mpaa, -1 ) ):
-                    continue
-                # check if genre is ok 
-                genre = re.findall( "<genre>(.*?)</genre>", movie )
-                genres = []
-                if ( genre ):
-                    genres = [ genre for genre in re.findall( "<name>(.*?)</name>", genre[ 0 ] ) ]
-                genre = " / ".join( genres )
-                if ( not set( genres ).intersection( set( self.genre ) ) and self.settings[ "trailer_limit_query" ] ):
-                    continue
-                # add id to watched file TODO: maybe don't add if not user preference
-                self.watched += [ id ]
-                #cast = re.findall( "<cast>(.*?)</cast>", movie )
-                poster = re.findall( "<poster>(.*?)</poster>", movie )
-                preview = re.findall( "<preview>(.*?)</preview>", movie )
-                # set our info
-                title = unicode( unescape( re.findall( "<title>(.*?)</title>", info[ 0 ] )[ 0 ] ), encoding, "replace" )
-                runtime = re.findall( "<runtime>(.*?)</runtime>", info[ 0 ] )[ 0 ]
-                studio = unicode( unescape( re.findall( "<studio>(.*?)</studio>", info[ 0 ] )[ 0 ] ), encoding, "replace" )
-                #postdate = ""
-                #tmp_postdate = re.findall( "<postdate>(.*?)</postdate>", info[ 0 ] )[ 0 ]
-                #if ( tmp_postdate ):
-                #    postdate = "%s-%s-%s" % ( tmp_postdate[ 8 : ], tmp_postdate[ 5 : 7 ], tmp_postdate[ : 4 ], )
-                releasedate = re.findall( "<releasedate>(.*?)</releasedate>", info[ 0 ] )[ 0 ]
-                if ( not releasedate ):
-                    releasedate = ""
-                #copyright = unicode( unescape( re.findall( "<copyright>(.*?)</copyright>", info[ 0 ] )[ 0 ] ), encoding, "replace" )
-                director = unicode( unescape( re.findall( "<director>(.*?)</director>", info[ 0 ] )[ 0 ] ), encoding, "replace" )
-                plot = unicode( unescape( re.findall( "<description>(.*?)</description>", info[ 0 ] )[ 0 ] ), encoding, "replace" )
-                # actors
-                #actors = []
-                #if ( cast ):
-                #    actor_list = re.findall( "<name>(.*?)</name>", cast[ 0 ] )
-                #    for actor in actor_list:
-                #        actors += [ unicode( unescape( actor ), encoding, "replace" ) ]
-                # poster
-                xlarge = re.findall( "<xlarge>(.*?)</xlarge>", poster[ 0 ] )
-                location = re.findall( "<location>(.*?)</location>", poster[ 0 ] )
-                poster = xlarge[ 0 ] or location[ 0 ]
-                # add user agent to url
-                poster += "|User-Agent=%s" % ( urllib.quote_plus( __useragent__ ), )
-                # trailer
-                trailer = re.findall( "<large[^>]*>(.*?)</large>", preview[ 0 ] )[ 0 ]
-                # replace with 1080p if quality == 1080p
-                if ( self.settings[ "trailer_quality" ] == 3 ):
-                    trailer = trailer.replace( "a720p.m4v", "h1080p.mov" )
-                # add user agent to url
-                trailer += "|User-Agent=%s" % ( urllib.quote_plus( __useragent__ ), )
-                # size
-                #size = long( re.findall( "filesize=\"([0-9]*)", preview[ 0 ] )[ 0 ] )
-                # add the item to our media list
-                self.trailers += [ ( id, title, trailer, poster, plot, runtime, mpaa, releasedate, studio, genre, _L_( 32605 ), director, ) ]
-                # increment counter
-                count += 1
-                # if we have enough exit
-                if ( count == self.settings[ "trailer_count" ] ):
-                    break
-        except:
-            # oops print error message
-            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
+# Function to get a dict of detailed movie information like coverURL, plot and genres
+
+def getMovieInfo(movieid, urlend='movie.html'):
+    returnmovie = {'movieid': movieid,
+                   'title': '',
+                   'otitle': '',
+                   'coverurl': '',
+                   'plot': '',
+                   'genres': '',
+                   'date': ''}
+    fullurl = '%s/media/trailer/%s,15,%s' %(mainurl,
+                                            movieid,
+                                            urlend)
+    cachefile = 'id%s.cache' %(movieid)
+    link = getCachedURL(fullurl, cachefile, _SM_('cache_movie_info'))
+    titlematch = re.compile('<h1>(.+?)</h1>.*<h2>\((.+?)\)</h2>', re.DOTALL).findall(link)
+    for title, otitle in titlematch:
+        returnmovie.update({'title': title, 'otitle': otitle})
+    covermatch = re.compile('src="([^"]+?)" width="150"').findall(link)
+    for coverurl in covermatch:
+        if coverurl != '/filme/grafiken/kein_poster.jpg':
+            returnmovie.update({'coverurl': mainurl + coverurl})
+    plotmatch = re.compile('WERDEN! -->(.+?)</span>').findall(link)
+    for plot in plotmatch:
+        plot = re.sub('<[^<]*?/?>','' , plot)
+        returnmovie.update({'plot': plot})
+    releasedatematch = re.compile('Dt. Start:</b> ([0-9]+.+?)<img').findall(link)
+    for releasedateugly in releasedatematch:
+        datearray = releasedateugly.split(' ')
+        months_de_long = ['', 'Januar', 'Februar', 'M\xe4rz', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+        date = datearray[0]+ str(months_de_long.index(datearray[1])).zfill(2) + '.' + datearray[2]
+        returnmovie.update({'date': date})
+    genresmatch = re.compile('<b style="font-weight:bold;">Genre:</b> (.+?)<br />', re.DOTALL).findall(link)
+    for allgenres in genresmatch:
+        returnmovie.update({'genres': allgenres})
+    return returnmovie
+
+
+# Function to get a list of dicts which contains trailer- URL, resolution, releasedate
+
+def GetMovieTrailers(movieid, urlend='movie.html'):
+    returntrailers = []
+    fullurl = '%s/media/trailer/%s,15,%s' %(mainurl,
+                                            movieid,
+                                            urlend)
+    cachefile = 'id%s.cache' %(movieid)
+    link = getCachedURL(fullurl, cachefile, _SM_('cache_movie_info'))
+    matchtrailerblock = re.compile('<table border=0 cellpadding=0 cellspacing=0 align=center width=100%><tr><td class="standard">.+?<b style="font-weight:bold;">(.+?)</b><br />\(([0-9:]+) Minuten\)(.+?</td></tr></table><br /></td></tr></table><br />)', re.DOTALL).findall(link)
+    for trailername, duration, trailerblock in matchtrailerblock:
+        matchlanguageblock = re.compile('alt="Sprache: (..)">(.+?)>([^<]+)</td></tr></table></td>', re.DOTALL).findall(trailerblock)
+        for language, languageblock, date in matchlanguageblock:
+            datearray = date.split(' ')
+            months_de_short = ['', 'Jan', 'Feb', 'M\xe4rz', 'Apr', 'Mai', 'Juni', 'Juli', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+            try: date = datearray[0]+ str(months_de_short.index(datearray[1])).zfill(2) +  '.2010' #fixme: this could be made better, no idea how :)
+            except: date = ''
+            matchtrailer = re.compile('generateDownloadLink\("([^"]+_([0-9]+)\.(?:mov|mp4)\?down=1)"\)').findall(languageblock)
+            for trailerurl, resolution in matchtrailer:
+                trailer = {'trailername': trailername,
+                           'duration': duration,
+                           'language': language,
+                           'resolution': resolution,
+                           'date': date,
+                           'trailerurl': mainurl+trailerurl}
+                returntrailers.append(trailer)
+    return returntrailers
+
+def guessPrefTrailer(movietrailers):
+    prefres = int(_SM_('trailer_xres'))
+    allres = ['1920', '1280', '1024', '848', '720', '640', '512', '480', '320']
+    prefmovietrailers = []
+    diff = 0
+    if len(filterdic(movietrailers, 'language', _SM_('trailer_lang'))) > 0:
+        movietrailers = filterdic(movietrailers, 'language', _SM_('trailer_lang'))
+    while len(prefmovietrailers) == 0:
+        searchres = prefres + diff
+        if not searchres >= len(allres):
+            prefmovietrailers = filterdic(movietrailers, 'resolution', allres[searchres])
+        if len(prefmovietrailers) == 0 and not diff == 0:
+            searchres = prefres - diff
+            if searchres >= 0:
+                prefmovietrailers = filterdic(movietrailers, 'resolution', allres[searchres])
+        diff += 1
+        if diff > len(allres) +1:
+            break
+    prefmovietrailer = prefmovietrailers[len(prefmovietrailers) - 1]
+    trailercaption = '%s - %s - %s (%s)' %(prefmovietrailer['trailername'],
+                                           prefmovietrailer['language'],
+                                           prefmovietrailer['resolution'],
+                                           prefmovietrailer['date'])
+    movieinfo = getMovieInfo(movieid)
+    trailer = {'trailerurl': prefmovietrailer['trailerurl'],
+               'title': movieinfo['title'],
+               'studio': trailercaption,
+               'coverurl':movieinfo['coverurl']}
+    return trailer
+
+def getCachedURL(url, filename, timetolive=1):
+    requestheader = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.2.9) Gecko/20100824 Firefox/3.6.9'
+    cachefilefullpath = _cachedir + filename
+    timetolive = int(timetolive) * 60 * 60
+    if (not os.path.isdir(_cachedir)):
+        os.makedirs(_cachedir)
+    try: cachefiledate = os.path.getmtime(cachefilefullpath)
+    except: cachefiledate = 0
+    if (time.time() - (timetolive)) > cachefiledate:
+        sock = urllib.urlopen( url )
+        link = sock.read()
+        encoding = sock.headers['Content-type'].split('charset=')[1]
+        outfile = open(cachefilefullpath,'w')
+        outfile.write(link)
+        outfile.close()
+    else:
+        sock = open(cachefilefullpath,'r')
+        link = sock.read()
+    sock.close()
+    return link
+
+
+def filterdic(dic, key, value):
+    return [d for d in dic if (d.get(key)==value)]
 
 
 class Main:
-    print "Apple Movie Trailers Newest trailers scraper"
+    print "MovieMaze Trailer scraper"
     # base url
-    BASE_CURRENT_URL = "http://www.apple.com/trailers/home/xml/newest%s.xml"
+    BASE_CURRENT_URL = __url__
     # base paths
     BASE_CURRENT_SOURCE_PATH = os.path.join( xbmc.translatePath( "special://profile/addon_data" ), os.path.basename( _A_.getAddonInfo('path') ) )
 
@@ -141,77 +191,35 @@ class Main:
 
     def fetch_trailers( self ):
         # initialize trailers list
+        movieid = url = thumbnail = trailer_name = language = resolution = date = title = genre = director = mpaa = studio = plot = runtime = ''
         trailers = []
-        # fetch source
-        path = os.path.join( self.BASE_CURRENT_SOURCE_PATH, ( "newest.xml", "newest_480p.xml", "newest_720p.xml", "newest_720p.xml", )[ self.settings[ "trailer_quality" ] ] )
-        url = self.BASE_CURRENT_URL % ( ( "", "_480p", "_720p", "_720p", )[ self.settings[ "trailer_quality" ] ], )
-        xmlSource = self._get_xml_source( path, url )
-        # parse source and add our items
-        if ( xmlSource ):
-            trailers = self._parse_xml_source( xmlSource )
-        # return results
+        current = getCurrent()
+        for movie in current:
+            '''
+                movie = {'movieid': movieid,
+                            'title': title,
+                           'urlend': urlend,
+                             'rank':'',
+                             'date':''}
+            '''
+            set_movieid( movie["movieid"] )
+            get_movie_trailer = GetMovieTrailers( movie["movieid"] )
+            preftrailer = guessPrefTrailer( get_movie_trailer )
+            '''
+                trailer = {'trailerurl': '',
+                           'title': '',
+                           'studio': '',     -> trailer name - language - resolution (date)
+                           'coverurl': ''}
+            '''
+            trailer_name, language, resolution = preftrailer["studio"].split(" - ")
+            resolution, date = resolution.split(" ")
+            title = preftrailer["title"] + " - " + trailer_name
+            movieid = movie["movieid"]
+            url = preftrailer["trailerurl"]
+            thumbnail = preftrailer["coverurl"]
+            trailer = ( movieid, title, url, thumbnail, plot, runtime, mpaa, date, studio, genre, '', director )
+            trailers += trailer
+            print "----------------------------"
+            print trailer
+            print "----------------------------"
         return trailers
-
-    def _get_xml_source( self, base_path, base_url=None ):
-        try:
-            ok = True
-            # get the source files date if it exists
-            try: date = os.path.getmtime( base_path )
-            except: date = 0
-            # we only refresh if it's been more than a day, 24hr * 60min * 60sec
-            refresh = ( ( time.time() - ( 24 * 60 * 60 ) ) >= date )
-            # only fetch source if it's been more than a day
-            if ( refresh and base_url is not None ):
-                # open url
-                usock = urllib.urlopen( base_url )
-            else:
-                # open path
-                usock = open( base_path, "r" )
-            # read source
-            xmlSource = usock.read()
-            # close socket
-            usock.close()
-            # save the xmlSource for future parsing
-            if ( refresh and base_url is not None ):
-                ok = self._save_xml_source( xmlSource, base_path )
-        except:
-            # oops print error message
-            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
-            ok = False
-        if ( ok ):
-            return xmlSource
-        else:
-            return ""
-
-    def _save_xml_source( self, xmlSource, base_path ):
-        try:
-            # if the path to the source file does not exist create it
-            if ( not os.path.isdir( os.path.dirname( base_path ) ) ):
-                os.makedirs( os.path.dirname( base_path ) )
-            # open source path for writing
-            file_object = open( base_path, "w" )
-            # write xmlSource
-            file_object.write( xmlSource )
-            # close file object
-            file_object.close()
-            # return successful
-            return True
-        except:
-            # oops print error message
-            print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
-            return False
-
-    def _parse_xml_source( self, xmlSource ):
-        # base path to watched file
-        base_path = os.path.join( self.BASE_CURRENT_SOURCE_PATH, self.settings[ "trailer_scraper" ] + "_watched.txt" )
-        # get watched file
-        try:
-            watched = eval( self._get_xml_source( base_path ) )
-        except:
-            watched = []
-        # Parse xmlSource for videos
-        parser = _Parser( xmlSource, self.mpaa, self.genre, self.settings, watched )
-        # saved watched file
-        ok = self._save_xml_source( repr( parser.watched ), base_path )
-        # return result
-        return parser.trailers

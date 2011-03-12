@@ -10,7 +10,10 @@ import xbmc
 from random import shuffle
 from urllib import quote_plus
 import datetime
-from pysqlite2 import dbapi2 as sqlite
+try:
+  from sqlite3 import dbapi2 as sqlite
+except:
+  from pysqlite2 import dbapi2 as sqlite
 
 _A_ = xbmcaddon.Addon('script.cinema.experience')
 _L_ = _A_.getLocalizedString
@@ -48,25 +51,25 @@ class Main:
             records = Records( amt_db_path=self.settings[ "trailer_amt_db_file" ] )
             # select only trailers with valid trailer urls sql
             sql = """
-                        SELECT movies.*, studios.studio, genres.genre  
-                        FROM movies, genres, genre_link_movie, studios, studio_link_movie 
-                        WHERE movies.trailer_urls IS NOT NULL 
-                        AND movies.trailer_urls!='[]' 
+                        SELECT movies.*, studios.studio, genres.genre
+                        FROM movies, genres, genre_link_movie, studios, studio_link_movie
+                        WHERE movies.trailer_urls IS NOT NULL
+                        AND movies.trailer_urls!='[]'
                         %s
                         %s
                         %s
                         %s
-                        AND genre_link_movie.idMovie=movies.idMovie 
-                        AND genre_link_movie.idGenre=genres.idGenre 
-                        AND studio_link_movie.idMovie=movies.idMovie 
-                        AND studio_link_movie.idStudio=studios.idStudio 
-                        ORDER BY RANDOM() 
+                        AND genre_link_movie.idMovie=movies.idMovie
+                        AND genre_link_movie.idGenre=genres.idGenre
+                        AND studio_link_movie.idMovie=movies.idMovie
+                        AND studio_link_movie.idStudio=studios.idStudio
+                        ORDER BY RANDOM()
                         LIMIT %d;
                     """
             # mpaa ratings
             mpaa_ratings = { "G": 0, "PG": 1, "PG-13": 2, "R": 3, "NC-17": 4 }
             # set the proper mpaa rating user preference
-            self.mpaa = ( self.settings[ "trailer_rating" ], self.mpaa, )[ self.settings[ "trailer_limit_query" ] ]
+            self.mpaa = ( self.settings[ "trailer_rating" ], self.mpaa, )[ self.settings[ "trailer_limit_mpaa" ] ]
             # rating query
             rating_sql = ( "", "AND (%s)" % " ".join( [ "rating='%s' OR" % rating for rating, index in mpaa_ratings.items() if index <= mpaa_ratings.get( self.mpaa, -1 ) ] )[ : -3 ], )[ mpaa_ratings.has_key( self.mpaa ) ]
             # HD only query, only for amt db source
@@ -74,9 +77,9 @@ class Main:
             # Only unwatched query, only for amt db source
             watched_sql = ( "", "AND movies.times_watched=0", )[ self.settings[ "trailer_unwatched_only" ] ]
             # genre query, only for amt db source
-            genre_sql = ( "", "AND genres.genre='Newest'", )[ self.settings[ "trailer_newest_only" ] and not self.settings[ "trailer_limit_query" ] ]
+            genre_sql = ( "", "AND genres.genre='Newest'", )[ self.settings[ "trailer_newest_only" ] and not self.settings[ "trailer_limit_genre" ] ]
             genres = self.genre.replace( "Sci-Fi", "Science Fiction" ).replace( "Action", "Action and ADV" ).replace( "Adventure", "ACT and Adventure" ).replace( "ACT",  "Action" ).replace( "ADV",  "Adventure" ).split( " / " )
-            genre_sql = ( genre_sql, "AND (%s)" % " ".join( [ "genres.genre='%s' OR" % genre for genre in genres ] )[ : -3 ], )[ self.settings[ "trailer_limit_query" ] ]
+            genre_sql = ( genre_sql, "AND (%s)" % " ".join( [ "genres.genre='%s' OR" % genre for genre in genres ] )[ : -3 ], )[ self.settings[ "trailer_limit_genre" ] ]
             # fetch our trailers
             result = records.fetch( sql % ( hd_sql, rating_sql, genre_sql, watched_sql, self.settings[ "trailer_count" ], ) )
             # close db connection
@@ -136,7 +139,7 @@ class Main:
         if ( choice >= 0 ):
             url = trailers[ choice ]
             # add user agent to url
-            url += "?|User-Agent=%s" % ( quote_plus( __useragent__ ), )
+            url += "|User-Agent=%s" % ( quote_plus( __useragent__ ), )
         # return choice
         return url
 
@@ -179,7 +182,7 @@ class Records:
 
     def close( self ):
         self.db.close()
-    
+
     def fetch( self, sql, params=None ):
         try:
             if ( params is not None ): self.cursor.execute( sql, params )

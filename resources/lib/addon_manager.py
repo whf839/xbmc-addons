@@ -54,7 +54,7 @@ class Main:
         Settings.setSetting( "install_%s_path" % ( setting, ), path )
         # set TWC.MapIconPath skin setting, so icons work immediately
         if ( path ):
-            xbmc.executebuiltin( "Skin.SetString(TWC.MapIconPath,%s)" % ( path, ) ) 
+            xbmc.executebuiltin( "Skin.SetString(TWC.MapIconPath,%s)" % ( path, ) )
 
     def _inform_user( self, url, path ):
         # set filename
@@ -126,7 +126,7 @@ class Main:
                 self.pDialog.update( 0 )
                 # extract package
                 xbmc.executebuiltin( "XBMC.Extract(%s,%s)" % ( tmp_path, path, ) )
-        except: 
+        except:
             # set error message
             self.message = 32221
         try:
