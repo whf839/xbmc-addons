@@ -23,6 +23,32 @@ from folder import dirEntries
 
 log_sep = "-"*70
 
+def _get_trailers( items, mpaa, genre, movie ):
+    # return if not user preference
+    if ( not items ):
+        return []
+    # trailer settings, grab them here so we don't need another _S_() object
+    settings = { "trailer_amt_db_file":  xbmc.translatePath( _S_( "trailer_amt_db_file" ) ),
+                      "trailer_folder":  xbmc.translatePath( _S_( "trailer_folder" ) ),
+                      "trailer_rating": _S_( "trailer_rating" ),
+                  "trailer_limit_mpaa": _S_( "trailer_limit_mpaa" ) == "true",
+                 "trailer_limit_genre": _S_( "trailer_limit_genre" ) == "true",
+                   "trailer_play_mode": int( _S_( "trailer_play_mode" ) ),
+                     "trailer_hd_only": _S_( "trailer_hd_only" ) == "true",
+                     "trailer_quality": int( _S_( "trailer_quality" ) ),
+              "trailer_unwatched_only": _S_( "trailer_unwatched_only" ) == "true",
+                 "trailer_newest_only": _S_( "trailer_newest_only" ) == "true",
+                       "trailer_count": ( 0, 1, 2, 3, 4, 5, 10, )[ int( _S_( "trailer_count" ) ) ],
+                     "trailer_scraper": ( "amt_database", "amt_current", "local", "xbmc_library", )[ int( _S_( "trailer_scraper" ) ) ]
+               }
+    # get the correct scraper
+    exec "from resources.scrapers.%s import scraper as scraper" % ( settings[ "trailer_scraper" ], )
+    Scraper = scraper.Main( mpaa, genre, settings, movie )
+    # fetch trailers
+    trailers = Scraper.fetch_trailers()
+    # return results
+    return trailers
+
 def _get_special_items( playlist, items, path, genre, title="", thumbnail=None, plot="",
                         runtime="", mpaa="", release_date="0 0 0", studio="", writer="",
                         director="", index=-1, media_type="video"
@@ -76,7 +102,7 @@ def _get_special_items( playlist, items, path, genre, title="", thumbnail=None, 
                 break
             else:
                 traceback.print_exc()
-                
+
 def _get_items( paths, media_type, tmp_paths ):
     xbmc.log( "[script.cinema.experience] - _get_items() Started", level=xbmc.LOGNOTICE)
     # reset folders list
@@ -101,7 +127,7 @@ def _get_items( paths, media_type, tmp_paths ):
     if ( folders ):
         _get_items( folders, media_type )
     return tmp_paths
-    
+
 def _get_listitem( title="", url="", thumbnail=None, plot="", runtime="", mpaa="", release_date="0 0 0", studio=_L_( 32604 ), genre="", writer="", director=""):
     # check for a valid thumbnail
     thumbnail = _get_thumbnail( ( thumbnail, url, )[ thumbnail is None ] )
@@ -119,7 +145,7 @@ def _get_listitem( title="", url="", thumbnail=None, plot="", runtime="", mpaa="
     listitem.setInfo( type="Video", infoLabels={ "Title": title, "Plot": plot, "PlotOutline": plot, "RunTime": runtime, "MPAA": mpaa, "Year": year, "Studio": studio, "Genre": genre, "Writer": writer, "Director": director } )
     # return result
     return listitem
-    
+
 def _get_thumbnail( url ):
     xbmc.log( "[script.cinema.experience] - _get_thumbnail() Started", level=xbmc.LOGNOTICE)
     xbmc.log( "[script.cinema.experience] - Thumbnail Url: %s" % url, xbmc.LOGNOTICE )
@@ -135,10 +161,10 @@ def _get_thumbnail( url ):
         thumbnail = "DefaultVideo.png"
     # return result
     return thumbnail
-    
+
 def _get_queued_video_info( feature = 0 ):
     xbmc.log( "[script.cinema.experience] - _get_queued_video_info() Started", xbmc.LOGNOTICE )
-    try:            
+    try:
         # get movie name
         movie_title = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )[ feature ].getdescription()
         # this is used to skip trailer for current movie selection
@@ -180,7 +206,7 @@ def _get_queued_video_info( feature = 0 ):
     xbmc.log( "[script.cinema.experience]  %s" % log_sep, xbmc.LOGNOTICE )
     # return results
     return mpaa, audio, genre, movie
-    
+
 def _wait_until_end(): # wait until the end of the playlist(for Trivia Intro)
     xbmc.log( "[script.cinema.experience] - Waiting Until End Of Trivia Intro Playlist", xbmc.LOGNOTICE)
     psize = xbmc.PlayList( xbmc.PLAYLIST_VIDEO ).size() - 1
@@ -191,7 +217,8 @@ def _wait_until_end(): # wait until the end of the playlist(for Trivia Intro)
     while xbmc.Player().getTime() < ( xbmc.Player().getTotalTime() - 0.5 ):
         pass
     xbmc.log( "[script.cinema.experience] - Video getTime: %s" % xbmc.Player().getTime(), xbmc.LOGNOTICE)
-    
+    xbmc.sleep(500)
+
 def build_music_playlist():
     xbmc.log( "[script.cinema.experience] - Building Music Playlist", xbmc.LOGNOTICE)
     xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "AudioPlaylist.Clear", "id": 1}')
@@ -202,12 +229,12 @@ def build_music_playlist():
         if ( _S_( "trivia_music_file" ).endswith(".m3u")):
             playlist_file = open( _S_( "trivia_music_file" ), 'rb')
             saved_playlist = playlist_file.readlines()
-            track_info, track_location = parse_playlist( saved_playlist, xbmc.getSupportedMedia('music') )            
+            track_info, track_location = parse_playlist( saved_playlist, xbmc.getSupportedMedia('music') )
         elif ( os.path.splitext( _S_( "trivia_music_file" ) )[1] in xbmc.getSupportedMedia('music') ):
             count = 0
             for count in range(100):
                 track_location.append( _S_( "trivia_music_file" ) )
-    # otherwise 
+    # otherwise
     else:
         if ( _S_( "trivia_music_folder" ) ):
             # search given folder and subfolders for files
@@ -216,7 +243,6 @@ def build_music_playlist():
     count = 0
     while count <6:
         shuffle( track_location, random )
-        count=count+1        
+        count=count+1
     for track in track_location:
         music_playlist.add( track,  )
-    

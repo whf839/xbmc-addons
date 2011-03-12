@@ -35,7 +35,7 @@ def download( url_path, download_path, file_tag = "" ):
         destination = ""
         success = False
     return success, destination
-        
+
 def _report_hook( count, blocksize, totalsize ):
     percent = int( float( count * blocksize * 100) / totalsize )
     try:

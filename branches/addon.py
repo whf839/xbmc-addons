@@ -2,13 +2,13 @@
 __script__ = "Cinema Experience"
 __author__ = "nuka1195-giftie-ackbarr"
 __url__ = "http://code.google.com/p/xbmc-addons/"
-__version__ = "1.0.33"
+__version__ = "1.0.36"
 __scriptID__ = "script.cinema.experience"
 
 import xbmcgui, xbmc, xbmcaddon, os, re, sys
-import traceback 
+import traceback
 import time
-from urllib import quote_plus       
+from urllib import quote_plus
 from threading import Thread
 
 _A_ = xbmcaddon.Addon( __scriptID__ )
@@ -178,7 +178,7 @@ def log_settings():
     xbmc.log( "[script.cinema.experience] - intermission_video_folder: %s" % _S_( "intermission_video_folder" ), xbmc.LOGNOTICE )
     xbmc.log( "[script.cinema.experience] - intermission_audio: %s" % _S_( "intermission_audio" ), xbmc.LOGNOTICE )
     xbmc.log( "[script.cinema.experience] - ", xbmc.LOGNOTICE )
-    xbmc.log( "[script.cinema.experience] - Misc Settings", xbmc.LOGNOTICE ) 
+    xbmc.log( "[script.cinema.experience] - Misc Settings", xbmc.LOGNOTICE )
     xbmc.log( "[script.cinema.experience] - autorefresh: %s" % _S_( "autorefresh" ), xbmc.LOGNOTICE )
 
 def _build_playlist( movie_titles ):
@@ -204,9 +204,10 @@ def _build_playlist( movie_titles ):
         listitem.setInfo('video', {'Title': movie_title,})
         playlist.add(url=movie_full_path, listitem=listitem, )
         xbmc.sleep( 150 )
-        
+
 def _store_playlist():
     p_list = []
+    voxcommando()
     try:
         xbmc.log( "[script.cinema.experience] - Storing Playlist", xbmc.LOGNOTICE )
         true = True
@@ -221,8 +222,27 @@ def _store_playlist():
         p_list = result['items']
     except:
         xbmc.log( "[script.cinema.experience] - Error - Playlist Empty", xbmc.LOGNOTICE )
-    return p_list        
-        
+    return p_list
+
+def voxcommando():
+    playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
+    playlistsize = playlist.size()
+    if playlistsize > 1:
+        movie_titles = ""
+        for feature_count in range (1, playlistsize + 1):
+            movie_title = playlist[ feature_count - 1 ].getdescription()
+            xbmc.log( "[script.cinema.experience] - Feature #%-2d - %s" % ( feature_count, movie_title ), xbmc.LOGNOTICE )
+            movie_titles = movie_titles + movie_title + "<li>"
+        movie_titles = movie_titles.rstrip("<li>")
+        if _S_( "voxcommando" ) == "true":
+            xbmc.executehttpapi( "Broadcast(<b>CElaunch." + str(playlistsize ) + "<li>" + movie_titles + "</b>;33000)" )
+    else:
+        # get the queued video info
+        movie_title = playlist[ 0 ].getdescription()
+        xbmc.log( "[script.cinema.experience] - Feature - %s" % movie_title, xbmc.LOGNOTICE )
+        if _S_( "voxcommando" ) == "true":
+            xbmc.executehttpapi( "Broadcast(<b>CElaunch<li>" + movie_title + "</b>;33000)" )
+
 def _sqlquery( sqlquery ):
     movie_list = []
     movies = []
@@ -234,11 +254,11 @@ def _sqlquery( sqlquery ):
         sqlresult = xbmc.executehttpapi( "QueryVideoDatabase(%s)" % quote_plus( sqlquery ), )
         xbmc.log( "[script.cinema.experience] - sqlresult: %s" % sqlresult, xbmc.LOGNOTICE )
         movies = sqlresult.split("</field>")
-        movie_list = movies[ 0:len( movies ) -1 ]    
+        movie_list = movies[ 0:len( movies ) -1 ]
     except:
-        xbmc.log( "[script.cinema.experience] - Error searching database", xbmc.LOGNOTICE )       
+        xbmc.log( "[script.cinema.experience] - Error searching database", xbmc.LOGNOTICE )
     return movie_list
-    
+
 def auto_refresh( before, mode ):
     xbmc.log( "[script.cinema.experience] - auto_refresh( %s, %s )" % ( before, mode ), xbmc.LOGNOTICE )
     # turn off autorefresh
@@ -249,7 +269,7 @@ def auto_refresh( before, mode ):
         xbmc.executehttpapi( "SetGUISetting(1; videoplayer.adjustrefreshrate; True)" )
     status = xbmc.executehttpapi( "GetGuiSetting(1; videoplayer.adjustrefreshrate)" ).strip("<li>")
     xbmc.log( "[script.cinema.experience] - Autorefresh Status: %s" % status, xbmc.LOGNOTICE )
-    
+
 def _play_trivia( mpaa, genre, plist ):
     # if trivia path and time to play the trivia slides
     pDialog = xbmcgui.DialogProgress()
@@ -269,12 +289,12 @@ def _play_trivia( mpaa, genre, plist ):
         play_list.clear()
         # get trivia intro videos
         _get_special_items( playlist=play_list,
-                               items=( 0, 1, 1, 2, 3, 4, 5, )[ int( _S_( "trivia_intro" ) ) ], 
+                               items=( 0, 1, 1, 2, 3, 4, 5, )[ int( _S_( "trivia_intro" ) ) ],
                                 path=( xbmc.translatePath( _S_( "trivia_intro_file" ) ), xbmc.translatePath( _S_( "trivia_intro_folder" ) ), )[ int( _S_( "trivia_intro" ) ) > 1 ],
                                genre=_L_( 32609 ),
                                index=0
                           )
-            
+
         # trivia settings, grab them here so we don't need another _S_() object
         settings = {  "trivia_total_time": int( float( _S_( "trivia_total_time" ) ) ),
                           "trivia_folder": xbmc.translatePath( _S_( "trivia_folder" ) ),
@@ -288,9 +308,9 @@ def _play_trivia( mpaa, genre, plist ):
                       "trivia_music_file": xbmc.translatePath( _S_( "trivia_music_file" ) ),
                     "trivia_music_folder": xbmc.translatePath( _S_( "trivia_music_folder" ) ),
                     "trivia_music_volume": int( float( _S_( "trivia_music_volume" ) ) ),
-                  "trivia_unwatched_only": _S_( "trivia_unwatched_only" ) == "true"                                
+                  "trivia_unwatched_only": _S_( "trivia_unwatched_only" ) == "true"
                             }
-        
+
         if ( int(_S_( "trivia_music" ) ) > 0):
             pDialog.update( -1, _L_( 32511 )  )
             build_music_playlist()
@@ -319,7 +339,7 @@ def _play_trivia( mpaa, genre, plist ):
         import xbmcscript_player as script
         script.Main()
         xbmc.Player().play( xbmc.PlayList(xbmc.PLAYLIST_VIDEO) )
-    
+
 def start_script( library_view = "oldway" ):
     messy_exit = False
     xbmc.log( "[script.cinema.experience] - Library_view: %s" % library_view, xbmc.LOGNOTICE )
@@ -337,7 +357,7 @@ def start_script( library_view = "oldway" ):
         # wait until playlist is full to the required number of features
         xbmc.log( "[script.cinema.experience] - Waiting for queue to be filled with %s Feature films" % number_of_features, xbmc.LOGNOTICE )
         count = 0
-        while xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() < ( number_of_features ):                
+        while xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() < ( number_of_features ):
             if xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() > count:
                 xbmc.log( "[script.cinema.experience] - User queued %s of %s Feature films" % (xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size(), number_of_features), xbmc.LOGNOTICE )
                 header1 = header + " - Feature " + "%d" % xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size()
@@ -360,7 +380,7 @@ def start_script( library_view = "oldway" ):
         _clear_playlists()
     else:
         mpaa, audio, genre, movie = _get_queued_video_info( 0 )
-        plist = _store_playlist() # need to store movie playlist 
+        plist = _store_playlist() # need to store movie playlist
         _play_trivia( mpaa, genre, plist )
         _clear_playlists( "music" )
         count = -1
@@ -378,13 +398,13 @@ def start_script( library_view = "oldway" ):
                     movie_next= False
                 try:
                     video_label = ( xbmc.executehttpapi( "GetVideoLabel(280)").strip("<li>") )
-                    video_label2 = ( xbmc.executehttpapi( "GetVideoLabel(251)").strip("<li>") ) 
+                    video_label2 = ( xbmc.executehttpapi( "GetVideoLabel(251)").strip("<li>") )
                 except:
                     video_label = ( repr( xbmc.executehttpapi( "GetVideoLabel(280)").strip("<li>") ) ).strip("'")
                     video_label2 = (repr( xbmc.executehttpapi( "GetVideoLabel(251)").strip("<li>") ) ).strip("'")
                 xbmc.log( "[script.cinema.experience] - video_label(280): %s" % video_label, xbmc.LOGNOTICE )
                 xbmc.log( "[script.cinema.experience] - video_label(251): %s" % video_label2, xbmc.LOGNOTICE )
-                xbmc.log( "[script.cinema.experience] - Playlist Position: %s  Playlist Size: %s " % ( ( xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition() + 1 ), (xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() ) ), xbmc.LOGNOTICE )               
+                xbmc.log( "[script.cinema.experience] - Playlist Position: %s  Playlist Size: %s " % ( ( xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition() + 1 ), (xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() ) ), xbmc.LOGNOTICE )
                 if ( video_label == _L_( 32606 ) ):
                     movie_next = True
                     if _S_( "autorefresh" ) == "true" and _S_( "autorefresh_movie" ) == "true":
@@ -396,12 +416,12 @@ def start_script( library_view = "oldway" ):
                         autorefresh_movie = False
                 #xbmc.sleep( 5000 )
                 xbmc.log( "[script.cinema.experience] - autorefresh_movie: %s" % autorefresh_movie, xbmc.LOGNOTICE )
-                count = xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition()                    
+                count = xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition()
             #xbmc.sleep( 2000 )
         if not xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() < 1: # To catch an already running script when a new instance started
             try:
                 video_label = ( xbmc.executehttpapi( "GetVideoLabel(280)").strip("<li>") )
-                video_label2 = ( xbmc.executehttpapi( "GetVideoLabel(251)").strip("<li>") ) 
+                video_label2 = ( xbmc.executehttpapi( "GetVideoLabel(251)").strip("<li>") )
             except:
                 video_label = ( repr( xbmc.executehttpapi( "GetVideoLabel(280)").strip("<li>") ) ).strip("'")
                 video_label2 = (repr( xbmc.executehttpapi( "GetVideoLabel(251)").strip("<li>") ) ).strip("'")
@@ -426,7 +446,7 @@ def start_script( library_view = "oldway" ):
             xbmc.log( "[script.cinema.experience] - Stopping Script", xbmc.LOGNOTICE )
             messy_exit = True
     return messy_exit
-    
+
 if ( __name__ == "__main__" ):
     footprints()
     # check to see if an argv has been passed to script
@@ -486,7 +506,7 @@ if ( __name__ == "__main__" ):
                     _clear_playlists()
                     exit = start_script( sys.argv[ 1 ].lower() )
             except:
-                traceback.print_exc()       
+                traceback.print_exc()
     except:
         #start script in 'Old Way' if the script is called with out argv... queue the movie the old way
         _A_.setSetting( id='number_of_features', value='0' ) # set number of features to 1

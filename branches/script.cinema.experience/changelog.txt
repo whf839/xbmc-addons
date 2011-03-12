@@ -1,3 +1,22 @@
+1.0.37
+- Enhancement - Added XBMC Movie Library Trailer Scraper
+                    - Searches XBMC's Database for trailer paths and urls(not fully tested)
+                    
+1.0.36
+- Enhancement - Added NFO scraping for Local Trailers
+                    - Compatible NFO files from HD-Trailers.net Downloader, Apple Movie Trailers Lite and Cinema Experience
+- Enhancement - Local Trailers now can be matched to Movie's Genre or MPAA rating
+                    - If no NFO file is found, the trailer is skipped(no matching Genres or MPAA's)
+                 
+1.0.35
+- Enhancement - Added Trailer Downloader
+                    - Starts to Download Trailers as soon as script starts, Falls back onto streaming if trailers are not downloaded
+                    - Saving folder can be different from the local trailer folder
+                    - Saves an NFO file for future use
+                 
+1.0.34 
+- Fixed - Added back Trivia Intro
+
 1.0.33 
 - Rearranged script to start fixing Trivia Intro, Trailer Downloader
 

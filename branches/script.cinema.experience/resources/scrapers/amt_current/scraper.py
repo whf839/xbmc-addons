@@ -46,7 +46,7 @@ class _Parser:
             # mpaa ratings
             mpaa_ratings = { "G": 0, "PG": 1, "PG-13": 2, "R": 3, "NC-17": 4, "--": 5, "Not yet rated": -1 }
             # set the proper mpaa rating user preference
-            self.mpaa = ( self.settings[ "trailer_rating" ], self.mpaa, )[ self.settings[ "trailer_limit_query" ] ]
+            self.mpaa = ( self.settings[ "trailer_rating" ], self.mpaa, )[ self.settings[ "trailer_limit_mpaa" ] ]
             # encoding
             encoding = re.findall( "<\?xml version=\"[^\"]*\" encoding=\"([^\"]*)\"\?>", xmlSource )[ 0 ]
             # gather all video records <movieinfo>
@@ -67,13 +67,13 @@ class _Parser:
                 mpaa = re.findall( "<rating>(.*?)</rating>", info[ 0 ] )[ 0 ]
                 if ( mpaa_ratings.get( self.mpaa, -1 ) < mpaa_ratings.get( mpaa, -1 ) ):
                     continue
-                # check if genre is ok 
+                # check if genre is ok
                 genre = re.findall( "<genre>(.*?)</genre>", movie )
                 genres = []
                 if ( genre ):
                     genres = [ genre for genre in re.findall( "<name>(.*?)</name>", genre[ 0 ] ) ]
                 genre = " / ".join( genres )
-                if ( not set( genres ).intersection( set( self.genre ) ) and self.settings[ "trailer_limit_query" ] ):
+                if ( not set( genres ).intersection( set( self.genre ) ) and self.settings[ "trailer_limit_genre" ] ):
                     continue
                 # add id to watched file TODO: maybe don't add if not user preference
                 self.watched += [ id ]

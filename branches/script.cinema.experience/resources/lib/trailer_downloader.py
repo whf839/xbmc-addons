@@ -28,40 +28,16 @@ BASE_CURRENT_SOURCE_PATH = os.path.join( xbmc.translatePath( "special://profile/
 BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( _A_.getAddonInfo('path'), 'resources' ) )
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 from download import download
+from ce_playlist import _get_trailers
 
 downloaded_trailers = []
 
-def _get_trailers( items, mpaa, genre, movie ):
-    # return if not user preference
-    if ( not items ):
-        return []
-    # trailer settings, grab them here so we don't need another _S_() object
-    settings = { "trailer_amt_db_file":  xbmc.translatePath( _S_( "trailer_amt_db_file" ) ),
-                      "trailer_folder":  xbmc.translatePath( _S_( "trailer_folder" ) ),
-                      "trailer_rating": _S_( "trailer_rating" ),
-                 "trailer_limit_query": _S_( "trailer_limit_query" ) == "true",
-                   "trailer_play_mode": int( _S_( "trailer_play_mode" ) ),
-                     "trailer_hd_only": _S_( "trailer_hd_only" ) == "true",
-                     "trailer_quality": int( _S_( "trailer_quality" ) ),
-              "trailer_unwatched_only": _S_( "trailer_unwatched_only" ) == "true",
-                 "trailer_newest_only": _S_( "trailer_newest_only" ) == "true",
-                       "trailer_count": ( 0, 1, 2, 3, 4, 5, 10, )[ int( _S_( "trailer_count" ) ) ],
-                     "trailer_scraper": ( "amt_database", "amt_current", "local", )[ int( _S_( "trailer_scraper" ) ) ]
-               }
-    # get the correct scraper
-    exec "from resources.scrapers.%s import scraper as scraper" % ( settings[ "trailer_scraper" ], )
-    Scraper = scraper.Main( mpaa, genre, settings, movie )
-    # fetch trailers
-    trailers = Scraper.fetch_trailers()
-    # return results
-    return trailers
-    
 def downloader( mpaa, genre ):
     movie = ""
     xbmc.log( "[script.cinema.experience] - Starting Trailer Downloader", xbmc.LOGNOTICE )
     save_download_list( _download_trailers( mpaa, genre, movie ) )
     return
-    
+
 def save_download_list( download_trailers ):
     xbmc.log( "[script.cinema.experience] - Saving List of Downloaded Trailers", xbmc.LOGNOTICE )
     try:
@@ -83,7 +59,7 @@ def save_download_list( download_trailers ):
     except:
         traceback.print_exc()
 
-        
+
 def _download_trailers( mpaa, genre, movie ):
     updated_trailers = []
     xbmc.log( "[script.cinema.experience] - Downloading Trailers: %s Trailers" % ( 0, 1, 2, 3, 4, 5, 10, )[ int( _S_( "trailer_count" ) ) ], xbmc.LOGNOTICE )
@@ -99,7 +75,7 @@ def _download_trailers( mpaa, genre, movie ):
         filename = filename + "-trailer" + ext
         file_path = os.path.join( _S_( "trailer_download_folder" ), filename ).replace( "\\\\", "\\" )
         # check to see if trailer is already downloaded
-        if os.path.isfile( file_path ): 
+        if os.path.isfile( file_path ):
             success = True
             destination = file_path
         else:
@@ -124,7 +100,7 @@ def _download_trailers( mpaa, genre, movie ):
             updated_trailer=[]
         updated_trailers += [ updated_trailer ]
     return updated_trailers
-    
+
 def _create_nfo_file( trailer, trailer_nfopath ):
     '''
             path=trailer[ 2 ],

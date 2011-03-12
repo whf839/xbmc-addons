@@ -2,7 +2,7 @@ import sys, os, re
 
 def parse_playlist( playlist, supported ):
     """ Simple m3u playlist parser
-        finds all Artist - Title and File path information from a m3u playlist 
+        finds all Artist - Title and File path information from a m3u playlist
         Returns a list for Artist - Title and one for File path
     """
     track_info = []

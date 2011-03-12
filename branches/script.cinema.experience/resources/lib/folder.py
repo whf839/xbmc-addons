@@ -3,7 +3,7 @@ import xbmc
 
 def dirEntries( dir_name, media_type="files", recursive="FALSE", contains="" ):
     '''Returns a list of valid XBMC files from a given directory(folder)
-       
+
        Method to call:
        dirEntries( dir_name, media_type, recursive )
             dir_name   - the name of the directory to be searched
@@ -28,10 +28,10 @@ def dirEntries( dir_name, media_type="files", recursive="FALSE", contains="" ):
         else:
             continue
     return fileList
-    
+
 def escapeDirJSON ( dir_name ):
     ''' escapes characters in a directory path for use in JSON RPC calls
-        
+
         Method to call:
         escapeDirJSON( dir_name )
             dir_name    - the name of the directory
