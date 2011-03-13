@@ -137,11 +137,11 @@ class Main:
             # add the intermission videos and audio files for the 2, third, etc movies
             if self.playlistsize > 1:
                 if ( int( _S_( "intermission_video") ) > 0 or _S_( "intermission_audio") or _S_( "intermission_ratings") ):
-                    mpaa, audio, genre, movie = self._add_intermission_videos()
+                    mpaa, audio, genre, movie, equivalent_mpaa = self._add_intermission_videos()
             # otherwise just build for a single video
             else:
-                mpaa, audio, genre, movie = _get_queued_video_info()
-            self._create_playlist( mpaa, audio, genre, movie)
+                mpaa, audio, genre, movie, equivalent_mpaa = _get_queued_video_info()
+            self._create_playlist( mpaa, audio, genre, movie, equivalent_mpaa )
             # play the trivia slide show
         except:
             traceback.print_exc()
@@ -151,7 +151,7 @@ class Main:
         count = 0
         index_count = 1
         for feature in range( 1, self.playlistsize ):
-            mpaa, audio, genre, movie = _get_queued_video_info( index_count )
+            mpaa, audio, genre, movie, equivalent_mpaa = _get_queued_video_info( index_count )
             #count = index_count
             # add intermission video
             if ( int( _S_( "intermission_video") ) > 0 ):
@@ -204,10 +204,10 @@ class Main:
                     index_count += 1
             index_count += 1
         # return info from first movie in playlist
-        mpaa, audio, genre, movie = _get_queued_video_info( 0 )
-        return mpaa, audio, genre, movie
+        mpaa, audio, genre, movie, equivalent_mpaa = _get_queued_video_info( 0 )
+        return mpaa, audio, genre, movie, equivalent_mpaa
 
-    def _create_playlist( self, mpaa, audio, genre, movie ):
+    def _create_playlist( self, mpaa, audio, genre, movie, equivalent_mpaa ):
         # TODO: try to get a local thumb for special videos?
         xbmc.log( "[script.cinema.experience] - Building Cinema Experience Playlist",xbmc.LOGNOTICE )
         # get Dolby/DTS videos
@@ -252,7 +252,7 @@ class Main:
         xbmc.log( "[script.cinema.experience] - Retriving Trailers: %s Trailers" % (0, 1, 2, 3, 4, 5, 10,)[ int( _S_( "trailer_count" ) ) ],xbmc.LOGNOTICE )
         if not int( _S_( "trailer_play_mode" ) ) == 1:
             trailers = _get_trailers(  items=( 0, 1, 2, 3, 4, 5, 10, )[ int( _S_( "trailer_count" ) ) ],
-                                        mpaa=mpaa,
+                                        mpaa=equivalent_mpaa,
                                        genre=genre,
                                        movie=movie
                                     )
