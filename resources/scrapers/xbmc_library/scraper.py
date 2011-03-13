@@ -55,6 +55,17 @@ class Main:
                     trailer_ratingsql = ( trailer_ratingsql, "NR", )[ trailer_ratingsql not in ( "12", "12A", "PG", "15", "18", "R18", "MA", "U", ) ]
                 else:
                     trailer_ratingsql = ( trailer_ratingsql, "NR", )[ trailer_ratingsql not in ( "12", "12A", "PG", "15", "18", "R18", "MA", "U", ) ]
+                if trailer_ratingsql not in ( "G", "PG", "PG-13", "R", "NC-17", "Unrated", "NR" ):
+                    if trailer_ratingsql in ("12", "12A",):
+                        trailer_ratingsql = "PG-13"
+                    elif trailer_ratingsql == "15":
+                        trailer_ratingsql = "R"
+                    elif trailer_ratingsql == "U":
+                        trailer_ratingsql = "G"
+                    elif trailer_ratingsql in ("18", "R18", "MA",):
+                        trailer_ratingsql = "NC-17"
+                    else:
+                        trailer_ratingsql = trailer_ratingsql
                 # add trailer to our final list
                 if ( self.settings[ "trailer_unwatched_only" ] and xbmc.getCacheThumbName( trailer_path ) in self.watched ):
                     continue

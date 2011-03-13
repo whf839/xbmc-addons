@@ -190,9 +190,20 @@ def _get_queued_video_info( feature = 0 ):
             mpaa = ( mpaa, "NR", )[ mpaa not in ( "12", "12A", "PG", "15", "18", "R18", "MA", "U", ) ]
         else:
             mpaa = ( mpaa, "NR", )[ mpaa not in ( "12", "12A", "PG", "15", "18", "R18", "MA", "U", ) ]
+        if mpaa not in ( "G", "PG", "PG-13", "R", "NC-17", "Unrated", "NR" ):
+            if mpaa in ("12", "12A",):
+                equivalent_mpaa = "PG-13"
+            elif mpaa == "15":
+                equivalent_mpaa = "R"
+            elif mpaa == "U":
+                equivalent_mpaa = "G"
+            elif mpaa in ("18", "R18", "MA",):
+                equivalent_mpaa = "NC-17"
+            else:
+                equivalent_mpaa = mpaa
     except:
         traceback.print_exc()
-        movie_title = mpaa = audio = genre = movie = ""
+        movie_title = mpaa = audio = genre = movie = equivalent_mpaa = ""
     # spew queued video info to log
     xbmc.log( "[script.cinema.experience] - Queued Movie Information", xbmc.LOGNOTICE )
     xbmc.log( "[script.cinema.experience] " + log_sep, xbmc.LOGNOTICE )
@@ -205,7 +216,7 @@ def _get_queued_video_info( feature = 0 ):
         xbmc.log( "[script.cinema.experience] - Folder: %s" % ( xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "ac3": "Dolby", "dtsma": "DTSHD-MA", "dtshd_ma": "DTSHD-MA", "a_truehd": "Dolby TrueHD", "truehd": "Dolby TrueHD" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ], ), xbmc.LOGNOTICE )
     xbmc.log( "[script.cinema.experience]  %s" % log_sep, xbmc.LOGNOTICE )
     # return results
-    return mpaa, audio, genre, movie
+    return mpaa, audio, genre, movie, equivalent_mpaa
 
 def _wait_until_end(): # wait until the end of the playlist(for Trivia Intro)
     xbmc.log( "[script.cinema.experience] - Waiting Until End Of Trivia Intro Playlist", xbmc.LOGNOTICE)
