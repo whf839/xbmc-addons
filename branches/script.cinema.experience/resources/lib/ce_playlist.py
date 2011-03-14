@@ -65,7 +65,7 @@ def _get_special_items( playlist, items, path, genre, title="", thumbnail=None, 
     # if path is a folder fetch # videos/pictures
     if ( path.endswith( "/" ) or path.endswith( "\\" ) ):
         # initialize our lists
-        tmp_paths = _get_items( [ path ], media_type, tmp_paths )
+        tmp_paths = dirEntries( path, media_type, "TRUE" )
         count = 0
         while count <6:
             shuffle( tmp_paths, random )
@@ -96,37 +96,11 @@ def _get_special_items( playlist, items, path, genre, title="", thumbnail=None, 
             else:
                 playlist.add( path, listitem, index=index )
         except:
-            traceback.print_exc()
             if items > count:
                 xbmc.log( "[script.cinema.experience] - Looking for %d files, but only found %d" % (items, count), level=xbmc.LOGNOTICE)
                 break
             else:
                 traceback.print_exc()
-
-def _get_items( paths, media_type, tmp_paths ):
-    xbmc.log( "[script.cinema.experience] - _get_items() Started", level=xbmc.LOGNOTICE)
-    # reset folders list
-    folders = []
-    # enumerate thru paths and fetch videos/pictures recursively
-    for path in paths:
-        # get the directory listing
-        entries = xbmc.executehttpapi( "GetDirectory(%s)" % ( path, ) ).split( "\n" )
-        # enumerate through our entries list and check for valid media type
-        for entry in entries:
-            # remove <li> from item
-            entry = entry.replace( "<li>", "" )
-            # if folder add to our folder list to recursively fetch videos/pictures
-            if ( entry.endswith( "/" ) or entry.endswith( "\\" ) ):
-                folders += [ entry ]
-            # is this a valid video/picture file
-            elif ( entry and ( ( media_type.startswith( "video" ) and os.path.splitext( entry )[ 1 ] in xbmc.getSupportedMedia( "video" ) ) or
-                ( media_type.endswith( "picture" ) and os.path.splitext( entry )[ 1 ] in xbmc.getSupportedMedia( "picture" ) ) ) ):
-                # add our entry
-                tmp_paths += [ entry ]
-    # if there are folders call again (we want recursive)
-    if ( folders ):
-        _get_items( folders, media_type )
-    return tmp_paths
 
 def _get_listitem( title="", url="", thumbnail=None, plot="", runtime="", mpaa="", release_date="0 0 0", studio=_L_( 32604 ), genre="", writer="", director=""):
     # check for a valid thumbnail
@@ -199,8 +173,8 @@ def _get_queued_video_info( feature = 0 ):
                 equivalent_mpaa = "G"
             elif mpaa in ("18", "R18", "MA",):
                 equivalent_mpaa = "NC-17"
-            else:
-                equivalent_mpaa = mpaa
+        else:
+            equivalent_mpaa = mpaa
     except:
         traceback.print_exc()
         movie_title = mpaa = audio = genre = movie = equivalent_mpaa = ""

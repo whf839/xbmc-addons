@@ -41,6 +41,23 @@ def footprints():
     xbmc.log( "[script.cinema.experience] - Script Version: %s" % __version__, xbmc.LOGNOTICE )
     xbmc.log( "[script.cinema.experience] - Autorefresh - Before Script: %s" % autorefresh, xbmc.LOGNOTICE )
 
+def _load_trigger_list():
+    xbmc.log( "[script.cinema.experience] - Loading Trigger List", xbmc.LOGNOTICE)
+    try:
+        # set base watched file path
+        base_path = os.path.join( BASE_CURRENT_SOURCE_PATH, "trigger_list.txt" )
+        # open path
+        usock = open( base_path, "r" )
+        # read source
+        trigger_list = eval( usock.read() )
+        # close socket
+        usock.close()
+    except:
+        xbmc.log( "[script.cinema.experience] - Loading Trigger List", xbmc.LOGNOTICE)
+        traceback.print_exc()
+        trigger_list = []
+    return trigger_list
+            
 def _clear_watched_items( clear_type ):
     xbmc.log( "[script.cinema.experience] - _clear_watched_items( %s )" % ( clear_type ), xbmc.LOGNOTICE )
     # initialize base_path
@@ -339,7 +356,7 @@ def _play_trivia( mpaa, genre, plist ):
         import xbmcscript_player as script
         script.Main()
         xbmc.Player().play( xbmc.PlayList(xbmc.PLAYLIST_VIDEO) )
-
+    
 def start_script( library_view = "oldway" ):
     messy_exit = False
     xbmc.log( "[script.cinema.experience] - Library_view: %s" % library_view, xbmc.LOGNOTICE )
@@ -379,34 +396,21 @@ def start_script( library_view = "oldway" ):
         xbmc.executebuiltin("Notification( %s, %s, %d, %s)" % (header, _L_( 32544 ), time_delay, image) )
         _clear_playlists()
     else:
-        mpaa, audio, genre, movie = _get_queued_video_info( 0 )
+        mpaa, audio, genre, movie, equivalent_mpaa = _get_queued_video_info( 0 )
         plist = _store_playlist() # need to store movie playlist
-        _play_trivia( mpaa, genre, plist )
+        _play_trivia( equivalent_mpaa, genre, plist )
         _clear_playlists( "music" )
+        trigger_list = _load_trigger_list()
         count = -1
         # prelim programming for adding - Activate script and other additions
         while xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition() < ( xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() - 1 ):
             if xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition() > count:
-                xbmc.sleep( 2000 )
-                if movie_next:
-                    try:
-                        movie_title = xbmc.executehttpapi( "GetVideoLabel(250)").strip("<li>")
-                        xbmc.log( "[script.cinema.experience] - Movie Title: %s" % movie_title, xbmc.LOGNOTICE )
-                    except:
-                        movie_title = repr( xbmc.executehttpapi( "GetVideoLabel(250)").strip("<li>") )
-                        xbmc.log( "[script.cinema.experience] - Movie Title: %s" % movie_title, xbmc.LOGNOTICE )
-                    movie_next= False
                 try:
-                    video_label = ( xbmc.executehttpapi( "GetVideoLabel(280)").strip("<li>") )
-                    video_label2 = ( xbmc.executehttpapi( "GetVideoLabel(251)").strip("<li>") )
+                    xbmc.log( "[script.cinema.experience] - Item From Trigger List: %s" % trigger_list[ xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition() ], xbmc.LOGNOTICE )
                 except:
-                    video_label = ( repr( xbmc.executehttpapi( "GetVideoLabel(280)").strip("<li>") ) ).strip("'")
-                    video_label2 = (repr( xbmc.executehttpapi( "GetVideoLabel(251)").strip("<li>") ) ).strip("'")
-                xbmc.log( "[script.cinema.experience] - video_label(280): %s" % video_label, xbmc.LOGNOTICE )
-                xbmc.log( "[script.cinema.experience] - video_label(251): %s" % video_label2, xbmc.LOGNOTICE )
+                    xbmc.log( "[script.cinema.experience] - Problem With Trigger List", xbmc.LOGNOTICE )
                 xbmc.log( "[script.cinema.experience] - Playlist Position: %s  Playlist Size: %s " % ( ( xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition() + 1 ), (xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() ) ), xbmc.LOGNOTICE )
-                if ( video_label == _L_( 32606 ) ):
-                    movie_next = True
+                if trigger_list[ xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition() + 1] == "Movie":
                     if _S_( "autorefresh" ) == "true" and _S_( "autorefresh_movie" ) == "true":
                         auto_refresh( autorefresh, "enable" )
                         autorefresh_movie = True
@@ -420,15 +424,12 @@ def start_script( library_view = "oldway" ):
             #xbmc.sleep( 2000 )
         if not xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() < 1: # To catch an already running script when a new instance started
             try:
-                video_label = ( xbmc.executehttpapi( "GetVideoLabel(280)").strip("<li>") )
-                video_label2 = ( xbmc.executehttpapi( "GetVideoLabel(251)").strip("<li>") )
+                xbmc.log( "[script.cinema.experience] - Item From Trigger List: %s" % trigger_list[ xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition() ], xbmc.LOGNOTICE )
             except:
-                video_label = ( repr( xbmc.executehttpapi( "GetVideoLabel(280)").strip("<li>") ) ).strip("'")
-                video_label2 = (repr( xbmc.executehttpapi( "GetVideoLabel(251)").strip("<li>") ) ).strip("'")
+                xbmc.log( "[script.cinema.experience] - Problem With Trigger List", xbmc.LOGNOTICE )
             xbmc.log( "[script.cinema.experience] - Playlist Position: %s  Playlist Size: %s " % ( xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition(), (xbmc.PlayList(xbmc.PLAYLIST_VIDEO).size() - 1) ), xbmc.LOGNOTICE )
-            if (video_label not in headings):
-                xbmc.log( "[script.cinema.experience] - video_label(280): %s" % video_label, xbmc.LOGNOTICE )
-                xbmc.log( "[script.cinema.experience] - video_label(251): %s" % video_label2, xbmc.LOGNOTICE )
+            if ( trigger_list[ xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition() ] not in headings):
+                xbmc.log( "[script.cinema.experience] - Item From Trigger List: %s" % trigger_list[ xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition() ], xbmc.LOGNOTICE )
                 #xbmc.Player().pause()
                 if _S_( "autorefresh" ) == "true":
                     auto_refresh( autorefresh, "enable" )
@@ -436,7 +437,7 @@ def start_script( library_view = "oldway" ):
                     xbmc.sleep( 300 )
                     #xbmc.Player().play()
             else:
-                xbmc.log( "[script.cinema.experience] - video_label(280): %s" % video_label, xbmc.LOGNOTICE )
+                xbmc.log( "[script.cinema.experience] - Item From Trigger List: %s" % trigger_list[ xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition() ], xbmc.LOGNOTICE )
                 if autorefresh_movie:
                     auto_refresh( autorefresh, "disable" )
                     autorefresh_movie == False
