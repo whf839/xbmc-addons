@@ -1,6 +1,11 @@
+1.0.38
+- Enhancement - Added First Step For Home Automation Scripting
+- Enhancement - Changed how auto refresh is triggered.
+
 1.0.37
 - Enhancement - Added XBMC Movie Library Trailer Scraper
                     - Searches XBMC's Database for trailer paths and urls(not fully tested)
+- Added - Spanish Description Added.  Thanks KiSUAN
                     
 1.0.36
 - Enhancement - Added NFO scraping for Local Trailers
