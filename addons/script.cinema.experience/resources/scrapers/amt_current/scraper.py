@@ -10,7 +10,7 @@ import xbmcaddon
 import time
 import re
 import urllib
-from random import shuffle
+from random import shuffle, random
 from xml.sax.saxutils import unescape
 
 __useragent__ = "QuickTime/7.2 (qtver=7.2;os=Windows NT 5.1Service Pack 3)"
@@ -46,13 +46,16 @@ class _Parser:
             # mpaa ratings
             mpaa_ratings = { "G": 0, "PG": 1, "PG-13": 2, "R": 3, "NC-17": 4, "--": 5, "Not yet rated": -1 }
             # set the proper mpaa rating user preference
-            self.mpaa = ( self.settings[ "trailer_rating" ], self.mpaa, )[ self.settings[ "trailer_limit_query" ] ]
+            self.mpaa = ( self.settings[ "trailer_rating" ], self.mpaa, )[ self.settings[ "trailer_limit_mpaa" ] ]
             # encoding
             encoding = re.findall( "<\?xml version=\"[^\"]*\" encoding=\"([^\"]*)\"\?>", xmlSource )[ 0 ]
             # gather all video records <movieinfo>
             movies = re.findall( "<movieinfo id=\"(.+?)\">(.*?)</movieinfo>", xmlSource )
             # randomize the trailers and create our play list
-            shuffle( movies )
+            while count <6:
+                shuffle( movies, random )
+                count += 1
+            count = 0
             # enumerate thru the movies list and gather info
             for id, movie in movies:
                 # user preference to skip watch trailers
@@ -64,13 +67,13 @@ class _Parser:
                 mpaa = re.findall( "<rating>(.*?)</rating>", info[ 0 ] )[ 0 ]
                 if ( mpaa_ratings.get( self.mpaa, -1 ) < mpaa_ratings.get( mpaa, -1 ) ):
                     continue
-                # check if genre is ok 
+                # check if genre is ok
                 genre = re.findall( "<genre>(.*?)</genre>", movie )
                 genres = []
                 if ( genre ):
                     genres = [ genre for genre in re.findall( "<name>(.*?)</name>", genre[ 0 ] ) ]
                 genre = " / ".join( genres )
-                if ( not set( genres ).intersection( set( self.genre ) ) and self.settings[ "trailer_limit_query" ] ):
+                if ( not set( genres ).intersection( set( self.genre ) ) and self.settings[ "trailer_limit_genre" ] ):
                     continue
                 # add id to watched file TODO: maybe don't add if not user preference
                 self.watched += [ id ]
@@ -102,14 +105,14 @@ class _Parser:
                 location = re.findall( "<location>(.*?)</location>", poster[ 0 ] )
                 poster = xlarge[ 0 ] or location[ 0 ]
                 # add user agent to url
-                poster += "?|User-Agent=%s" % ( urllib.quote_plus( __useragent__ ), )
+                poster += "|User-Agent=%s" % ( urllib.quote_plus( __useragent__ ), )
                 # trailer
                 trailer = re.findall( "<large[^>]*>(.*?)</large>", preview[ 0 ] )[ 0 ]
                 # replace with 1080p if quality == 1080p
                 if ( self.settings[ "trailer_quality" ] == 3 ):
                     trailer = trailer.replace( "a720p.m4v", "h1080p.mov" )
                 # add user agent to url
-                trailer += "?|User-Agent=%s" % ( urllib.quote_plus( __useragent__ ), )
+                trailer += "|User-Agent=%s" % ( urllib.quote_plus( __useragent__ ), )
                 # size
                 #size = long( re.findall( "filesize=\"([0-9]*)", preview[ 0 ] )[ 0 ] )
                 # add the item to our media list

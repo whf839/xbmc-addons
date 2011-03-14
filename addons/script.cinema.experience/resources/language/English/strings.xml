@@ -18,9 +18,11 @@
     <string id="32111">Apple Movie Trailers (database)</string>
     <string id="32112">Apple Movie Trailers (newest)</string>
     <string id="32113">Local Folder</string>
+    <string id="32114">XBMC Movie Library</string>
     <string id="32120">   - Database Path</string>
     <string id="32130">   - Folder</string>
-    <string id="32140">   - Limit Trailers by Genre and MPAA Rating of Movie</string>
+    <string id="32140">   - Limit Trailers by MPAA Rating of Movie</string>
+    <string id="32141">   - Limit Trailers by Genre of Movie</string>
     <string id="32150">   - MPAA Rating Limit for Trailers</string>
     <string id="32160">   - Select Trailers from Newest Genre only</string>
     <string id="32170">   - Preferred Trailer Quality</string>
