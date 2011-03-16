@@ -187,6 +187,7 @@ class Main:
         # we set this here in case we do not need to download new lists
         current_map = self.WEATHER_WINDOW.getProperty( "Weather.CurrentMapUrl" )
         current_map_title = self.WEATHER_WINDOW.getProperty( "Weather.CurrentMap" )
+        print "[Weather.com+] Current Map : " + current_map
         # only run if any new map lists
         if ( True in map_download ):
             # we set our maps path property to loading images while downloading
@@ -203,13 +204,17 @@ class Main:
                 map_category = int( self.Settings.getSetting( "maplist%d" % ( maplist_count, ) ) )
                 # fetch map list
                 category_title, maps = self.WeatherClient.fetch_map_list( map_category, self.Settings.getSetting( "maplist_user_file" ), xbmc.getInfoLabel( "Window(Weather).Property(LocationIndex)" ) )
+                # print maps
                 # only run if maps were found
                 if ( maps is None ):
                     continue
                 # set a current_map in case one isn't set
                 if ( current_map == "" ):
-                    current_map = maps[ 0 ][ 0 ]
-                    current_map_title = maps[ 0 ][ 1 ]
+                    try:
+                       current_map = maps[ 0 ][ 0 ]
+                       current_map_title = maps[ 0 ][ 1 ]
+                    except:
+                       print "ERROR : Failed Fatching Maps of Category No."+map_category
                 # if user defined map list set the new titles
                 if ( category_title is not None ):
                     self._set_map_list_titles( maplist_count, category_title, category_title )
@@ -228,6 +233,10 @@ class Main:
         self._fetch_map( current_map, current_map_title, xbmc.getInfoLabel( "Window(Weather).Property(LocationIndex)" ) )
 
     def _fetch_map( self, map, title, locationindex=None ):
+        print "[Weather.com+] map = " + map
+        print "[Weather.com+] title = " + title
+        print "[Weather.com+] Locationindex = " + locationindex
+        print "[Weather.com+] maplist_user_file = " + self.Settings.getSetting("maplist_user_file")
         # exit script if user changed locations
         if ( self.areacode != xbmc.getInfoLabel( "Window(Weather).Property(AreaCode)" ) ):
             return
@@ -240,6 +249,7 @@ class Main:
         maps = self.WeatherClient.fetch_map_urls( map, self.Settings.getSetting( "maplist_user_file" ), locationindex )
         # fetch the images
         maps_path, legend_path = self.WeatherClient.fetch_images( maps )
+        # print "maps", maps
         # hack incase the weather in motion link was bogus
         if ( maps_path == "" and len( maps[ 1 ] ) ):
             maps_path, legend_path = self.WeatherClient.fetch_images( ( maps[ 0 ], [], maps[ 2 ], ) )

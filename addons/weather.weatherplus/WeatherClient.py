@@ -427,11 +427,18 @@ class Forecast36HourParser:
             if ( sunrise_ ) :
                    sunrise = "".join(sunrise_[0].split("\n"))
                    sunrise = "".join(sunrise.split("\t"))
-                   sunrise = _localize_unit( str(int(sunrise.split(" ")[3].split(":")[0])-time_diff) + ":" + sunrise.split(" ")[3].split(":")[1], "time" )
+                   # print sunrise
+                   try : 
+                      sunrise = _localize_unit( str(int(sunrise.split(" ")[3].split(":")[0])-time_diff) + ":" + sunrise.split(" ")[3].split(":")[1], "time" )
+                   except :
+                      sunrise = "N/A"
             if ( sunset_ ) :
                    sunset = "".join(sunset_[0].split("\n"))
                    sunset = "".join(sunset.split("\t"))
-                   sunset = _localize_unit( str(int(sunset.split(" ")[3].split(":")[0])-time_diff) + ":" + sunset.split(" ")[3].split(":")[1], "time" )
+                   try : 
+                      sunset = _localize_unit( str(int(sunset.split(" ")[3].split(":")[0])-time_diff) + ":" + sunset.split(" ")[3].split(":")[1], "time" )
+                   except :
+                      sunset = "N/A"
             print "[Weather.com+] pressure : "+pressure
             if ( pressure == "N/A" ) :
                    self.extras += [(pressure, _localize_unit(visibility, "distance"), sunrise, sunset)]
@@ -905,9 +912,13 @@ class MapParser:
             # initialize our animated maps list
             animated_maps = []
             # regex patterns
-            pattern_maps = "<IMG NAME=\"mapImg\" SRC=\"([^\"]+)\""
+            pattern_maps = "<img name=\"mapImg\" src=\"([^\"]+)\""
             # fetch static map
-            static_map = re.findall( pattern_maps, htmlSource )
+            static_map_ = re.findall( pattern_maps, htmlSource, re.IGNORECASE )
+            static_map_ = str(static_map_).replace("http://i.imwx.com/", "http://image.weather.com").replace("[", "").replace("]","").replace("\'","")
+            static_map = []
+            static_map += [static_map_]
+            # print "stat : ", static_map            
             # does this map support animation?
             motion = re.findall( ">Weather In Motion<", htmlSource, re.IGNORECASE )
             if ( len( motion ) ):
@@ -921,18 +932,19 @@ class MapParser:
             print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
         # set our maps object
         self.maps += ( static_map, animated_maps, "", )
+        # print "self.maps", self.maps
 
 
 class WeatherClient:
     # base urls
     BASE_URL = "http://www.weather.com"
-    BASE_FORECAST_URL = "http://www.weather.com/outlook/travel/businesstraveler/%s/%s?bypassredirect=true%s"
+    BASE_FORECAST_URL = "http://www.weather.com/weather/%s/%s?bypassredirect=true%s"
     BASE_VIDEO_URL = "http://v.imwx.com/v/wxflash/%s.flv"
     BASE_MAPS = ( 
                                 # Main local maps (includes some regional maps) #0
                                 ( "", "", ),
                                 # Main local maps (includes some regional maps) #1
-                                ( "Local", "/outlook/travel/businesstraveler/%s/%s?bypassredirect=true%s", ),
+                                ( "Local", "/weather/%s/%s?bypassredirect=true%s", ),
                                 # weather details #2
                                 ( "Weather Details (Alaska)", "/maps/geography/alaskaus/index_large.html", ),
                                 ( "Weather Details (Current Weather)", "/maps/maptype/currentweatherusnational/index_large.html", ),
@@ -1029,7 +1041,7 @@ class WeatherClient:
         # fetch source
         htmlSource = self._fetch_data( self.BASE_FORECAST_URL % ( "local", self.code, "", ), 15 )
         htmlSource_5 = self._fetch_data( self.BASE_URL + "/weather/5-day/"+ self.code, 15 )
-        _localtime_source_ =self._fetch_data ( "http://xoap.weather.com/weather/local/"+self.code+"?cc=f&dayf=1&par=1126833389&key=11405f5127bcfa06" )
+        _localtime_source_ =self._fetch_data ( "http://xoap.weather.com/weather/local/"+self.code+"?cc=f&dayf=1&par=1004124588&key=079f24145f208494" )
         _localtime_ = int(re.findall ("([0-9]+):([0-9]+)", _localtime_source_)[1][0])
         # print "localtime_source = "+_localtime_source_
 
@@ -1226,7 +1238,7 @@ class WeatherClient:
 
     def fetch_map_list( self, maptype=0, userfile=None, locationindex=None ):
         # set url
-        url = self.BASE_URL + self.BASE_MAPS[ maptype ][ 1 ]
+        url = self.BASE_URL + self.BASE_MAPS[ maptype ][ 1 ]        
         # we handle None, local and custom map categories differently
         if ( maptype == 0 ):
             # return None if none category was selected
@@ -1234,6 +1246,8 @@ class WeatherClient:
         elif ( maptype == 1 ):
             # add locale to local map list if local category
             url = url % ( "map", self.code, "", )
+        print "[Weather.com+] maptype = " + str(maptype)
+        print "[Weather.com+] map_list_url = " + url
         # handle user definde maps special
         if ( maptype == ( len( self.BASE_MAPS ) - 1 ) ):
             # initialize our map list variable
@@ -1252,9 +1266,11 @@ class WeatherClient:
         else:
             # fetch source, only refresh once a week
             htmlSource = self._fetch_data( url, 60 * 24 * 7, subfolder="maps" )
+            # print htmlSource
             # parse source for map list
             parser = MaplistParser( htmlSource )
             # return map list
+            print parser.map_list
             return None, parser.map_list
 
     def _get_user_file( self, userfile, locationindex ):
@@ -1306,9 +1322,11 @@ class WeatherClient:
         # set url
         if ( map.endswith( ".html" ) ):
             url = self.BASE_URL + map
+            # print "made url = " + url
         else:
             url = self.BASE_FORECAST_URL % ( "map", self.code, "&mapdest=%s" % ( map, ), )
         # fetch source
+        print "[Weather.com+] map_url = " + url
         htmlSource = self._fetch_data( url, subfolder="maps" )
         # parse source for static map and create animated map list if available
         parser = MapParser( htmlSource )
@@ -1316,6 +1334,7 @@ class WeatherClient:
         return parser.maps
 
     def fetch_images( self, map ):
+        # print "fetch_images map", map
         # are there multiple images?
         maps = map[ 1 ] or map[ 0 ]
         # initailize our return variables
@@ -1325,6 +1344,7 @@ class WeatherClient:
         for count, url in enumerate( maps ):
             # used for info in progress dialog
             self.image = os.path.basename( url )
+            print "[Weather.com+] Fetch image = " + self.image + " ||| url = "+ url
             # fetch map
             base_path_maps = self._fetch_data( url, -1 * ( count + 1 ), self.image, len( maps ) > 1, subfolder="" )
             # no need to continue if the first map of multi image map fails
@@ -1337,6 +1357,7 @@ class WeatherClient:
             # we add the image filename back to path since we don't use a multiimage control
             legend_path = os.path.join( legend_path, os.path.basename( map[ 2 ] ) )
         # we return path to images or empty string if an error occured
+        print base_path_maps
         return base_path_maps, legend_path
 
     def _fetch_data( self, base_url, refreshtime=0, filename=None, animated=False, subfolder="forecasts", retry=True ):
