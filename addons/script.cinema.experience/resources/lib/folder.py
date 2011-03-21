@@ -20,8 +20,8 @@ def dirEntries( dir_name, media_type="files", recursive="FALSE", contains="" ):
         if not match:
             match = re.search( '"file":"(.*?)",', f )
         if match:
-            if ( match.group(1).endswith( "/" ) or match.group(1).endswith( "\\" ) ):
-                if ( recursive == "TRUE" ):
+            if match.group(1).endswith( "/" ) or match.group(1).endswith( "\\" ):
+                if recursive == "TRUE":
                     fileList.extend( dirEntries( match.group(1), media_type, recursive, contains ) )
             elif not contains or ( contains and (contains in match.group(1) ) ):
                 fileList.append( match.group(1) )
@@ -37,6 +37,6 @@ def escapeDirJSON ( dir_name ):
             dir_name    - the name of the directory
     '''
     print "escapeDirJSON Activated"
-    if (dir_name.find(":")):
+    if dir_name.find(":"):
         dir_name = dir_name.replace("\\", "\\\\")
     return dir_name

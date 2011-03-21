@@ -19,7 +19,7 @@ BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( _A_.getAddonInfo('path'),
 sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib" ) )
 from music import parse_playlist
 from folder import dirEntries
-from ce_playlist import build_music_playlist
+from ce_playlist import build_music_playlist, _rebuild_playlist
 
 class Trivia( xbmcgui.WindowXML ):
     # base paths
@@ -52,7 +52,7 @@ class Trivia( xbmcgui.WindowXML ):
         # start music
         self._start_slideshow_music()
         # Build Video Playlist
-        self._rebuild_playlist()
+        _rebuild_playlist( self.plist )
         # start slideshow
         self._next_slide( 0 )
 
@@ -64,20 +64,6 @@ class Trivia( xbmcgui.WindowXML ):
         self.screensaver = xbmc.executehttpapi( "GetGUISetting(3;screensaver.mode)" ).replace( "<li>", "" )
         self.xbmc_volume = self._get_current_volume()
         self.image_count = 0
-
-    def _rebuild_playlist( self ): # rebuild movie playlist
-        self.playlist.clear()
-        for movie in self.plist:
-            movie_title = movie["label"]
-            movie_full_path = movie["file"].replace("\\\\" , "\\")
-            movie_thumbnail = movie["thumbnail"]
-            xbmc.log( "[script.cinema.experience] - Movie Title: %s" % movie_title, xbmc.LOGNOTICE )
-            xbmc.log( "[script.cinema.experience] - Movie Thumbnail: %s" % movie_thumbnail, xbmc.LOGNOTICE )
-            xbmc.log( "[script.cinema.experience] - Full Movie Path: %s" % movie_full_path, xbmc.LOGNOTICE )
-            listitem = xbmcgui.ListItem( movie_title, thumbnailImage=movie_thumbnail )
-            listitem.setInfo('video', {'Title': movie_title,})
-            self.playlist.add(url=movie_full_path, listitem=listitem, )
-            xbmc.sleep( 50 )
 
     def _get_current_volume( self ):
         # get the current volume
@@ -96,35 +82,35 @@ class Trivia( xbmcgui.WindowXML ):
         xbmc.log( "[script.cinema.experience] - Starting Tivia Music", xbmc.LOGNOTICE)
         # did user set this preference
         xbmc.log( "[script.cinema.experience] - Setting - trivia_music: %s"  % self.settings[ "trivia_music" ], xbmc.LOGNOTICE)
-        if ( int(self.settings[ "trivia_music" ]) > 0):
+        if int(self.settings[ "trivia_music" ]) > 0:
             # check to see if script is to adjust the volume
-            if ( self.settings[ "trivia_adjust_volume" ] == "true" ):
+            if self.settings[ "trivia_adjust_volume" ] == "true":
                 xbmc.log( "[script.cinema.experience] - Adjusting Volume to %s" % self.settings[ "trivia_music_volume" ], xbmc.LOGNOTICE)
                 # calculate the new volume
                 volume = self.settings[ "trivia_music_volume" ]
                 # set the volume percent of current volume
                 xbmc.executebuiltin( "XBMC.SetVolume(%d)" % ( volume, ) )
             # play music
-            if (self.settings[ "trivia_music_file" ].endswith(".m3u")):
+            if self.settings[ "trivia_music_file" ].endswith(".m3u"):
                 xbmc.Player().play( self.music_playlist )
 
     def _next_slide( self, slide=1, final_slide=False ):
         # cancel timer if it's running
-        if ( self.slide_timer is not None ):
+        if self.slide_timer is not None:
             self.slide_timer.cancel()
         # increment/decrement count
         self.image_count += slide
         # check for invalid count, TODO: make sure you don't want to reset timer
-        if ( self.image_count < 0 ):
+        if self.image_count < 0:
             self.image_count = 0
         # if no more slides, exit
-        if ( self.image_count > len( self.slide_playlist ) -1 ):
+        if self.image_count > len( self.slide_playlist ) -1:
             self._exit_trivia()
         else:
             # check to see if playlist has come to an end
-            if not ( xbmc.Player().isPlayingAudio() and ( int(self.settings[ "trivia_music" ]) > 0) ):
-                build_music_playlist()
-                xbmc.Player().play( self.music_playlist )
+            #if not ( xbmc.Player().isPlayingAudio() and ( int(self.settings[ "trivia_music" ]) > 0) ):
+            #    build_music_playlist()
+            #    xbmc.Player().play( self.music_playlist )
             # set the property the image control uses
             xbmcgui.Window( xbmcgui.getCurrentWindowId() ).setProperty( "Slide", self.slide_playlist[ self.image_count ] )
             # add id to watched file TODO: maybe don't add if not user preference
@@ -153,7 +139,7 @@ class Trivia( xbmcgui.WindowXML ):
             # base path to watched file
             base_path = os.path.join( self.BASE_CURRENT_SOURCE_PATH, "trivia_watched.txt" )
             # if the path to the source file does not exist create it
-            if ( not os.path.isdir( os.path.dirname( base_path ) ) ):
+            if not os.path.isdir( os.path.dirname( base_path ) ):
                 os.makedirs( os.path.dirname( base_path ) )
             # open source path for writing
             file_object = open( base_path, "w" )
@@ -166,7 +152,7 @@ class Trivia( xbmcgui.WindowXML ):
 
     def _reset_watched( self ):
         base_path = os.path.join( self.BASE_CURRENT_SOURCE_PATH, "trivia_watched.txt" )
-        if ( os.path.isfile( base_path ) ):
+        if os.path.isfile( base_path ):
             os.remove( base_path )
             self.watched = []
 
@@ -194,9 +180,9 @@ class Trivia( xbmcgui.WindowXML ):
 
     def _show_intro_outro( self, type="intro" ):
         is_playing = "True"
-        if ( type == "outro" ):
+        if type == "outro":
             xbmc.log( "[script.cinema.experience] - ## Outro ##", xbmc.LOGNOTICE)
-            if (self.settings[ "trivia_fade_volume" ] == "true" and self.settings[ "trivia_adjust_volume"] == "true" ):
+            if self.settings[ "trivia_fade_volume" ] == "true" and self.settings[ "trivia_adjust_volume"] == "true":
                 self._fade_volume()
             self._play_video_playlist()
         else:
@@ -222,10 +208,10 @@ class Trivia( xbmcgui.WindowXML ):
 
     def _cancel_timers( self ):
         # cancel all timers
-        if ( self.slide_timer is not None ):
+        if self.slide_timer is not None:
             self.slide_timer.cancel()
             self.slide_timer = None
-        if ( self.global_timer is not None ):
+        if self.global_timer is not None:
             self.global_timer.cancel()
             self.global_timer = None
 
@@ -247,7 +233,7 @@ class Trivia( xbmcgui.WindowXML ):
         # calc sleep time, 0.5 second for rise time
         sleep_time = 0.5 / len( volumes )
         # if fading out reverse order
-        if ( out ):
+        if out:
             xbmc.log( "[script.cinema.experience] - Fading Volume", xbmc.LOGNOTICE)
             volumes = range( 1, self.settings[ "trivia_music_volume" ] )
             volumes.reverse()
@@ -258,7 +244,7 @@ class Trivia( xbmcgui.WindowXML ):
         # loop thru and set volume
         xbmc.log( "[script.cinema.experience] - Start Volume: %d " % ( self._get_current_volume() ), xbmc.LOGNOTICE)
         for volume in volumes:
-            xbmc.executebuiltin( "XBMC.SetVolume(%d)" % ( volume ) )
+            xbmc.executebuiltin( "XBMC.SetVolume(%d)" % volume  )
             # sleep
             #time.sleep( sleep_time )
             xbmc.sleep( int( sleep_time * 1000 ) )
@@ -271,11 +257,11 @@ class Trivia( xbmcgui.WindowXML ):
         pass
 
     def onAction( self, action ):
-        if ( action in self.ACTION_EXIT_SCRIPT and self.exiting is False ):
+        if action in self.ACTION_EXIT_SCRIPT and self.exiting is False:
             self._exit_trivia()
-        elif ( action in self.ACTION_EXIT_SCRIPT and self.exiting is True ):
+        elif action in self.ACTION_EXIT_SCRIPT and self.exiting is True:
             self._play_video_playlist()
-        elif ( action in self.ACTION_NEXT_SLIDE and not self.exiting ):
+        elif action in self.ACTION_NEXT_SLIDE and not self.exiting:
             self._next_slide()
-        elif ( action in self.ACTION_PREV_SLIDE and not self.exiting ):
+        elif action in self.ACTION_PREV_SLIDE and not self.exiting:
             self._next_slide( -1 )

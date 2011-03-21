@@ -1,11 +1,9 @@
 import os, sys
-import xbmcgui
-import xbmc
-import xbmcaddon
-import threading
-import binascii
+import xbmcgui,xbmc, xbmcaddon
+
 from random import shuffle, random
 import re
+
 __script__ = "Cinema Experience"
 __scriptID__ = "script.cinema.experience"
 
@@ -43,7 +41,7 @@ def _load_watched_trivia_file():
 
 def _reset_watched( self ):
     base_path = os.path.join( BASE_CURRENT_SOURCE_PATH, "trivia_watched.txt" )
-    if ( os.path.isfile( base_path ) ):
+    if os.path.isfile( base_path ):
         os.remove( base_path )
         watched = []
     return watched

@@ -17,23 +17,25 @@ def download( url_path, download_path, file_tag = "" ):
         optional:
             file_tag - add a tag to the filename, ie "-trailer"
     '''
-    try:
+    success = False
+    destination = ""
+    for i in range(0, 4):
         try:
-            url_path = url_path.split("|")[0]
+            try:
+                url_path = url_path.split("|")[0]
+            except:
+                url_path = url_path
+            if file_tag:
+                filename, ext = os.path.splitext( os.path.basename( url_path.replace( "?","" ) ) )
+                filename = filename + file_tag + ext
+            else:
+                filename = os.path.basename( url_path.replace( "?","" ) )
+            destination = os.path.join( download_path, filename ).replace( "\\\\", "\\" )
+            urllib.urlretrieve( url_path, destination, _report_hook )
+            success = True
+            break
         except:
-            url_path = url_path
-        if file_tag:
-            filename, ext = os.path.splitext( os.path.basename( url_path.replace( "?","" ) ) )
-            filename = filename + file_tag + ext
-        else:
-            filename = os.path.basename( url_path.replace( "?","" ) )
-        destination = os.path.join( download_path, filename ).replace( "\\\\", "\\" )
-        urllib.urlretrieve( url_path, destination, _report_hook )
-        success = True
-    except:
-        traceback.print_exc()
-        destination = ""
-        success = False
+            traceback.print_exc()
     return success, destination
 
 def _report_hook( count, blocksize, totalsize ):

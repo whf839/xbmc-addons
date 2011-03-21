@@ -1,3 +1,17 @@
+1.0.39
+- Fixed - Corrected Downloader
+- Fixed - Script error on exit
+- Fixed - Auto-refresh Enabling/Disabling Trigger
+- Fixed - Script stopping if User stops or skips through Trivia Intro
+- Change - Download Trailers will fall back on to searching for unwatched Downloaded trailers
+- Enhancement - Added the ability to disable the 'annoying' notification pop up when running from the Home Window
+- Change - Re-arranged Settings to function better
+- Enhancement - Added the ability to select the Movie Quiz as an alternative to Trivia Slides(the Movie Quiz Script is not yet ready for this integration)
+- Change - Trivia Selection now Available: None, Slide Show, or Movie Quiz(see above)
+- Fixed - More proper error handling
+- Enhancement - Added Home Automation Settings to Settings(Note. Not Yet Implemented in Script)
+- Fixed - More proper logging of errors and script details.
+
 1.0.38
 - Enhancement - Added First Step For Home Automation Scripting
 - Enhancement - Changed how auto refresh is triggered.

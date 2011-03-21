@@ -1,5 +1,7 @@
 __script__ = "Cinema Experience"
 __scriptID__ = "script.cinema.experience"
+__modname__ = "trailer_downloader.py"
+
 import sys
 import os
 import xbmcgui
@@ -7,19 +9,12 @@ import xbmc
 import xbmcaddon
 import traceback, threading
 
+logmessage = "[ " + __scriptID__ + " ] - [ " + __modname__ + " ]"
 _A_ = xbmcaddon.Addon( __scriptID__ )
 # language method
 _L_ = _A_.getLocalizedString
 # settings method
 _S_ = _A_.getSetting
-
-
-# set proper message
-message = 32520
-
-#pDialog = xbmcgui.DialogProgress()
-#pDialog.create( __script__, _L_( message )  )
-#pDialog.update( 0 )
 
 from urllib import quote_plus
 from random import shuffle, random
@@ -34,12 +29,16 @@ downloaded_trailers = []
 
 def downloader( mpaa, genre ):
     movie = ""
-    xbmc.log( "[script.cinema.experience] - Starting Trailer Downloader", xbmc.LOGNOTICE )
-    save_download_list( _download_trailers( mpaa, genre, movie ) )
-    return
+    trailer_list = []
+    xbmc.log( "%s - Starting Trailer Downloader" % logmessage, xbmc.LOGNOTICE )
+    trailer_list = _download_trailers( mpaa, genre, movie )
+    print trailer_list
+    save_download_list( trailer_list )
+
 
 def save_download_list( download_trailers ):
-    xbmc.log( "[script.cinema.experience] - Saving List of Downloaded Trailers", xbmc.LOGNOTICE )
+    xbmc.log( "%s - Saving List of Downloaded Trailers" % logmessage, xbmc.LOGNOTICE )
+    success = False
     try:
         # base path to watched file
         base_path = os.path.join( BASE_CURRENT_SOURCE_PATH, "downloaded_trailers.txt" )
@@ -50,27 +49,38 @@ def save_download_list( download_trailers ):
         file_object = open( base_path, "w" )
         if download_trailers:
             for trailer in download_trailers:
-                # write list
-                file_object.write( repr( trailer[ 2 ] ) )
+                try:# write list
+                    file_object.write( repr( trailer[ 2 ] ) )
+                    success = True
+                except:
+                    file_object.write( "" )
+                    success = False
             # close file object
         else:
             file_object.write( "" )
         file_object.close()
     except:
         traceback.print_exc()
-
+    if not success:
+        try:
+            xbmc.log( "%s - Removing List of Downloaded Trailers" % logmessage, xbmc.LOGNOTICE )
+            if ( os.path.isfile( base_path ) ):
+                os.remove( base_path )
+        except:
+            xbmc.log( "%s - Error Trying to Remove List of Downloaded Trailers" % logmessage, xbmc.LOGNOTICE )
 
 def _download_trailers( mpaa, genre, movie ):
     updated_trailers = []
-    xbmc.log( "[script.cinema.experience] - Downloading Trailers: %s Trailers" % ( 0, 1, 2, 3, 4, 5, 10, )[ int( _S_( "trailer_count" ) ) ], xbmc.LOGNOTICE )
+    xbmc.log( "%s - Downloading Trailers: %s Trailers" % ( logmessage, ( 0, 1, 2, 3, 4, 5, 10, )[ int( _S_( "trailer_count" ) ) ] ), xbmc.LOGNOTICE )
     trailers = _get_trailers(  items=( 0, 1, 2, 3, 4, 5, 10, )[ int( _S_( "trailer_count" ) ) ],
                                 mpaa=mpaa,
                                genre=genre,
-                               movie=movie
+                               movie=movie,
+                                mode="download"
                             )
     for trailer in trailers:
-        updated_trailer={}
-        xbmc.log( "[script.cinema.experience] - Attempting To Download Trailer: %s" % trailer[ 1 ], xbmc.LOGNOTICE )
+        updated_trailer= {}
+        xbmc.log( "%s - Attempting To Download Trailer: %s" % ( logmessage, trailer[ 1 ] ), xbmc.LOGNOTICE )
         filename, ext = os.path.splitext( os.path.basename( (trailer[ 2 ].split("|")[0] ).replace( "?","" ) ) )
         filename = filename + "-trailer" + ext
         file_path = os.path.join( _S_( "trailer_download_folder" ), filename ).replace( "\\\\", "\\" )
@@ -81,7 +91,7 @@ def _download_trailers( mpaa, genre, movie ):
         else:
             success, destination = download( trailer[ 2 ], _S_( "trailer_download_folder" ), file_tag="-trailer" )
         if success:
-            xbmc.log( "[script.cinema.experience] - Downloaded Trailer: %s" % trailer[ 1 ], xbmc.LOGNOTICE )
+            xbmc.log( "%s - Downloaded Trailer: %s" % ( logmessage, trailer[ 1 ] ), xbmc.LOGNOTICE )
             updated_trailer[ 0 ] = trailer[ 0 ]
             updated_trailer[ 1 ] = trailer[ 1 ]
             updated_trailer[ 2 ] = destination
@@ -96,7 +106,7 @@ def _download_trailers( mpaa, genre, movie ):
             updated_trailer[ 11 ] = trailer[ 11 ]
             _create_nfo_file( updated_trailer, destination )
         else:
-            xbmc.log( "[script.cinema.experience] - Failed to Download Trailer: %s" % trailer[ 1 ], xbmc.LOGNOTICE )
+            xbmc.log( "%s - Failed to Download Trailer: %s" % ( logmessage, trailer[ 1 ] ), xbmc.LOGNOTICE )
             updated_trailer=[]
         updated_trailers += [ updated_trailer ]
     return updated_trailers
@@ -114,7 +124,7 @@ def _create_nfo_file( trailer, trailer_nfopath ):
             studio=trailer[ 8 ],
             director=trailer[ 11 ]
     '''
-    xbmc.log( "[script.cinema.experience] - Creating Trailer NFO file", xbmc.LOGNOTICE )
+    xbmc.log( "%s - Creating Trailer NFO file" % logmessage, xbmc.LOGNOTICE )
     # set quality, we do this since not all resolutions have trailers
     quality = ( "Standard", "480p", "720p", "1080p" )[ int( _S_( "trailer_quality" ) ) ]
     # set movie info
@@ -137,7 +147,7 @@ def _create_nfo_file( trailer, trailer_nfopath ):
     return _save_nfo_file( nfoSource, trailer_nfopath )
 
 def _save_nfo_file( nfoSource, trailer_nfopath ):
-    xbmc.log( "[script.cinema.experience] - Saving Trailer NFO file", xbmc.LOGNOTICE )
+    xbmc.log( "%s - Saving Trailer NFO file" % logmessage, xbmc.LOGNOTICE )
     destination = os.path.splitext( trailer_nfopath )[0] + ".nfo"
     try:
         # open source path for writing
@@ -150,6 +160,6 @@ def _save_nfo_file( nfoSource, trailer_nfopath ):
         return True
     except Exception, e:
         # oops, notify user what error occurred
-        xbmc.log( "[script.cinema.experience] - %s" % str( e ), xbmc.LOGERROR )
+        xbmc.log( "%s - %s" % ( logmessage, str( e ) ), xbmc.LOGERROR )
         # return failed
         return False
