@@ -296,7 +296,7 @@ class Main:
                                      runtime=trailer[ 5 ],
                                         mpaa=trailer[ 6 ],
                                 release_date=trailer[ 7 ],
-                                      studio=trailer[ 8 ] or _L_( 32604 ),
+                                      studio=trailer[ 8 ] or _L_( 32605 ),
                                       writer= _L_( 32605 ),
                                     director=trailer[ 11 ],
                                        index=0

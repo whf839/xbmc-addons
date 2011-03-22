@@ -10,7 +10,7 @@ def dirEntries( dir_name, media_type="files", recursive="FALSE", contains="" ):
             media_type - valid types: video, music, pictures, files, programs
             recursive  - Setting to "TRUE" searches Parent and subdirectories, Setting to "FALSE" only search Parent Directory
     '''
-    print "dirEntries Activated"
+    print "[folder.py] - dirEntries Activated"
     fileList = []
     json_query = '{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "%s", "recursive": "%s"}, "id": 1}' % ( escapeDirJSON( dir_name ), media_type, recursive )
     json_folder_detail = xbmc.executeJSONRPC(json_query)
@@ -25,6 +25,7 @@ def dirEntries( dir_name, media_type="files", recursive="FALSE", contains="" ):
                     fileList.extend( dirEntries( match.group(1), media_type, recursive, contains ) )
             elif not contains or ( contains and (contains in match.group(1) ) ):
                 fileList.append( match.group(1) )
+                print "[folder.py] - File Path: %s" % match.group(1) 
         else:
             continue
     return fileList
@@ -36,7 +37,7 @@ def escapeDirJSON ( dir_name ):
         escapeDirJSON( dir_name )
             dir_name    - the name of the directory
     '''
-    print "escapeDirJSON Activated"
+    print "[folder.py] - escapeDirJSON Activated"
     if dir_name.find(":"):
         dir_name = dir_name.replace("\\", "\\\\")
     return dir_name

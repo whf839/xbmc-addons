@@ -91,8 +91,10 @@ class Trivia( xbmcgui.WindowXML ):
                 # set the volume percent of current volume
                 xbmc.executebuiltin( "XBMC.SetVolume(%d)" % ( volume, ) )
             # play music
-            if self.settings[ "trivia_music_file" ].endswith(".m3u"):
-                xbmc.Player().play( self.music_playlist )
+            #if self.settings[ "trivia_music_file" ].endswith(".m3u"):
+            #    xbmc.Player().play( self.music_playlist )
+            xbmc.Player().play( self.music_playlist )
+
 
     def _next_slide( self, slide=1, final_slide=False ):
         # cancel timer if it's running
@@ -108,9 +110,9 @@ class Trivia( xbmcgui.WindowXML ):
             self._exit_trivia()
         else:
             # check to see if playlist has come to an end
-            #if not ( xbmc.Player().isPlayingAudio() and ( int(self.settings[ "trivia_music" ]) > 0) ):
-            #    build_music_playlist()
-            #    xbmc.Player().play( self.music_playlist )
+            if not ( xbmc.Player().isPlayingAudio() and ( int(self.settings[ "trivia_music" ]) > 0) ):
+                build_music_playlist()
+                xbmc.Player().play( self.music_playlist )
             # set the property the image control uses
             xbmcgui.Window( xbmcgui.getCurrentWindowId() ).setProperty( "Slide", self.slide_playlist[ self.image_count ] )
             # add id to watched file TODO: maybe don't add if not user preference

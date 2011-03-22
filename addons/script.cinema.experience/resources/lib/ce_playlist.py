@@ -342,6 +342,7 @@ def build_music_playlist():
             # search given folder and subfolders for files
             track_location = dirEntries( _S_( "trivia_music_folder" ), "music", "TRUE" )
     # shuffle playlist
+    print track_location
     count = 0
     while count <6:
         shuffle( track_location, random )

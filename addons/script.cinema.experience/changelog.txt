@@ -1,3 +1,9 @@
+1.0.40
+- Fixed - Corrected Trivia Music
+- Fixed - Cleaned up Settings
+- Updated - New Spanish Translation.  Thanks KiSUAN
+- Added Home Automation Integration file - PM Giftie for details.
+
 1.0.39
 - Fixed - Corrected Downloader
 - Fixed - Script error on exit

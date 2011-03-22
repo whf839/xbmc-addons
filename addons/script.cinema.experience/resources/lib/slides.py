@@ -39,7 +39,7 @@ def _load_watched_trivia_file():
         watched = []
     return watched
 
-def _reset_watched( self ):
+def _reset_watched():
     base_path = os.path.join( BASE_CURRENT_SOURCE_PATH, "trivia_watched.txt" )
     if os.path.isfile( base_path ):
         os.remove( base_path )

@@ -34,6 +34,7 @@
     <string id="32185">- Trailer play mode</string>
     <string id="32186">Stream</string>
     <string id="32187">Download</string>
+    <string id="32188">Downioad Folder</string>
     <string id="32190">- Select only unwatched Trailers</string>
     <string id="32191">   - Reset Trailers watched status</string>
     <string id="32195">- Coming Attractions Intro</string>
@@ -157,7 +158,7 @@
     <string id="32604">Home Theatre</string>
     <string id="32605">Movie Trailer</string>
     <string id="32606">Audio Format</string>
-    <string id="32607">Movie Theater Clips</string>
+    <string id="32607">Movie Theater Intro</string>
     <string id="32608">Coming Attractions Outro</string>
     <string id="32609">Trivia Intro</string>
     <string id="32610">Trivia Outro</string>
@@ -167,6 +168,7 @@
     <string id="32614">Script End</string>
     <string id="32615">Trivia</string>
     <string id="32616">Movie</string>
+    <string id="32617">Movie Theatre Outro</string>
     <!-- Start Translating Again -->
     
     <!-- compatible messages -->

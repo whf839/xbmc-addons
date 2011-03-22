@@ -68,8 +68,8 @@
         <setting id="trailer_scraper" type="enum" visible="!eq(-7,0)" lvalues="32111|32112|32113|32114" label="32110" default="1" />  <!-- Stream -->
         <setting id="trailer_play_mode" type="enum" visible="eq(-1,0) | eq(-1,1)" enable="!eq(-1,2) | !eq(-1,3)" lvalues="32186|32187" label="32185" default="0" />
         <setting type="lsep" label="Must use Trivia Slide Show as well to provide time for script to download trailer(s)" visible="eq(-1,1)" /> 
-        <setting id="trailer_download_folder" type="folder" visible="!eq(-10,0) + eq(-2,1)" source="video" label="32130" default="" />
-        <setting id="trailer_folder" type="folder" visible="!eq(-11,0) + eq(-4,2)" source="video" label="32130" default="" />
+        <setting id="trailer_download_folder" type="folder" visible="!eq(-10,0) + eq(-2,1) + !eq(-3,2) + !eq(-3,3)" source="video" label="32188" default="" />
+        <setting id="trailer_folder" type="folder" visible="!eq(-11,0) + eq(-4,2)" source="video" label="32113" default="" />
         <setting id="trailer_amt_db_file" type="file" visible="!eq(-12,0) + eq(-5,0)" source="local" mask="AMT.db" label="32120" default="special://profile/addon_data/script.apple.movie.trailers/AMT.db" />
         <setting id="trailer_newest_only" type="bool" visible="!eq(-13,0) + eq(-6,0)" label="32160" default="false" />
         <setting id="trailer_quality" type="enum" visible="!eq(-14,0) + !eq(-7,2) + !eq(-7,3)" enable="!eq(-7,2) + !eq(-7,3)" lvalues="32171|32172|32173|32174" label="32170" default="0" />
