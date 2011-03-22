@@ -7,7 +7,7 @@ def activate_on( trigger = "None" ) :
     if trigger == "None":
         xbmc.log( "[script.cinema.experience] - [ home_automation.py ] - No Trigger Sent, Returning", xbmc.LOGNOTICE )
         return
-    xbmc.log( "[script.cinema.experience] - [ home_automation.py ] - Activate On %s Triggered" % trigger, xbmc.LOGNOTICE )
+    xbmc.log( "[script.cinema.experience] - [ home_automation.py ] - activate_on( %s ) Triggered" % trigger, xbmc.LOGNOTICE )
     if trigger == _L_( 32613 ): # Script Start
         xbmc.log( "[script.cinema.experience] - [ home_automation.py ] - %s Triggered" % _L_( 32613 ), xbmc.LOGNOTICE )
         # place code below this line
@@ -19,6 +19,9 @@ def activate_on( trigger = "None" ) :
         # place code below this line
     elif trigger ==_L_( 32610 ): # Trivia Outro
         xbmc.log( "[script.cinema.experience] - [ home_automation.py ] - %s Triggered" % _L_( 32610 ), xbmc.LOGNOTICE )
+        # place code below this line
+    elif trigger ==_L_( 32607 ): # Movie Theatre Intro
+        xbmc.log( "[script.cinema.experience] - [ home_automation.py ] - %s Triggered" % _L_( 32607 ), xbmc.LOGNOTICE )
         # place code below this line
     elif trigger ==_L_( 32600 ): # Coming Attractions Intro
         xbmc.log( "[script.cinema.experience] - [ home_automation.py ] - %s Triggered" % _L_( 32600 ), xbmc.LOGNOTICE )
@@ -46,6 +49,9 @@ def activate_on( trigger = "None" ) :
         # place code below this line
     elif trigger ==_L_( 32602 ): # Feature Presentation Outro
         xbmc.log( "[script.cinema.experience] - [ home_automation.py ] - %s Triggered" % _L_( 32602 ), xbmc.LOGNOTICE )
+        # place code below this line
+    elif trigger ==_L_( 32617 ): # Movie Theatre Intro
+        xbmc.log( "[script.cinema.experience] - [ home_automation.py ] - %s Triggered" % _L_( 32617 ), xbmc.LOGNOTICE )
         # place code below this line
     elif trigger ==_L_( 32612 ): # Intermission
         xbmc.log( "[script.cinema.experience] - [ home_automation.py ] - %s Triggered" % _L_( 32612 ), xbmc.LOGNOTICE )
