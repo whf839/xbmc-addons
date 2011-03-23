@@ -1,3 +1,6 @@
+1.0.41
+- Fixed - Script crashing when Trivia music is set to None
+
 1.0.40
 - Fixed - Corrected Trivia Music
 - Fixed - Cleaned up Settings

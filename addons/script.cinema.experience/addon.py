@@ -2,7 +2,7 @@
 __script__ = "Cinema Experience"
 __author__ = "nuka1195-giftie-ackbarr"
 __url__ = "http://code.google.com/p/xbmc-addons/"
-__version__ = "1.0.40"
+__version__ = "1.0.41"
 __scriptID__ = "script.cinema.experience"
 
 import xbmcgui, xbmc, xbmcaddon, os, re, sys
@@ -364,7 +364,7 @@ def _play_trivia( mpaa, genre, plist ):
                   "trivia_unwatched_only": _S_( "trivia_unwatched_only" ) == "true"
                             }
 
-        if int(_S_( "trivia_music" ) > 0):
+        if not int( _S_( "trivia_music" ) )== 0:
             pDialog.update( -1, _L_( 32511 )  )
             build_music_playlist()
         # set the proper mpaa rating user preference

@@ -110,7 +110,7 @@ class Trivia( xbmcgui.WindowXML ):
             self._exit_trivia()
         else:
             # check to see if playlist has come to an end
-            if not ( xbmc.Player().isPlayingAudio() and ( int(self.settings[ "trivia_music" ]) > 0) ):
+            if not xbmc.Player().isPlayingAudio() and int(self.settings[ "trivia_music" ]) > 0:
                 build_music_playlist()
                 xbmc.Player().play( self.music_playlist )
             # set the property the image control uses
