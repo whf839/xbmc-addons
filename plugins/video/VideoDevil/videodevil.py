@@ -1017,6 +1017,13 @@ class CCurrentList:
                 tmp.infos_values[info_idx] = smart_unicode(item_rule.url_build % (smart_unicode(tmp.infos_values[info_idx])))
                 if item_rule.skill.find('append') != -1:
                     tmp.infos_values[info_idx] = curr_url + tmp.infos_values[info_idx]
+		if item_rule.skill.find('striptoslash') != -1:
+                    curr_match = re.search(r'(.+?/)[^/]+$', curr_url)
+                    if curr_match:
+			if curr_match.group(1) == 'http://':
+                            tmp.infos_values[info_idx] = curr_url + '/' + tmp.infos_values[info_idx]
+			else:
+			    tmp.infos_values[info_idx] = curr_match.group(1) + tmp.infos_values[info_idx]
                 if item_rule.skill.find('space') != -1:
                     try:
                         tmp.infos_values[tmp.infos_names.index('title')] = ' ' + tmp.infos_values[tmp.infos_names.index('title')].lstrip().rstrip() + ' '
