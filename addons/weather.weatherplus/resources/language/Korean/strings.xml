@@ -195,4 +195,15 @@
     <string id="32863">Fitness</string>
     <string id="32864">User Defined</string>
 
+    <!-- Alternative Provider strings -->
+	<string id="32901">Location #1</string>
+	<string id="32902">Provider</string>
+	<string id="32903">Location</string>
+	<string id="32904">Change Location</string>
+	<string id="32905">Location #2</string>
+	<string id="32906">Location #3</string>
+
+	<!-- Alternative Provider Lists -->
+	<string id="32951">Accuweather.com Global</string>
+
 </strings>

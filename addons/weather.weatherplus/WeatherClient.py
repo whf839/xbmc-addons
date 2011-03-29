@@ -1009,6 +1009,83 @@ class ForecastHourlyParser:
                 # add result to our class variable
                 self.forecast += [ ( _localize_unit( item[ 0 ], "time" ), dates[ date_counter ].split( ", " )[ -1 ], iconpath, _localize_unit( item[ 3 ] ), brief[ count ], _localize_unit( item[ 5 ] ), item[ 6 ].replace( "%", "" ), item[ 7 ].replace( "%", "" ), wind[ count ], _localize_unit( item[ 10 ], "speed" ), item[ 8 ].split( " " )[ -1 ], sunrise, sunset, ) ]
 
+class ACCU_ForecastHourlyParser:
+    def __init__( self, htmlSource, translate ):
+        self.forecast = []
+        self.translate = translate
+        # only need to parse source if there is source
+        if ( htmlSource ):
+            self._get_forecast( htmlSource )
+
+    def _get_forecast( self, htmlSource ):
+        # regex patterns
+	pattern_date = "([0-9]+)/([0-9]+)/20"
+        pattern_info = "<div class=\".+?textBold\">([^<]+)</div>"
+	pattern_brief = "<div class=\".+?hbhWxText\">([^<]+)</div>"
+	pattern_icon = "wxicons/31x24/(.+?).gif"
+	pattern_wind = "winds/24x24/(.+?).gif"
+        # fetch info
+	date = re.findall( pattern_date, htmlSource )
+        raw_info = re.findall( pattern_info, htmlSource )
+	raw_brief = re.findall( pattern_brief, htmlSource )
+	icon = re.findall( pattern_icon, htmlSource )
+	wind = re.findall( pattern_wind, htmlSource )
+	info_ = []
+	info = []
+	brief = []
+	dates = [ ( date[0][0], date[0][1] ), ( date[3][0], date[3][1] ) ]
+	for item in raw_info:
+	    info_ += [ item.replace("\n","").replace("\r","").replace("\t","").replace("&deg;C", "") ]
+	for item in raw_brief:
+	    brief += [ item.replace("\n","").replace("\r","").replace("\t","").replace("&deg;C", "") ]
+	icondir = {"1":"32", "2":"30", "3":"28", "4":"30", "5":"34", "6":"28", "7":"26", "8":"26", "11":"19", "12":"11", "13":"39", "14":"39", "15":"3", "16":"37", "17":"37", "18":"12", "19":"14", "20":"14", "21":"14", "22":"16", "23":"16", "24":"25", "25":"25", "26":"25", "29":"25", "30":"36", "31":"32", "32":"23", "33":"31", "34":"29", "35":"27", "36":"27", "38":"27", "37":"33", "39":"45", "40":"45", "41":"47", "42":"47", "43":"46", "44":"46" }       
+	# we convert wind direction to full text
+        windir = {    
+                            "N": "From the North",
+                            "NNE": "From the North Northeast",
+                            "NE": "From the Northeast",
+                            "ENE": "From the East Northeast",
+                            "E": "From the East",
+                            "ESE": "From the East Southeast",
+                            "SE": "From the Southeast",
+                            "SSE": "From the South Southeast",
+                            "S": "From the South",
+                            "SSW": "From the South Southwest",
+                            "SW": "From the Southwest",
+                            "WSW": "From the West Southwest",
+                            "W": "From the West",
+                            "WNW": "From the West Northwest",
+                            "NW": "From the Northwest",
+                            "NNW": "From the North Northwest"
+		}
+	for count in range(0, 7):
+	    info += [ ( info_[count], icondir.get( icon[count] ), brief[count], info_[count+7], info_[count+14], info_[count+21], info_[count+28], windir.get( wind[count] ), info_[count+35], info_[count+42] ) ]
+	for count in range(49, 56):
+	    info += [ ( info_[count], icondir.get( icon[count-43] ), brief[count-43], info_[count+7], info_[count+14], info_[count+21], info_[count+28], windir.get( wind[count-43] ), info_[count+35], info_[count+42] ) ]
+        if ( len( info ) ):
+            # counter for date
+            date_counter = 0
+            # create our forecast list
+            for count, item in enumerate( info ):
+                # make icon path
+                iconpath = "/".join( [ "special://temp", "weather", "128x128", item[ 1 ] + ".png" ] )
+                # do we need to increment date_counter
+                if ( item[ 0 ] == "12:00 AM" and count > 0 ):
+                    date_counter += 1
+                # does sunrise/sunset fit in this period
+                sunrise = ""
+                sunset = ""
+                # we want 24 hour as the math is easier
+                period = _localize_unit( item[ 0 ], "time24" )
+                # set to a high number, we use this for checking next time period
+                period2 = "99:00"
+                if ( count < len( info ) - 2 ):
+                    period2 = _localize_unit( info[ count + 1 ][ 0 ], "time24" )
+                    period2 = ( period2, "24:%s" % ( period2.split( ":" )[ 1 ], ), )[ period2.split( ":" )[ 0 ] == "0" ]
+                # add result to our class variable
+                self.forecast += [ ( _localize_unit( item[ 0 ], "time" ), " ".join( dates[ date_counter ] ), iconpath, _english_localize_unit( item[ 3 ] ), item[ 2 ], _english_localize_unit( item[ 4 ] ), item[ 9 ].replace( "%", "" ), item[ 6 ].replace( "%", "" ), item[ 7 ], _english_localize_unit( item[ 8 ], "speed" ), item[ 7 ].split( " " )[ -1 ], "", "", ) ]
+
+
 
 class ForecastWeekendParser:
     def __init__( self, htmlSource, translate ):
@@ -1199,7 +1276,10 @@ class ACCU_Forecast10DayParser:
 	icon = re.findall( pattern_icon, htmlSource )
 	# enumerate thru and create heading and forecast
 	for count, day in enumerate(days):
-            iconpath = "/".join( [ "special://temp", "weather", "128x128", icondir.get( icon[count] ) + ".png" ] )
+            if (count<7):
+		iconpath = "/".join( [ "special://temp", "weather", "128x128", icondir.get( icon[count] ) + ".png" ] )
+	    else:
+	        iconpath = "/".join( [ "special://temp", "weather", "128x128", icondir.get( icon[count+7] ) + ".png" ] )
 	    self.forecast += [ ( day.split(" ")[0], day.split(" ")[1], iconpath, outlook[count], _english_localize_unit( hightemp[count] ), _english_localize_unit( lowtemp[count] ), "N/A", "N/A", "N/A", "N/A" ) ]
 
 class Forecast10DayParser:
@@ -1324,7 +1404,7 @@ class WeatherClient:
     # base urls
     BASE_URL = "http://www.weather.com"
     BASE_FORECAST_URL = "http://www.weather.com/weather/%s/%s?bypassredirect=true%s"
-    BASE_ACCU_FORECAST_URL = "http://www.accuweather.com/%s.aspx?partner=accuweather&metric=0&loc=%s&day=%s&week=%s"
+    BASE_ACCU_FORECAST_URL = "http://www.accuweather.com/%s.aspx?partner=accuweather&metric=0&loc=%s&day=%s&week=%s&hour=%s"
     BASE_VIDEO_URL = "http://v.imwx.com/v/wxflash/%s.flv"
     BASE_MAPS = ( 
                                 # Main local maps (includes some regional maps) #0
@@ -1454,9 +1534,9 @@ class WeatherClient:
 
     def accu_36_forecast( self, video ):
         # fetch source
-        htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( "quick-look", self.code, "", "" ), 15 )
-        htmlSource_1 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( "details", self.code, "1", "" ), 15 )
-	htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( "details", self.code, "2", "" ), 15 )
+        htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( "quick-look", self.code, "", "", "" ), 15 )
+        htmlSource_1 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( "details", self.code, "1", "", "" ), 15 )
+	htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( "details", self.code, "2", "", "" ), 15 )
         print "[Weather.com+] Area code = "+self.code
         # parse source for forecast
         parser = ACCU_Forecast36HourParser( htmlSource, htmlSource_1, htmlSource_2, self.translate )
@@ -1586,11 +1666,11 @@ class WeatherClient:
             videoID = re.findall( pattern_videoID, htmlSource )
 	    try:
 		if (int(video_[0][1][7:])-1000 < 10000) :
-			video= video_[0][1][:7] + "0" + str(int(video_[0][0][7:])-1000)
+			video= video_[0][1][:7] + "0" + str(int(video_[0][1][7:])-1000)
 		else :
-			video= video_[0][1][:7] + str(int(video_[0][1][7:])-1000)
-		if (video is not None and video_[0][1][15:] == "cnnational") :
-			url = "http://brightcove.vo.llnwd.net/d" + video_[0][0] + "/unsecured/media/1612802193/1612802193_" + video + "_" + video_[0][1] + ".mp4" + "?videoId="+videoID[0]+"&pubId="+publisherID[0]+"&playerId="+playerID[0]
+			video= video_[0][1][:7] + str(int(video_[0][1][7:])-1000)  
+		if (video is not None and video_[0][2][15:] == "cnnational") :
+			url = "http://brightcove.vo.llnwd.net/d" + video_[0][0] + "/unsecured/media/1612802193/1612802193_" + video + "_" + video_[0][2] + ".mp4" + "?videoId="+videoID[0]+"&pubId="+publisherID[0]+"&playerId="+playerID[0]
 		else : 
 			url = ""
 	    except:
@@ -1603,7 +1683,7 @@ class WeatherClient:
             print "[Weather.com+] Local Video Location : Europe"
             accu_europe = "http://www.accuweather.com/video/1681759717/europe-weather-forecast.asp?channel=world"
             htmlSource = self._fetch_data( accu_europe, 15 )
-            pattern_video = "http://brightcove.vo.llnwd.net/d14/unsecured/media/1612802193/1612802193_([0-9]+)_(.+?)-thumb.jpg"
+            pattern_video = "http://brightcove.vo.llnwd.net/d([0-9]+)/unsecured/media/1612802193/1612802193_([0-9]+)_(.+?)-thumb.jpg"
             pattern_playerID = "name=\"playerID\" value=\"(.+?)\""
             pattern_publisherID = "name=\"publisherID\" value=\"(.+?)\""
             pattern_videoID = "name=\"\@videoPlayer\" value=\"(.+?)\""
@@ -1611,13 +1691,14 @@ class WeatherClient:
             playerID = re.findall( pattern_playerID, htmlSource )
             publisherID = re.findall( pattern_publisherID, htmlSource )
             videoID = re.findall( pattern_videoID, htmlSource )
+	    # print video_
 	    try:
-		if (int(video_[0][0][7:])-1000 < 10000) :
-			video= video_[0][0][:7] + "0" + str(int(video_[0][0][7:])-1000)
+		if (int(video_[0][1][7:])-1000 < 10000) :
+			video= video_[0][1][:7] + "0" + str(int(video_[0][1][7:])-1000)
 		else :
-			video= video_[0][0][:7] + str(int(video_[0][0][7:])-1000)
-	        if (video_[0][1][15:] == "europe") :
-                        url = "http://brightcove.vo.llnwd.net/d14/unsecured/media/1612802193/1612802193_" + video + "_" + video_[0][1] + ".mp4" + "?videoId="+videoID[0]+"&pubId="+publisherID[0]+"&playerId="+playerID[0]
+			video= video_[0][1][:7] + str(int(video_[0][1][7:])-1000)
+	        if (video_[0][2][15:] == "europe") :
+                        url = "http://brightcove.vo.llnwd.net/d" + video_[0][0] + "/unsecured/media/1612802193/1612802193_" + video + "_" + video_[0][2] + ".mp4" + "?videoId="+videoID[0]+"&pubId="+publisherID[0]+"&playerId="+playerID[0]
 	        else : 
 	                url = "http://static1.sky.com/feeds/skynews/latest/weather/europeweather.flv"
             except:
@@ -1635,6 +1716,18 @@ class WeatherClient:
         # return forecast
         return parser.forecast
 
+    def accu_fetch_hourly_forecast( self ):
+        # fetch source
+        htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( "hourly", self.code, "", "", "1" ), 1 )
+	pattern_date = "<option selected=\"selected\" value=\"([0-9]+)\">"
+	date = re.findall( pattern_date, htmlSource )
+        htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( "hourly", self.code, "", "", date[1] ), 1 )
+	htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( "hourly", self.code, "", "", str(int(date[1])+7) ), 1 )
+        # parse source for forecast
+        parser = ACCU_ForecastHourlyParser( htmlSource + htmlSource_2, self.translate )
+        # return forecast
+        return parser.forecast
+
     def fetch_weekend_forecast( self ):
         # fetch source
         htmlSource = self._fetch_data( self.BASE_FORECAST_URL % ( "weekend", self.code, "", ), 15 )
@@ -1645,8 +1738,8 @@ class WeatherClient:
 
     def accu_fetch_10day_forecast( self ):
         # fetch source
-        htmlSource_1 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( "forecast", self.code, "", "1" ), 15 )
-	htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( "forecast", self.code, "", "2" ), 15 )
+        htmlSource_1 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( "forecast", self.code, "", "1", "" ), 15 )
+	htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( "forecast", self.code, "", "2", "" ), 15 )
         # parse source for forecast
         parser = ACCU_Forecast10DayParser( htmlSource_1, htmlSource_2, self.translate )
         # return forecast

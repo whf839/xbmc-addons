@@ -73,7 +73,7 @@ class Main:
 			self.areacode = self.Settings.getSetting("alt_code" + str(self.locationindex))
 			print "[Weather.com+] Alternative Provider Selected : Accuweather.com Global (" + self.areacode + ")"
 			self._accu_36_forecast()
-			# self._accu_hourly_forecast()
+			self._accu_hourly_forecast()
 			self._accu_10day_forecast()
 			# self._accu_weekend_forecast()
 			for count in range( 1, 4 ):
@@ -447,7 +447,6 @@ class Main:
         if ( self.areacode != self.Settings.getSetting("alt_code" + str(self.locationindex)) ):
             return
         # fetch 36 hour forecast
-	print "Accuweather.com Global 36hour Forecast Loaded"
         alerts, alertsrss, alertsnotify, alertscolor, alertscount, forecasts, extras, video, video_local = self.WeatherClient.accu_36_forecast("")
 	# set current info
 	self.WEATHER_WINDOW.setProperty( "Current.Temperature", extras[0][4] )
@@ -486,10 +485,10 @@ class Main:
         if ( self.areacode != self.Settings.getSetting("alt_code" + str(self.locationindex)) ):
             return
         # fetch hourly forecast
-        forecasts = self.WeatherClient.accu_hourly_forecast()
+        forecasts = self.WeatherClient.accu_fetch_hourly_forecast()
         # localized long and short date dictionary
-        longdate_dict = { "January": xbmc.getLocalizedString( 21 ), "February": xbmc.getLocalizedString( 22 ), "March": xbmc.getLocalizedString( 23 ), "April": xbmc.getLocalizedString( 24 ), "May": xbmc.getLocalizedString( 25 ), "June": xbmc.getLocalizedString( 26 ), "July": xbmc.getLocalizedString( 27 ), "August": xbmc.getLocalizedString( 28 ), "September": xbmc.getLocalizedString( 29 ), "October": xbmc.getLocalizedString( 30 ), "November": xbmc.getLocalizedString( 31 ), "December": xbmc.getLocalizedString( 32 ) }
-        shortdate_dict = { "January": xbmc.getLocalizedString( 51 ), "February": xbmc.getLocalizedString( 52 ), "March": xbmc.getLocalizedString( 53 ), "April": xbmc.getLocalizedString( 54 ), "May": xbmc.getLocalizedString( 55 ), "June": xbmc.getLocalizedString( 56 ), "July": xbmc.getLocalizedString( 57 ), "August": xbmc.getLocalizedString( 58 ), "September": xbmc.getLocalizedString( 59 ), "October": xbmc.getLocalizedString( 60 ), "November": xbmc.getLocalizedString( 61 ), "December": xbmc.getLocalizedString( 62 ) }
+        longdate_dict = { "1": xbmc.getLocalizedString( 21 ), "2": xbmc.getLocalizedString( 22 ), "3": xbmc.getLocalizedString( 23 ), "4": xbmc.getLocalizedString( 24 ), "5": xbmc.getLocalizedString( 25 ), "6": xbmc.getLocalizedString( 26 ), "7": xbmc.getLocalizedString( 27 ), "8": xbmc.getLocalizedString( 28 ), "9": xbmc.getLocalizedString( 29 ), "10": xbmc.getLocalizedString( 30 ), "11": xbmc.getLocalizedString( 31 ), "12": xbmc.getLocalizedString( 32 ) }
+        shortdate_dict = { "1": xbmc.getLocalizedString( 51 ), "2": xbmc.getLocalizedString( 52 ), "3": xbmc.getLocalizedString( 53 ), "4": xbmc.getLocalizedString( 54 ), "5": xbmc.getLocalizedString( 55 ), "6": xbmc.getLocalizedString( 56 ), "7": xbmc.getLocalizedString( 57 ), "8": xbmc.getLocalizedString( 58 ), "9": xbmc.getLocalizedString( 59 ), "10": xbmc.getLocalizedString( 60 ), "11": xbmc.getLocalizedString( 61 ), "12": xbmc.getLocalizedString( 62 ) }
         # enumerate thru and set the info
         for count, forecast in enumerate( forecasts ):
             # set properties
@@ -564,6 +563,33 @@ class Main:
         longdate_dict = { "1": xbmc.getLocalizedString( 21 ), "2": xbmc.getLocalizedString( 22 ), "3": xbmc.getLocalizedString( 23 ), "4": xbmc.getLocalizedString( 24 ), "5": xbmc.getLocalizedString( 25 ), "6": xbmc.getLocalizedString( 26 ), "7": xbmc.getLocalizedString( 27 ), "8": xbmc.getLocalizedString( 28 ), "9": xbmc.getLocalizedString( 29 ), "10": xbmc.getLocalizedString( 30 ), "11": xbmc.getLocalizedString( 31 ), "12": xbmc.getLocalizedString( 32 ) }
         shortdate_dict = { "1": xbmc.getLocalizedString( 51 ), "2": xbmc.getLocalizedString( 52 ), "3": xbmc.getLocalizedString( 53 ), "4": xbmc.getLocalizedString( 54 ), "5": xbmc.getLocalizedString( 55 ), "6": xbmc.getLocalizedString( 56 ), "7": xbmc.getLocalizedString( 57 ), "8": xbmc.getLocalizedString( 58 ), "9": xbmc.getLocalizedString( 59 ), "10": xbmc.getLocalizedString( 60 ), "11": xbmc.getLocalizedString( 61 ), "12": xbmc.getLocalizedString( 62 ) }
         # enumerate thru and set the info
+	weekend_count = 0
+	weekend = 0
+	for count in range(0,3):
+		self.WEATHER_WINDOW.clearProperty( "Weekend.%d.OutlookIcon" % ( count, ) )
+	        self.WEATHER_WINDOW.clearProperty( "Weekend.%d.FanartCode" % ( count, ) )
+		self.WEATHER_WINDOW.clearProperty( "Weekend.%d.Outlook" % ( count, ) )
+		self.WEATHER_WINDOW.clearProperty( "Weekend.%d.HighTemperature" % ( count, ) )
+		self.WEATHER_WINDOW.clearProperty( "Weekend.%d.LowTemperature" % ( count, ) )
+		self.WEATHER_WINDOW.clearProperty( "Weekend.%d.Precipitation" % ( count, ) )
+		self.WEATHER_WINDOW.clearProperty( "Weekend.%d.Wind" % ( count, ) )
+		self.WEATHER_WINDOW.clearProperty( "Weekend.%d.UV" % ( count, ) )
+		self.WEATHER_WINDOW.clearProperty( "Weekend.%d.Humidity" % ( count, ) )
+		self.WEATHER_WINDOW.clearProperty( "Weekend.%d.Sunrise" % ( count, ) )
+		self.WEATHER_WINDOW.clearProperty( "Weekend.%d.Sunset" % ( count, ) )
+		self.WEATHER_WINDOW.clearProperty( "Weekend.%d.Forecast" % ( count, ) )
+		self.WEATHER_WINDOW.clearProperty( "Weekend.%d.Observed" % ( count, ) )
+		self.WEATHER_WINDOW.clearProperty( "Weekend.%d.ObservedPrecipitation" % ( count, ) )
+		self.WEATHER_WINDOW.clearProperty( "Weekend.%d.ObservedAvgHighTemperature" % ( count, ) )
+		self.WEATHER_WINDOW.clearProperty( "Weekend.%d.ObservedAvgLowTemperature" % ( count, ) )
+		self.WEATHER_WINDOW.clearProperty( "Weekend.%d.ObservedRecordHighTemperature" % ( count, ) )
+		self.WEATHER_WINDOW.clearProperty( "Weekend.%d.ObservedRecordLowTemperature" % ( count, ) )
+		self.WEATHER_WINDOW.clearProperty( "Weekend.%d.DepartureHigh" % ( count, ) )
+		self.WEATHER_WINDOW.clearProperty( "Weekend.%d.DepartureHighColor" % ( count, ) )
+		self.WEATHER_WINDOW.clearProperty( "Weekend.%d.DepartureLow" % ( count, ) )
+		self.WEATHER_WINDOW.clearProperty( "Weekend.%d.DepartureLowColor" % ( count, ) )
+		# do this last so skin's visibilty works better
+		self.WEATHER_WINDOW.clearProperty( "Weekend.%d.Date" % ( count, ) )
         for count, forecast in enumerate( forecasts ):
             self.WEATHER_WINDOW.setProperty( "Daily.%d.LongDay" % ( count + 1, ), longday_dict[ forecast[ 0 ] ] )
             self.WEATHER_WINDOW.setProperty( "Daily.%d.ShortDay" % ( count + 1, ), shortday_dict[ forecast[ 0 ] ] )
@@ -578,6 +604,43 @@ class Main:
             self.WEATHER_WINDOW.setProperty( "Daily.%d.WindDirection" % ( count + 1, ), forecast[ 7 ] )
             self.WEATHER_WINDOW.setProperty( "Daily.%d.WindSpeed" % ( count + 1, ), forecast[ 8 ] )
             self.WEATHER_WINDOW.setProperty( "Daily.%d.ShortWindDirection" % ( count + 1, ), forecast[ 9 ] )
+	    # weekend info
+	    if ( forecast[ 0 ] == "Friday" and weekend_count == 0 ):
+		weekend = 1
+            elif ( forecast[ 0 ] == "Saturday" and weekend_count < 2 ):
+		weekend = 2
+	    elif ( forecast[ 0 ] == "Sunday" ):
+		weekend = 3
+	    if ( weekend != 0 and weekend_count != 100 ):
+		self.WEATHER_WINDOW.setProperty( "Weekend.%d.OutlookIcon" % ( weekend, ), forecast[ 2 ] )
+	        self.WEATHER_WINDOW.setProperty( "Weekend.%d.FanartCode" % ( weekend, ), os.path.splitext( os.path.basename( forecast[ 2 ] ) )[ 0 ] )
+		self.WEATHER_WINDOW.setProperty( "Weekend.%d.Outlook" % ( weekend, ), "" )
+		self.WEATHER_WINDOW.setProperty( "Weekend.%d.HighTemperature" % ( weekend, ), forecast[ 4 ] )
+		self.WEATHER_WINDOW.setProperty( "Weekend.%d.LowTemperature" % ( weekend, ), forecast[ 5 ] )
+		self.WEATHER_WINDOW.setProperty( "Weekend.%d.Precipitation" % ( weekend, ), "" )
+		self.WEATHER_WINDOW.setProperty( "Weekend.%d.Wind" % ( weekend, ), "" )
+		self.WEATHER_WINDOW.setProperty( "Weekend.%d.UV" % ( weekend, ), "" )
+		self.WEATHER_WINDOW.setProperty( "Weekend.%d.Humidity" % ( weekend, ), "" )
+		self.WEATHER_WINDOW.setProperty( "Weekend.%d.Sunrise" % ( weekend, ), "" )
+		self.WEATHER_WINDOW.setProperty( "Weekend.%d.Sunset" % ( weekend, ), "" )
+		self.WEATHER_WINDOW.setProperty( "Weekend.%d.Forecast" % ( weekend, ), forecast[ 3 ] )
+		self.WEATHER_WINDOW.setProperty( "Weekend.%d.Observed" % ( weekend, ), "" )
+		self.WEATHER_WINDOW.setProperty( "Weekend.%d.ObservedPrecipitation" % ( weekend, ), "" )
+		self.WEATHER_WINDOW.setProperty( "Weekend.%d.ObservedAvgHighTemperature" % ( weekend, ), "" )
+		self.WEATHER_WINDOW.setProperty( "Weekend.%d.ObservedAvgLowTemperature" % ( weekend, ), "" )
+		self.WEATHER_WINDOW.setProperty( "Weekend.%d.ObservedRecordHighTemperature" % ( weekend, ), "" )
+		self.WEATHER_WINDOW.setProperty( "Weekend.%d.ObservedRecordLowTemperature" % ( weekend, ), "" )
+		self.WEATHER_WINDOW.setProperty( "Weekend.%d.DepartureHigh" % ( weekend, ), "" )
+		self.WEATHER_WINDOW.setProperty( "Weekend.%d.DepartureHighColor" % ( weekend, ), "" )
+		self.WEATHER_WINDOW.setProperty( "Weekend.%d.DepartureLow" % ( weekend, ), "" )
+		self.WEATHER_WINDOW.setProperty( "Weekend.%d.DepartureLowColor" % ( weekend, ), "" )
+		# do this last so skin's visibilty works better
+		self.WEATHER_WINDOW.setProperty( "Weekend.%d.Date" % ( weekend, ), "%s %s" % ( shortdate_dict[ forecast[ 1 ].split( "/" )[ 0 ] ], forecast[ 1 ].split( "/" )[ 1 ], ) )
+		if ( weekend != 3 ):
+			weekend_count += 1
+		else:
+			weekend_count = 100
+	    weekend = 0
         # just in case day 10 is missing
         for count in range( len( forecasts ), 10 ):
             self.WEATHER_WINDOW.clearProperty( "Daily.%d.ShortDay" % ( count + 1, ) )
