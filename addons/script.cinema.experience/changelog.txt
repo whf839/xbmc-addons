@@ -1,3 +1,7 @@
+1.0.44
+- Fixed - Single music file for trivia now works
+- Fixed - Non Download trailers
+
 1.0.43
 - Enhancement - Added Paused & Resumed Triggers for Home Automation
 - Fixed - Script now handles being stopped(cleanly shuts script down)

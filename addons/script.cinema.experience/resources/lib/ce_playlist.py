@@ -64,7 +64,11 @@ def _get_trailers( items, mpaa, genre, movie, mode = "download" ):
         settings[ "trailer_scraper" ] = "local"
         settings[ "trailer_folder" ] = _S_( "trailer_download_folder" )
     # get the correct scraper
-    exec "from scrapers.%s import scraper as scraper" % ( settings[ "trailer_scraper" ], )
+    if int( _S_( "trailer_play_mode" ) ) == 1 and mode != "playlist" and int( _S_( "trailer_scraper" ) ) < 2:
+        exec "from scrapers.%s import scraper as scraper" % ( settings[ "trailer_scraper" ], )
+    else:
+        sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib", "scrapers" ) )
+        exec "from %s import scraper as scraper" % ( settings[ "trailer_scraper" ], )
     Scraper = scraper.Main( mpaa, genre, settings, movie )
     # fetch trailers
     trailers = Scraper.fetch_trailers()
@@ -192,10 +196,10 @@ def _get_special_items( playlist, items, path, genre, title="", thumbnail=None, 
         xbmc.log( "%s - _get_special_items() - Path: %s" % ( log_message, path ), level=xbmc.LOGDEBUG)
         # initialize our lists
         tmp_paths = dirEntries( path, media_type, "TRUE" )
-        count = 0
-        while count <6:
+        shuf = 0
+        while shuf <6:
             shuffle( tmp_paths, random )
-            count += 1
+            shuf += 1
     # enumerate thru and add our videos/pictures
     for count in range( items ):
         try:
@@ -230,7 +234,7 @@ def _get_special_items( playlist, items, path, genre, title="", thumbnail=None, 
                 traceback.print_exc()
 
 def _get_listitem( title="", url="", thumbnail=None, plot="", runtime="", mpaa="", release_date="0 0 0", studio=_L_( 32604 ), genre="", writer="", director=""):
-    xbmc.log( "%s - _get_listitems() Started" % log_message, level=xbmc.LOGNOTICE)
+    xbmc.log( "%s - _get_listitem() Started" % log_message, level=xbmc.LOGNOTICE)
     # check for a valid thumbnail
     if not writer == _L_( 32605 ):
         thumbnail = _get_thumbnail( ( thumbnail, url, )[ thumbnail is None ] )
@@ -341,6 +345,7 @@ def build_music_playlist():
     xbmc.log( "%s - Building Music Playlist" % log_message, level=xbmc.LOGNOTICE)
     xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "AudioPlaylist.Clear", "id": 1}')
     music_playlist = xbmc.PlayList( xbmc.PLAYLIST_MUSIC )
+    track_location = []
     # check to see if playlist or music file is selected
     if int( _S_( "trivia_music" ) ) == 1:
         if _S_( "trivia_music_file" ).endswith(".m3u"):
