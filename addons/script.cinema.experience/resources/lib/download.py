@@ -1,6 +1,10 @@
+# -*- coding: utf-8 -*-
 import urllib, urllib2, os, traceback, sys, socket
-import xbmcgui
-
+try:
+    import xbmcgui
+except:
+    pass
+    
 socket.setdefaulttimeout(30)
 
 class _urlopener( urllib.URLopener ):
@@ -8,7 +12,7 @@ class _urlopener( urllib.URLopener ):
 
 urllib._urlopener = _urlopener()
 
-def download( url_path, download_path, file_tag = "" ):
+def download( url_path, download_path, file_tag = "", new_name= "", extension="" ):
     ''' retrieves files from url_path to download_path.
         pulls filename from url_path
         requirements:
@@ -16,6 +20,8 @@ def download( url_path, download_path, file_tag = "" ):
             download_path - where to save file
         optional:
             file_tag - add a tag to the filename, ie "-trailer"
+            new_name - rename file
+            extension - change the extension to something different
     '''
     success = False
     destination = ""
@@ -30,6 +36,13 @@ def download( url_path, download_path, file_tag = "" ):
                 filename = filename + file_tag + ext
             else:
                 filename = os.path.basename( url_path.replace( "?","" ) )
+            if new_name:
+                filename = new_name
+            if extension:
+                filename = os.path.splitext( filename )[ 0 ]
+                filename = filename + extension
+            else:
+                pass
             destination = os.path.join( download_path, filename ).replace( "\\\\", "\\" )
             urllib.urlretrieve( url_path, destination, _report_hook )
             success = True

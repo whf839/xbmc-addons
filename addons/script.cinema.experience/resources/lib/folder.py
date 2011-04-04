@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import sys, os, re
 import xbmc
 
@@ -25,7 +27,7 @@ def dirEntries( dir_name, media_type="files", recursive="FALSE", contains="" ):
                     fileList.extend( dirEntries( match.group(1), media_type, recursive, contains ) )
             elif not contains or ( contains and (contains in match.group(1) ) ):
                 fileList.append( match.group(1) )
-                print "[folder.py] - File Path: %s" % match.group(1) 
+                #print "[folder.py] - File Path: %s" % match.group(1) 
         else:
             continue
     return fileList

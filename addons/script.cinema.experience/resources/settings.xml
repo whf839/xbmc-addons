@@ -117,12 +117,16 @@
         <setting id="ha_fpv_outro" type="bool" label="32915" visible="eq(-16,true)" default="false"/>
         <setting id="ha_mte_outro" type="bool" label="32916" visible="eq(-17,true)" default="false"/>
         <setting id="ha_script_end" type="bool" label="32917" visible="eq(-18,true)" default="false" />
+        <setting type="sep" />
+        <setting id="ha_paused" type="bool" label="32918" visible="eq(-20,true)" default="false" />
+        <setting id="ha_resumed" type="bool" label="32919" visible="eq(-21,true)" default="false" />
     </category>
+    
 <!-- Misc. Settings _-->
     
     <category label="32804">    
         <setting type="lsep" label="32804" />
-        <setting id="autorefresh" type="bool" label="32401" default="true" />
+        <setting id="autorefresh" type="bool" label="32401" default="false" />
         <setting id="autorefresh_movie" type="bool" visible="eq(-1,true)" enable="eq(-1,true)" label="32402" default="false" />
         <setting id="voxcommando" type="bool" label="32403" default="false" />
     </category>

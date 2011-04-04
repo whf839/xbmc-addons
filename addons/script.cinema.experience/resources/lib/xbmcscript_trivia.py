@@ -1,7 +1,9 @@
+# -*- coding: utf-8 -*-
+
 __script__ = "Cinema Experience"
 __scriptID__ = "script.cinema.experience"
 # main imports
-import os, sys
+import os, sys, traceback
 import xbmcgui
 import xbmc
 import xbmcaddon
@@ -75,17 +77,17 @@ class Trivia( xbmcgui.WindowXML ):
             volume = int(match.group(1))
         except: # Fall back onto httpapi
             volume = int( xbmc.executehttpapi( "GetVolume" ).replace( "<li>", "" ) )
-        #xbmc.log( "[script.cinema.experience] - Current Volume: %d" % volume, xbmc.LOGNOTICE)
+        #xbmc.log( "[script.cinema.experience] - Current Volume: %d" % volume, level=xbmc.LOGNOTICE)
         return volume
 
     def _start_slideshow_music( self ):
-        xbmc.log( "[script.cinema.experience] - Starting Tivia Music", xbmc.LOGNOTICE)
+        xbmc.log( "[script.cinema.experience] - Starting Tivia Music", level=xbmc.LOGNOTICE)
         # did user set this preference
-        xbmc.log( "[script.cinema.experience] - Setting - trivia_music: %s"  % self.settings[ "trivia_music" ], xbmc.LOGNOTICE)
+        #xbmc.log( "[script.cinema.experience] - Setting - trivia_music: %s"  % self.settings[ "trivia_music" ], level=xbmc.LOGNOTICE)
         if int(self.settings[ "trivia_music" ]) > 0:
             # check to see if script is to adjust the volume
             if self.settings[ "trivia_adjust_volume" ] == "true":
-                xbmc.log( "[script.cinema.experience] - Adjusting Volume to %s" % self.settings[ "trivia_music_volume" ], xbmc.LOGNOTICE)
+                xbmc.log( "[script.cinema.experience] - Adjusting Volume to %s" % self.settings[ "trivia_music_volume" ], level=xbmc.LOGNOTICE)
                 # calculate the new volume
                 volume = self.settings[ "trivia_music_volume" ]
                 # set the volume percent of current volume
@@ -93,6 +95,7 @@ class Trivia( xbmcgui.WindowXML ):
             # play music
             #if self.settings[ "trivia_music_file" ].endswith(".m3u"):
             #    xbmc.Player().play( self.music_playlist )
+            xbmc.sleep( 200 )
             xbmc.Player().play( self.music_playlist )
 
 
@@ -103,26 +106,28 @@ class Trivia( xbmcgui.WindowXML ):
         # increment/decrement count
         self.image_count += slide
         # check for invalid count, TODO: make sure you don't want to reset timer
+        # check to see if playlist has come to an end
+        if not xbmc.Player().isPlayingAudio() and int(self.settings[ "trivia_music" ]) > 0:
+                #build_music_playlist()
+                xbmc.Player().play( self.music_playlist )
+        else:
+            pass
         if self.image_count < 0:
             self.image_count = 0
         # if no more slides, exit
         if self.image_count > len( self.slide_playlist ) -1:
             self._exit_trivia()
-        else:
-            # check to see if playlist has come to an end
-            if not xbmc.Player().isPlayingAudio() and int(self.settings[ "trivia_music" ]) > 0:
-                build_music_playlist()
-                xbmc.Player().play( self.music_playlist )
+        else:     
             # set the property the image control uses
             xbmcgui.Window( xbmcgui.getCurrentWindowId() ).setProperty( "Slide", self.slide_playlist[ self.image_count ] )
             # add id to watched file TODO: maybe don't add if not user preference
             self.watched += [ xbmc.getCacheThumbName( self.slide_playlist[ self.image_count ] ) ]
             # start slide timer
             self._get_slide_timer()
-
+        
 
     def _load_watched_trivia_file( self ):
-        xbmc.log( "[script.cinema.experience] - Loading Watch Slide List", xbmc.LOGNOTICE)
+        xbmc.log( "[script.cinema.experience] - Loading Watch Slide List", level=xbmc.LOGNOTICE)
         try:
             # set base watched file path
             base_path = os.path.join( self.BASE_CURRENT_SOURCE_PATH, "trivia_watched.txt" )
@@ -136,7 +141,7 @@ class Trivia( xbmcgui.WindowXML ):
             self.watched = []
 
     def _save_watched_trivia_file( self ):
-        xbmc.log( "[script.cinema.experience] - Saving Watch Slide List", xbmc.LOGNOTICE)
+        xbmc.log( "[script.cinema.experience] - Saving Watch Slide List", level=xbmc.LOGNOTICE)
         try:
             # base path to watched file
             base_path = os.path.join( self.BASE_CURRENT_SOURCE_PATH, "trivia_watched.txt" )
@@ -150,7 +155,7 @@ class Trivia( xbmcgui.WindowXML ):
             # close file object
             file_object.close()
         except:
-            pass
+            traceback.print_exc()
 
     def _reset_watched( self ):
         base_path = os.path.join( self.BASE_CURRENT_SOURCE_PATH, "trivia_watched.txt" )
@@ -183,7 +188,7 @@ class Trivia( xbmcgui.WindowXML ):
     def _show_intro_outro( self, type="intro" ):
         is_playing = "True"
         if type == "outro":
-            xbmc.log( "[script.cinema.experience] - ## Outro ##", xbmc.LOGNOTICE)
+            xbmc.log( "[script.cinema.experience] - ## Outro ##", level=xbmc.LOGNOTICE)
             if self.settings[ "trivia_fade_volume" ] == "true" and self.settings[ "trivia_adjust_volume"] == "true":
                 self._fade_volume()
             self._play_video_playlist()
@@ -217,18 +222,6 @@ class Trivia( xbmcgui.WindowXML ):
             self.global_timer.cancel()
             self.global_timer = None
 
-    def _check_video_player( self ):
-        playing = ""
-        result = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Player.GetActivePlayers", "id": 1}')
-        match = re.search( '"video" : (.*?)', result )
-        if not match:
-            match = re.search( '"video":(.*?)', result )
-        if match:
-            playing="True"
-        else:
-            playing="False"
-        return playing
-
     def _fade_volume( self, out=True ):
         # set initial start/end values
         volumes = range( 1, self.xbmc_volume + 1 )
@@ -236,21 +229,21 @@ class Trivia( xbmcgui.WindowXML ):
         sleep_time = 0.5 / len( volumes )
         # if fading out reverse order
         if out:
-            xbmc.log( "[script.cinema.experience] - Fading Volume", xbmc.LOGNOTICE)
+            xbmc.log( "[script.cinema.experience] - Fading Volume", level=xbmc.LOGNOTICE)
             volumes = range( 1, self.settings[ "trivia_music_volume" ] )
             volumes.reverse()
             # calc sleep time, for fade time
             sleep_time = ( self.settings[ "trivia_fade_time" ] * 1.0 ) / len( volumes )
         else:
-            xbmc.log( "[script.cinema.experience] - Raising Volume", xbmc.LOGNOTICE)
+            xbmc.log( "[script.cinema.experience] - Raising Volume", level=xbmc.LOGNOTICE)
         # loop thru and set volume
-        xbmc.log( "[script.cinema.experience] - Start Volume: %d " % ( self._get_current_volume() ), xbmc.LOGNOTICE)
+        xbmc.log( "[script.cinema.experience] - Start Volume: %d " % ( self._get_current_volume() ), level=xbmc.LOGNOTICE)
         for volume in volumes:
             xbmc.executebuiltin( "XBMC.SetVolume(%d)" % volume  )
             # sleep
             #time.sleep( sleep_time )
             xbmc.sleep( int( sleep_time * 1000 ) )
-        xbmc.log( "[script.cinema.experience] - Finish Volume: %d " % ( self._get_current_volume() ), xbmc.LOGNOTICE)
+        xbmc.log( "[script.cinema.experience] - Finish Volume: %d " % ( self._get_current_volume() ), level=xbmc.LOGNOTICE)
 
     def onClick( self, controlId ):
         pass

@@ -159,7 +159,7 @@
     <string id="32601">Feature Presentation Intro</string>
     <string id="32602">Feature Presentation Outro</string>
     <string id="32603">MPAA Rating</string>
-    <string id="32604">Home Theatre</string>
+    <string id="32604">Cinema Experience</string>
     <string id="32605">Movie Trailer</string>
     <string id="32606">Audio Format</string>
     <string id="32607">Movie Theatre Intro</string>
@@ -173,6 +173,8 @@
     <string id="32615">Trivia</string>
     <string id="32616">Movie</string>
     <string id="32617">Movie Theatre Outro</string>
+    <string id="32618">Pause</string>
+    <string id="32619">Resume</string>
     <!-- Start Translating Again -->
     
     <!-- compatible messages -->

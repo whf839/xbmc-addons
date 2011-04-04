@@ -155,7 +155,7 @@
     <string id="32601">Feature Presentation Intro</string>
     <string id="32602">Feature Presentation Outro</string>
     <string id="32603">MPAA Rating</string>
-    <string id="32604">Home Theatre</string>
+    <string id="32604">Cinema Experience</string>
     <string id="32605">Movie Trailer</string>
     <string id="32606">Audio Format</string>
     <string id="32607">Movie Theater Intro</string>
@@ -169,6 +169,8 @@
     <string id="32615">Trivia</string>
     <string id="32616">Movie</string>
     <string id="32617">Movie Theatre Outro</string>
+    <string id="32618">Pause</string>
+    <string id="32619">Resume</string>
     <!-- Start Translating Again -->
     
     <!-- compatible messages -->
@@ -204,5 +206,7 @@
     <string id="32915">Trigger at start of the Feature Presentation Outro(s)</string>
     <string id="32916">Trigger at start of the Movie Theatre Outro(s)</string> 
     <string id="32917">Trigger at end of the Script</string>
+    <string id="32918">Trigger when paused</string>
+    <string id="32919">Trigger when resumed</string>
     <string id="32920">Enable the Home Automation Script</string>
 </strings>

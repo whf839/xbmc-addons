@@ -36,7 +36,6 @@ def downloader( mpaa, genre ):
     trailer_list = _download_trailers( mpaa, genre, movie )
     save_download_list( trailer_list )
 
-
 def save_download_list( download_trailers ):
     xbmc.log( "%s - Saving List of Downloaded Trailers" % logmessage, level=xbmc.LOGNOTICE )
     success = False
@@ -56,9 +55,9 @@ def save_download_list( download_trailers ):
                 except:
                     file_object.write( "" )
                     success = False
-            # close file object
         else:
             file_object.write( "" )
+        # close file object
         file_object.close()
     except:
         traceback.print_exc()
@@ -69,7 +68,7 @@ def save_download_list( download_trailers ):
                 os.remove( base_path )
         except:
             xbmc.log( "%s - Error Trying to Remove List of Downloaded Trailers" % logmessage, level=xbmc.LOGNOTICE )
-
+    
 def _download_trailers( mpaa, genre, movie ):
     updated_trailers = []
     xbmc.log( "%s - Downloading Trailers: %s Trailers" % ( logmessage, ( 0, 1, 2, 3, 4, 5, 10, )[ int( _S_( "trailer_count" ) ) ] ), level=xbmc.LOGNOTICE )
@@ -81,6 +80,9 @@ def _download_trailers( mpaa, genre, movie ):
                             )
     for trailer in trailers:
         updated_trailer= {}
+        success = False
+        destination = ""   
+        thumb = ""
         xbmc.log( "%s - Attempting To Download Trailer: %s" % ( logmessage, trailer[ 1 ] ), level=xbmc.LOGNOTICE )
         filename, ext = os.path.splitext( os.path.basename( (trailer[ 2 ].split("|")[0] ).replace( "?","" ) ) )
         filename = filename + "-trailer" + ext
@@ -89,6 +91,7 @@ def _download_trailers( mpaa, genre, movie ):
         if os.path.isfile( file_path ):
             success = True
             destination = file_path
+            thumb = os.path.splitext( file_path )[0] + ".tbn"
         else:
             success, destination = download( trailer[ 2 ], _S_( "trailer_download_folder" ), file_tag="-trailer" )
             tsuccess, thumb = download( trailer[ 3 ], _S_( "trailer_download_folder" ), file_tag="-trailer", new_name=filename, extension=".tbn" )
@@ -115,16 +118,16 @@ def _download_trailers( mpaa, genre, movie ):
 
 def _create_nfo_file( trailer, trailer_nfopath ):
     '''
-            path=trailer[ 2 ],
-            genre=trailer[ 9 ],
-            title=trailer[ 1 ],
-            thumbnail=trailer[ 3 ],
-            plot=trailer[ 4 ],
-            runtime=trailer[ 5 ],
-            mpaa=trailer[ 6 ],
-            release_date=trailer[ 7 ],
-            studio=trailer[ 8 ],
-            director=trailer[ 11 ]
+                path=trailer[ 2 ],
+                genre=trailer[ 9 ],
+                title=trailer[ 1 ],
+                thumbnail=trailer[ 3 ],
+                plot=trailer[ 4 ],
+                runtime=trailer[ 5 ],
+                mpaa=trailer[ 6 ],
+                release_date=trailer[ 7 ],
+                studio=trailer[ 8 ],
+                director=trailer[ 11 ]
     '''
     xbmc.log( "%s - Creating Trailer NFO file" % logmessage, level=xbmc.LOGNOTICE )
     # set quality, we do this since not all resolutions have trailers
@@ -165,3 +168,16 @@ def _save_nfo_file( nfoSource, trailer_nfopath ):
         xbmc.log( "%s - %s" % ( logmessage, str( e ) ), xbmc.LOGERROR )
         # return failed
         return False
+
+if __name__ == "__main__":
+    try:
+        if sys.argv[1]:
+            mpaa, genre = sys.argv[1].replace( "mpaa=", "" ).replace( "genre=", "").split(";")
+            _genre = genre.replace( "_", " / " )
+            downloader( mpaa, _genre )
+        else:
+            xbmc.log( "%s - No Arguments sent " % logmessage, level=xbmc.LOGNOTICE )
+    except:
+        traceback.print_exc()
+        xbmc.log( "%s - No Arguments sent " % logmessage, level=xbmc.LOGNOTICE )
+ 

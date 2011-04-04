@@ -1,3 +1,14 @@
+1.0.43
+- Enhancement - Added Paused & Resumed Triggers for Home Automation
+- Fixed - Script now handles being stopped(cleanly shuts script down)
+- Fixed - Properly use thumbnail images when HD-Trailers.net Downloader is used
+
+1.0.42
+- Fixed - the DefaultVideo.png thumbnail was showing up instead of the Movie Trailer thumbnail
+- Fixed - added error catching if user does not have the proper version of Movie Quiz installed and has the Trivia Mode set to Movie Quiz
+- Enhancement - Trailer Downloader now downloads Movie Trailer Posters
+- Fixed - Home Automation module was left out of last version.
+
 1.0.41
 - Fixed - Script crashing when Trivia music is set to None
 

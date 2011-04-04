@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 __script__ = "Cinema Experience"
 __scriptID__ = "script.cinema.experience"
 __modname__ = "ce_playlist.py"
@@ -25,16 +27,16 @@ from folder import dirEntries
 log_sep = "-"*70
 
 def _rebuild_playlist( plist ): # rebuild movie playlist
-    xbmc.log( "[script.cinema.experience] - [ce_playlist.py] - Rebuilding Playlist", xbmc.LOGNOTICE )
+    xbmc.log( "[script.cinema.experience] - [ce_playlist.py] - Rebuilding Playlist", level=xbmc.LOGNOTICE )
     playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
     playlist.clear()
     for movie in plist:
         movie_title = movie["label"]
         movie_full_path = movie["file"].replace("\\\\" , "\\")
         movie_thumbnail = movie["thumbnail"]
-        xbmc.log( "[script.cinema.experience] - Movie Title: %s" % movie_title, xbmc.LOGNOTICE )
-        xbmc.log( "[script.cinema.experience] - Movie Thumbnail: %s" % movie_thumbnail, xbmc.LOGNOTICE )
-        xbmc.log( "[script.cinema.experience] - Full Movie Path: %s" % movie_full_path, xbmc.LOGNOTICE )
+        xbmc.log( "[script.cinema.experience] - Movie Title: %s" % movie_title, level=xbmc.LOGDEBUG )
+        xbmc.log( "[script.cinema.experience] - Movie Thumbnail: %s" % movie_thumbnail, level=xbmc.LOGDEBUG )
+        xbmc.log( "[script.cinema.experience] - Full Movie Path: %s" % movie_full_path, level=xbmc.LOGDEBUG )
         listitem = xbmcgui.ListItem( movie_title, thumbnailImage=movie_thumbnail )
         listitem.setInfo('video', {'Title': movie_title,})
         playlist.add(url=movie_full_path, listitem=listitem, )
@@ -58,11 +60,11 @@ def _get_trailers( items, mpaa, genre, movie, mode = "download" ):
                        "trailer_count": ( 0, 1, 2, 3, 4, 5, 10, )[ int( _S_( "trailer_count" ) ) ],
                      "trailer_scraper": ( "amt_database", "amt_current", "local", "xbmc_library", )[ int( _S_( "trailer_scraper" ) ) ]
                }
-    if int( _S_( "trailer_play_mode" ) ) == 1 and mode == "playlist":
+    if int( _S_( "trailer_play_mode" ) ) == 1 and mode == "playlist" and int( _S_( "trailer_scraper" ) ) < 2:
         settings[ "trailer_scraper" ] = "local"
         settings[ "trailer_folder" ] = _S_( "trailer_download_folder" )
     # get the correct scraper
-    exec "from resources.scrapers.%s import scraper as scraper" % ( settings[ "trailer_scraper" ], )
+    exec "from scrapers.%s import scraper as scraper" % ( settings[ "trailer_scraper" ], )
     Scraper = scraper.Main( mpaa, genre, settings, movie )
     # fetch trailers
     trailers = Scraper.fetch_trailers()
@@ -85,7 +87,7 @@ def _getnfo( path ):
             studio=trailer[ 8 ],
             director=trailer[ 11 ]
     '''
-    xbmc.log("%s - Retrieving Trailer NFO file" % log_message, xbmc.LOGNOTICE )
+    xbmc.log("%s - Retrieving Trailer NFO file" % log_message, level=xbmc.LOGNOTICE )
     try:
         path = os.path.splitext( path )[0] + ".nfo"
         usock = open( path, "r" )
@@ -103,12 +105,12 @@ def _getnfo( path ):
     #title = plot = runtime = mpaa = release_date = studio = genre = director = ""
     trailer = re.findall( '<movieinfo id="(.*?)"><title>(.*?)</title><quality>(.*?)</quality><runtime>(.*?)</runtime><releasedate>(.*?)</releasedate><mpaa>(.*?)</mpaa><genre>(.*?)</genre><studio>(.*?)</studio><director>(.*?)</director><cast>(.*?)</cast><plot>(.*?)</plot><thumb>(.*?)</thumb>', xmlSource )
     if trailer:
-        xbmc.log("%s - CE XML Match Found" % log_message, xbmc.LOGNOTICE )
+        xbmc.log("%s - CE XML Match Found" % log_message, level=xbmc.LOGDEBUG )
         for item in trailer:
             new_trailer += item
         return new_trailer[ 1 ], new_trailer[ 10 ], new_trailer[ 3 ], new_trailer[ 5 ], new_trailer[ 4 ], new_trailer[ 7 ], new_trailer[ 6 ], new_trailer[ 8 ]
     else:
-        xbmc.log("%s - HD-Trailers.Net Downloader XML Match Found" % log_message, xbmc.LOGNOTICE )
+        xbmc.log("%s - HD-Trailers.Net Downloader XML Match Found" % log_message, level=xbmc.LOGDEBUG )
         title = "".join(re.compile("<title>(.*?)</title>", re.DOTALL).findall(xmlSource)) or ""
         plot = "".join(re.compile("<plot>(.*?)</plot>", re.DOTALL).findall(xmlSource)) or ""
         runtime = "".join(re.compile("<runtime>(.*?)</runtime>", re.DOTALL).findall(xmlSource)) or ""
@@ -120,17 +122,17 @@ def _getnfo( path ):
         return title, plot, runtime, mpaa, release_date, studio, genre, director
     
 def _set_trailer_info( trailer ):
-    xbmc.log("%s - Setting Trailer Info" % log_message, xbmc.LOGNOTICE )
+    xbmc.log("%s - Setting Trailer Info" % log_message, level=xbmc.LOGNOTICE )
     title = plot = runtime = mpaa = release_date = studio = genre = director = ""
     if os.path.isfile( os.path.splitext( trailer )[ 0 ] + ".nfo" ):
-        xbmc.log("%s - Trailer .nfo file FOUND" % log_message, xbmc.LOGNOTICE )
+        xbmc.log("%s - Trailer .nfo file FOUND" % log_message, level=xbmc.LOGDEBUG )
         title, plot, runtime, mpaa, release_date, studio, genre, director = _getnfo( trailer )
     else:
-        xbmc.log("%s - Trailer .nfo file NOT FOUND" % log_message, xbmc.LOGNOTICE )
+        xbmc.log("%s - Trailer .nfo file NOT FOUND" % log_message, level=xbmc.LOGDEBUG )
     result = ( xbmc.getCacheThumbName( trailer ), # id
                title or os.path.basename( trailer ).split( "-trailer." )[ 0 ], # title
                trailer, # trailer
-               _get_thumbnail( trailer ), # thumb
+               _get_trailer_thumbnail( trailer ), # thumb
                plot, # plot
                runtime, # runtime
                mpaa, # mpaa
@@ -142,17 +144,31 @@ def _set_trailer_info( trailer ):
               )
     return result
     
-def _get_thumbnail( path ):
-    xbmc.log("%s - Getting Thumbnail" % log_message, xbmc.LOGNOTICE )
+def _get_trailer_thumbnail( path ):
+    xbmc.log("%s - Getting Trailer Thumbnail" % log_message, level=xbmc.LOGNOTICE )
     # check for a thumb based on trailername.tbn
     thumbnail = os.path.splitext( path )[ 0 ] + ".tbn"
+    xbmc.log("%s - Looking for thumbnail: %s" % ( log_message, thumbnail), level=xbmc.LOGDEBUG )
     # if thumb does not exist try stripping -trailer
     if not os.path.isfile( thumbnail ):
-        thumbnail = "%s.tbn" % ( os.path.splitext( path )[ 0 ].replace( "-trailer", "" ), )
-        # if thumb does not exist return empty
+        thumbnail = os.path.splitext( path )[ 0 ] + ".jpg"
+        xbmc.log("%s - Looking for thumbnail: %s" % ( log_message, thumbnail), level=xbmc.LOGDEBUG )
         if not os.path.isfile( thumbnail ):
-            # set empty string
-            thumbnail = None
+            thumbnail = "%s.tbn" % ( os.path.splitext( path )[ 0 ].replace( "-trailer", "" ), )
+            xbmc.log("%s - Thumbnail not found, Trying: %s" % ( log_message, thumbnail), level=xbmc.LOGDEBUG )
+            if not os.path.isfile( thumbnail ):
+                thumbnail = "%s.jpg" % ( os.path.splitext( path )[ 0 ].replace( "-trailer", "" ), )
+                xbmc.log("%s - Looking for thumbnail: %s" % ( log_message, thumbnail), level=xbmc.LOGDEBUG )
+                if not os.path.isfile( thumbnail ):
+                    thumbnail = os.path.join( os.path.dirname( path ), "movie.tbn" )
+                    xbmc.log("%s - Thumbnail not found, Trying: %s" % ( log_message, thumbnail), level=xbmc.LOGDEBUG )
+                    # if thumb does not exist return empty
+                    if not os.path.isfile( thumbnail ):
+                        # set empty string
+                        thumbnail = None
+                        xbmc.log("%s - Thumbnail not found" % log_message, level=xbmc.LOGDEBUG )
+    if not thumbnail == None:
+        xbmc.log("%s - Thumbnail found: %s" % ( log_message, thumbnail), level=xbmc.LOGDEBUG )
     # return result
     return thumbnail
 
@@ -163,17 +179,17 @@ def _get_special_items( playlist, items, path, genre, title="", thumbnail=None, 
     xbmc.log( "%s - _get_special_items() Started" % log_message, level=xbmc.LOGNOTICE)
     # return if not user preference
     if not items:
-        xbmc.log( "%s - No Items" % log_message, level=xbmc.LOGNOTICE)
+        xbmc.log( "%s - No Items" % log_message, level=xbmc.LOGDEBUG)
         return
     # if path is a file check if file exists
     if os.path.splitext( path )[ 1 ] and not path.startswith( "http://" ) and not ( xbmc.executehttpapi( "FileExists(%s)" % ( path, ) ) == "<li>True" ):
-        xbmc.log( "%s - _get_special_items() - File Does not Exist" % log_message, level=xbmc.LOGNOTICE)
+        xbmc.log( "%s - _get_special_items() - File Does not Exist" % log_message, level=xbmc.LOGDEBUG)
         return
     # set default paths list
     tmp_paths = [ path ]
     # if path is a folder fetch # videos/pictures
     if path.endswith( "/" ) or path.endswith( "\\" ):
-        xbmc.log( "%s - _get_special_items() - Path: %s" % ( log_message, path ), level=xbmc.LOGNOTICE)
+        xbmc.log( "%s - _get_special_items() - Path: %s" % ( log_message, path ), level=xbmc.LOGDEBUG)
         # initialize our lists
         tmp_paths = dirEntries( path, media_type, "TRUE" )
         count = 0
@@ -185,7 +201,7 @@ def _get_special_items( playlist, items, path, genre, title="", thumbnail=None, 
         try:
             # set our path
             path = tmp_paths[ count ]
-            xbmc.log( "%s - Checking Path: %s" % ( log_message, path ), level=xbmc.LOGNOTICE)
+            xbmc.log( "%s - Checking Path: %s" % ( log_message, path ), level=xbmc.LOGDEBUG)
             # format a title (we don't want the ugly extension)
             title = title or os.path.splitext( os.path.basename( path ) )[ 0 ]
             # create the listitem and fill the infolabels
@@ -216,7 +232,8 @@ def _get_special_items( playlist, items, path, genre, title="", thumbnail=None, 
 def _get_listitem( title="", url="", thumbnail=None, plot="", runtime="", mpaa="", release_date="0 0 0", studio=_L_( 32604 ), genre="", writer="", director=""):
     xbmc.log( "%s - _get_listitems() Started" % log_message, level=xbmc.LOGNOTICE)
     # check for a valid thumbnail
-    thumbnail = _get_thumbnail( ( thumbnail, url, )[ thumbnail is None ] )
+    if not writer == _L_( 32605 ):
+        thumbnail = _get_thumbnail( ( thumbnail, url, )[ thumbnail is None ] )
     # set the default icon
     icon = "DefaultVideo.png"
     # only need to add label, icon and thumbnail, setInfo() and addSortMethod() takes care of label2
@@ -233,23 +250,22 @@ def _get_listitem( title="", url="", thumbnail=None, plot="", runtime="", mpaa="
     return listitem
 
 def _get_thumbnail( url ):
-    xbmc.log( "%s - _get_thumbnail() Started"  % log_message, level=xbmc.LOGNOTICE)
-    xbmc.log( "%s - Thumbnail Url: %s" % ( log_message, url ), xbmc.LOGNOTICE )
+    xbmc.log( "%s - _get_thumbnail() Started"  % log_message, level=xbmc.LOGDEBUG)
+    xbmc.log( "%s - Thumbnail Url: %s" % ( log_message, url ), level=xbmc.LOGDEBUG )
     # if the cached thumbnail does not exist create the thumbnail based on filepath.tbn
     filename = xbmc.getCacheThumbName( url )
     thumbnail = os.path.join( BASE_CACHE_PATH, filename[ 0 ], filename )
-    xbmc.log( "%s - Thumbnail Filename: %s" % ( log_message, filename ), xbmc.LOGNOTICE )
+    xbmc.log( "%s - Thumbnail Cached Filename: %s" % ( log_message, filename ), level=xbmc.LOGDEBUG )
     # if cached thumb does not exist try auto generated
     if not os.path.isfile( thumbnail ):
         thumbnail = os.path.join( BASE_CACHE_PATH, filename[ 0 ], "auto-" + filename )
-    # if cached thumb does not exist set default
     if not os.path.isfile( thumbnail ):
         thumbnail = "DefaultVideo.png"
     # return result
     return thumbnail
 
 def _get_queued_video_info( feature = 0 ):
-    xbmc.log( "%s - _get_queued_video_info() Started" % log_message, xbmc.LOGNOTICE )
+    xbmc.log( "%s - _get_queued_video_info() Started" % log_message, level=xbmc.LOGDEBUG )
     equivalent_mpaa = "NR"
     try:
         # get movie name
@@ -262,7 +278,7 @@ def _get_queued_video_info( feature = 0 ):
         # TODO: verify the first is the best audio
         # setup the sql, we limit to 1 record as there can be multiple entries in streamdetails
         sql = "SELECT movie.c12, movie.c14, streamdetails.strAudioCodec FROM movie, streamdetails WHERE movie.idFile=streamdetails.idFile AND streamdetails.iStreamType=1 AND c00='%s' LIMIT 1" % ( movie_title.replace( "'", "''", ), )
-        xbmc.log( "%s - SQL: %s" % ( log_message, sql, ), xbmc.LOGNOTICE )
+        xbmc.log( "%s - SQL: %s" % ( log_message, sql, ), level=xbmc.LOGDEBUG )
         # query database for info dummy is needed as there are two </field> formatters
         mpaa, genre, audio, dummy = xbmc.executehttpapi( "QueryVideoDatabase(%s)" % quote_plus( sql ), ).split( "</field>" )
         # TODO: add a check and new sql for videos queued from files mode, or try an nfo
@@ -292,46 +308,46 @@ def _get_queued_video_info( feature = 0 ):
         traceback.print_exc()
         movie_title = mpaa = audio = genre = movie = equivalent_mpaa = ""
     # spew queued video info to log
-    xbmc.log( "%s - Queued Movie Information" % log_message, xbmc.LOGNOTICE )
-    xbmc.log( "%s %s" % ( log_message,log_sep ), xbmc.LOGNOTICE )
-    xbmc.log( "%s - Title: %s" % ( log_message, movie_title, ), xbmc.LOGNOTICE )
-    xbmc.log( "%s - Path: %s" % ( log_message, movie, ), xbmc.LOGNOTICE )
-    xbmc.log( "%s - Genre: %s" % ( log_message, genre, ), xbmc.LOGNOTICE )
-    xbmc.log( "%s - MPAA: %s" % ( log_message, mpaa, ), xbmc.LOGNOTICE )
-    xbmc.log( "%s - Audio: %s" % ( log_message, audio, ), xbmc.LOGNOTICE )
+    xbmc.log( "%s - Queued Movie Information" % log_message, level=xbmc.LOGDEBUG )
+    xbmc.log( "%s %s" % ( log_message,log_sep ), level=xbmc.LOGDEBUG )
+    xbmc.log( "%s - Title: %s" % ( log_message, movie_title, ), level=xbmc.LOGDEBUG )
+    xbmc.log( "%s - Path: %s" % ( log_message, movie, ), level=xbmc.LOGDEBUG )
+    xbmc.log( "%s - Genre: %s" % ( log_message, genre, ), level=xbmc.LOGDEBUG )
+    xbmc.log( "%s - MPAA: %s" % ( log_message, mpaa, ), level=xbmc.LOGDEBUG )
+    xbmc.log( "%s - Audio: %s" % ( log_message, audio, ), level=xbmc.LOGDEBUG )
     if _S_( "audio_videos_folder" ):
-        xbmc.log( "%s - Folder: %s" % ( log_message, ( xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "ac3": "Dolby", "dtsma": "DTSHD-MA", "dtshd_ma": "DTSHD-MA", "a_truehd": "Dolby TrueHD", "truehd": "Dolby TrueHD" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ], ) ), xbmc.LOGNOTICE )
-    xbmc.log( "%s  %s" % ( log_message, log_sep ), xbmc.LOGNOTICE )
+        xbmc.log( "%s - Folder: %s" % ( log_message, ( xbmc.translatePath( _S_( "audio_videos_folder" ) ) + { "dca": "DTS", "ac3": "Dolby", "dtsma": "DTSHD-MA", "dtshd_ma": "DTSHD-MA", "a_truehd": "Dolby TrueHD", "truehd": "Dolby TrueHD" }.get( audio, "Other" ) + xbmc.translatePath( _S_( "audio_videos_folder" ) )[ -1 ], ) ), level=xbmc.LOGDEBUG )
+    xbmc.log( "%s  %s" % ( log_message, log_sep ), level=xbmc.LOGDEBUG )
     # return results
     return mpaa, audio, genre, movie, equivalent_mpaa
 
 def _wait_until_end(): # wait until the end of the playlist(for Trivia Intro)
-    xbmc.log( "%s - Waiting Until End Of Trivia Intro Playlist" % log_message, xbmc.LOGNOTICE)
+    xbmc.log( "%s - Waiting Until End Of Trivia Intro Playlist" % log_message, level=xbmc.LOGNOTICE)
     try:
         psize = xbmc.PlayList( xbmc.PLAYLIST_VIDEO ).size() - 1
-        xbmc.log( "%s - Playlist Size: %s" % (log_message, ( psize + 1 ) ), xbmc.LOGNOTICE)
+        xbmc.log( "%s - Playlist Size: %s" % (log_message, ( psize + 1 ) ), level=xbmc.LOGDEBUG)
         while xbmc.PlayList( xbmc.PLAYLIST_VIDEO ).getposition() < psize:
             pass
-        xbmc.log( "%s - Video TotalTime: %s" % ( log_message, xbmc.Player().getTotalTime() ), xbmc.LOGNOTICE)
+        xbmc.log( "%s - Video TotalTime: %s" % ( log_message, xbmc.Player().getTotalTime() ), level=xbmc.LOGDEBUG)
         while xbmc.Player().getTime() < ( xbmc.Player().getTotalTime() - 0.5 ):
             pass
-        xbmc.log( "%s - Video getTime: %s"  % ( log_message, xbmc.Player().getTime() ), xbmc.LOGNOTICE)
+        xbmc.log( "%s - Video getTime: %s"  % ( log_message, xbmc.Player().getTime() ), level=xbmc.LOGDEBUG)
         xbmc.sleep(500)
     except:
-        xbmc.log( "%s - Intro Either Stopped or Skipped, Continuing on..." % log_message, xbmc.LOGNOTICE)
+        xbmc.log( "%s - Intro Either Stopped or Skipped, Continuing on..." % log_message, level=xbmc.LOGDEBUG)
 
 
 def build_music_playlist():
-    xbmc.log( "%s - Building Music Playlist" % log_message, xbmc.LOGNOTICE)
+    xbmc.log( "%s - Building Music Playlist" % log_message, level=xbmc.LOGNOTICE)
     xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "AudioPlaylist.Clear", "id": 1}')
     music_playlist = xbmc.PlayList( xbmc.PLAYLIST_MUSIC )
     # check to see if playlist or music file is selected
     if int( _S_( "trivia_music" ) ) == 1:
         if _S_( "trivia_music_file" ).endswith(".m3u"):
-            xbmc.log( "%s - Music Playlist: %s" % ( log_message, _S_( "trivia_music_file" ) ), xbmc.LOGNOTICE)
+            xbmc.log( "%s - Music Playlist: %s" % ( log_message, _S_( "trivia_music_file" ) ), level=xbmc.LOGDEBUG)
             playlist_file = open( _S_( "trivia_music_file" ), 'rb')
             saved_playlist = playlist_file.readlines()
-            xbmc.log( "%s - Finished Reading Music Playlist" % log_message, xbmc.LOGNOTICE)
+            xbmc.log( "%s - Finished Reading Music Playlist" % log_message, level=xbmc.LOGDEBUG)
             track_info, track_location = parse_playlist( saved_playlist, xbmc.getSupportedMedia('music') )
         elif os.path.splitext( _S_( "trivia_music_file" ) )[1] in xbmc.getSupportedMedia('music'):
             for track in range(100):
