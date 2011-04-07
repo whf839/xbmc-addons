@@ -30,18 +30,44 @@ def _rebuild_playlist( plist ): # rebuild movie playlist
     xbmc.log( "[script.cinema.experience] - [ce_playlist.py] - Rebuilding Playlist", level=xbmc.LOGNOTICE )
     playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
     playlist.clear()
+    print plist
     for movie in plist:
-        movie_title = movie["label"]
-        movie_full_path = movie["file"].replace("\\\\" , "\\")
-        movie_thumbnail = movie["thumbnail"]
-        xbmc.log( "[script.cinema.experience] - Movie Title: %s" % movie_title, level=xbmc.LOGDEBUG )
-        xbmc.log( "[script.cinema.experience] - Movie Thumbnail: %s" % movie_thumbnail, level=xbmc.LOGDEBUG )
-        xbmc.log( "[script.cinema.experience] - Full Movie Path: %s" % movie_full_path, level=xbmc.LOGDEBUG )
-        listitem = xbmcgui.ListItem( movie_title, thumbnailImage=movie_thumbnail )
-        listitem.setInfo('video', {'Title': movie_title,})
-        playlist.add(url=movie_full_path, listitem=listitem, )
+        try:
+            movie_title = movie["label"]
+            movie_full_path = movie["file"].replace("\\\\" , "\\")
+            if os.path.isfile( movie["file"] ):
+                print "found file"
+            else:
+                print "could not find file"
+            try:
+                movie_thumbnail = movie["thumbnail"]
+            except:
+                movie_thumbnail = os.path.join( os.path.split( movie_full_path )[ 0 ], "movie.tbn" )
+            xbmc.log( "[script.cinema.experience] - Movie Title: %s" % movie_title, level=xbmc.LOGDEBUG )
+            xbmc.log( "[script.cinema.experience] - Movie Thumbnail: %s" % movie_thumbnail, level=xbmc.LOGDEBUG )
+            xbmc.log( "[script.cinema.experience] - Full Movie Path: %s" % movie_full_path, level=xbmc.LOGDEBUG )
+            plot, runtime, mpaa, year, studio, genre, writer, director =  _get_movie_details( movie_title, movie_thumbnail, movie_full_path )
+            #runtime = int( runtime.strip("min") )
+            year = int ( year )
+            listitem = xbmcgui.ListItem( movie_title, thumbnailImage=movie_thumbnail )
+            listitem.setInfo('Video', {'Title': movie_title, 'Plot': plot, 'PlotOutline': plot, 'MPAA': mpaa, 'Year': year, 'Studio': studio, 'Genre': genre, 'Writer': writer, 'Director': director,} )
+            #listitem.setInfo('Video', {'Title': movie_title, 'Plot': plot, 'PlotOutline': plot, 'MPAA': mpaa, 'Studio': studio, 'Genre': genre, 'Writer': writer, 'Director': director,} )
+            playlist.add(url=movie_full_path, listitem=listitem, )
+        except:
+            traceback.print_exc()
+        # give XBMC a chance to add to the playlist... May not be needed, but what's 50ms?
         xbmc.sleep( 50 )
 
+def _get_movie_details( movie_title="", thumbnail="", movie_full_path="" ):
+    # format our records start and end
+    xbmc.executehttpapi( "SetResponseFormat()" )
+    xbmc.executehttpapi( "SetResponseFormat(OpenField,)" )
+    # retrive plot, runtime, mpaa, year, studio, genre, writer, director from database
+    sql_query = "SELECT c01, c11, c12, c07, c18, c14, c06, c15 FROM movieview WHERE c00='%s' LIMIT 1" % ( movie_title.replace( "'", "''", ), )
+    # the dummy string is to catch the extra </field>
+    plot, runtime, mpaa, year, studio, genre, writer, director, dummy = xbmc.executehttpapi( "QueryVideoDatabase(%s)" % quote_plus( sql_query ), ).split( "</field>" )
+    return plot, runtime, mpaa, year, studio, genre, writer, director
+    
 def _get_trailers( items, mpaa, genre, movie, mode = "download" ):
     # return if not user preference
     if not items:
@@ -64,11 +90,8 @@ def _get_trailers( items, mpaa, genre, movie, mode = "download" ):
         settings[ "trailer_scraper" ] = "local"
         settings[ "trailer_folder" ] = _S_( "trailer_download_folder" )
     # get the correct scraper
-    if int( _S_( "trailer_play_mode" ) ) == 1 and mode != "playlist" and int( _S_( "trailer_scraper" ) ) < 2:
-        exec "from scrapers.%s import scraper as scraper" % ( settings[ "trailer_scraper" ], )
-    else:
-        sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib", "scrapers" ) )
-        exec "from %s import scraper as scraper" % ( settings[ "trailer_scraper" ], )
+    sys.path.append( os.path.join( BASE_RESOURCE_PATH, "lib", "scrapers" ) )
+    exec "from %s import scraper as scraper" % ( settings[ "trailer_scraper" ], )
     Scraper = scraper.Main( mpaa, genre, settings, movie )
     # fetch trailers
     trailers = Scraper.fetch_trailers()
@@ -363,7 +386,6 @@ def build_music_playlist():
             # search given folder and subfolders for files
             track_location = dirEntries( _S_( "trivia_music_folder" ), "music", "TRUE" )
     # shuffle playlist
-    print track_location
     count = 0
     while count <6:
         shuffle( track_location, random )

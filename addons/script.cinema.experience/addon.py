@@ -4,7 +4,7 @@
 __script__ = "Cinema Experience"
 __author__ = "nuka1195-giftie-ackbarr"
 __url__ = "http://code.google.com/p/xbmc-addons/"
-__version__ = "1.0.44"
+__version__ = "1.0.45"
 __scriptID__ = "script.cinema.experience"
 
 import xbmcgui, xbmc, xbmcaddon, os, re, sys
@@ -337,12 +337,14 @@ def start_downloader( mpaa, genre ):
     else:
         pass
         
-def activate_ha( trigger = None, prev_trigger = None ):
+def activate_ha( trigger = None, prev_trigger = None, mode="thread" ):
     if _S_( "ha_enable" ) == "true" and ha_imported:
         if _S_( "ha_multi_trigger" ) == "true" and prev_trigger == trigger:
             pass
+        elif mode != "thread":
+            activate_on( trigger )
         else:
-            thread = Thread( target=activate_on, args=( trigger, ) ) # paused
+            thread = Thread( target=activate_on, args=( trigger, ) )
             thread.start()
         if not trigger in ( _L_( 32618 ), _L_( 32619 ) ):
             prev_trigger = trigger
@@ -551,7 +553,7 @@ def start_script( library_view = "oldway" ):
                     break  # Reached the last item in the playlist
         if not playlist.size() < 1 and not messy_exit: # To catch an already running script when a new instance started
             xbmc.log( "[script.cinema.experience] - Playlist Position: %s  Playlist Size: %s " % ( playlist.getposition() + 1, ( playlist.size() ) ), level=xbmc.LOGNOTICE )
-            prev_trigger = activate_ha( trigger_list[ playlist.getposition() ], prev_trigger )
+            prev_trigger = activate_ha( trigger_list[ playlist.getposition() ], prev_trigger, "normal" )
             if trigger_list[ playlist.getposition() ] == "Movies":
                 xbmc.log( "[script.cinema.experience] - Item From Trigger List: %s" % trigger_list[ playlist.getposition() ], level=xbmc.LOGNOTICE )
                 if _S_( "autorefresh" ) == "true" and _S_( "autorefresh_movie" ) == "true":
@@ -563,10 +565,11 @@ def start_script( library_view = "oldway" ):
                     auto_refresh( autorefresh, "disable" )
                     autorefresh_movie == False
             messy_exit = False
+            _wait_until_end()
         else:
-            xbmc.log( "[script.cinema.experience] - Playlist Size: %s   User must have restarted script after pressing stop" % playlist.size(), level=xbmc.LOGNOTICE )
+            xbmc.log( "[script.cinema.experience] - User might have pressed stop", level=xbmc.LOGNOTICE )
             xbmc.log( "[script.cinema.experience] - Stopping Script", level=xbmc.LOGNOTICE )
-            messy_exit = True
+            messy_exit = False
     return messy_exit
 
 if __name__ == "__main__" :
@@ -586,10 +589,13 @@ if __name__ == "__main__" :
                     titles = ""
                     if sys.argv[ 1 ] == "ClearWatchedTrivia" or sys.argv[ 1 ] == "ClearWatchedTrailers":
                         _clear_watched_items( sys.argv[ 1 ] )
+                        exit = True
                     elif sys.argv[ 1 ] == "ViewChangelog":
                         _view_changelog()
+                        exit = True
                     elif sys.argv[ 1 ] == "ViewReadme":
                         _view_readme()
+                        exit = True
                     elif sys.argv[ 1 ] == "oldway":
                         _A_.setSetting( id='number_of_features', value='0' ) # set number of features to 1
                         _clear_playlists()
@@ -645,7 +651,7 @@ if __name__ == "__main__" :
                 # we need to sleep so the video gets queued properly
                 xbmc.sleep( 500 )
                 autorefresh_movie = False
-                start_script( "oldway" )
+                exit = start_script( "oldway" )
             else:
                 _A_.openSettings()
                 exit = True
@@ -658,8 +664,7 @@ if __name__ == "__main__" :
             _clear_playlists()
             if _S_( "autorefresh" ) == "true":
                 auto_refresh( autorefresh, "enable" )
-        if prev_trigger != "":
-            prev_trigger = activate_ha( _L_( 32614 ), None ) # Script End
+            prev_trigger = activate_ha( _L_( 32614 ), None, "normal" ) # Script End
             _A_.setSetting( id='number_of_features', value='%d' % (number_of_features - 1) )
             xbmc.executehttpapi( "SetGUISetting(3,screensaver.mode,%s)" % screensaver )
     except:
@@ -669,5 +674,5 @@ if __name__ == "__main__" :
             auto_refresh( autorefresh, "enable" )
         _A_.setSetting( id='number_of_features', value='%d' % (number_of_features - 1) )
         xbmc.executehttpapi( "SetGUISetting(3,screensaver.mode,%s)" % screensaver )
-        prev_trigger = activate_ha( _L_( 32614 ), None ) # Script End
+        prev_trigger = activate_ha( _L_( 32614 ), None, "normal" ) # Script End
     #sys.modules.clear()

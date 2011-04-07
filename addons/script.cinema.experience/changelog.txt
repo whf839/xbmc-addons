@@ -1,3 +1,9 @@
+1.0.45
+- Fixed - Full Movie details now show when info overlay is shown during movie playback
+- Fixed - Script had a habit of crashing XBMC if the last video is skipped
+- Fixed - Trailers should not be causing errors now
+- Fixed - Script now properly ends(HA script was causing improper ending)
+
 1.0.44
 - Fixed - Single music file for trivia now works
 - Fixed - Non Download trailers
