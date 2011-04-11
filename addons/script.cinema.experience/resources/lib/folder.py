@@ -12,10 +12,11 @@ def dirEntries( dir_name, media_type="files", recursive="FALSE", contains="" ):
             media_type - valid types: video, music, pictures, files, programs
             recursive  - Setting to "TRUE" searches Parent and subdirectories, Setting to "FALSE" only search Parent Directory
     '''
-    print "[folder.py] - dirEntries Activated"
+    xbmc.log( "[folder.py] - dirEntries Activated", level=xbmc.LOGDEBUG )
     fileList = []
-    json_query = '{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "%s", "recursive": "%s"}, "id": 1}' % ( escapeDirJSON( dir_name ), media_type, recursive )
+    json_query = '{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "%s"}, "id": 1}' % ( escapeDirJSON( dir_name ), media_type )
     json_folder_detail = xbmc.executeJSONRPC(json_query)
+    xbmc.log( "[folder.py] - json_folder_detail -\n%s" % json_folder_detail, level=xbmc.LOGDEBUG )
     file_detail = re.compile( "{(.*?)}", re.DOTALL ).findall(json_folder_detail)
     for f in file_detail:
         match = re.search( '"file" : "(.*?)",', f )
@@ -27,7 +28,7 @@ def dirEntries( dir_name, media_type="files", recursive="FALSE", contains="" ):
                     fileList.extend( dirEntries( match.group(1), media_type, recursive, contains ) )
             elif not contains or ( contains and (contains in match.group(1) ) ):
                 fileList.append( match.group(1) )
-                #print "[folder.py] - File Path: %s" % match.group(1) 
+            xbmc.log( "[folder.py] - File Path: %s" % match.group(1), level=xbmc.LOGDEBUG ) 
         else:
             continue
     return fileList
@@ -39,7 +40,7 @@ def escapeDirJSON ( dir_name ):
         escapeDirJSON( dir_name )
             dir_name    - the name of the directory
     '''
-    print "[folder.py] - escapeDirJSON Activated"
+    xbmc.log( "[folder.py] - escapeDirJSON Activated", level=xbmc.LOGDEBUG )
     if dir_name.find(":"):
         dir_name = dir_name.replace("\\", "\\\\")
     return dir_name

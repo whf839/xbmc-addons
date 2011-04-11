@@ -1,3 +1,20 @@
+1.0.46
+- Fixed - Added missing movie details
+- Enhancement - Improved Debug logging
+- Enhancement - Added Pre-Eden code and Dharma code files to support Dharma and forward moving Git
+- Enhancement - Added 'Enable Pre-Eden' Setting in Misc Settings for those that like being on the Bleeding Edge. - Defaulted off
+- Fixed - Make various changes to script to be valid for Dharma and Pre-Eden
+- Fixed - Corrected mode coding for using Movie Quiz script in place of Trivia
+- Fixed - Added back Slide MPAA Rating
+- Enhancement - Added and MPAA Equivilent Rating for various purposes(Slides, Trailers)
+    - BBFC Rating = MPAA Rating
+    - 12, 12A = PG-13
+    - 15 = R
+    - U = G
+    - 18, R18, MA = NC-17
+ 
+    Used the following page http://en.wikipedia.org/wiki/Motion_picture_rating_system
+    
 1.0.45
 - Fixed - Full Movie details now show when info overlay is shown during movie playback
 - Fixed - Script had a habit of crashing XBMC if the last video is skipped

@@ -27,7 +27,7 @@ def _fetch_slides( movie_mpaa ):
     return slide_playlist
 
 def _load_watched_trivia_file():
-    xbmc.log( "[script.cinema.experience] - Loading Watch Slide List", level=xbmc.LOGNOTICE)
+    xbmc.log( "[script.cinema.experience] - Loading Watch Slide List", level=xbmc.LOGDEBUG)
     try:
         # set base watched file path
         base_path = os.path.join( BASE_CURRENT_SOURCE_PATH, "trivia_watched.txt" )
@@ -63,9 +63,11 @@ def _get_slides( paths, movie_mpaa ):
         # get a slides.xml if it exists
         slidesxml_exists, mpaa, question_format, clue_format, answer_format = _get_slides_xml( path )
         # check if rating is ok
-        #if ( slidesxml_exists and mpaa_ratings.get( movie_mpaa, -1 ) < mpaa_ratings.get( mpaa, -1 ) ):
-        #    xbmc.log( "[script.cinema.experience] - skipping whole folder", level=xbmc.LOGNOTICE)
-        #    continue
+        xbmc.log( "[script.cinema.experience] - Movie MPAA: %s" % movie_mpaa, level=xbmc.LOGDEBUG )
+        xbmc.log( "[script.cinema.experience] - Slide MPAA: %s" % mpaa, level=xbmc.LOGDEBUG )
+        if ( slidesxml_exists and mpaa_ratings.get( movie_mpaa, -1 ) < mpaa_ratings.get( mpaa, -1 ) ):
+            xbmc.log( "[script.cinema.experience] - Slide Rating above movie rating - skipping whole folder", level=xbmc.LOGNOTICE)
+            continue
         # initialize these to True so we add a new list item to start
         question = clue = answer = True
         # enumerate through our entries list and combine question, clue, answer
@@ -111,14 +113,6 @@ def _get_slides_xml( path ):
     xml = open( os.path.join( path, "slides.xml" ) ).read()
     # parse info
     mpaa, theme, question_format, clue_format, answer_format = re.search( "<slides?(?:.+?rating=\"([^\"]*)\")?(?:.+?theme=\"([^\"]*)\")?.*?>.+?<question.+?format=\"([^\"]*)\".*?/>.+?<clue.+?format=\"([^\"]*)\".*?/>.+?<answer.+?format=\"([^\"]*)\".*?/>", xml, re.DOTALL ).groups()
-    # compile regex's for performance
-    if ( question_format ):
-        question_format = re.compile( question_format, re.IGNORECASE )
-    if ( clue_format ):
-        clue_format = re.compile( clue_format, re.IGNORECASE )
-    if ( answer_format ):
-        answer_format = re.compile( answer_format, re.IGNORECASE )
-    # return results
     return True, mpaa, question_format, clue_format, answer_format
 
 def _shuffle_slides( tmp_slides, watched ):
