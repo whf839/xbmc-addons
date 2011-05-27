@@ -52,32 +52,42 @@ class Main:
 	def __init__(self, loc=1):
 		location = ""
 		location_name = []
+		provider = __Settings__.getSetting("alt_provider" + str(loc))
+		# print provider
 		kb = xbmc.Keyboard("","Type a name of your location", False)
 		kb.doModal()
 		if (kb.isConfirmed()):
 			userInput = kb.getText()
 			if (userInput is not None):
-				location = self._fetch_location(userInput)	
+				location = self._fetch_location(userInput, provider)	
 		dialog = xbmcgui.Dialog()
 		for count, loca in enumerate(location):
-			location_name += [ location[count][0]+ ", "+ location[count][1] ]
+			if ( provider == "0" ):
+				location_name += [ location[count][0]+ ", "+ location[count][1] ]
+			elif ( provider == "1" ):
+				location_name += [ location[count][1] ]
 		select = dialog.select("Choose your location", location_name)
-		print select
+		# print select
 		if ( select != -1 ):
 			self.location = location[ select ]
-			print __Settings__.getSetting("alt_location1")
+			# print int ( provider )
 			__Settings__.setSetting( ("alt_location1", "alt_location2", "alt_location3", )[ loc-1 ], location_name[ select ] )
-			__Settings__.setSetting( ("alt_code1", "alt_code2", "alt_code3", )[ loc-1 ], self.location[2] )
+			if ( provider == "0" ):
+				__Settings__.setSetting( ("alt_code1", "alt_code2", "alt_code3", )[ loc-1 ], self.location[2] )
+			elif ( provider == "1" ):
+				__Settings__.setSetting( ("alt_code1", "alt_code2", "alt_code3", )[ loc-1 ], self.location[0] )
 		__Settings__.openSettings()
-		# url = "http://www.accuweather.com/quick-look.aspx?loc=" + self.location[2]
-		# print url
-		# htmlSource = _fetch_data ( url )
-		# print htmlSource
 	
-	def _fetch_location(self, userInput):
-		pattern_location = "<location city=\"([^\"]+)\" state=\"([^\"]+)\" location=\"([^\"]+)\"/>"
-		htmlSource = _fetch_data ( "http://www.accuweather.com/includes/ajax-functions/cityLookup.asp?location="+ userInput )
-		location = re.findall( pattern_location, htmlSource )
+	def _fetch_location(self, userInput, provider):
+		location = []
+		if (provider == "0"):
+			pattern_location = "<location city=\"([^\"]+)\" state=\"([^\"]+)\" location=\"([^\"]+)\"/>"
+			htmlSource = _fetch_data ( "http://www.accuweather.com/includes/ajax-functions/cityLookup.asp?location="+ userInput.replace(" ","+") )
+			location = re.findall( pattern_location, htmlSource )
+		elif (provider == "1"):
+			pattern_location = "<a href=\"http://forecast.weather.gov/MapClick.php?([^\"]+)\">([^<]+)</a>"
+			htmlSource = _fetch_data ( "http://forecast.weather.gov/zipcity.php?inputstring=" + userInput.replace(" ","+") )
+			location = re.findall( pattern_location, htmlSource )
 		return location
 
 Main( loc=int( sys.argv[ 1 ].split( "=" )[ 1 ] ) )
