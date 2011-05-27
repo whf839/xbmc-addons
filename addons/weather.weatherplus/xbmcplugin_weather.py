@@ -765,7 +765,7 @@ class Main:
 	    else:
 		self.WEATHER_WINDOW.setProperty( "Daily.%d.LowTemperature" % ( int( ( count + 1 + ampm )/2 ) ), forecast[ 4 ] )	
         # use this to hide info until fully fetched
-        self.WEATHER_WINDOW.setProperty( "10day.IsFetched", "true" )
+        self.WEATHER_WINDOW.setProperty( "Daily.IsFetched", "true" )
 
 
     def _noaa_hourly_forecast( self ):

@@ -939,7 +939,7 @@ class NOAA_Forecast36HourParser:
 	except:
 	    current_time = xbmc.getInfoLabel("System.Time")
 	ampm = 0
-	if ( current_time.split(" ")[1] == "PM" and int(current_time.split(":")[0]) > 2 ):
+	if ( current_time.split(" ")[1] == "PM" and int(current_time[0]) > 2 ):
 	    ampm = 1	    
 	print "[Weather.com+] ampm : " + str(ampm) + " " + current_time
 
@@ -1138,8 +1138,31 @@ class NOAA_Forecast36HourParser:
                 except :
                   print "[Weather.com+] daylight["+str(count+ampm)+"] is not available"
                   daylight += [ ("00:00", ) ]
-                self.forecast += [ ( days[count+ampm], iconpath, brief[ count ], temperature_info[ count+ampm ], _localize_unit( temperature[ count ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), outlook[ count ], daylight[ count+ampm ][ 0 ], _localize_unit( daylight[ count+ampm ][ 1 ], "time"  ), days_10day[count].replace("This Afternoon", "Today"), date, windir.get(wind[count][0]), " ".join( [ _localize_unit( wind[count][1].split(" ")[0], "speed" ), wind[count][1].split(" ")[1], _localize_unit( wind[count][1].split(" ")[2], "speed" ) ] )  ) ]	
-
+		try :
+		  print "[Weather.com+] " + days_10day[count].replace("This Afternoon", "Today")
+		except :
+		  print "[Weather.com+] days_10day["+str(count)+"] is not available"
+		  days_10day += [ ("N/A", ) ]
+		try:
+		  print "[Weather.com+] " + date
+		except :
+		  print "[Weather.com+] date is not available"
+		  date += [ ("N/A", ) ]
+		try:
+		  print "[Weather.com+] wind : ", wind[count]
+		except :
+		  print "[Weather.com+] wind["+str(count)+"] is not available"
+		  wind += [ ("N/A", "0") ]
+		# print days[count+ampm], iconpath, brief[ count ]
+	        # print _localize_unit( temperature[ count ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" )
+		# print outlook[ count ], daylight[ count+ampm ][ 0 ], _localize_unit( daylight[ count+ampm ][ 1 ], "time"  )
+		# print days_10day[count].replace("This Afternoon", "Today"), date
+		# print windir.get(wind[count][0]), 
+		# print " ".join( [ _localize_unit( wind[count][1].split(" ")[0], "speed" ), wind[count][1].split(" ")[1], _localize_unit( wind[count][1].split(" ")[2], "speed" ) ] )
+		try:
+		  self.forecast += [ ( days[count+ampm], iconpath, brief[ count ], temperature_info[ count+ampm ], _localize_unit( temperature[ count ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), outlook[ count ], daylight[ count+ampm ][ 0 ], _localize_unit( daylight[ count+ampm ][ 1 ], "time"  ), days_10day[count].replace("This Afternoon", "Today"), date, windir.get(wind[count][0]), " ".join( [ _localize_unit( wind[count][1].split(" ")[0], "speed" ), wind[count][1].split(" ")[1], _localize_unit( wind[count][1].split(" ")[2], "speed" ) ] )  ) ]	
+		except:
+		  self.forecast += [ ( days[count+ampm], iconpath, brief[ count ], temperature_info[ count+ampm ], _localize_unit( temperature[ count ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), outlook[ count ], daylight[ count+ampm ][ 0 ], _localize_unit( daylight[ count+ampm ][ 1 ], "time"  ), days_10day[count].replace("This Afternoon", "Today"), date, windir.get(wind[count][0]), _localize_unit( wind[count][1].split(" ")[0], "speed" ), ) ]	
 
 class ForecastHourlyParser:
     def __init__( self, htmlSource, translate ):
