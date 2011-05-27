@@ -916,17 +916,22 @@ class NOAA_Forecast36HourParser:
         pattern_forecast_brief = "<td class=\"weekly_weather\">(.+?)</td>"
 	pattern_current_info = "<span class=\"obs_wxtmp\"> (.+?)<br />([0-9]+)\&deg;</span>"
 	pattern_current_info_2 = "<span class=\"obs_wxtmp\">(.+?)<br />([0-9]+)\&deg;</span>"
+	pattern_current_info_3 = "<font size=\'3\' color=\'000066\'>([^<]+)<br>[^<]+<br>(.+?)\&deg\;F<br>"
 	pattern_current_feel_like = "<td><b>Wind Chill</b>:</td>[^<]+<td align=\"right\">(.+?)</td>"
 	pattern_current_time = "Last Update:</b></a> (.+?)</span>"
-	pattern_current_wind = "<td><b>Wind Speed</b>:</td>[^<]+<td align=\"right\">(.+?)</td>"
-	pattern_current_humidity = "<td><b>Humidity</b>:</td>[^<]+<td align=\"right\">(.+?) \%</td>"
-	pattern_current_dew = "<td><b>Dewpoint</b>:</td>[^<]+<td align=\"right\">(.+?)</td>"
+	pattern_current_wind = "<td><b>Wind Speed</b>:</td>[^<]+<td align=[^>]+>(.+?)</td>"
+	pattern_current_wind_2 = "<td><b>Wind Speed</b>:</td><td align=[^>]+>(.+?)<br>"
+	pattern_current_humidity = "<td><b>Humidity</b>:</td>[^<]+<td align=[^>]+>(.+?) \%</td>"
+	pattern_current_dew = "<td><b>Dewpoint</b>:</td>[^<]+<td align=[^>]+>(.+?)</td>"
+	pattern_current_dew_2 = "<td><b>Dewpoint</b>:</td><td align=[^>]+>(.+?)</td>"
 	# pattern_precip_title = "Chance of ([^\:]+):"
         pattern_precip_amount = "no-repeat;\">([0-9]+)\%</td><td class=\"weekly_wind\">"
         pattern_outlook = ": </b>(.+?)<br><br>"
         # pattern_daylight = "<td class=\"twc-col-[0-9]+ twc-line-daylight\">(.+?)<strong>\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*\n\s(.+?)\n"
-        pattern_pressure = "<td><b>Barometer</b>:</td>[^<]+<td align=\"right\" nowrap>(.+?)</td>"	                     
-        pattern_visibility = "<td><b>Visibility</b>:</td>[^<]+<td align=\"right\">(.+?)</td>"	        
+        pattern_pressure = "<td><b>Barometer</b>:</td>[^<]+<td align=[^<]+ nowrap>(.+?)</td>"	
+        pattern_pressure_2 = "<td><b>Barometer</b>:</td><td align=[^<]+ nowrap>(.+?)</td>"	                     
+        pattern_visibility = "<td><b>Visibility</b>:</td>[^<]+<td align=\"right\">(.+?)</td>"	
+	pattern_visibility_2 = "<td><b>Visibility</b>:</td><td align=[^<]+>(.+?)</td>"	
         # pattern_current_sunrise = "Today\'s sunrise will occur around (.+?)am"
         # pattern_current_sunset = "Tonight\'s sunset will occur around (.+?)pm"
 	pattern_sunrise = "sunrise will occur around (.+?)am"
@@ -970,8 +975,12 @@ class NOAA_Forecast36HourParser:
 	    if ( len(current_info) ):
 		current_brief = current_info[0][0]
 	    else:
-		current_info = re.findall ( pattern_current_info_2, htmlSource_2 )
-		current_brief = current_info[0][0]
+		try: 
+			current_info = re.findall ( pattern_current_info_2, htmlSource_2 )
+			current_brief = current_info[0][0]
+		except:
+			current_info = re.findall ( pattern_current_info_3, htmlSource_2 )
+			current_brief = current_info[0][0]
             
 	    brief = re.findall( pattern_forecast_brief, htmlSource_2 )   
 
@@ -1006,12 +1015,21 @@ class NOAA_Forecast36HourParser:
 
 	    # fecth current infos
 	    current_humidity = re.findall( pattern_current_humidity, htmlSource )[0]
-	    current_dew = re.findall( pattern_current_dew, htmlSource )[0].split(" ")[0]
-	    current_wind = re.findall( pattern_current_wind, htmlSource )[0]
 	    try:
-		current_wind = current_wind.split(" ")[0]+" "+_localize_unit( current_wind.split(" ")[1], "speed" ).replace(" mph","").replace(" km/h","") +" Gust "+_localize_unit( current_wind.split(" ")[3], "speed" )
-	    except:	
-		current_wind = current_wind.split(" ")[0]+" "+_localize_unit( current_wind.split(" ")[1], "speed" )
+		current_dew = re.findall( pattern_current_dew, htmlSource )[0].split(" ")[0]
+	    except:
+		current_dew = re.findall( pattern_current_dew_2, htmlSource )[0].split(" ")[0].replace("&deg;F","")
+		# print current_dew
+            try:
+		current_wind = re.findall( pattern_current_wind, htmlSource )[0]
+	    except:
+		current_wind = re.findall( pattern_current_wind_2, htmlSource )[0]
+	    if ( current_wind != "calm" ):
+		    try:
+			current_wind = current_wind.split(" ")[0]+" "+_localize_unit( current_wind.split(" ")[1], "speed" ).replace(" mph","").replace(" km/h","") +" Gust "+_localize_unit( current_wind.split(" ")[3], "speed" )
+		    except:	
+			current_wind = current_wind.split(" ")[0]+" "+_localize_unit( current_wind.split(" ")[1], "speed" )
+
 	
             # fetch precip
 	    precip_title = []
@@ -1029,11 +1047,17 @@ class NOAA_Forecast36HourParser:
 		try:
 		     pressure = re.findall( pattern_pressure, htmlSource, re.DOTALL )[0].replace("&quot;","\"")
 		except:
-		     pressure = "N/A"
+			try:
+				pressure = re.findall( pattern_pressure_2, htmlSource, re.DOTALL )[0].replace("&quot;","\"")
+			except:
+			        pressure = "N/A"
 	    try:
-		visibility = _localize_unit( re.findall( pattern_visibility, htmlSource, re.DOTALL )[0].replace("mi.","miles"), "distance" )
+		visibility = _localize_unit( re.findall( pattern_visibility, htmlSource, re.DOTALL )[0].replace("Miles","miles").replace("mi.","miles"), "distance" )
 	    except:
-		visibility = "N/A"
+		try:
+		     visibility = _localize_unit( re.findall( pattern_visibility_2, htmlSource, re.DOTALL )[0].replace("Miles","miles").replace("mi.","miles"), "distance" )
+		except:
+		     visibility = "N/A"
             print "[Weather.com+] pressure, visibility : " + pressure, visibility
             sunrise = re.findall( pattern_sunrise, htmlSource_2 ) 
 	    sunset = re.findall( pattern_sunset, htmlSource_2 )
