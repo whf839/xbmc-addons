@@ -669,7 +669,7 @@ class Forecast36HourParser:
                 self.forecast += [ ( days[count], iconpath, brief[ count+1 ], temperature_info[ count ], _localize_unit( temperature[ count ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), brief[ count+4 ], daylight[ count ][ 0 ], _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  ), ) ]
 
 class ACCU_Forecast36HourParser:
-    def __init__( self, htmlSource, htmlSource_1, htmlSource_2, translate=None ):
+    def __init__( self, htmlSource, htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4, translate=None ):
         self.forecast = []
         self.extras = []
         self.alerts = []
@@ -680,9 +680,9 @@ class ACCU_Forecast36HourParser:
 
         # only need to parse source if there is source
         if ( htmlSource ):
-            self._get_forecast( htmlSource, htmlSource_1, htmlSource_2 )
+            self._get_forecast( htmlSource, htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4 )
 
-    def _get_forecast( self, htmlSource, htmlSource_1, htmlSource_2 ):
+    def _get_forecast( self, htmlSource, htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4 ):
         # regex patterns
         # pattern_video_location = ""
         # pattern_video_local_location = ""
@@ -709,7 +709,7 @@ class ACCU_Forecast36HourParser:
         pattern_current_sunset = "<span id=\"ctl00_cphContent_lblSunSetValue\" class=\"fltRight\" style=\"width: 80px; display: block;\">(.+?)</span>"
 	pattern_sunrise = "Sunrise: (.+?)</span>"
 	pattern_sunset = "Sunset: (.+?)</span>"
-					
+				
         # fetch icons
 	icon = []
 	icondir = {"1":"32", "2":"30", "3":"28", "4":"30", "5":"34", "6":"28", "7":"26", "8":"26", "11":"19", "12":"11", "13":"39", "14":"39", "15":"3", "16":"37", "17":"37", "18":"12", "19":"14", "20":"14", "21":"14", "22":"16", "23":"16", "24":"25", "25":"25", "26":"25", "29":"25", "30":"36", "31":"32", "32":"23", "33":"31", "34":"29", "35":"27", "36":"27", "38":"27", "37":"33", "39":"45", "40":"45", "41":"47", "42":"47", "43":"46", "44":"46" }
@@ -785,19 +785,19 @@ class ACCU_Forecast36HourParser:
 
             # fetch sunrise and sunset
 	    try:
-	        current_sunrise = _localize_unit( re.findall( pattern_current_sunrise, htmlSource)[0], "time" )
+	        current_sunrise = _localize_unit( re.findall( pattern_current_sunrise, htmlSource_3 )[0], "time" )
 	    except:
 		current_sunrise = "N/A"
 	    try:
-		current_sunset = _localize_unit( re.findall( pattern_current_sunset, htmlSource)[0], "time" )                      
+		current_sunset = _localize_unit( re.findall( pattern_current_sunset, htmlSource_3 )[0], "time" )                      
 	    except:
 		current_sunset = "N/A"
 	    try:
-		sunrise = re.findall( pattern_sunrise, htmlSource_2 )[0]
+		sunrise = re.findall( pattern_sunrise, htmlSource_4 )[0]
 	    except:
 		sunrise = "N/A"
 	    try:
-	        sunset = re.findall( pattern_sunset, htmlSource_2 )[0]
+	        sunset = re.findall( pattern_sunset, htmlSource_4 )[0]
 	    except:
 	        sunset = "N/A"
 	    daylight = [ ("Sunrise", current_sunrise), ("Sunset", current_sunset), ("Sunrise", sunrise), ("Sunset", sunset) ]
@@ -814,12 +814,18 @@ class ACCU_Forecast36HourParser:
 	    self.extras += [( pressure, visibility, current_sunrise, current_sunset, current_temp, current_feel_like, current_brief, current_wind, current_humidity, current_dew, current_icon )]
 	    # am or pm now?
             try: 
-	        current_time = re.findall( pattern_current_time, htmlSource )[0]
+	        current_time = re.findall( pattern_current_time, htmlSource_3 )[0]
 	    except:
 	        current_time = xbmc.getInfoLabel("System.Time")
 	    ampm = 0
-	    if ( current_time.split(" ")[1] == "PM" ):
-		ampm = 1	    
+	    try:
+		if ( current_time.split(" ")[1] == "PM" ):
+			ampm = 1	    
+	    except:
+		if ( current_time.split(" ")[0] == "오후" ):
+			ampm = 1
+		elif ( int(current_time.split(":")[0]) > 11 ):
+			ampm = 1
 	    # print "[Weather.com+] Current Time : " + current_time
 	    days = ["Today", "Tonight", "Tomorrow", "Tomorrow Night"]
             for count in range(0, 3):
@@ -952,7 +958,7 @@ class NOAA_Forecast36HourParser:
 	# fetch icons
 	icon = []
 	icons = re.findall( pattern_icon, htmlSource_2 )
-	icondir = { "skc":"32", "nskc":"31", "few":"34", "nfew":"33", "sct":"30", "nsct":"29", "bkn":"28", "nbkn":"27", "scttsra":"37", "nscttsra":"47", "tsra":"35", "ntsra":"35", "ra":"10", "nra":"10", "sn":"14", "nsn":"14", "shra":"39", "nshra":"45", "wind":"24", "nwind":"24", "fg":"20", "nfg":"20", "sctfg":"20", "nsctfg":"20" }
+	icondir = { "skc":"32", "nskc":"31", "few":"34", "nfew":"33", "sct":"30", "nsct":"29", "bkn":"28", "nbkn":"27", "scttsra":"37", "nscttsra":"47", "tsra":"35", "ntsra":"35", "ra":"10", "nra":"10", "sn":"14", "nsn":"14", "shra":"39", "nshra":"45", "wind":"24", "nwind":"24", "fg":"20", "nfg":"20", "sctfg":"20", "nsctfg":"20", "hi_tsra":"37", "hi_ntsra":"47" }
 	for count in range(0, 12-ampm):
 		icon += [ icondir.get(icons[count - 12]) ]
 	print "[Weather.com+] NOAA icons : "
@@ -1335,9 +1341,9 @@ class ACCU_ForecastHourlyParser:
 	brief = []
 	dates = [ ( date[0][0], date[0][1] ), ( date[3][0], date[3][1] ) ]
 	for item in raw_info:
-	    info_ += [ item.replace("\n","").replace("\r","").replace("\t","").replace("&deg;C", "") ]
+	    info_ += [ item.replace("\n","").replace("\r","").replace("\t","").replace("&deg", "°") ]
 	for item in raw_brief:
-	    brief += [ item.replace("\n","").replace("\r","").replace("\t","").replace("&deg;C", "") ]
+	    brief += [ item.replace("\n","").replace("\r","").replace("\t","").replace("&deg", "°") ]
 	icondir = {"1":"32", "2":"30", "3":"28", "4":"30", "5":"34", "6":"28", "7":"26", "8":"26", "11":"19", "12":"11", "13":"39", "14":"39", "15":"3", "16":"37", "17":"37", "18":"12", "19":"14", "20":"14", "21":"14", "22":"16", "23":"16", "24":"25", "25":"25", "26":"25", "29":"25", "30":"36", "31":"32", "32":"23", "33":"31", "34":"29", "35":"27", "36":"27", "38":"27", "37":"33", "39":"45", "40":"45", "41":"47", "42":"47", "43":"46", "44":"46" }       
 	# we convert wind direction to full text
         windir = {    
@@ -1375,15 +1381,18 @@ class ACCU_ForecastHourlyParser:
                 # does sunrise/sunset fit in this period
                 sunrise = ""
                 sunset = ""
-                # we want 24 hour as the math is easier
-                period = _localize_unit( item[ 0 ], "time24" )
+		# we want 24 hour as the math is easier
+                # period = _localize_unit( item[ 0 ], "time24" )
                 # set to a high number, we use this for checking next time period
-                period2 = "99:00"
-                if ( count < len( info ) - 2 ):
-                    period2 = _localize_unit( info[ count + 1 ][ 0 ], "time24" )
-                    period2 = ( period2, "24:%s" % ( period2.split( ":" )[ 1 ], ), )[ period2.split( ":" )[ 0 ] == "0" ]
+                # period2 = "99:00"
+                # if ( count < len( info ) - 2 ):
+                #    period2 = _localize_unit( info[ count + 1 ][ 0 ], "time24" )
+                #    period2 = ( period2, "24:%s" % ( period2.split( ":" )[ 1 ], ), )[ period2.split( ":" )[ 0 ] == "0" ]
                 # add result to our class variable
-                self.forecast += [ ( _localize_unit( item[ 0 ], "time" ), " ".join( dates[ date_counter ] ), iconpath, _english_localize_unit( item[ 3 ] ), item[ 2 ], _english_localize_unit( item[ 4 ] ), item[ 9 ].replace( "%", "" ), item[ 6 ].replace( "%", "" ), item[ 7 ], _english_localize_unit( item[ 8 ], "speed" ), item[ 7 ].split( " " )[ -1 ], "", "", ) ]
+                try:
+		   self.forecast += [ ( _localize_unit( item[ 0 ], "time" ), " ".join( dates[ date_counter ] ), iconpath, _english_localize_unit( item[ 3 ].split("°")[0] ), item[ 2 ], _english_localize_unit( item[ 4 ].split("°")[0] ), item[ 9 ].replace( "%", "" ), item[ 6 ].replace( "%", "" ), item[ 7 ], _english_localize_unit( item[ 8 ], "speed" ), item[ 7 ].split( " " )[ -1 ], "", "", ) ]
+		except:
+		   self.forecast += [ ( item[ 0 ], " ".join( dates[ date_counter ] ), iconpath, _english_localize_unit( item[ 3 ].split("°")[0] ), item[ 2 ], _english_localize_unit( item[ 4 ].split("°")[0] ), item[ 9 ].replace( "%", "" ), item[ 6 ].replace( "%", "" ), item[ 7 ], _english_localize_unit( item[ 8 ], "speed" ), item[ 7 ].split( " " )[ -1 ], "", "", ) ]
 
 
 class NOAA_ForecastHourlyParser:
@@ -1613,14 +1622,14 @@ class ForecastWeekendParser:
 
 
 class ACCU_Forecast10DayParser:
-    def __init__( self, htmlSource_1, htmlSource_2, translate ):
+    def __init__( self, htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4, translate ):
         self.forecast = []
         self.translate = translate
         # only need to parse source if there is source
         if ( htmlSource_1 and htmlSource_2 ):
-            self._get_forecast( htmlSource_1, htmlSource_2 )
+            self._get_forecast( htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4 )
 
-    def _get_forecast( self, htmlSource_1, htmlSource_2 ):
+    def _get_forecast( self, htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4 ):
         # regex patterns
         pattern_day = "Day_ctl0[0-9]+_lblDate\">(.+?)</span>"
 	pattern_outlook = "Day_ctl0[0-9]+_lblDesc\">(.+?)</span>"
@@ -1632,7 +1641,8 @@ class ACCU_Forecast10DayParser:
 
         # fetch info
 	htmlSource = htmlSource_1 + htmlSource_2
-        days = re.findall( pattern_day, htmlSource )
+	htmlSource_en = htmlSource_3 + htmlSource_4
+        days = re.findall( pattern_day, htmlSource_en )
 	outlook = re.findall( pattern_outlook, htmlSource )
 	hightemp = re.findall( pattern_hightemp, htmlSource )
 	lowtemp = re.findall( pattern_lowtemp, htmlSource )
@@ -1767,7 +1777,7 @@ class WeatherClient:
     # base urls
     BASE_URL = "http://www.weather.com"
     BASE_FORECAST_URL = "http://www.weather.com/weather/%s/%s?bypassredirect=true%s"
-    BASE_ACCU_FORECAST_URL = "http://www.accuweather.com/%s.aspx?partner=accuweather&metric=0&loc=%s&day=%s&week=%s&hour=%s"
+    BASE_ACCU_FORECAST_URL = "http://www.accuweather.com/%s/%s.aspx"
     BASE_NOAA_FORECAST_URL = "http://forecast.weather.gov/MapClick.php?%s"
     BASE_NOAA_QUICK_URL = "http://forecast.weather.gov/afm/PointClick.php?%s"
     BASE_NOAA_HOURLY_URL = "http://forecast.weather.gov/MapClick.php?%s&&FcstType=digital"
@@ -1854,7 +1864,7 @@ class WeatherClient:
         BASE_MAPS_PATH = xbmc.translatePath( "/".join( [ "special://temp", os.path.basename( os.getcwd() ), "maps" ] ) )
         BASE_SOURCE_PATH = xbmc.translatePath( "/".join( [ "special://profile", "script_data", os.path.basename( os.getcwd() ), "source" ] ) )
 
-    def __init__( self, code=None, translate=None ):
+    def __init__( self, code=None, translate=None, accu_translate=None ):
         # only check for compatibility if not debugging
         if ( not DEBUG ):
             # we raise an error if not compatible
@@ -1864,6 +1874,7 @@ class WeatherClient:
         self.code = code
         # set users translate preference
         self.translate = translate
+	self.accu_translate = accu_translate
 
     def _compatible( self ):
         # check for compatibility
@@ -1900,12 +1911,15 @@ class WeatherClient:
 
     def accu_36_forecast( self, video ):
         # fetch source
-        htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( "quick-look", self.code, "", "", "" ), 15 )
-        htmlSource_1 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( "details", self.code, "1", "", "" ), 15 )
-	htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( "details", self.code, "2", "", "" ), 15 )
+	code = "en-us" + self.code.lstrip( str(self.code.split("/")[0]) )
+        htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code, "quick-look"), 15 )
+        htmlSource_1 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code, "details" ), 15 )
+	htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code, "details2" ), 15 )
+        htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( code, "quick-look" ), 15 )
+	htmlSource_4 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( code, "details2" ), 15 )
         print "[Weather.com+] Area code = "+self.code
         # parse source for forecast
-        parser = ACCU_Forecast36HourParser( htmlSource, htmlSource_1, htmlSource_2, self.translate )
+        parser = ACCU_Forecast36HourParser( htmlSource, htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4, self.translate )
         # print parser.alertscolor[0]
         # fetch any alerts
         alerts, alertsrss, alertsnotify = self._fetch_alerts( parser.alerts )
@@ -2107,13 +2121,15 @@ class WeatherClient:
 
     def accu_fetch_hourly_forecast( self ):
         # fetch source
-        htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( "hourly", self.code, "", "", "1" ), 1 )
+	htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code, "hourly" ), 1 )
+	self.code = self.code.replace( "en-us", self.accu_translate )
+        htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code, "hourly" ), 1 )
 	pattern_date = "<option selected=\"selected\" value=\"([0-9]+)\">"
 	date = re.findall( pattern_date, htmlSource )
-        htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( "hourly", self.code, "", "", date[1] ), 1 )
-	htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( "hourly", self.code, "", "", str(int(date[1])+7) ), 1 )
+        htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code, "hourly"+date[1] ), 1 )
+	htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code, "hourly"+ str( int(date[1])+7 ) ), 1 )
         # parse source for forecast
-        parser = ACCU_ForecastHourlyParser( htmlSource + htmlSource_2, self.translate )
+        parser = ACCU_ForecastHourlyParser( htmlSource + htmlSource_2 + htmlSource_3, self.translate )
         # return forecast
         return parser.forecast
 
@@ -2136,10 +2152,13 @@ class WeatherClient:
 
     def accu_fetch_10day_forecast( self ):
         # fetch source
-        htmlSource_1 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( "forecast", self.code, "", "1", "" ), 15 )
-	htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( "forecast", self.code, "", "2", "" ), 15 )
+	code = "en-us" + self.code.lstrip( str(self.code.split("/")[0]) )
+        htmlSource_1 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code, "forecast" ), 15 )
+	htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code, "forecast2" ), 15 )
+        htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( code, "forecast" ), 15 )
+	htmlSource_4 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( code, "forecast2" ), 15 )
         # parse source for forecast
-        parser = ACCU_Forecast10DayParser( htmlSource_1, htmlSource_2, self.translate )
+        parser = ACCU_Forecast10DayParser( htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4, self.translate )
         # return forecast
         return parser.forecast
 

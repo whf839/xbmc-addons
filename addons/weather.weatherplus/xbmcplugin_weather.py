@@ -72,9 +72,9 @@ class Main:
 		self.WEATHER_WINDOW.setProperty( "Location", Location.split(" (")[0] )
 	        if ( self.provider == "0" ):
 			self.areacode = self.Settings.getSetting("alt_code" + str(self.locationindex))
-			print "[Weather.com+] Alternative Provider Selected : Accuweather.com Global (" + self.areacode + ")"
-			self._accu_36_forecast()
+			print "[Weather.com+] Alternative Provider Selected : Accuweather.com Global (" + self.areacode + ")"		
 			self._accu_hourly_forecast()
+			self._accu_36_forecast()
 			self._accu_10day_forecast()
 			# self._accu_weekend_forecast()
 			for count in range( 1, 4 ):
@@ -113,7 +113,7 @@ class Main:
         self.WEATHER_WINDOW.setProperty( "Plugin", sys.modules[ "__main__" ].__plugin__ )
         
     def _get_client( self ):	
-        self.settings = { "translate": None }
+        self.settings = { "translate": None, "accu_translate": "en-us" }
         if ( self.Settings.getSetting( "translate" ) == "true" ):
             self.settings[ "translate" ] = {
                                         "Chinese (Simple)": "en_zh",
@@ -132,6 +132,42 @@ class Main:
                                         "Spanish": "en_es",
                                         "Spanish (Mexico)": "en_es",
                                     }.get( xbmc.getLanguage(), None )
+
+	self.settings[ "accu_translate" ] = {
+                                        "2": "ca",
+                                        "6": "cs",
+                                        "7": "da",
+                                        "13": "de",
+                                        "28": "es-ar",
+                                        "29": "es-mx",
+                                        "1": "es",
+                                        "11": "fr-ca",
+                                        "12": "fr",
+                                        "18": "it",
+                                        "17": "hu",
+                                        "8": "nl",
+					"9": "en-us",
+                                        "21": "no",
+                                        "22": "pl",
+                                        "23": "pt-br",
+					"24": "pt",
+					"25": "ro",
+					"26": "ru",
+					"30": "sv",
+					"10": "fi",
+					"27": "sk",
+					"0": "ar",
+					"3": "zh-cn",
+					"4": "zh-tw",
+					"5": "zh-hk",
+					"31": "tr",
+					"14": "el",
+					"19": "ja",
+					"20": "ko",
+					"16": "hi",
+					"15": "he"
+                                    }.get( self.Settings.getSetting( "accu_translate" ), "en-us" )
+		
         if ( sys.argv[ 1 ].startswith( "map=" ) ):
             self.areacode = xbmc.getInfoLabel( "Window(Weather).Property(AreaCode)" )
         elif ( self.Settings.getSetting("location" + str(self.locationindex)) == "true" ):
@@ -144,7 +180,7 @@ class Main:
         if ( self.new_location ):
             self.WEATHER_WINDOW.setProperty( "Weather.AreaCode", self.areacode )
         # setup our radar client
-        self.WeatherClient = WeatherClient.WeatherClient( self.areacode, self.settings[ "translate" ] )
+        self.WeatherClient = WeatherClient.WeatherClient( self.areacode, self.settings[ "translate" ], self.settings[ "accu_translate" ] )
 
     def _set_maps_path( self, path=0, maps_path="", legend_path="" ):
         # we have three possibilities. loading, default (error) or the actual map path

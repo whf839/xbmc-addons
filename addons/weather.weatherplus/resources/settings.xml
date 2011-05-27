@@ -16,20 +16,21 @@
   </category>
   <category label="Provider">
 	<setting type="lsep" label="32440" />
+	<setting id="accu_translate" type="enum" label="32981" default="9"  lvalues="32701|32702|32703|32704|32705|32706|32707|32708|32709|32799|32710|32711|32712|32713|32714|32715|32716|32717|32718|32719|32720|32721|32722|32723|32724|32725|32726|32727|32728|32729|32730|32731" />
 	<setting id="location1" type="bool" label="32901" default="false" />
-	<setting id="alt_provider1" type="enum" subsetting="true" label="32902" lvalues="32951" default="0" visible="eq(-1,true)" enable="eq(-1,true)" />
+	<setting id="alt_provider1" type="enum" subsetting="true" label="32902" lvalues="32951|32952" default="0" visible="eq(-1,true)" enable="eq(-1,true)" />
 	<setting id="alt_change_location1" type="action" subsetting="true" label="32904" option="close" visible="eq(-2,true)" enable="eq(-2,true)" action="RunScript($CWD/resources/lib/accuweather_location.py,loc=1)"/>
 	<setting id="alt_location1" type="text" subsetting="true" label="32903" default="" visible="eq(-3,true)" enable="false" />
 	<setting id="alt_code1" type="text" visible="false" default="" enable="false" />
 
 	<setting id="location2" type="bool" label="32905" default="false" />
-	<setting id="alt_provider2" type="enum" subsetting="true" label="32902" lvalues="32951" default="0" visible="eq(-1,true)" enable="eq(-1,true)" />
+	<setting id="alt_provider2" type="enum" subsetting="true" label="32902" lvalues="32951|32952" default="0" visible="eq(-1,true)" enable="eq(-1,true)" />
 	<setting id="alt_change_location2" type="action" subsetting="true" label="32904" option="close" visible="eq(-2,true)" enable="eq(-2,true)" action="RunScript($CWD/resources/lib/accuweather_location.py,loc=2)"/>
 	<setting id="alt_location2" type="text" subsetting="true" label="32903" default="" visible="eq(-3,true)" enable="false" />
 	<setting id="alt_code2" type="text" visible="false" default="" enable="false" />
 	
 	<setting id="location3" type="bool" label="32906" default="false" />
-	<setting id="alt_provider3" type="enum" subsetting="true" label="32902" lvalues="32951" default="0" visible="eq(-1,true)" enable="eq(-1,true)" />
+	<setting id="alt_provider3" type="enum" subsetting="true" label="32902" lvalues="32951|32952" default="0" visible="eq(-1,true)" enable="eq(-1,true)" />
 	<setting id="alt_change_location3" type="action" subsetting="true" label="32904" option="close" visible="eq(-2,true)" enable="eq(-2,true)" action="RunScript($CWD/resources/lib/accuweather_location.py,loc=3)"/>
 	<setting id="alt_location3" type="text" subsetting="true" label="32903" default="" visible="eq(-3,true)" enable="false" />
 	<setting id="alt_code2" type="text" visible="false" default="" enable="false" />

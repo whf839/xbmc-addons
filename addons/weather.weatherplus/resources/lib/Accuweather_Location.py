@@ -59,7 +59,15 @@ class Main:
 		if (kb.isConfirmed()):
 			userInput = kb.getText()
 			if (userInput is not None):
-				location = self._fetch_location(userInput, provider)	
+				pDialog = xbmcgui.DialogProgress()
+				ret = pDialog.create('XBMC', 'Searching...')
+				pDialog.update(50)
+				if (pDialog.iscanceled()): 
+					__Settings__.openSettings()
+					return
+				location = self._fetch_location(userInput, provider)
+				pDialog.update(100)
+				pDialog.close()
 		dialog = xbmcgui.Dialog()
 		for count, loca in enumerate(location):
 			if ( provider == "0" ):
@@ -73,7 +81,11 @@ class Main:
 			# print int ( provider )
 			__Settings__.setSetting( ("alt_location1", "alt_location2", "alt_location3", )[ loc-1 ], location_name[ select ] )
 			if ( provider == "0" ):
-				__Settings__.setSetting( ("alt_code1", "alt_code2", "alt_code3", )[ loc-1 ], self.location[2] )
+			        htmlSource = _fetch_data ( "http://www.accuweather.com/quick-look.aspx?partner=accuweather&metric=0&loc=" + self.location[2] )
+				pattern_location = "http://www.accuweather.com/(.+?)/forecast.aspx"
+				new_location = re.findall( pattern_location, htmlSource )
+				# print htmlSource
+				__Settings__.setSetting( ("alt_code1", "alt_code2", "alt_code3", )[ loc-1 ], new_location[0] )
 			elif ( provider == "1" ):
 				__Settings__.setSetting( ("alt_code1", "alt_code2", "alt_code3", )[ loc-1 ], self.location[0] )
 		__Settings__.openSettings()
