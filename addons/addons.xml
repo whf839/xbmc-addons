@@ -206,7 +206,7 @@
 
 <addon id="weather.weatherplus"
        name="Weather.com+ for Dharma"
-       version="2.1.1"
+       version="2.1.2"
        provider-name="Brightsr (Original Sources from Nuka1195)">
   <extension point="xbmc.python.weather" library="default.py"/>
   <extension point="xbmc.addon.metadata">
