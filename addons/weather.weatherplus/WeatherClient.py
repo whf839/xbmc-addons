@@ -939,7 +939,7 @@ class NOAA_Forecast36HourParser:
 	except:
 	    current_time = xbmc.getInfoLabel("System.Time")
 	ampm = 0
-	if ( current_time.split(" ")[1] == "PM" and int(current_time[0]) > 2 ):
+	if ( current_time.split(" ")[1] == "PM" and int(current_time.split(":")[0]) > 2 ):
 	    ampm = 1	    
 	print "[Weather.com+] ampm : " + str(ampm) + " " + current_time
 
