@@ -1,4 +1,11 @@
-﻿Plugin Name:
+﻿* Please change infolabels on your xmls for compatibility with alternative providers. (05/26/2011)
+
+Weather.Conditions -> Window(Weather).Property(Current.ConditionIcon)
+Weather.FanartCode -> Window(Weather).Property(Current.FanartCode)
+Weather.Location -> Window(Weather).Property(Location)
+
+
+Plugin Name:
 ------------
 
 "PluginName": name of the plugin(not the same as the infolabel "Weather.Plugin")
