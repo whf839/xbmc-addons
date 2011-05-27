@@ -206,5 +206,43 @@
 
 	<!-- Alternative Provider Lists -->
 	<string id="32951">Accuweather.com Global</string>
+	<string id="32952">NOAA (US Only)</string>
 
+	<!-- Misc. -->
+	<string id="32981">Accuweather.com Language</string>
+
+	<!-- Languages -->
+	<string id="32701">Arabic</string>
+	<string id="32702">Castellano</string>
+	<string id="32703">Catalan</string>
+	<string id="32704">Chinese(SIM)</string>
+	<string id="32705">Chinese(Taiwan)</string>
+	<string id="32706">Chinese(HK)</string>
+	<string id="32707">Czech</string>
+	<string id="32708">Danish</string>
+	<string id="32709">Dutch</string>
+	<string id="32799">English</string>
+	<string id="32710">Finnish</string>
+	<string id="32711">French(Canada)</string>
+	<string id="32712">Frehch</string>
+	<string id="32713">German</string>
+	<string id="32714">Greek</string>
+	<string id="32715">Hebrew</string>                                
+	<string id="32716">Hindi</string>
+	<string id="32717">Hungarian</string>
+	<string id="32718">Italian</string>
+	<string id="32719">Japanese</string>
+	<string id="32720">Korean</string>
+	<string id="32721">Norwegian</string>
+	<string id="32722">Polish</string>
+	<string id="32723">Portuguese(Brazil)</string>
+	<string id="32724">Portuguese</string>
+	<string id="32725">Romanian</string>
+	<string id="32726">Russian</string>
+	<string id="32727">Slovenian</string>
+	<string id="32728">Spanish</string>
+	<string id="32729">Spanish(Latin)</string>
+	<string id="32730">Swedish</string>
+	<string id="32731">Turkish</string>
+				
 </strings>
