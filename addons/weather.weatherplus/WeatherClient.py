@@ -944,15 +944,14 @@ class NOAA_Forecast36HourParser:
 	pattern_sunset = "sunset will occur around (.+?)pm"
 	pattern_wind = "<td class=\"weekly_wind\"><img class=\"wind\" src=\"image/(.+?).png\" width=\"50\" height=\"22\" alt=\"[^\"]+\" /><br />(.+?)</td>"
 	
-	# am or pm now?
-        try: 
-	    current_time = re.findall( pattern_current_time, htmlSource )[0]
-	except:
-	    current_time = xbmc.getInfoLabel("System.Time")
+        # fetch day title
+        days_10day = re.findall( pattern_days, htmlSource )
+        print days_10day
+
+ 	# am or pm now?
 	ampm = 0
-	if ( current_time.split(" ")[1] == "PM" and int(current_time.split(":")[0]) > 2 ):
-	    ampm = 1	    
-	print "[Weather.com+] ampm : " + str(ampm) + " " + current_time
+	if (days_10day[0] == "Tonight" or days_10day[0] == "Overnight"): ampm = 1
+        print "[Weather.com+] ampm : " + str(ampm)
 
 
 	# fetch icons
@@ -967,10 +966,6 @@ class NOAA_Forecast36HourParser:
 
         # enumerate thru and combine the day with it's forecast
         if ( len( icon ) ):
-	    # fetch day title
-	    days_10day = re.findall( pattern_days, htmlSource )
-	    print days_10day
-
 	    # fetch today's date
 	    today = re.findall( pattern_date, htmlSource )[0]
 	    today = today.split(" ")[2] + " " + today.split(" ")[3].replace(",", " ")
