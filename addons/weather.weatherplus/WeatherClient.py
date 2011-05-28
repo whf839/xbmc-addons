@@ -1,3 +1,5 @@
+# coding: utf-8
+
 """
     weather.com api client module
 """
