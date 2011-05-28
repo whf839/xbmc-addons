@@ -822,9 +822,7 @@ class ACCU_Forecast36HourParser:
 		if ( current_time.split(" ")[1] == "PM" ):
 			ampm = 1	    
 	    except:
-		if ( current_time.split(" ")[0] == "오후" ):
-			ampm = 1
-		elif ( int(current_time.split(":")[0]) > 11 ):
+		if ( int(current_time.split(":")[0]) > 11 ):
 			ampm = 1
 	    # print "[Weather.com+] Current Time : " + current_time
 	    days = ["Today", "Tonight", "Tomorrow", "Tomorrow Night"]
