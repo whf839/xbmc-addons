@@ -16,9 +16,16 @@ except:
 
 import urllib2
 from urllib import urlencode
-import md5
+
+try:
+    import hashlib
+except:
+    import md5
+
 import re
 import time
+import xbmcaddon
+
 
 
 # TODO: maybe use xbmc language strings for brief outlook translation
@@ -1769,6 +1776,7 @@ class MapParser:
 
 
 class WeatherClient:
+    Addon = xbmcaddon.Addon( id="weather.weatherplus" )
     # base urls
     BASE_URL = "http://www.weather.com"
     BASE_FORECAST_URL = "http://www.weather.com/weather/%s/%s?bypassredirect=true%s"
@@ -1853,12 +1861,11 @@ class WeatherClient:
 
     # base paths
     if ( DEBUG ):
-        BASE_MAPS_PATH = os.path.join( os.getcwd(), "maps" )
-        BASE_SOURCE_PATH = os.path.join( os.getcwd(), "source" )
+        BASE_MAPS_PATH = os.path.join( Addon.getAddonInfo("path"), "maps" )
+        BASE_SOURCE_PATH = os.path.join( Addon.getAddonInfo("path"), "source" )
     else:
-        BASE_MAPS_PATH = xbmc.translatePath( "/".join( [ "special://temp", os.path.basename( os.getcwd() ), "maps" ] ) )
-        BASE_SOURCE_PATH = xbmc.translatePath( "/".join( [ "special://profile", "script_data", os.path.basename( os.getcwd() ), "source" ] ) )
-
+        BASE_MAPS_PATH = xbmc.translatePath( "/".join( [ "special://temp", Addon.getAddonInfo("id"), "maps" ] ) )
+        BASE_SOURCE_PATH = xbmc.translatePath( "/".join( [ "special://profile", "script_data", Addon.getAddonInfo("id"), "source" ] ) )
     def __init__( self, code=None, translate=None, accu_translate=None ):
         # only check for compatibility if not debugging
         if ( not DEBUG ):
@@ -2120,7 +2127,9 @@ class WeatherClient:
 	self.code = self.code.replace( "en-us", self.accu_translate )
         htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code, "hourly" ), 1 )
 	pattern_date = "<option selected=\"selected\" value=\"([0-9]+)\">"
-	date = re.findall( pattern_date, htmlSource )
+	date = re.findall( pattern_date, htmlSource_3 )
+	# print htmlSource_3
+	# print date
         htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code, "hourly"+date[1] ), 1 )
 	htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code, "hourly"+ str( int(date[1])+7 ) ), 1 )
         # parse source for forecast
@@ -2298,7 +2307,10 @@ class WeatherClient:
                 base_refresh_path = None
             elif ( filename is None ):
                 # anything else except map/radar images (basically htmlSource)
-                base_path = os.path.join( self.BASE_SOURCE_PATH, subfolder, md5.new( base_url ).hexdigest() )
+                try: 
+		    base_path = os.path.join( self.BASE_SOURCE_PATH, subfolder, hashlib.md5( base_url ).hexdigest() )
+		except:
+		    base_path = os.path.join( self.BASE_SOURCE_PATH, subfolder, md5.new( base_url ).hexdigest() )
                 base_refresh_path = None
             else:
                 # set proper path for md5 hash
@@ -2309,8 +2321,12 @@ class WeatherClient:
                     # non animated maps share same base url, so use full name
                     path = base_url
                 # set base paths
-                base_path = os.path.join( self.BASE_MAPS_PATH, subfolder, md5.new( path ).hexdigest(), filename )
-                base_refresh_path = os.path.join( self.BASE_MAPS_PATH, subfolder, md5.new( path ).hexdigest(), "refresh.txt" )
+		try:
+		    base_path = os.path.join( self.BASE_MAPS_PATH, subfolder, hashlib.md5( path ).hexdigest(), filename )
+                    base_refresh_path = os.path.join( self.BASE_MAPS_PATH, subfolder, hashlib.md5( path ).hexdigest(), "refresh.txt" )
+		except:
+		    base_path = os.path.join( self.BASE_MAPS_PATH, subfolder, md5.new( path ).hexdigest(), filename )
+                    base_refresh_path = os.path.join( self.BASE_MAPS_PATH, subfolder, md5.new( path ).hexdigest(), "refresh.txt" )
             # get expiration date
             expires, refresh = self._get_expiration_date( base_path, base_refresh_path, refreshtime )
             # only fetch source if it's been longer than refresh time or does not exist
