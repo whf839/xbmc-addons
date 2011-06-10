@@ -1748,7 +1748,10 @@ class Forecast10DayParser:
                 iconpath = "/".join( [ "special://temp", "weather", "128x128", icon[ count ] + ".png" ] )
 		# print headings, iconpath, brief, high_temp, low_temp, precip, wind
 		# add result to our class variable
-                self.forecast += [ ( headings[ count ][ 0 ], headings[ count ][ 1 ], iconpath, brief[ count ], _localize_unit( high_temp[ count ].strip("\nt&deg;") ), _localize_unit( low_temp[ count ].strip("\nt&deg;") ), precip[ count ][ 1 ].replace( "%", "" ), windir.get( wind[ count ][ 0 ], wind[ count ][ 0 ] ), _localize_unit( wind[ count ][ 1 ], "speed" ), wind[ count ][ 0 ], ) ]
+                try:
+		     self.forecast += [ ( headings[ count ][ 0 ], headings[ count ][ 1 ], iconpath, brief[ count ], _localize_unit( high_temp[ count ].strip("\nt&deg;") ), _localize_unit( low_temp[ count ].strip("\nt&deg;") ), precip[ count ][ 1 ].replace( "%", "" ), windir.get( wind[ count ][ 0 ], wind[ count ][ 0 ] ), _localize_unit( wind[ count ][ 1 ], "speed" ), wind[ count ][ 0 ], ) ]
+		except:
+		     self.forecast += [ ( headings[ count ][ 0 ], headings[ count ][ 1 ], iconpath, brief[ count ], "N/A", _localize_unit( low_temp[ count ].strip("\nt&deg;") ), precip[ count ][ 1 ].replace( "%", "" ), windir.get( wind[ count ][ 0 ], wind[ count ][ 0 ] ), _localize_unit( wind[ count ][ 1 ], "speed" ), wind[ count ][ 0 ], ) ]
 
 
 class MaplistParser:
