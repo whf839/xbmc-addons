@@ -206,7 +206,7 @@
 
 <addon id="weather.weatherplus"
        name="Weather Plus"
-       version="2.1.6"
+       version="2.1.7"
        provider-name="Brightsr">
   <extension point="xbmc.python.weather" library="default.py"/>
   <extension point="xbmc.addon.metadata">
