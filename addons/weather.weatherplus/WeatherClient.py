@@ -1735,11 +1735,13 @@ class Forecast10DayParser:
             if ( self.translate is not None ):
                 # we only need outlook and brief. the rest the skins or xbmc language file can handle
                 # we separate each item with single pipe
-                text = "|".join( wind )
+                try: 
+		   text = "|".join( wind )
                 # separator for different info
                 text += "|||||"
                 # we separate each item with single pipe
-                text += "|".join( brief )
+                try:
+		   text += "|".join( brief )
                 # translate text
                 text = _translate_text( text, self.translate )
                 # split text into it's original list
@@ -1760,7 +1762,7 @@ class Forecast10DayParser:
 		     try: 
 		          self.forecast += [ ( headings[ count ][ 0 ], headings[ count ][ 1 ], iconpath, brief[ count ], "N/A", _localize_unit( low_temp[ count ].strip("\nt&deg;") ), precip[ count ][ 1 ].replace( "%", "" ), windir.get( wind[ count ][ 0 ], wind[ count ][ 0 ] ), _localize_unit( wind[ count ][ 1 ], "speed" ), wind[ count ][ 0 ], ) ]
 		     except:
-		          self.forecast += [ ( "N/A", "N/A", iconpath, "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", ) ]
+		          self.forecast += [ ( "N/A", "N/A ", iconpath, "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", ) ]
 
 class MaplistParser:
     def __init__( self, htmlSource ):
