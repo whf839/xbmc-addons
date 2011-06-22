@@ -1737,11 +1737,15 @@ class Forecast10DayParser:
                 # we separate each item with single pipe
                 try: 
 		   text = "|".join( wind )
+		except:
+		   print "[Weather Plus] No Info : 10day Wind"
                 # separator for different info
                 text += "|||||"
                 # we separate each item with single pipe
                 try:
 		   text += "|".join( brief )
+		except:
+		   print "[Weather Plus] No Info : 10day Brief"
                 # translate text
                 text = _translate_text( text, self.translate )
                 # split text into it's original list
