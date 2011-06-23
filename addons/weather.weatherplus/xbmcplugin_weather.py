@@ -338,8 +338,13 @@ class Main:
         self.WEATHER_WINDOW.setProperty( "Alerts.Label", xbmc.getLocalizedString( 33049 + ( alertscount > 1 ) ) )
 
     def _set_video( self, video_url, video_local_url ):
-        self.WEATHER_WINDOW.setProperty( "Video", video_url )
-        self.WEATHER_WINDOW.setProperty( "Video.local", video_local_url )
+	# 1 : local, 2 : regional
+	if ( self.Settings.getSetting("video_type") == "2" ):
+	        self.WEATHER_WINDOW.setProperty( "Video", video_url )
+	else:
+		self.WEATHER_WINDOW.setProperty( "Video", video_local_url )
+        self.WEATHER_WINDOW.setProperty( "Video.regional", video_url )
+	self.WEATHER_WINDOW.setProperty( "Video.local", video_local_url )
         # print "Weather Video = "+self.WEATHER_WINDOW.getProperty ("Video")
     def _set_extra_current_info( self, extras ):
         if ( extras ):

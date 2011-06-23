@@ -61,6 +61,9 @@
     <string id="32586">2 minutes</string>
     <string id="32587">5 minutes</string>
     <string id="32588">10 minutes</string>
+	<string id="32590">Video</string>
+	<string id="32591">Regional</string>
+	<string id="32592">Local (Only US)</string>
 
     <!-- map lists long -->
     <string id="32600">None</string>

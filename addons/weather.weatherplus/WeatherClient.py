@@ -1831,7 +1831,7 @@ class WeatherClient:
     BASE_NOAA_FORECAST_URL = "http://forecast.weather.gov/MapClick.php?%s"
     BASE_NOAA_QUICK_URL = "http://forecast.weather.gov/afm/PointClick.php?%s"
     BASE_NOAA_HOURLY_URL = "http://forecast.weather.gov/MapClick.php?%s&&FcstType=digital"
-    BASE_VIDEO_URL = "http://v.imwx.com/v/wxflash/%s.flv"
+    BASE_VIDEO_URL = "http://v.imwx.com/v/wxcom/%s.mov"
     BASE_MAPS = ( 
                                 # Main local maps (includes some regional maps) #0
                                 ( "", "", ),
