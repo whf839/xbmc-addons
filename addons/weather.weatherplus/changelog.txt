@@ -1,0 +1,60 @@
+v.2.2.0
+- Fixed : Weather.com Forecast Video
+- Added : Video Selection available for US locations (settings->general->video->select regional or local, regional is default)
+- Changed properties : 
+video : selected video based on addon's settings. (regional or local)
+video.regional : regional forecast video (if n/a, national forecast video)
+video.local : local forecast video
+
+v.2.1.9 - v.2.1.12
+- Fixed : Weather.com 10day forecast bugs
+
+v.2.1.8
+- Fixed : 10 day forecast temperature bug 
+
+v.2.1.7
+- Rebuilded : Weather.com 36 hour, 10 day forecast (they changed entire form of 10 day forecast page)
+
+v.2.1.6
+- Compatible with the latest nightly build
+- Changed : Addon's name - Weather Plus 
+
+v.2.1.5
+- Fixed : NOAA 6 day forecast bugs 
+
+v.2.1.4
+- Added : Accuweather.com suppports multi-language.
+How-to-set : Addon's Settings->Provider->Accuweather.com Language
+Supported languages : Arabic, Castellano, Catalan, Chinese(SIM, Taiwan, HK), Czech, Danish, Dutch, English, Finnish, French(Canada), Frehch, German, Greek, Hebrew, Hindi, Hungarian, Italian, Japanese, Korean, Norwegian, Polish, Portuguese(Brazil), Portuguese, Romanian, Russian, Slovenian, Spanish, Spanish(Latin), Swedish, Turkish
+
+v.2.1.1 - v.2.1.3
+- Fixed : NOAA 36 hours forecast issues of several cities (e.g., Los Angeles, CA)
+- Fixed : Space issue of location selector for alternative providers (e.g., San Jose, Los Angeles)
+- Fixed : NOAA minor bugs
+
+v.2.1.0
+- Added : Alternative Provder - NOAA (US only)
+- Fixed : Minor bugs
+
+v.2.0.1
+- European Forecast Video Available for Ireland Locations
+
+v.2.0.0
+- Alternative Provider : Accuweather.com Global Available (Some info. not available depending on a provider)
+* HOW-TO-USE : addon's settings -> provider tab -> toggle on any location slot you want -> change location -> ENJOY!
+* NOTE : XBMC always fetches current weather info. from weather.com regardless you toggle on alternative provider. So you may see weather info you don't want briefly, which is totally normal.
+* NOTE #2 : If you want to use another provider, feel free to let me know the provider. I'll try add it.
+
+- Fixed : Canadian and European Weather Video
+- Added : Spanish translation for addon's settings (Thanks to lams144)
+
+v.1.2.1
+- Fixed : Weather Alert
+- Fixed : Canadian and European Video
+- Added : Alternative Provider (Alpha ver., only for current, 36hour and 10day)
+
+v.1.2.0
+- Adjusted : Recently changed map pages and images on weather.com
+- Fixed : Misc. Map bugs
+- Fixed : Sunrise, Sunset bugs (if fetching sunrise or sunset time failed, it'll appear as "N/A")
+- Added : Portuguese (Brazil), Korean translation for addon settings (Thanks to Wanilton)
