@@ -1735,6 +1735,7 @@ class Forecast10DayParser:
             if ( self.translate is not None ):
                 # we only need outlook and brief. the rest the skins or xbmc language file can handle
                 # we separate each item with single pipe
+		text = ""
                 try: 
 		   text = "|".join( wind )
 		except:
