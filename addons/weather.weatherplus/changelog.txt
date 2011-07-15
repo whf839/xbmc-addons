@@ -1,3 +1,6 @@
+v.2.2.1
+- Fixed : Sunrise Time Bug of Weather.com 36 Hour Forecast
+
 v.2.2.0
 - Fixed : Weather.com Forecast Video
 - Added : Video Selection available for US locations (settings->general->video->select regional or local, regional is default)
