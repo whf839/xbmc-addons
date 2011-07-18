@@ -1,3 +1,6 @@
+v.2.2.2
+- Added : Heat Index and Wind Chill from NOAA ( they will be shown as feels-like temperature, if not available, just "N/A". )
+
 v.2.2.1
 - Fixed : Sunrise Time Bug of Weather.com 36 Hour Forecast
 

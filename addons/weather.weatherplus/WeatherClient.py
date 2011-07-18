@@ -937,7 +937,8 @@ class NOAA_Forecast36HourParser:
 	pattern_current_info = "<span class=\"obs_wxtmp\"> (.+?)<br />([0-9]+)\&deg;</span>"
 	pattern_current_info_2 = "<span class=\"obs_wxtmp\">(.+?)<br />([0-9]+)\&deg;</span>"
 	pattern_current_info_3 = "<font size=\'3\' color=\'000066\'>([^<]+)<br>[^<]+<br>(.+?)\&deg\;F<br>"
-	pattern_current_feel_like = "<td><b>Wind Chill</b>:</td>[^<]+<td align=\"right\">(.+?)</td>"
+	pattern_current_windchill = "<td><b>Wind Chill</b>:</td>[^<]+<td align=\"right\">(.+?)\&deg\;F"
+	pattern_current_heatindex = "<td><b>Heat Index</b>:</td>[^<]+<td align=[^>]+>(.+?)\&deg\;F"
 	pattern_current_time = "Last Update:</b></a> (.+?)</span>"
 	pattern_current_wind = "<td><b>Wind Speed</b>:</td>[^<]+<td align=[^>]+>(.+?)</td>"
 	pattern_current_wind_2 = "<td><b>Wind Speed</b>:</td><td align=[^>]+>(.+?)<br>"
@@ -1023,7 +1024,14 @@ class NOAA_Forecast36HourParser:
 
             # fetch temperature
             current_temp = current_info[0][1]
-	    current_feel_like = "N/A"
+	    try:
+	        current_feel_like = re.findall( pattern_current_windchill, htmlSource )[0]
+	    except:
+	        try:
+		    print "******************************************************", htmlSource, re.findall( pattern_current_heatindex, htmlSource )
+		    current_feel_like = re.findall( pattern_current_heatindex, htmlSource )[0]
+		except:
+		    current_feel_like = "N/A"
 	    temp = re.findall( pattern_temperature, htmlSource_2 )
 	    temperature_info = ["High", "Low", "High", "Low"]
 	    temperature = [ temp[0], temp[1], temp[2] ]
