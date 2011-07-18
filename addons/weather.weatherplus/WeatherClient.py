@@ -1028,7 +1028,7 @@ class NOAA_Forecast36HourParser:
 	        current_feel_like = re.findall( pattern_current_windchill, htmlSource )[0]
 	    except:
 	        try:
-		    print "******************************************************", htmlSource, re.findall( pattern_current_heatindex, htmlSource )
+		    # print "******************************************************", htmlSource, re.findall( pattern_current_heatindex, htmlSource )
 		    current_feel_like = re.findall( pattern_current_heatindex, htmlSource )[0]
 		except:
 		    current_feel_like = "N/A"
