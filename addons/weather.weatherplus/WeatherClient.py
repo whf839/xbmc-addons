@@ -2056,10 +2056,15 @@ class WeatherClient:
     def _create_video( self, location, local_location, local_number, video ):
         url = ""
         local_url = ""
-        # print "[Weather.com+] Video Location : "+location
+	try:
+	     local_location = local_location.split("/")[2]
+	except:
+	     pass
+        print "[Weather.com+] Video Location : " + location
+	print "[Weather.com+] Local Video Location : " + local_location
         # video = location
         # US
-        if ( len( location ) and (self.code.startswith( "US" ) or len(self.code) == 5) and video == "" ):
+        if ( len( location ) and (self.code.startswith( "US" ) or len(self.code) == 5) ):    
             # Regional Video
             if ( location == "NE" or location == "MW" or location == "SE" or location == "W" or location == "S" or location == "SW" or location == "NW" or location == "NC" or location == "CN" or location == "WC"):               
                 if ( location == "NE" ):
@@ -2080,9 +2085,9 @@ class WeatherClient:
                     video = "west"
                 elif ( location == "NC" or location == "CN" ):
                     video="midwest"        
-               # create the url
+                # create the url
                 url = self.BASE_VIDEO_URL % ( video, )
-               # print "url : "+url
+                # print "url : "+url
                            
            # Local Video
             if ( local_location == "new-yorks" or local_location == "washington-dcs") :

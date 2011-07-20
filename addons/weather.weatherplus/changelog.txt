@@ -1,3 +1,6 @@
+v.2.2.3
+- Fixed : US Local Forecast Video from Weather.com
+
 v.2.2.2
 - Added : Heat Index and Wind Chill from NOAA ( they will be shown as feels-like temperature, if not available, just "N/A". )
 
