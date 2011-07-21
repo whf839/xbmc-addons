@@ -1749,10 +1749,10 @@ class Forecast10DayParser:
                 # we only need outlook and brief. the rest the skins or xbmc language file can handle
                 # we separate each item with single pipe
 		text = ""
-                try: 
-		   text = "|".join( wind )
-		except:
-		   print "[Weather Plus] No Info : 10day Wind"
+                # try: 
+		#    text = "|".join( wind )
+		# except:
+		#   print "[Weather Plus] No Info : 10day Wind"
                 # separator for different info
                 text += "|||||"
                 # we separate each item with single pipe
@@ -1763,7 +1763,7 @@ class Forecast10DayParser:
                 # translate text
                 text = _translate_text( text, self.translate )
                 # split text into it's original list
-                wind = text.split( "|||||" )[ 0 ].split( "|" )
+                # wind = text.split( "|||||" )[ 0 ].split( "|" )
                 brief = text.split( "|||||" )[ 1 ].split( "|" )
             # create our forecast list
             for count in range(0, 10):
@@ -1774,13 +1774,22 @@ class Forecast10DayParser:
 			iconpath = "special://temp/weather/128x128/na.png"
 		# print headings, iconpath, brief, high_temp, low_temp, precip, wind
 		# add result to our class variable
-                try:
-		     self.forecast += [ ( headings[ count ][ 0 ], headings[ count ][ 1 ], iconpath, brief[ count ], _localize_unit( high_temp[ count ].strip("\nt&deg;") ), _localize_unit( low_temp[ count ].strip("\nt&deg;") ), precip[ count ][ 1 ].replace( "%", "" ), windir.get( wind[ count ][ 0 ], wind[ count ][ 0 ] ), _localize_unit( wind[ count ][ 1 ], "speed" ), wind[ count ][ 0 ], ) ]
-		except:
-		     try: 
-		          self.forecast += [ ( headings[ count ][ 0 ], headings[ count ][ 1 ], iconpath, brief[ count ], "N/A", _localize_unit( low_temp[ count ].strip("\nt&deg;") ), precip[ count ][ 1 ].replace( "%", "" ), windir.get( wind[ count ][ 0 ], wind[ count ][ 0 ] ), _localize_unit( wind[ count ][ 1 ], "speed" ), wind[ count ][ 0 ], ) ]
-		     except:
-		          self.forecast += [ ( "N/A", "N/A ", iconpath, "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", ) ]
+		if ( self.translate is not None ):
+			try:
+				self.forecast += [ ( headings[ count ][ 0 ], headings[ count ][ 1 ], iconpath, brief[ count ], _localize_unit( high_temp[ count ].strip("\nt&deg;") ), _localize_unit( low_temp[ count ].strip("\nt&deg;") ), precip[ count ][ 1 ].replace( "%", "" ), _translate_text( windir.get( wind[ count ][ 0 ], wind[ count ][ 0 ] ), self.translate ), _localize_unit( wind[ count ][ 1 ], "speed" ), wind[ count ][ 0 ], ) ]
+			except:
+				try: 
+					self.forecast += [ ( headings[ count ][ 0 ], headings[ count ][ 1 ], iconpath, brief[ count ], "N/A", _localize_unit( low_temp[ count ].strip("\nt&deg;") ), precip[ count ][ 1 ].replace( "%", "" ), _translate_text( windir.get( wind[ count ][ 0 ], wind[ count ][ 0 ] ), self.translate ) , _localize_unit( wind[ count ][ 1 ], "speed" ), wind[ count ][ 0 ], ) ]
+				except:
+					self.forecast += [ ( "N/A", "N/A ", iconpath, "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", ) ]
+		else:
+			try:
+				self.forecast += [ ( headings[ count ][ 0 ], headings[ count ][ 1 ], iconpath, brief[ count ], _localize_unit( high_temp[ count ].strip("\nt&deg;") ), _localize_unit( low_temp[ count ].strip("\nt&deg;") ), precip[ count ][ 1 ].replace( "%", "" ), windir.get( wind[ count ][ 0 ], wind[ count ][ 0 ] ), _localize_unit( wind[ count ][ 1 ], "speed" ), wind[ count ][ 0 ], ) ]
+			except:
+				try: 
+					self.forecast += [ ( headings[ count ][ 0 ], headings[ count ][ 1 ], iconpath, brief[ count ], "N/A", _localize_unit( low_temp[ count ].strip("\nt&deg;") ), precip[ count ][ 1 ].replace( "%", "" ), windir.get( wind[ count ][ 0 ], wind[ count ][ 0 ] ) , _localize_unit( wind[ count ][ 1 ], "speed" ), wind[ count ][ 0 ], ) ]
+				except:
+					self.forecast += [ ( "N/A", "N/A ", iconpath, "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", ) ]
 
 class MaplistParser:
     def __init__( self, htmlSource ):

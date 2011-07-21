@@ -1,3 +1,6 @@
+v.2.2.5
+- Fixed : Babelfish Translation Bug of 10 Day Forecast
+
 v.2.2.4
 - Fixed : Sunrise and Sunset Time Bug of Weather.com
 
