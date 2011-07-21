@@ -1954,7 +1954,7 @@ class WeatherClient:
         htmlSource = self._fetch_data( self.BASE_FORECAST_URL % ( "local", self.code, "", ), 15 )
         htmlSource_5 = self._fetch_data( self.BASE_URL + "/weather/5-day/"+ self.code, 15 )
         _localtime_source_ = self._fetch_data( "http://xoap.weather.com/weather/local/"+self.code+"?cc=f&dayf=1&prod=xoap&link=xoap&par=1004124588&key=079f24145f208494", )
-        print "http://xoap.weather.com/weather/local/"+self.code+"?cc=f&dayf=1&prod=xoap&link=xoap&par=1004124588&key=079f24145f208494", "localtime_source = "+_localtime_source_
+        # print "http://xoap.weather.com/weather/local/"+self.code+"?cc=f&dayf=1&prod=xoap&link=xoap&par=1004124588&key=079f24145f208494", "localtime_source = "+_localtime_source_
 	try:
              _localtime_ = int(re.findall ("([0-9]+):([0-9]+)", _localtime_source_)[1][0])
 	except:
