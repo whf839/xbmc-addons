@@ -1,3 +1,6 @@
+v.2.2.4
+- Fixed : Sunrise and Sunset Time Bug of Weather.com
+
 v.2.2.3
 - Fixed : US Local Forecast Video from Weather.com
 

@@ -120,7 +120,7 @@ def _localize_unit( value, unit="temp" ):
             hour += ( 12 * ( value_specifier == "PM" and int( value.split( ":" )[ 0 ] ) != 12 ) )
             hour -= ( 12 * ( value_specifier == "AM" and int( value.split( ":" )[ 0 ] ) == 12 ) )
             time = "%d:%s" % ( hour, value.split( ":" )[ 1 ], )
-            # print "[Weather.com+] Converting Time : "+value + " " + value_specifier+ " -> " + time
+            # print "[Weather Plus] Converting Time : "+value + " " + value_specifier+ " -> " + time
         else : 
             hour = int( value.split( ":" )[ 0 ] )
             if (hour < 0 ):
@@ -253,7 +253,7 @@ def _english_localize_unit( value, unit="temp" ):
             hour += ( 12 * ( value_specifier == "PM" and int( value.split( ":" )[ 0 ] ) != 12 ) )
             hour -= ( 12 * ( value_specifier == "AM" and int( value.split( ":" )[ 0 ] ) == 12 ) )
             time = "%d:%s" % ( hour, value.split( ":" )[ 1 ], )
-            # print "[Weather.com+] Converting Time : "+value + " " + value_specifier+ " -> " + time
+            # print "[Weather Plus] Converting Time : "+value + " " + value_specifier+ " -> " + time
         else : 
             hour = int( value.split( ":" )[ 0 ] )
             if (hour < 0 ):
@@ -454,6 +454,7 @@ class Forecast36HourParser:
 	self.video_local_location = []
 	self.video_local_number = 0
         self.translate = translate
+	self.error = 0
         self.sun = []
 
         # only need to parse source if there is source
@@ -518,7 +519,7 @@ class Forecast36HourParser:
                    self.video_location = "Non US"
             except :
                 self.video_location = "Non US"
-            print "[Weather.com+] video_location : "+self.video_location + " Local_location : " + self.video_local_location
+            print "[Weather Plus] video_location : "+self.video_location + " Local_location : " + self.video_local_location
             # fetch alerts
             self.alertscolor += re.findall(pattern_alert_color, htmlSource)
             self.alerts = re.findall( pattern_alerts, htmlSource )
@@ -548,7 +549,7 @@ class Forecast36HourParser:
             except :
                time_diff = 0
             # print str(int(sunrise_[ 0 ].split( " " )[ 3 ][:2]))+" asdasd "+ str(localtime)
-            print "[Weather.com+] Timezone : " + str(time_diff)
+            print "[Weather Plus] Timezone : " + str(time_diff)
             
             # fetch extra info
             pressure_ = re.findall( pattern_pressure, htmlSource, re.DOTALL )
@@ -566,9 +567,9 @@ class Forecast36HourParser:
                     pressure = pressure.replace("in", "")
                     # pressure = pressure + { "pressure-up": u"\u2191", "pressure-down": u"\u2193", "pressure-steady": u"\u2192" }[ pressure_[0][1] ]
                     try : 
-                       print "[Weather.com+] pressure : " + pressure_[0][1]
+                       print "[Weather Plus] pressure : " + pressure_[0][1]
                     except :
-                       print "[Weather.com+] there's no info about pressure-up or down"                     
+                       print "[Weather Plus] there's no info about pressure-up or down"                     
             if ( visibility_ ) :
                    visibility = "".join(visibility_[0].split("\n"))
                    visibility = "".join(visibility.split("\t"))
@@ -589,7 +590,7 @@ class Forecast36HourParser:
                       sunset = _localize_unit( str(int(sunset.split(" ")[3].split(":")[0])-time_diff) + ":" + sunset.split(" ")[3].split(":")[1], "time" )
                    except :
                       sunset = "N/A"
-            print "[Weather.com+] pressure : "+pressure
+            print "[Weather Plus] pressure : "+pressure
             if ( pressure == "N/A" ) :
                    self.extras += [(pressure, _localize_unit(visibility, "distance"), sunrise, sunset)]
             elif ( pressure == pressure.replace("mb", "") ) :
@@ -619,7 +620,7 @@ class Forecast36HourParser:
                 try :
                   iconpath = "/".join( [ "special://temp", "weather", "128x128", icon[ count ] + ".png" ] )
                 except :
-                  print "[Weather.com+] Icon is not available"
+                  print "[Weather Plus] Icon is not available"
                   iconpath = "/".join( [ "special://temp", "weather", "128x128", "0.png" ] ) 
                 # add result to our class variable
                 # self.forecast += [ ( days, iconpath, brief[ count ], temperature[ count ][ 0 ], _localize_unit( temperature[ count ][ 1 ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), outlook[ count ].strip(), daylight[ count ].split( ": " )[ 0 ], _localize_unit( daylight[ count ].split( ": " )[ 1 ], "time" ), ) ]
@@ -632,57 +633,60 @@ class Forecast36HourParser:
                 # print precip_amount[ count ].replace( "%", "" )
                 # print brief[ count+4 ]
                 # print daylight[ count ][ 0 ]
-                # print "[Weather.com+] " + _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  )
+                # print "[Weather Plus] " + _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  )
                 try :
-                  print "[Weather.com+] " + days[count]
+                  print "[Weather Plus] " + days[count]
                 except :
-                  print "[Weather.com+] days["+str(count)+"] is not available"
+                  print "[Weather Plus] days["+str(count)+"] is not available"
                   days += [ ("N/A", ) ]              
-                print "[Weather.com+] " + iconpath
-		print "[Weather.com+] brief = ", brief
+                print "[Weather Plus] " + iconpath
+		print "[Weather Plus] brief = ", brief
                 try :
-                  print "[Weather.com+] " + brief[ count ]
+                  print "[Weather Plus] " + brief[ count ]
                 except :
-                  print "[Weather.com+] brief[" +str(count)+ "] is not available"
+                  print "[Weather Plus] brief[" +str(count)+ "] is not available"
                   brief += [ ("N/A", ) ]
                 try :
-                  print "[Weather.com+] " + temperature_info[ count ]
+                  print "[Weather Plus] " + temperature_info[ count ]
                 except :
-                  print "[Weather.com+] temperature_info["+str(count)+"] is not available"
+                  print "[Weather Plus] temperature_info["+str(count)+"] is not available"
                   temperature_info += [ ("N/A", ) ]
                 try :
-                  print "[Weather.com+] " + _localize_unit( temperature[ count ] )
+                  print "[Weather Plus] " + _localize_unit( temperature[ count ] )
                 except :
-                  print "[Weather.com+] temperature["+str(count)+"] is not available"
+                  print "[Weather Plus] temperature["+str(count)+"] is not available"
                   temperature += [ ("N/A", ) ]
                 try :
-                  print "[Weather.com+] " + precip_title[ count ]
+                  print "[Weather Plus] " + precip_title[ count ]
                 except :
-                  print "[Weather.com+] precip_title["+str(count)+"] is not available"
+                  print "[Weather Plus] precip_title["+str(count)+"] is not available"
                   precip_title += [ ("N/A", ) ]
                 try :
-                  print "[Weather.com+] " + precip_amount[ count ].replace( "%", "" )
+                  print "[Weather Plus] " + precip_amount[ count ].replace( "%", "" )
                 except :
-                  print "[Weather.com+] precip_amount["+str(count)+"] is not available"
+                  print "[Weather Plus] precip_amount["+str(count)+"] is not available"
                   precip_amount += [ ("N/A", ) ]
                 try :
-                  print "[Weather.com+] " + outlook[ count ]
+                  print "[Weather Plus] " + outlook[ count ]
                 except :
-                  print "[Weather.com+] outlook["+str(count)+"] is not available"
+                  print "[Weather Plus] outlook["+str(count)+"] is not available"
                   outlook += [ ("N/A", ) ]
                 try :
-                  print "[Weather.com+] " + daylight[ count ][ 0 ]
+                  print "[Weather Plus] " + daylight[ count ][ 0 ]
                 except :
-                  print "[Weather.com+] daylight["+str(count)+"][0] is not available"
+                  print "[Weather Plus] daylight["+str(count)+"][0] is not available"
                   daylight += [ ("N/A", ) ]
                 try :
-                  print "[Weather.com+] " + _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  )
+                  print "[Weather Plus] " + _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  )
                   self.forecast += [ ( days[count], iconpath, brief[ count ], temperature_info[ count ], _localize_unit( temperature[ count ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), outlook[ count ], daylight[ count ][ 0 ], _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  ), ) ]
                 except :
-                  print "[Weather.com+] daylight["+str(count)+"][1] is not available"
+                  print "[Weather Plus] daylight["+str(count)+"][1] is not available"
                   self.forecast += [ ( days[count], iconpath, brief[ count ], temperature_info[ count ], _localize_unit( temperature[ count ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), outlook[ count ], daylight[ count ][ 0 ], "N/A", ) ]
 
                 # self.forecast += [ ( days[count], iconpath, brief[ count ], temperature_info[ count ], _localize_unit( temperature[ count ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), outlook[ count ], daylight[ count ][ 0 ], _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  ), ) ]
+        else:
+	    print "[Weather Plus] No data fetched! Weather.com pages may have been changed."
+	    self.error = 1
 
 class ACCU_Forecast36HourParser:
     def __init__( self, htmlSource, htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4, translate=None ):
@@ -758,7 +762,7 @@ class ACCU_Forecast36HourParser:
                    self.video_location = "Non US"
             except :
                 self.video_location = "Non US"
-            print "[Weather.com+] video_location : "+self.video_location + " Local_location : " + self.video_local_location
+            print "[Weather Plus] video_location : "+self.video_location + " Local_location : " + self.video_local_location
 
             # fetch alerts
             self.alertscolor += re.findall(pattern_alert_color, htmlSource)
@@ -826,7 +830,7 @@ class ACCU_Forecast36HourParser:
 		visibility = _english_localize_unit( re.findall( pattern_visibility, htmlSource, re.DOTALL )[0], "distance" )
 	    except:
 		visibility = "N/A"
-            # print "[Weather.com+] pressure : " + pressure
+            # print "[Weather Plus] pressure : " + pressure
 	    self.extras += [( pressure, visibility, current_sunrise, current_sunset, current_temp, current_feel_like, current_brief, current_wind, current_humidity, current_dew, current_icon )]
 	    # am or pm now?
             try: 
@@ -840,14 +844,14 @@ class ACCU_Forecast36HourParser:
 	    except:
 		if ( int(current_time.split(":")[0]) > 11 ):
 			ampm = 1
-	    # print "[Weather.com+] Current Time : " + current_time
+	    # print "[Weather Plus] Current Time : " + current_time
 	    days = ["Today", "Tonight", "Tomorrow", "Tomorrow Night"]
             for count in range(0, 3):
                 # make icon path
                 try :
                   iconpath = "/".join( [ "special://temp", "weather", "128x128", icon[ count+ampm ] + ".png" ] )
                 except :
-                  print "[Weather.com+] Icon is not available"
+                  print "[Weather Plus] Icon is not available"
                   iconpath = "/".join( [ "special://temp", "weather", "128x128", "na.png" ] ) 
                 # add result to our class variable
                 # self.forecast += [ ( days, iconpath, brief[ count ], temperature[ count ][ 0 ], _localize_unit( temperature[ count ][ 1 ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), outlook[ count ].strip(), daylight[ count ].split( ": " )[ 0 ], _localize_unit( daylight[ count ].split( ": " )[ 1 ], "time" ), ) ]
@@ -860,49 +864,49 @@ class ACCU_Forecast36HourParser:
                 # print precip_amount[ count ].replace( "%", "" )
                 # print brief[ count+4 ]
                 # print daylight[ count ][ 0 ]
-                # print "[Weather.com+] " + _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  )
-                print "[Weather.com+] " + days[count+ampm]          
-                print "[Weather.com+] " + iconpath
+                # print "[Weather Plus] " + _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  )
+                print "[Weather Plus] " + days[count+ampm]          
+                print "[Weather Plus] " + iconpath
 		# print daylight
                 try :
-                  print "[Weather.com+] " + brief[ count+1 ]
+                  print "[Weather Plus] " + brief[ count+1 ]
                 except :
-                  print "[Weather.com+] iconpath is not available"
+                  print "[Weather Plus] iconpath is not available"
                   brief += [ ("N/A", ) ]
                 try :
-                  print "[Weather.com+] " + temperature_info[ count ]
+                  print "[Weather Plus] " + temperature_info[ count ]
                 except :
-                  print "[Weather.com+] temperature_info["+str(count)+"] is not available"
+                  print "[Weather Plus] temperature_info["+str(count)+"] is not available"
                   temperature_info += [ ("N/A", ) ]
                 try :
-                  print "[Weather.com+] " + _localize_unit( temperature[ count ] )
+                  print "[Weather Plus] " + _localize_unit( temperature[ count ] )
                 except :
-                  print "[Weather.com+] temperature["+str(count)+"] is not available"
+                  print "[Weather Plus] temperature["+str(count)+"] is not available"
                   temperature += [ ("N/A", ) ]
                 try :
-                  print "[Weather.com+] " + precip_title[ count ]
+                  print "[Weather Plus] " + precip_title[ count ]
                 except :
-                  print "[Weather.com+] precip_title["+str(count)+"] is not available"
+                  print "[Weather Plus] precip_title["+str(count)+"] is not available"
                   precip_title += [ ("N/A", ) ]
                 try :
-                  print "[Weather.com+] " + precip_amount[ count ].replace( "%", "" )
+                  print "[Weather Plus] " + precip_amount[ count ].replace( "%", "" )
                 except :
-                  print "[Weather.com+] precip_amount["+str(count)+"] is not available"
+                  print "[Weather Plus] precip_amount["+str(count)+"] is not available"
                   precip_amount += [ "N/A" ]
                 try :
-                  print "[Weather.com+] " + brief[ count+ampm ]
+                  print "[Weather Plus] " + brief[ count+ampm ]
                 except :
-                  print "[Weather.com+] brief["+str(count+ampm)+"] is not available"
+                  print "[Weather Plus] brief["+str(count+ampm)+"] is not available"
                   brief += [ ("N/A", "N/A", "N/A", "N/A", ) ]
                 try :
-                  print "[Weather.com+] " + daylight[ count+ampm ][ 0 ]
+                  print "[Weather Plus] " + daylight[ count+ampm ][ 0 ]
                 except :
-                  print "[Weather.com+] daylight["+str(count+ampm)+"] is not available"
+                  print "[Weather Plus] daylight["+str(count+ampm)+"] is not available"
                   daylight += [ ("N/A", ) ]
                 try :
-                  print "[Weather.com+] " + _localize_unit( daylight[ count+ampm ][ 1 ], "time"  )
+                  print "[Weather Plus] " + _localize_unit( daylight[ count+ampm ][ 1 ], "time"  )
                 except :
-                  print "[Weather.com+] daylight["+str(count+ampm)+"] is not available"
+                  print "[Weather Plus] daylight["+str(count+ampm)+"] is not available"
                   daylight += [ ("00:00", ) ]
 
                 self.forecast += [ ( days[count+ampm], iconpath, "", temperature_info[ count+ampm ], _english_localize_unit( temperature[ count+ampm ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), brief[ count+ampm ], daylight[ count+ampm ][ 0 ], _localize_unit( daylight[ count+ampm ][ 1 ], "time"  ), ) ]
@@ -966,7 +970,7 @@ class NOAA_Forecast36HourParser:
  	# am or pm now?
 	ampm = 0
 	if (days_10day[0] == "Tonight" or days_10day[0] == "Overnight"): ampm = 1
-        print "[Weather.com+] ampm : " + str(ampm)
+        print "[Weather Plus] ampm : " + str(ampm)
 
 
 	# fetch icons
@@ -975,7 +979,7 @@ class NOAA_Forecast36HourParser:
 	icondir = { "skc":"32", "nskc":"31", "few":"34", "nfew":"33", "sct":"30", "nsct":"29", "bkn":"28", "nbkn":"27", "scttsra":"37", "nscttsra":"47", "tsra":"35", "ntsra":"35", "ra":"10", "nra":"10", "sn":"14", "nsn":"14", "shra":"39", "nshra":"45", "wind":"24", "nwind":"24", "fg":"20", "nfg":"20", "sctfg":"20", "nsctfg":"20", "hi_tsra":"37", "hi_ntsra":"47" }
 	for count in range(0, 12-ampm):
 		icon += [ icondir.get(icons[count - 12]) ]
-	print "[Weather.com+] NOAA icons : "
+	print "[Weather Plus] NOAA icons : "
 	print icon
 	
 
@@ -1081,7 +1085,7 @@ class NOAA_Forecast36HourParser:
 		     visibility = _localize_unit( re.findall( pattern_visibility_2, htmlSource, re.DOTALL )[0].replace("Miles","miles").replace("mi.","miles"), "distance" )
 		except:
 		     visibility = "N/A"
-            print "[Weather.com+] pressure, visibility : " + pressure, visibility
+            print "[Weather Plus] pressure, visibility : " + pressure, visibility
             sunrise = re.findall( pattern_sunrise, htmlSource_2 ) 
 	    sunset = re.findall( pattern_sunset, htmlSource_2 )
 	    daylight = []
@@ -1095,7 +1099,7 @@ class NOAA_Forecast36HourParser:
 				daylight += [ ("Sunrise", sunrise[count]+" AM"), ("Sunset", sunset[count+1]+" PM") ]
 		except:
 			daylight += [ ("Sunrise", "N/A"), ("Sunset", "N/A"), ]
-	    print "[Weather.com+] Sunrize and Sunset : ", daylight
+	    print "[Weather Plus] Sunrize and Sunset : ", daylight
 	    self.extras += [( pressure, visibility, daylight[0][1], daylight[1][1], current_temp, current_feel_like, current_brief, current_wind, current_humidity, current_dew, "/".join( [ "special://temp", "weather", "128x128", "na.png" ] ) )]
 	    days = ["Today", "Tonight", "Tomorrow", "Tomorrow Night", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A"]
             for count in range(0, 12-ampm):
@@ -1104,7 +1108,7 @@ class NOAA_Forecast36HourParser:
                 try :
                   iconpath = "/".join( [ "special://temp", "weather", "128x128", icon[ count+ampm ] + ".png" ] )
                 except :
-                  print "[Weather.com+] Icon is not available"
+                  print "[Weather Plus] Icon is not available"
                   iconpath = "/".join( [ "special://temp", "weather", "128x128", "na.png" ] ) 
                 # date calculation for 6 day
 		date_day = int(today.split(" ")[ 1 ]) + int( (count+1)/2 )
@@ -1138,67 +1142,67 @@ class NOAA_Forecast36HourParser:
                 # print precip_amount[ count ].replace( "%", "" )
                 # print brief[ count+4 ]
                 # print daylight[ count ][ 0 ]
-                # print "[Weather.com+] " + _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  )
+                # print "[Weather Plus] " + _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  )
                 if ( count < 3 ):
-		  print "[Weather.com+] " + days[count+ampm]          
+		  print "[Weather Plus] " + days[count+ampm]          
 		else:
-		  print "[Weather.com+] " + days_10day[count]
-                print "[Weather.com+] " + iconpath
+		  print "[Weather Plus] " + days_10day[count]
+                print "[Weather Plus] " + iconpath
 		# print daylight
                 try :
-                  print "[Weather.com+] " + brief[ count+1 ]
+                  print "[Weather Plus] " + brief[ count+1 ]
                 except :
-                  print "[Weather.com+] iconpath is not available"
+                  print "[Weather Plus] iconpath is not available"
                   brief += [ ("N/A", ) ]
                 try :
-                  print "[Weather.com+] " + temperature_info[ count+ampm ]
+                  print "[Weather Plus] " + temperature_info[ count+ampm ]
                 except :
-                  print "[Weather.com+] temperature_info["+str(count+ampm)+"] is not available"
+                  print "[Weather Plus] temperature_info["+str(count+ampm)+"] is not available"
                   temperature_info += [ ("N/A", ) ]
                 try :
-                  print "[Weather.com+] " + _localize_unit( temperature[ count ] )
+                  print "[Weather Plus] " + _localize_unit( temperature[ count ] )
                 except :
-                  print "[Weather.com+] temperature["+str(count)+"] is not available"
+                  print "[Weather Plus] temperature["+str(count)+"] is not available"
                   temperature += [ temp[ count ] ]
                 try :
-                  print "[Weather.com+] " + precip_title[ count ]
+                  print "[Weather Plus] " + precip_title[ count ]
                 except :
-                  print "[Weather.com+] precip_title["+str(count)+"] is not available"
+                  print "[Weather Plus] precip_title["+str(count)+"] is not available"
                   precip_title += [ "Rain/Snow" ]
 		try:
-                  print "[Weather.com+] " + precip_amount[ count ].replace( "%", "" )
+                  print "[Weather Plus] " + precip_amount[ count ].replace( "%", "" )
                 except :
-                  print "[Weather.com+] precip_amount["+str(count)+"] is not available"
+                  print "[Weather Plus] precip_amount["+str(count)+"] is not available"
                   precip_amount += [ "N/A" ]
                 try :
-                  print "[Weather.com+] " + brief[ count ]
+                  print "[Weather Plus] " + brief[ count ]
                 except :
-                  print "[Weather.com+] brief["+str(count)+"] is not available"
+                  print "[Weather Plus] brief["+str(count)+"] is not available"
                   brief += [ ("N/A", "N/A", "N/A", "N/A", ) ]
                 try :
-                  print "[Weather.com+] " + daylight[ count+ampm ][ 0 ]
+                  print "[Weather Plus] " + daylight[ count+ampm ][ 0 ]
                 except :
-                  print "[Weather.com+] daylight["+str(count+ampm)+"] is not available"
+                  print "[Weather Plus] daylight["+str(count+ampm)+"] is not available"
                   daylight += [ ("N/A", ) ]
                 try :
-                  print "[Weather.com+] " + _localize_unit( daylight[ count+ampm ][ 1 ], "time"  )
+                  print "[Weather Plus] " + _localize_unit( daylight[ count+ampm ][ 1 ], "time"  )
                 except :
-                  print "[Weather.com+] daylight["+str(count+ampm)+"] is not available"
+                  print "[Weather Plus] daylight["+str(count+ampm)+"] is not available"
                   daylight += [ ("00:00", ) ]
 		try :
-		  print "[Weather.com+] " + days_10day[count].replace("This Afternoon", "Today")
+		  print "[Weather Plus] " + days_10day[count].replace("This Afternoon", "Today")
 		except :
-		  print "[Weather.com+] days_10day["+str(count)+"] is not available"
+		  print "[Weather Plus] days_10day["+str(count)+"] is not available"
 		  days_10day += [ ("N/A", ) ]
 		try:
-		  print "[Weather.com+] " + date
+		  print "[Weather Plus] " + date
 		except :
-		  print "[Weather.com+] date is not available"
+		  print "[Weather Plus] date is not available"
 		  date += [ ("N/A", ) ]
 		try:
-		  print "[Weather.com+] wind : ", wind[count]
+		  print "[Weather Plus] wind : ", wind[count]
 		except :
-		  print "[Weather.com+] wind["+str(count)+"] is not available"
+		  print "[Weather Plus] wind["+str(count)+"] is not available"
 		  wind += [ ("N/A", "0") ]
 		# print days[count+ampm], iconpath, brief[ count ]
 	        # print _localize_unit( temperature[ count ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" )
@@ -1939,33 +1943,43 @@ class WeatherClient:
         return ( not "%s" % ( str( [ chr( c ) for c in ( 98, 111, 120, 101, 101, ) ] ).replace( "'", "" ).replace( ", ", "" )[ 1 : -1 ], ) in xbmc.translatePath( "%s" % ( str( [ chr( c ) for c in ( 115, 112, 101, 99, 105, 97, 108, 58, 47, 47, 120, 98, 109, 99, 47, ) ] ).replace( "'", "" ).replace( ", ", "" )[ 1 : -1 ], ) ).lower() )
 
     def fetch_36_forecast( self, video ):
+        print "[Weather Plus] Area code = " + self.code
+        print "*****************************************************"
+        print "*                                                   *"
+	print "* [Weather Plus] Trying to fetch 36 hour forecast.. *"
+        print "*                                                   *"
+	print "*****************************************************"
+	print "[Weather Plus] Fetching URL : " + self.BASE_FORECAST_URL % ( "local", self.code, "", )
         # fetch source
         htmlSource = self._fetch_data( self.BASE_FORECAST_URL % ( "local", self.code, "", ), 15 )
         htmlSource_5 = self._fetch_data( self.BASE_URL + "/weather/5-day/"+ self.code, 15 )
-        _localtime_source_ = self._fetch_data( "http://xoap.weather.com/weather/local/"+self.code+"?cc=f&dayf=1&par=1004124588&key=079f24145f208494", )
-        # print "http://xoap.weather.com/weather/local/"+self.code+"?cc=f&dayf=1&par=1004124588&key=079f24145f208494", "localtime_source = "+_localtime_source_
+        _localtime_source_ = self._fetch_data( "http://xoap.weather.com/weather/local/"+self.code+"?cc=f&dayf=1&prod=xoap&link=xoap&par=1004124588&key=079f24145f208494", )
+        print "http://xoap.weather.com/weather/local/"+self.code+"?cc=f&dayf=1&prod=xoap&link=xoap&par=1004124588&key=079f24145f208494", "localtime_source = "+_localtime_source_
 	try:
              _localtime_ = int(re.findall ("([0-9]+):([0-9]+)", _localtime_source_)[1][0])
 	except:
 	     _localtime_ = None
 
-        print "[Weather.com+] Area code = "+self.code
+
         # parse source for forecast
         parser = Forecast36HourParser( htmlSource, htmlSource_5, _localtime_, self.translate )
-        # print parser.alertscolor[0]
-        # fetch any alerts
-        alerts, alertsrss, alertsnotify = self._fetch_alerts( parser.alerts )
-        # print alerts, alertsrss, alertsnotify
-        # create video url
-        video, video_local = self._create_video( parser.video_location, parser.video_local_location, parser.video_local_number, video )
-        print "[Weather.com+] Weather Video = "+video
-        print "[Weather.com+] Local Video = "+video_local
-        # return forecast
-        if ( parser.alertscolor is not None ) :
-             try : 
-                 return alerts, alertsrss, alertsnotify, parser.alertscolor[0], len(parser.alerts), parser.forecast, parser.extras, video, video_local
-             except : 
-                 return alerts, alertsrss, alertsnotify, parser.alertscolor, len(parser.alerts), parser.forecast, parser.extras, video, video_local
+	if ( parser.error == 0 ):
+		# print parser.alertscolor[0]
+	        # fetch any alerts
+	        alerts, alertsrss, alertsnotify = self._fetch_alerts( parser.alerts )
+	        # print alerts, alertsrss, alertsnotify
+	        # create video url
+	        video, video_local = self._create_video( parser.video_location, parser.video_local_location, parser.video_local_number, video )
+	        print "[Weather Plus] Weather Video = "+video
+	        print "[Weather Plus] Local Video = "+video_local
+	        # return forecast
+	        if ( parser.alertscolor is not None ) :
+	             try : 
+	                 return alerts, alertsrss, alertsnotify, parser.alertscolor[0], len(parser.alerts), parser.forecast, parser.extras, video, video_local
+	             except : 
+	                 return alerts, alertsrss, alertsnotify, parser.alertscolor, len(parser.alerts), parser.forecast, parser.extras, video, video_local
+	else:
+		print "[Weather Plus] Error Code : " + str( parser.error )
 
     def accu_36_forecast( self, video ):
         # fetch source
@@ -1975,7 +1989,7 @@ class WeatherClient:
 	htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code, "details2" ), 15 )
         htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( code, "quick-look" ), 15 )
 	htmlSource_4 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( code, "details2" ), 15 )
-        print "[Weather.com+] Area code = "+self.code
+        print "[Weather Plus] Area code = "+self.code
         # parse source for forecast
         parser = ACCU_Forecast36HourParser( htmlSource, htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4, self.translate )
         # print parser.alertscolor[0]
@@ -1986,8 +2000,8 @@ class WeatherClient:
         # video, video_local = self._create_video( parser.video_location, parser.video_local_location, parser.video_local_number, video )
 	video = ""
 	video_local = ""
-        print "[Weather.com+] Weather Video = "+video
-        print "[Weather.com+] Local Video = "+video_local
+        print "[Weather Plus] Weather Video = "+video
+        print "[Weather Plus] Local Video = "+video_local
         # return forecast
         if ( parser.alertscolor is not None ) :
              try : 
@@ -1999,7 +2013,7 @@ class WeatherClient:
         # fetch source
         htmlSource = self._fetch_data( self.BASE_NOAA_FORECAST_URL % ( self.code ), 15 )
 	htmlSource_2 = self._fetch_data( self.BASE_NOAA_QUICK_URL % ( self.code ), 15 )
-        print "[Weather.com+] Area code = " + self.code
+        print "[Weather Plus] Area code = " + self.code
         # parse source for forecast
         parser = NOAA_Forecast36HourParser( htmlSource, htmlSource_2, self.translate )
         # print parser.alertscolor[0]
@@ -2010,8 +2024,8 @@ class WeatherClient:
         # video, video_local = self._create_video( parser.video_location, parser.video_local_location, parser.video_local_number, video )
 	video = ""
 	video_local = ""
-        print "[Weather.com+] Weather Video = "+video
-        print "[Weather.com+] Local Video = "+video_local
+        print "[Weather Plus] Weather Video = "+video
+        print "[Weather Plus] Local Video = "+video_local
         # return forecast
         if ( parser.alertscolor is not None ) :
              try : 
@@ -2060,8 +2074,8 @@ class WeatherClient:
 	     local_location = local_location.split("/")[2]
 	except:
 	     pass
-        print "[Weather.com+] Video Location : " + location
-	print "[Weather.com+] Local Video Location : " + local_location
+        print "[Weather Plus] Video Location : " + location
+	print "[Weather Plus] Local Video Location : " + local_location
         # video = location
         # US
         if ( len( location ) and (self.code.startswith( "US" ) or len(self.code) == 5) ):    
@@ -2104,7 +2118,7 @@ class WeatherClient:
                 # print local_location, htmlSource
                 if (local_location is not None) :
                    local_url = self.BASE_VIDEO_URL % ( local_location[0].replace(" ", "").lower(), )
-                   print "[Weather.com+] Local Video Location : " + local_location[0].replace(" ", "").lower()
+                   print "[Weather Plus] Local Video Location : " + local_location[0].replace(" ", "").lower()
             
             # all failed use national
             if ( url == "" ) : 
@@ -2115,11 +2129,11 @@ class WeatherClient:
         # UK
         if (len( location ) and self.code.startswith( "UK" ) and video == "" ):
             url = "http://static1.sky.com/feeds/skynews/latest/daily/ukweather.flv"
-            print "[Weather.com+] Local Video Location : UK"
+            print "[Weather Plus] Local Video Location : UK"
             return url, local_url
         # Canada
         if (len( location ) and self.code.startswith("CA") and video == "" ):
-            print "[Weather.com+] Local Video Location : Canada"
+            print "[Weather Plus] Local Video Location : Canada"
             accu_canada = "http://www.accuweather.com/video/1681759716/canadian-national-weather-fore.asp?channel=world"
             htmlSource = self._fetch_data( accu_canada, 15 )
             pattern_video = "http://brightcove.vo.llnwd.net/d([0-9]+)/unsecured/media/1612802193/1612802193_([0-9]+)_(.+?)-thumb.jpg"
@@ -2146,7 +2160,7 @@ class WeatherClient:
 
         # Europe
         if (len( location ) and (self.code.startswith("FR") or self.code.startswith("SP") or self.code.startswith("IT") or self.code.startswith("GM") or self.code.startswith("NL") or self.code.startswith("GR") or self.code.startswith("PO") or self.code.startswith("EI")) and video == "" ):
-            print "[Weather.com+] Local Video Location : Europe"
+            print "[Weather Plus] Local Video Location : Europe"
             accu_europe = "http://www.accuweather.com/video/1681759717/europe-weather-forecast.asp?channel=world"
             htmlSource = self._fetch_data( accu_europe, 15 )
             pattern_video = "http://brightcove.vo.llnwd.net/d([0-9]+)/unsecured/media/1612802193/1612802193_([0-9]+)_(.+?)-thumb.jpg"
@@ -2175,6 +2189,12 @@ class WeatherClient:
         return video, video
 
     def fetch_hourly_forecast( self ):
+        print "*****************************************************"
+        print "*                                                   *"
+	print "* [Weather Plus] Trying to fetch hourly forecast..  *"
+        print "*                                                   *"
+	print "*****************************************************"
+	print "[Weather Plus] Fetching URL : " + self.BASE_FORECAST_URL % ( "hourbyhour", self.code, "", )
         # fetch source
         htmlSource = self._fetch_data( self.BASE_FORECAST_URL % ( "hourbyhour", self.code, "", ), 15 )
         # parse source for forecast
@@ -2208,6 +2228,12 @@ class WeatherClient:
         return parser.forecast
 
     def fetch_weekend_forecast( self ):
+        print "*****************************************************"
+        print "*                                                   *"
+	print "* [Weather Plus] Trying to fetch weekend forecast.. *"
+        print "*                                                   *"
+	print "*****************************************************"
+	print "[Weather Plus] Fetching URL : " + self.BASE_FORECAST_URL % ( "weekend", self.code, "", )
         # fetch source
         htmlSource = self._fetch_data( self.BASE_FORECAST_URL % ( "weekend", self.code, "", ), 15 )
         # parse source for forecast
@@ -2228,9 +2254,15 @@ class WeatherClient:
         return parser.forecast
 
     def fetch_10day_forecast( self ):
+        print "*****************************************************"
+        print "*                                                   *"
+	print "* [Weather Plus] Trying to fetch 10 day forecast..  *"
+        print "*                                                   *"
+        print "*****************************************************"
+	print "[Weather Plus] Fetching URL : " + self.BASE_FORECAST_URL % ( "tenday", self.code, "", )
         # fetch source
         htmlSource = self._fetch_data( self.BASE_FORECAST_URL % ( "tenday", self.code, "", ), 15 )
-	print self.BASE_FORECAST_URL % ( "tenday", self.code, "", )
+	# print self.BASE_FORECAST_URL % ( "tenday", self.code, "", )
         # parse source for forecast
         parser = Forecast10DayParser( htmlSource, self.translate )
         # return forecast
@@ -2246,8 +2278,8 @@ class WeatherClient:
         elif ( maptype == 1 ):
             # add locale to local map list if local category
             url = url % ( "map", self.code, "", )
-        print "[Weather.com+] maptype = " + str(maptype)
-        print "[Weather.com+] map_list_url = " + url
+        print "[Weather Plus] maptype = " + str(maptype)
+        print "[Weather Plus] map_list_url = " + url
         # handle user definde maps special
         if ( maptype == ( len( self.BASE_MAPS ) - 1 ) ):
             # initialize our map list variable
@@ -2326,7 +2358,7 @@ class WeatherClient:
         else:
             url = self.BASE_FORECAST_URL % ( "map", self.code, "&mapdest=%s" % ( map, ), )
         # fetch source
-        print "[Weather.com+] map_url = " + url
+        print "[Weather Plus] map_url = " + url
         htmlSource = self._fetch_data( url, subfolder="maps" )
         # parse source for static map and create animated map list if available
         parser = MapParser( htmlSource )
@@ -2344,7 +2376,7 @@ class WeatherClient:
         for count, url in enumerate( maps ):
             # used for info in progress dialog
             self.image = os.path.basename( url )
-            print "[Weather.com+] Fetch image = " + self.image + " ||| url = "+ url
+            print "[Weather Plus] Fetch image = " + self.image + " ||| url = "+ url
             # fetch map
             base_path_maps = self._fetch_data( url, -1 * ( count + 1 ), self.image, len( maps ) > 1, subfolder="" )
             # no need to continue if the first map of multi image map fails

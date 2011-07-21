@@ -62,7 +62,7 @@ class Main:
 	         code = area.split("-")[0].replace(" ","")
 		 if ( self.areacode == code ):
 		      self.area_num = count+1
-	    print "[Weather.com+] self.area_num = " + str(self.area_num)
+	    print "[Weather Plus] self.area_num = " + str(self.area_num)
 	    """	     
 	    self.provider = "Default"
 	    # Accuweather.com Global
@@ -72,7 +72,7 @@ class Main:
 		self.WEATHER_WINDOW.setProperty( "Location", Location.split(" (")[0] )
 	        if ( self.provider == "0" ):
 			self.areacode = self.Settings.getSetting("alt_code" + str(self.locationindex))
-			print "[Weather.com+] Alternative Provider Selected : Accuweather.com Global (" + self.areacode + ")"		
+			print "[Weather Plus] Alternative Provider Selected : Accuweather.com Global (" + self.areacode + ")"		
 			self._accu_hourly_forecast()
 			self._accu_36_forecast()
 			self._accu_10day_forecast()
@@ -83,7 +83,7 @@ class Main:
 			# self._fetch_map_list()
 		if ( self.provider == "1" ):
 			self.areacode = self.Settings.getSetting("alt_code" + str(self.locationindex))
-			print "[Weather.com+] Alternative Provider Selected : NOAA"
+			print "[Weather Plus] Alternative Provider Selected : NOAA"
 			self._noaa_36_forecast()
 			self._noaa_hourly_forecast()
 			# self._noaa_10day_forecast()
@@ -246,7 +246,7 @@ class Main:
         # we set this here in case we do not need to download new lists
         current_map = self.WEATHER_WINDOW.getProperty( "Weather.CurrentMapUrl" )
         current_map_title = self.WEATHER_WINDOW.getProperty( "Weather.CurrentMap" )
-        print "[Weather.com+] Current Map : " + current_map
+        print "[Weather Plus] Current Map : " + current_map
         # only run if any new map lists
         if ( True ):
             # we set our maps path property to loading images while downloading
@@ -299,10 +299,10 @@ class Main:
         self._fetch_map( current_map, current_map_title, xbmc.getInfoLabel( "Window(Weather).Property(LocationIndex)" ) )
 
     def _fetch_map( self, map, title, locationindex=None ):
-        print "[Weather.com+] map = " + map
-        print "[Weather.com+] title = " + title
-        print "[Weather.com+] Locationindex = " + locationindex
-        print "[Weather.com+] maplist_user_file = " + self.Settings.getSetting("maplist_user_file")
+        print "[Weather Plus] map = " + map
+        print "[Weather Plus] title = " + title
+        print "[Weather Plus] Locationindex = " + locationindex
+        print "[Weather Plus] maplist_user_file = " + self.Settings.getSetting("maplist_user_file")
         # exit script if user changed locations
         if ( self.areacode != xbmc.getInfoLabel( "Window(Weather).Property(AreaCode)" ) ):
             return
@@ -346,6 +346,7 @@ class Main:
         self.WEATHER_WINDOW.setProperty( "Video.regional", video_url )
 	self.WEATHER_WINDOW.setProperty( "Video.local", video_local_url )
         # print "Weather Video = "+self.WEATHER_WINDOW.getProperty ("Video")
+
     def _set_extra_current_info( self, extras ):
         if ( extras ):
             self.WEATHER_WINDOW.setProperty( "Current.Pressure", extras[ 0 ][0] )
