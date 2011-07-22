@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="weather.weatherplus"
        name="Weather Plus"
-       version="2.2.5"
+       version="2.2.6"
        provider-name="Brightsr">
   <extension point="xbmc.python.weather" library="default.py"/>
   <extension point="xbmc.addon.metadata">

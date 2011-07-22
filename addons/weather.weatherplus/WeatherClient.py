@@ -2111,24 +2111,30 @@ class WeatherClient:
                 # create the url
                 url = self.BASE_VIDEO_URL % ( video, )
                 # print "url : "+url
-                           
-           # Local Video
-            if ( local_location == "new-yorks" or local_location == "washington-dcs") :
+
+	   # Local Video
+            if ( local_location == "new-yorks" or local_location == "washington-dcs" or local_location == "las-vegas") :
                 if ( local_location == "new-yorks" ) :
                     local_location = "newyorkcity"
                     # print local_location
                 if ( local_location == "washington-dcs" ) :
                     local_location = "washingtondc"
+		if ( local_location == "las-vegas" ) :
+		    local_location = "vegas"
                 local_url = self.BASE_VIDEO_URL % ( local_location, )
             elif ( local_location != "Not Available" ) :
-                htmlSource = self._fetch_data("http://www.weather.com/outlook/videos/" + local_location + "-60-second-forecast-" + local_number)
-                pattern_local = "<TITLE>(.+?)\'"
-                local_location = re.findall( pattern_local, htmlSource )
-                # print local_location, htmlSource
-                if (local_location is not None) :
-                   local_url = self.BASE_VIDEO_URL % ( local_location[0].replace(" ", "").lower(), )
-                   print "[Weather Plus] Local Video Location : " + local_location[0].replace(" ", "").lower()
-            
+                # htmlSource = self._fetch_data("http://www.weather.com/outlook/videos/" + local_location + "-60-second-forecast-" + local_number)
+                # pattern_local = "<TITLE>(.+?)\'"
+                # local_location = re.findall( pattern_local, htmlSource )
+                # print local_location, local_number
+                # if (local_location != []) :
+                #    local_url = self.BASE_VIDEO_URL % ( local_location[0].replace(" ", "").lower(), )
+                #    print "[Weather Plus] Local Video Location : " + local_location[0].replace(" ", "").lower()
+		local_location = local_location.replace("-","")
+                if ( local_location == "colombus" or local_location == "ftmyers" or local_location == "new-orleans" or local_location == "cedar-rapids" or local_location == "des moines" or local_location == "grand-rapids" or local_location == "indianapolis" or local_location == "minneapolis" or local_location == "stlouis" or local_location == "colorado-springs" or local_location == "dallas" or local_location == "vegas" or local_location == "los-angeles" ) :
+		    local_url = self.BASE_VIDEO_URL % ( local_location, )
+                else :
+	            local_url = self.BASE_VIDEO_URL % ( local_location [:(len(local_location)-1)], )
             # all failed use national
             if ( url == "" ) : 
                 url = self.BASE_VIDEO_URL % ( "national", )

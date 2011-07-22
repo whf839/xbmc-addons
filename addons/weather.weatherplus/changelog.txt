@@ -1,3 +1,6 @@
+v.2.2.6
+- Fixed : US Local Forecast Video from Weather.com
+
 v.2.2.5
 - Fixed : Babelfish Translation Bug of 10 Day Forecast
 
