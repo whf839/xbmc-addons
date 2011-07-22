@@ -1593,7 +1593,7 @@ class ForecastWeekendParser:
         # convert outlook wind/temp values
         # normalize turned off due to variety of expressions : 'upper', 'single digits', etc.
         # TODO : getting most expressions covered
-        # outlooks = _normalize_outlook( outlooks )
+        outlooks = _normalize_outlook( outlooks )
         # translate brief and outlook if user preference
         if ( self.translate is not None ):
             # we only need outlook and brief. the rest the skins or xbmc language file can handle
