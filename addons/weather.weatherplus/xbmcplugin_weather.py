@@ -65,14 +65,21 @@ class Main:
 	    print "[Weather Plus] self.area_num = " + str(self.area_num)
 	    """	     
 	    self.provider = "Default"
-	    # Accuweather.com Global
+	    # Alternative Provider ( 0 : Accuweather.com Global, 1 : NOAA )
 	    if ( self.Settings.getSetting("location" + str(self.locationindex)) == "true" ):
 	        Location = self.Settings.getSetting("alt_location" + str(self.locationindex))
 		self.provider = self.Settings.getSetting("alt_provider" + str(self.locationindex))
 		self.WEATHER_WINDOW.setProperty( "Location", Location.split(" (")[0] )
 	        if ( self.provider == "0" ):
 			self.areacode = self.Settings.getSetting("alt_code" + str(self.locationindex))
-			print "[Weather Plus] Alternative Provider Selected : Accuweather.com Global (" + self.areacode + ")"		
+			print "[Weather Plus] Alternative Provider Selected : Accuweather.com Global (" + self.areacode + ")"
+			# print re.search( "/", self.areacode )
+			if ( re.search( "/", self.areacode ) is None ):
+				dialog = xbmcgui.Dialog()
+				yesno = dialog.yesno( "Area Code Error", "You need to re-select your location.", "Would you want to open Settings window?", "(Please refresh after re-selection.)" )
+				if ( yesno ):
+					self.__settings__.openSettings()
+				return
 			self._accu_hourly_forecast()
 			self._accu_36_forecast()
 			self._accu_10day_forecast()
@@ -83,7 +90,13 @@ class Main:
 			# self._fetch_map_list()
 		if ( self.provider == "1" ):
 			self.areacode = self.Settings.getSetting("alt_code" + str(self.locationindex))
-			print "[Weather Plus] Alternative Provider Selected : NOAA"
+			print "[Weather Plus] Alternative Provider Selected : NOAA (" + self.areacode +")"
+			if ( re.search( "CityName", self.areacode ) is None ):
+				dialog = xbmcgui.Dialog()
+				yesno = dialog.yesno( "Area Code Error", "You need to re-select your location.", "Would you want to open Settings window?", "(Please refresh after re-selection.)")
+				if ( yesno ):
+					self.__settings__.openSettings()
+				return
 			self._noaa_36_forecast()
 			self._noaa_hourly_forecast()
 			# self._noaa_10day_forecast()

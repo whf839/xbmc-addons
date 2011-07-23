@@ -1,3 +1,6 @@
+v.2.2.7
+- Added : "Area Code Error" Dialog ( It'll let you know if you don't re-select a location after changing a provider. )
+
 v.2.2.6
 - Fixed : US Local Forecast Video from Weather.com
 

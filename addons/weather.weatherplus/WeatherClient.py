@@ -145,7 +145,10 @@ def _localize_unit( value, unit="temp" ):
         return time
     else:
         # we need a float
-        value = float( value )
+        try:
+	    value = float( value )
+	except:
+	    return value
         # temp conversion
         if ( unit == "temp" or  unit == "tempdiff" ):
             # set our default temp unit
@@ -1051,7 +1054,7 @@ class NOAA_Forecast36HourParser:
 		current_wind = re.findall( pattern_current_wind, htmlSource )[0]
 	    except:
 		current_wind = re.findall( pattern_current_wind_2, htmlSource )[0]
-	    if ( current_wind != "calm" ):
+	    if ( current_wind != "calm" and current_wind.split(" ")[1] != "M" ):
 		    try:
 			current_wind = current_wind.split(" ")[0]+" "+_localize_unit( current_wind.split(" ")[1], "speed" ).replace(" mph","").replace(" km/h","") +" Gust "+_localize_unit( current_wind.split(" ")[3], "speed" )
 		    except:	
