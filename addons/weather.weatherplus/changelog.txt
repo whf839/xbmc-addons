@@ -1,3 +1,7 @@
+v.2.3.0
+- Fixed : Weather Alert
+- Added : Supports up to 3 videos ( You can change videos in addon's settings)
+
 v.2.2.8
 - Fixed : Video Option Bug 
 
