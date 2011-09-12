@@ -375,16 +375,18 @@ class WeatherAlert:
 
         # pattern_alert = "<h1>([^<]+)</h1>"      
         # pattern_issuedby = "<p class=\"alIssuedBy\">(.+?)</p>"
-        pattern_narrative = "<p class=\"alNarrative\">(.*?)</p>"
+        pattern_narrative = "<p class=\"alNarrative\">(.+?)</p>"
         # pattern_expires = "<p>(<b>.+?</b>[^<]+)</p>" 
-        
         pattern_moreinfo = "<h2>([^<]+)</h2>\n.+?<p class=\"alSynopsis\">"
         pattern_synopsis = "<p class=\"alSynopsis\">(.+?)</p>"
         
         pattern_alert_ = "</span>([^<]+)</h2>"
         pattern_issuedby_ = "Issued by (.+?)</h3>"
-        pattern_narrative_ = "\.\.\. (.*?)<br class=\"clear-content\">"
+        # pattern_narrative_ = "\.\.\. (.*?)<br class=\"clear-content\">"
+        pattern_narrative_ = "</div>[^<]+</div>[^<]+</div>[^<]+<p>(.+?)<br class=\"clear-content\">"
         pattern_expires_ = "<h3 class=\"twc-module-sub-header twc-timestamp twc-alert-timestamp\">([^<]+)</h3>"
+
+	# print htmlSource
 
         # fetch alert
         alert = re.findall( pattern_alert_, htmlSource )[ 0 ].replace("\n", "").replace("\t","")
@@ -407,6 +409,7 @@ class WeatherAlert:
             # fetch narrative
 	    narrative = ""
  	    description_list = re.findall( pattern_narrative, htmlSource, re.DOTALL )
+	    # print description_list
 	    if (not len(description_list)):
 	        description_list = re.findall( pattern_narrative_, htmlSource, re.DOTALL )
 		narrative = "... "
@@ -1981,15 +1984,19 @@ class WeatherClient:
 	        alerts, alertsrss, alertsnotify = self._fetch_alerts( parser.alerts )
 	        # print alerts, alertsrss, alertsnotify
 	        # create video url
-	        video, video_local = self._create_video( parser.video_location, parser.video_local_location, parser.video_local_number, video )
-	        print "[Weather Plus] Weather Video = "+video
-	        print "[Weather Plus] Local Video = "+video_local
+	        if ( self.code.startswith( "US" ) or len(self.code) == 5 ):
+			video = [self.Addon.getSetting("video1_url"), self.Addon.getSetting("video2_url"), self.Addon.getSetting("video3_url")]
+			video_title = [self.Addon.getSetting("video1"), self.Addon.getSetting("video2"), self.Addon.getSetting("video3")]
+		else:
+			video, video_title = self._create_video( parser.video_location, parser.video_local_location, parser.video_local_number, video )
+	        # print "[Weather Plus] Weather Video = "+video
+	        # print "[Weather Plus] Local Video = "+video_local
 	        # return forecast
 	        if ( parser.alertscolor is not None ) :
 	             try : 
-	                 return alerts, alertsrss, alertsnotify, parser.alertscolor[0], len(parser.alerts), parser.forecast, parser.extras, video, video_local
+	                 return alerts, alertsrss, alertsnotify, parser.alertscolor[0], len(parser.alerts), parser.forecast, parser.extras, video, video_title
 	             except : 
-	                 return alerts, alertsrss, alertsnotify, parser.alertscolor, len(parser.alerts), parser.forecast, parser.extras, video, video_local
+	                 return alerts, alertsrss, alertsnotify, parser.alertscolor, len(parser.alerts), parser.forecast, parser.extras, video, video_title
 	else:
 		print "[Weather Plus] Error Code : " + str( parser.error )
 
@@ -2010,16 +2017,16 @@ class WeatherClient:
         # print alerts, alertsrss, alertsnotify
         # create video url
         # video, video_local = self._create_video( parser.video_location, parser.video_local_location, parser.video_local_number, video )
-	video = ""
-	video_local = ""
-        print "[Weather Plus] Weather Video = "+video
-        print "[Weather Plus] Local Video = "+video_local
+	video = ["","",""]
+	video_title = ["","",""]
+        # print "[Weather Plus] Weather Video = "+video
+        # print "[Weather Plus] Local Video = "+video_local
         # return forecast
         if ( parser.alertscolor is not None ) :
              try : 
-                 return alerts, alertsrss, alertsnotify, parser.alertscolor[0], len(parser.alerts), parser.forecast, parser.extras, video, video_local
+                 return alerts, alertsrss, alertsnotify, parser.alertscolor[0], len(parser.alerts), parser.forecast, parser.extras, video, video_title
              except : 
-                 return alerts, alertsrss, alertsnotify, parser.alertscolor, len(parser.alerts), parser.forecast, parser.extras, video, video_local
+                 return alerts, alertsrss, alertsnotify, parser.alertscolor, len(parser.alerts), parser.forecast, parser.extras, video, video_title
 
     def noaa_36_forecast( self, video ):
         # fetch source
@@ -2034,16 +2041,16 @@ class WeatherClient:
         # print alerts, alertsrss, alertsnotify
         # create video url
         # video, video_local = self._create_video( parser.video_location, parser.video_local_location, parser.video_local_number, video )
-	video = ""
-	video_local = ""
-        print "[Weather Plus] Weather Video = "+video
-        print "[Weather Plus] Local Video = "+video_local
+	video = ["","",""]
+	video_title = ["","",""]
+        # print "[Weather Plus] Weather Video = "+video
+        # print "[Weather Plus] Local Video = "+video_local
         # return forecast
         if ( parser.alertscolor is not None ) :
              try : 
-                 return alerts, alertsrss, alertsnotify, parser.alertscolor[0], len(parser.alerts), parser.forecast, parser.extras, video, video_local
+                 return alerts, alertsrss, alertsnotify, parser.alertscolor[0], len(parser.alerts), parser.forecast, parser.extras, video, video_title
              except : 
-                 return alerts, alertsrss, alertsnotify, parser.alertscolor, len(parser.alerts), parser.forecast, parser.extras, video, video_local
+                 return alerts, alertsrss, alertsnotify, parser.alertscolor, len(parser.alerts), parser.forecast, parser.extras, video, video_title
 
     def _fetch_alerts( self, urls ):
         alerts = ""
@@ -2086,8 +2093,8 @@ class WeatherClient:
 	     local_location = local_location.split("/")[2]
 	except:
 	     pass
-        print "[Weather Plus] Video Location : " + location
-	print "[Weather Plus] Local Video Location : " + local_location
+        # print "[Weather Plus] Video Location : " + location
+	# print "[Weather Plus] Local Video Location : " + local_location
         # video = location
         # US
         if ( len( location ) and (self.code.startswith( "US" ) or len(self.code) == 5) ):    
@@ -2145,13 +2152,13 @@ class WeatherClient:
 
         # already have a video or non US
         # UK
-        if (len( location ) and self.code.startswith( "UK" ) and video == "" ):
+        if (len( location ) and self.code.startswith( "UK" )):
             url = "http://static1.sky.com/feeds/skynews/latest/daily/ukweather.flv"
-            print "[Weather Plus] Local Video Location : UK"
-            return url, local_url
+            print "[Weather Plus] Video Location : UK"
+            return [url,"",""], ["UK SKY NEWS", "No Video", "No Video"]
         # Canada
-        if (len( location ) and self.code.startswith("CA") and video == "" ):
-            print "[Weather Plus] Local Video Location : Canada"
+        if (len( location ) and self.code.startswith("CA")):
+            print "[Weather Plus] Video Location : Canada"
             accu_canada = "http://www.accuweather.com/video/1681759716/canadian-national-weather-fore.asp?channel=world"
             htmlSource = self._fetch_data( accu_canada, 15 )
             pattern_video = "http://brightcove.vo.llnwd.net/d([0-9]+)/unsecured/media/1612802193/1612802193_([0-9]+)_(.+?)-thumb.jpg"
@@ -2174,11 +2181,11 @@ class WeatherClient:
 	    except:
 		url = ""
             print url
-            return url, local_url
+            return [url,"",""], ["Canada", "No Video", "No Video"]
 
         # Europe
-        if (len( location ) and (self.code.startswith("FR") or self.code.startswith("SP") or self.code.startswith("IT") or self.code.startswith("GM") or self.code.startswith("NL") or self.code.startswith("GR") or self.code.startswith("PO") or self.code.startswith("EI")) and video == "" ):
-            print "[Weather Plus] Local Video Location : Europe"
+        if (len( location ) and (self.code.startswith("FR") or self.code.startswith("SP") or self.code.startswith("IT") or self.code.startswith("GM") or self.code.startswith("NL") or self.code.startswith("GR") or self.code.startswith("PO") or self.code.startswith("EI"))):
+            print "[Weather Plus] Video Location : Europe"
             accu_europe = "http://www.accuweather.com/video/1681759717/europe-weather-forecast.asp?channel=world"
             htmlSource = self._fetch_data( accu_europe, 15 )
             pattern_video = "http://brightcove.vo.llnwd.net/d([0-9]+)/unsecured/media/1612802193/1612802193_([0-9]+)_(.+?)-thumb.jpg"
@@ -2200,11 +2207,24 @@ class WeatherClient:
 	        else : 
 	                url = "http://static1.sky.com/feeds/skynews/latest/weather/europeweather.flv"
             except:
-                url = "http://static1.sky.com/feeds/skynews/latest/weather/europeweather.flv"
-            print url
-            return url, local_url
+                url = ""
+            # print url
+            return [url,"http://static1.sky.com/feeds/skynews/latest/weather/europeweather.flv",""], ["Accuweather.com (Europe)", "SKY News (Europe)", "No Video"]
+
+	# Austrailia
+	if (len( location ) and (self.code.startswith("AS"))):
+		print "[Weather Plus] Video Location : Austrailia"
+		abc = "http://www.abc.net.au/news/abcnews24/weather-in-90-seconds/"
+		htmlSource = self._fetch_data( abc, 15 )
+		pattern_video = "http://mpegmedia.abc.net.au/news/weather/video/(.+?)-weather-am1_video3.flv"
+		video = re.findall( pattern_video, htmlSource )
+		try:
+			url = "http://mpegmedia.abc.net.au/news/weather/video/" + video[0] + "-weather-am1_video3.flv"
+		except:
+			url = ""
+		return [url, "", ""], ["ABC (Weather in 90 Seconds)", "No Video", "No video"]
         # No available video
-        return video, video
+        return ["","",""], ["","",""]
 
     def fetch_hourly_forecast( self ):
         print "*****************************************************"

@@ -38,6 +38,7 @@
     <string id="32420">Map/Radar categories</string>
     <string id="32430">Forecast options</string>
 	<string id="32440">Alternative Providers</string>
+	<string id="32450">Video</string>
 
     <!-- Settings strings -->
     <string id="32500">Translate text (Babelfish)</string>
@@ -210,6 +211,12 @@
 	<!-- Alternative Provider Lists -->
 	<string id="32951">Accuweather.com Global</string>
 	<string id="32952">NOAA (US Only)</string>
+
+	<!-- Video Option -->
+	<string id="32961">Run Video Selector (Only for US)</string>
+	<string id="32962">Video #1</string>
+	<string id="32963">Video #2</string>
+	<string id="32964">Video #3</string>
 
 	<!-- Misc. -->
 	<string id="32981">Accuweather.com Language</string>
