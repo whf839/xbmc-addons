@@ -1057,7 +1057,8 @@ class NOAA_Forecast36HourParser:
 		current_wind = re.findall( pattern_current_wind, htmlSource )[0]
 	    except:
 		current_wind = re.findall( pattern_current_wind_2, htmlSource )[0]
-	    if ( current_wind != "calm" and current_wind.split(" ")[1] != "M" ):
+	    if ( current_wind.lower() != "calm"  ):
+	        if ( current_wind.split(" ")[1] != "M" ):
 		    try:
 			current_wind = current_wind.split(" ")[0]+" "+_localize_unit( current_wind.split(" ")[1], "speed" ).replace(" mph","").replace(" km/h","") +" Gust "+_localize_unit( current_wind.split(" ")[3], "speed" )
 		    except:	
