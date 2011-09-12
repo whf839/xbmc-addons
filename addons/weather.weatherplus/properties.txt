@@ -16,12 +16,12 @@ Special skin settings used by plugin: (added: 12/12/2009)
 "TWC.DefaultMap": used by plugin to download user selected default map(skins must support a way to set this for this to work)
 "TWC.DefaultMapBool": used for radio button toggle
 
-Video:
+Video (%d == 1 thru 3):
 -------
  
-"Video": url of regional or local forecast video. based on addon's settings. empty if not avaialble
-"video.regional" :  url of regional (or national if n/a) forecast video. empty if not available (added : 06/23/2011)
-"Video.local" : url of local forecast video. empty if not available (added : 02/13/2011)
+"Video": url of Video #1
+"Video.%d" :  url of Video #%d (added: 09/12/2011)
+"Video.%d.Title" : Title of Video #%d (added: 09/12/2011)
 
 Alerts:
 -------
