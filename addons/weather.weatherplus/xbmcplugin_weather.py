@@ -369,8 +369,11 @@ class Main:
         if ( extras ):
             self.WEATHER_WINDOW.setProperty( "Current.Pressure", extras[ 0 ][0] )
             if ( extras[0][1] != "N/A" ) :
-                self.WEATHER_WINDOW.setProperty( "Current.Visibility", "%s %s" % ( extras[ 0 ][1].split( " " )[ 0 ], { "mile": self._( 32300 ), "miles": self._( 32301 ), "kilometer": self._( 32302 ), "kilometers": self._( 32303 ) }[ extras[ 0 ][1].split( " " )[ 1 ] ], ) )
-            else:
+                try:
+		     self.WEATHER_WINDOW.setProperty( "Current.Visibility", "%s %s" % ( extras[ 0 ][1].split( " " )[ 0 ], { "mile": self._( 32300 ), "miles": self._( 32301 ), "kilometer": self._( 32302 ), "kilometers": self._( 32303 ) }[ extras[ 0 ][1].split( " " )[ 1 ] ], ) )
+		except:
+		     self.WEATHER_WINDOW.setProperty( "Current.Visibility", extras[ 0 ][ 1 ])
+	    else:
                 self.WEATHER_WINDOW.setProperty( "Current.Visibility", extras[ 0 ][ 1 ])
             self.WEATHER_WINDOW.setProperty( "Current.Sunrise", extras[ 0 ][ 2 ] )
             self.WEATHER_WINDOW.setProperty( "Current.Sunset", extras[ 0 ][ 3 ])
