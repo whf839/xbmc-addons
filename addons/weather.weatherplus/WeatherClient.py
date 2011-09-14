@@ -472,8 +472,8 @@ class Forecast36HourParser:
         pattern_locstate = "wx.config.loc.state=\"([^\"]+)\""
         pattern_video_location = "US_Current_Weather:([^\"]+)\""
         pattern_video_local_location = "/outlook/videos/(.+?)-60-second-forecast-(.+?)\""
-        pattern_alert_color = "alert-bullet-(.+?)\"></div>"
-        pattern_alerts = "location.href='/weather/alerts/(.+?)'"
+        pattern_alert_color = "<div id=\"wx-alert-bar\" class=\"wx-alert-(.+?)\">"
+        pattern_alerts = "href=\"/weather/alerts/(.+?)\""
         pattern_days = "<td class=\"twc-col-[0-9]+ twc-forecast-when\">(.+?)</td>"
         pattern_icon = "<img src=\"http://s\.imwx\.com/v\.20100719\.135915/img/wxicon/[0-9]+/([0-9]+)\.png\" width=\"72\""
         pattern_forecast_brief = "<td class=\"twc-col-[0-9]+ \">(.+?)</td>"
@@ -527,7 +527,7 @@ class Forecast36HourParser:
                 self.video_location = "Non US"
             print "[Weather Plus] video_location : "+self.video_location + " Local_location : " + self.video_local_location
             # fetch alerts
-            self.alertscolor += re.findall(pattern_alert_color, htmlSource)
+            self.alertscolor = re.findall(pattern_alert_color, htmlSource)
             self.alerts = re.findall( pattern_alerts, htmlSource )
             
             # fetch icon
@@ -1698,11 +1698,12 @@ class Forecast10DayParser:
         # pattern_info = "<p><[^>]+>([^<]+)</a><br>([^<]+)</p>\s.*\s.*\s.*\s.*\s\[^<]+<p><img src=\"http://i.imwx.com/web/common/wxicons/[0-9]+/([0-9]+).gif[^>]+><br>([^<]+)</p>\s.*\s.*\s.*\s.*\s[^<]+<p><strong>([^<]+)</strong><br>([^<]+)</p>\s.*\s.*\s.*\s.*\s.*\s[^<]+<p>([^<]+)</p>\s.*\s.*\s.*\s.*\s.*\s.*\s.*\s[^<]+<td><p>([^<]+)</p></td>\s.*\s.*\s\[^<]+<[^<]+<[^<]+<[^<]+<strong>([^<]+</strong>[^<]+)</p>"
 	pattern_heading = "<th class=\"twc-col-[0-9]+ twc-forecast-when \" id=\"twc-date-col[0-9]+\">(.+?)<span>([^:]+):"
 	pattern_icon = "http://s.imwx.com/v.20100719.135915/img/wxicon/45/([0-9]+).png"
-	pattern_brief = "<span class=\"fc-wx-phrase\">(.+?)</span>"
+	pattern_brief = "<span class=\"fc-wx-phrase\">([^<]+)</span>"
 	pattern_high_temp = "id=\"twc-wx-hi[0-9]+\">([^<]+)<"
 	pattern_low_temp = "id=\"twc-wx-low[0-9]+\">([^<]+)<"
 	pattern_wind = "<div class=\"fc-wind-desc\"><strong>(.+?)<br>at<br>(.+?)</strong>"
 	pattern_precip = "twc-line-precip\">(.+?):<br><strong>(.+?)</strong>"
+	# print htmlSource
         # fetch headings
         heading = re.findall( pattern_heading, htmlSource )
 	# print heading
@@ -1718,7 +1719,7 @@ class Forecast10DayParser:
 	# print icon
 	# fetch brief
 	brief = re.findall( pattern_brief, htmlSource )
-	# print brief
+	print brief
 	# fetch temperatures
 	high_temp = re.findall( pattern_high_temp, htmlSource )
 	# print high_temp
@@ -1783,18 +1784,18 @@ class Forecast10DayParser:
 		# add result to our class variable
 		if ( self.translate is not None ):
 			try:
-				self.forecast += [ ( headings[ count ][ 0 ], headings[ count ][ 1 ], iconpath, brief[ count ], _localize_unit( high_temp[ count ].strip("\nt&deg;") ), _localize_unit( low_temp[ count ].strip("\nt&deg;") ), precip[ count ][ 1 ].replace( "%", "" ), _translate_text( windir.get( wind[ count ][ 0 ], wind[ count ][ 0 ] ), self.translate ), _localize_unit( wind[ count ][ 1 ], "speed" ), wind[ count ][ 0 ], ) ]
+				self.forecast += [ ( headings[ count ][ 0 ], headings[ count ][ 1 ], iconpath, brief[ count ].replace("\n","").replace("\t",""), _localize_unit( high_temp[ count ].strip("\nt&deg;") ), _localize_unit( low_temp[ count ].strip("\nt&deg;") ), precip[ count ][ 1 ].replace( "%", "" ), _translate_text( windir.get( wind[ count ][ 0 ], wind[ count ][ 0 ] ), self.translate ), _localize_unit( wind[ count ][ 1 ], "speed" ), wind[ count ][ 0 ], ) ]
 			except:
 				try: 
-					self.forecast += [ ( headings[ count ][ 0 ], headings[ count ][ 1 ], iconpath, brief[ count ], "N/A", _localize_unit( low_temp[ count ].strip("\nt&deg;") ), precip[ count ][ 1 ].replace( "%", "" ), _translate_text( windir.get( wind[ count ][ 0 ], wind[ count ][ 0 ] ), self.translate ) , _localize_unit( wind[ count ][ 1 ], "speed" ), wind[ count ][ 0 ], ) ]
+					self.forecast += [ ( headings[ count ][ 0 ], headings[ count ][ 1 ], iconpath, brief[ count ].replace("\n","").replace("\t",""), "N/A", _localize_unit( low_temp[ count ].strip("\nt&deg;") ), precip[ count ][ 1 ].replace( "%", "" ), _translate_text( windir.get( wind[ count ][ 0 ], wind[ count ][ 0 ] ), self.translate ) , _localize_unit( wind[ count ][ 1 ], "speed" ), wind[ count ][ 0 ], ) ]
 				except:
 					self.forecast += [ ( "N/A", "N/A ", iconpath, "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", ) ]
 		else:
 			try:
-				self.forecast += [ ( headings[ count ][ 0 ], headings[ count ][ 1 ], iconpath, brief[ count ], _localize_unit( high_temp[ count ].strip("\nt&deg;") ), _localize_unit( low_temp[ count ].strip("\nt&deg;") ), precip[ count ][ 1 ].replace( "%", "" ), windir.get( wind[ count ][ 0 ], wind[ count ][ 0 ] ), _localize_unit( wind[ count ][ 1 ], "speed" ), wind[ count ][ 0 ], ) ]
+				self.forecast += [ ( headings[ count ][ 0 ], headings[ count ][ 1 ], iconpath, brief[ count ].replace("\n","").replace("\t",""), _localize_unit( high_temp[ count ].strip("\nt&deg;") ), _localize_unit( low_temp[ count ].strip("\nt&deg;") ), precip[ count ][ 1 ].replace( "%", "" ), windir.get( wind[ count ][ 0 ], wind[ count ][ 0 ] ), _localize_unit( wind[ count ][ 1 ], "speed" ), wind[ count ][ 0 ], ) ]
 			except:
 				try: 
-					self.forecast += [ ( headings[ count ][ 0 ], headings[ count ][ 1 ], iconpath, brief[ count ], "N/A", _localize_unit( low_temp[ count ].strip("\nt&deg;") ), precip[ count ][ 1 ].replace( "%", "" ), windir.get( wind[ count ][ 0 ], wind[ count ][ 0 ] ) , _localize_unit( wind[ count ][ 1 ], "speed" ), wind[ count ][ 0 ], ) ]
+					self.forecast += [ ( headings[ count ][ 0 ], headings[ count ][ 1 ], iconpath, brief[ count ].replace("\n","").replace("\t",""), "N/A", _localize_unit( low_temp[ count ].strip("\nt&deg;") ), precip[ count ][ 1 ].replace( "%", "" ), windir.get( wind[ count ][ 0 ], wind[ count ][ 0 ] ) , _localize_unit( wind[ count ][ 1 ], "speed" ), wind[ count ][ 0 ], ) ]
 				except:
 					self.forecast += [ ( "N/A", "N/A ", iconpath, "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", ) ]
 
@@ -2009,6 +2010,7 @@ class WeatherClient:
 	htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code, "details2" ), 15 )
         htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( code, "quick-look" ), 15 )
 	htmlSource_4 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( code, "details2" ), 15 )
+	htmlSource_5 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( code, "satellite" ), 15 )
         print "[Weather Plus] Area code = "+self.code
         # parse source for forecast
         parser = ACCU_Forecast36HourParser( htmlSource, htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4, self.translate )
@@ -2017,9 +2019,12 @@ class WeatherClient:
         alerts, alertsrss, alertsnotify = self._fetch_alerts( parser.alerts )
         # print alerts, alertsrss, alertsnotify
         # create video url
-        # video, video_local = self._create_video( parser.video_location, parser.video_local_location, parser.video_local_number, video )
-	video = ["","",""]
-	video_title = ["","",""]
+        if ( self.code.split("/")[1]=="us" ):
+		video = [self.Addon.getSetting("video1_url"), self.Addon.getSetting("video2_url"), self.Addon.getSetting("video3_url")]
+		video_title = [self.Addon.getSetting("video1"), self.Addon.getSetting("video2"), self.Addon.getSetting("video3")]
+	else:
+		loc = re.findall("http://sirocco.accuweather.com/sat_mosaic_640x480_public/IR/(.+?).jpg", htmlSource_5)
+		video, video_title = self._create_video( parser.video_location, loc, "", video )
         # print "[Weather Plus] Weather Video = "+video
         # print "[Weather Plus] Local Video = "+video_local
         # return forecast
@@ -2041,9 +2046,11 @@ class WeatherClient:
         alerts, alertsrss, alertsnotify = self._fetch_alerts( parser.alerts )
         # print alerts, alertsrss, alertsnotify
         # create video url
+	video = [self.Addon.getSetting("video1_url"), self.Addon.getSetting("video2_url"), self.Addon.getSetting("video3_url")]
+	video_title = [self.Addon.getSetting("video1"), self.Addon.getSetting("video2"), self.Addon.getSetting("video3")]
         # video, video_local = self._create_video( parser.video_location, parser.video_local_location, parser.video_local_number, video )
-	video = ["","",""]
-	video_title = ["","",""]
+	# video = ["","",""]
+	# video_title = ["","",""]
         # print "[Weather Plus] Weather Video = "+video
         # print "[Weather Plus] Local Video = "+video_local
         # return forecast
@@ -2055,7 +2062,7 @@ class WeatherClient:
 
     def _fetch_alerts( self, urls ):
         alerts = ""
-        #alertscolor = ""
+        # alertscolor = ""
         alertsrss = ""
         alertsnotify = ""
         
@@ -2063,7 +2070,11 @@ class WeatherClient:
             #alertscolor = urls[ 0 ][ 0 ]
             titles = []
             # enumerate thru the alert urls and add the alerts to one big string
+	    count = 0
             for url in urls:
+		if (count == 0):
+			count = 1
+			continue	
                 # fetch source refresh every 15 minutes
                 htmlSource = self._fetch_data( self.BASE_URL + "/weather/alerts/"+ url, 15 )
                 # parse source for alerts
@@ -2087,17 +2098,17 @@ class WeatherClient:
         # return alerts.strip(), alertsrss.strip().rstrip( "|" ).strip(), alertsnotify.rstrip( " |" ), alertscolor
         return alerts.strip(), alertsrss.strip().rstrip( "|" ).strip(), alertsnotify.rstrip( " |" )
 
-    def _create_video( self, location, local_location, local_number, video ):
+    def _create_video( self, location, accu_loc, local_number, video ):
         url = ""
         local_url = ""
 	try:
-	     local_location = local_location.split("/")[2]
+		loc = self.code.split("/")[1]
 	except:
-	     pass
-        # print "[Weather Plus] Video Location : " + location
-	# print "[Weather Plus] Local Video Location : " + local_location
+		loc = ""
+        print "[Weather Plus] Video Loc Code : " , accu_loc
         # video = location
         # US
+	'''
         if ( len( location ) and (self.code.startswith( "US" ) or len(self.code) == 5) ):    
             # Regional Video
             if ( location == "NE" or location == "MW" or location == "SE" or location == "W" or location == "S" or location == "SW" or location == "NW" or location == "NC" or location == "CN" or location == "WC"):               
@@ -2122,7 +2133,7 @@ class WeatherClient:
                 # create the url
                 url = self.BASE_VIDEO_URL % ( video, )
                 # print "url : "+url
-
+	
 	   # Local Video
             if ( local_location == "new-yorks" or local_location == "washington-dcs" or local_location == "las-vegas") :
                 if ( local_location == "new-yorks" ) :
@@ -2150,15 +2161,15 @@ class WeatherClient:
             if ( url == "" ) : 
                 url = self.BASE_VIDEO_URL % ( "national", )
             return url, local_url
-
-        # already have a video or non US
+	'''
         # UK
-        if (len( location ) and self.code.startswith( "UK" )):
+        if (self.code.startswith( "UK" ) or loc == "gb"):
             url = "http://static1.sky.com/feeds/skynews/latest/daily/ukweather.flv"
             print "[Weather Plus] Video Location : UK"
-            return [url,"",""], ["UK SKY NEWS", "No Video", "No Video"]
+            return [url,"http://static1.sky.com/feeds/skynews/latest/weather/long.flv","http://static1.sky.com/feeds/skynews/latest/weather/europeweather.flv"], ["UK Forecast", "Long Range", "Europe Forecast"]
+
         # Canada
-        if (len( location ) and self.code.startswith("CA")):
+        if (self.code.startswith("CA") or loc == "ca"):
             print "[Weather Plus] Video Location : Canada"
             accu_canada = "http://www.accuweather.com/video/1681759716/canadian-national-weather-fore.asp?channel=world"
             htmlSource = self._fetch_data( accu_canada, 15 )
@@ -2171,10 +2182,10 @@ class WeatherClient:
             publisherID = re.findall( pattern_publisherID, htmlSource )
             videoID = re.findall( pattern_videoID, htmlSource )
 	    try:
-		if (int(video_[0][1][7:])-1000 < 10000) :
-			video= video_[0][1][:7] + "0" + str(int(video_[0][1][7:])-1000)
+		if (int(video_[0][1][8:])-1000 < 10000) :
+			video= video_[0][1][:8] + "0" + str(int(video_[0][1][8:])-1000)
 		else :
-			video= video_[0][1][:7] + str(int(video_[0][1][7:])-1000)  
+			video= video_[0][1][:8] + str(int(video_[0][1][8:])-1000)  
 		if (video is not None and video_[0][2][15:] == "cnnational") :
 			url = "http://brightcove.vo.llnwd.net/d" + video_[0][0] + "/unsecured/media/1612802193/1612802193_" + video + "_" + video_[0][2] + ".mp4" + "?videoId="+videoID[0]+"&pubId="+publisherID[0]+"&playerId="+playerID[0]
 		else : 
@@ -2182,10 +2193,23 @@ class WeatherClient:
 	    except:
 		url = ""
             print url
-            return [url,"",""], ["Canada", "No Video", "No Video"]
+            return [url,"http://media.twnmm.com/storage/4902859/22","http://media.twnmm.com/storage/4902671/22"], ["Accuweather.com (Canada) ", "Weather News", "Long Range"]
+
+	# Mexico
+	if (self.code.startswith("MX") or loc == "mx"):
+	    print "[Weather Plus] Video Location : Mexico"
+
+	# France
+	if (self.code.startswith("FR") or loc == "fr"):
+	    print "[Weather Plus] Video Location : France"
+
+	# Italy
+	if (self.code.startswith("IT") or loc == "it"):
+	    print "[Weather Plus] Video Location : Italy"
+            return ["http://media.ilmeteo.it/video/oggi-tg.mp4","http://media.ilmeteo.it/video/domani-tg.mp4", "http://static1.sky.com/feeds/skynews/latest/weather/europeweather.flv"], ["iL Meteo (Today)", "iL Meteo (Tomorrow)", "SKY News (Europe)"]
 
         # Europe
-        if (len( location ) and (self.code.startswith("FR") or self.code.startswith("SP") or self.code.startswith("IT") or self.code.startswith("GM") or self.code.startswith("NL") or self.code.startswith("GR") or self.code.startswith("PO") or self.code.startswith("EI"))):
+        if (self.code.startswith("FR") or self.code.startswith("SP") or self.code.startswith("IT") or self.code.startswith("GM") or self.code.startswith("NL") or self.code.startswith("GR") or self.code.startswith("PO") or self.code.startswith("EI") or accu_loc[0].startswith("iseur")):
             print "[Weather Plus] Video Location : Europe"
             accu_europe = "http://www.accuweather.com/video/1681759717/europe-weather-forecast.asp?channel=world"
             htmlSource = self._fetch_data( accu_europe, 15 )
@@ -2199,10 +2223,10 @@ class WeatherClient:
             videoID = re.findall( pattern_videoID, htmlSource )
 	    # print video_
 	    try:
-		if (int(video_[0][1][7:])-1000 < 10000) :
-			video= video_[0][1][:7] + "0" + str(int(video_[0][1][7:])-1000)
+		if (int(video_[0][1][8:])-1000 < 10000) :
+			video= video_[0][1][:8] + "0" + str(int(video_[0][1][8:])-1000)
 		else :
-			video= video_[0][1][:7] + str(int(video_[0][1][7:])-1000)
+			video= video_[0][1][:8] + str(int(video_[0][1][8:])-1000)
 	        if (video_[0][2][15:] == "europe") :
                         url = "http://brightcove.vo.llnwd.net/d" + video_[0][0] + "/unsecured/media/1612802193/1612802193_" + video + "_" + video_[0][2] + ".mp4" + "?videoId="+videoID[0]+"&pubId="+publisherID[0]+"&playerId="+playerID[0]
 	        else : 
@@ -2213,14 +2237,14 @@ class WeatherClient:
             return [url,"http://static1.sky.com/feeds/skynews/latest/weather/europeweather.flv",""], ["Accuweather.com (Europe)", "SKY News (Europe)", "No Video"]
 
 	# Austrailia
-	if (len( location ) and (self.code.startswith("AS"))):
+	if (self.code.startswith("AS") or loc == "au"):
 		print "[Weather Plus] Video Location : Austrailia"
 		abc = "http://www.abc.net.au/news/abcnews24/weather-in-90-seconds/"
 		htmlSource = self._fetch_data( abc, 15 )
-		pattern_video = "http://mpegmedia.abc.net.au/news/weather/video/(.+?)-weather-am1_video3.flv"
+		pattern_video = "http://mpegmedia.abc.net.au/news/weather/video/(.+?)video3.flv"
 		video = re.findall( pattern_video, htmlSource )
 		try:
-			url = "http://mpegmedia.abc.net.au/news/weather/video/" + video[0] + "-weather-am1_video3.flv"
+			url = "http://mpegmedia.abc.net.au/news/weather/video/" + video[0] + "video3.flv"
 		except:
 			url = ""
 		return [url, "", ""], ["ABC (Weather in 90 Seconds)", "No Video", "No video"]

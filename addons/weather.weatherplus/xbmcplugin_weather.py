@@ -336,6 +336,10 @@ class Main:
         self._set_maps_path( ( maps_path == "" ) + 1, maps_path, legend_path )
 
     def _set_alerts( self, alerts, alertsrss, alertsnotify, alertscolor, alertscount ):
+	try:
+		alertscolor = {"1":"red", "2":"orange"}.get(alertscolor)
+	except:
+		alertscolor = ""
         # send notification if user preference and there are alerts
         if ( alerts != "" and ( int( self.Settings.getSetting( "alert_notify_type" ) ) == 1 or 
             ( alertscolor == "red" and int( self.Settings.getSetting( "alert_notify_type" ) ) > 1 ) or 
