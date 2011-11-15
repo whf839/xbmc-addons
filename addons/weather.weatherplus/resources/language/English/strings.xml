@@ -203,14 +203,15 @@
     <!-- Alternative Provider strings -->
 	<string id="32901">Location #1</string>
 	<string id="32902">Provider</string>
-	<string id="32903">Location</string>
-	<string id="32904">Change Location</string>
+	<string id="32903">Location Name</string>
+	<string id="32904">Run Location Selector</string>
 	<string id="32905">Location #2</string>
 	<string id="32906">Location #3</string>
 
 	<!-- Alternative Provider Lists -->
 	<string id="32951">Accuweather.com Global</string>
 	<string id="32952">NOAA (US Only)</string>
+	<string id="32953">Weather.com</string>
 
 	<!-- Video Option -->
 	<string id="32961">Run Video Selector (Only for US)</string>

@@ -1,3 +1,19 @@
+v.2.4.0
+- Added : [Weather.com] Current Weather
+- Forecast Videos Added:
+U.S : ABC, CBS, FOX, NBC
+Korea : KBS, OBS, Kweather
+Japan : NHK
+China : CCTV
+U.K : BBC
+France : TF1, France 2
+- Improved : Maps(from Weather.com) and Videos are available with alternative providers.
+- Fixed : [Accuweather.com] Unicode Error (e.g., île-de-france, rhône alpe.)
+- Fixed : [Accuweather.com & NOAA.gov] Misc. bugs
+
+v.2.3.2
+- Fixed : NOAA Extended Forecast Bugs
+
 v.2.3.1
 - Fixed : Weather Alert
 - Added : Weather Videos for Canada and Italy
