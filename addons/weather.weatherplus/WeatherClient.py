@@ -3797,7 +3797,7 @@ class WeatherClient:
         print "[Weather Plus] Area code = "+self.code
 	print "[Weather Plus] Fetching " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "details", self.code.split(" ")[1])
 	print "[Weather Plus] Fetching " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "details2", self.code.split(" ")[1])
-	print htmlSource_2
+	# print htmlSource_2
         # parse source for forecast
         parser = ACCU_Forecast36HourParser( htmlSource, htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4, self.translate )
         # print parser.alertscolor[0]
