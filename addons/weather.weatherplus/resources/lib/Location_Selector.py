@@ -2,16 +2,11 @@
 import sys
 import os
 
-try:
-    import xbmc
-    DEBUG = False
-except:
-    DEBUG = True
-
+import xbmc
 import xbmcgui
 import urllib2
 from urllib import urlencode
-import md5
+#import md5
 import re
 import time
 from xbmcaddon import Addon
@@ -54,39 +49,34 @@ class Main:
 		location = ""
 		location_name = []
 		loc, provider = loc.split("|")
-		# print loc, provider
-		# print provider
-		kb = xbmc.Keyboard("","Type a name of your location", False)
+		__Settings__.setSetting( "provider%s" % loc, provider )
+		kb = xbmc.Keyboard("", xbmc.getLocalizedString(14024), False)
 		kb.doModal()
 		if (kb.isConfirmed()):
 			userInput = kb.getText()
-			if (userInput is not None):
+			if (userInput != ""):
+				print userInput
 				pDialog = xbmcgui.DialogProgress()
 				ret = pDialog.create('XBMC', 'Searching...')
 				pDialog.update(50)
-				if (pDialog.iscanceled()): 
-					__Settings__.openSettings()
-					return
 				location = self._fetch_location(userInput, provider)
 				pDialog.update(100)
 				pDialog.close()
-		dialog = xbmcgui.Dialog()
-		for count, loca in enumerate(location):
-			if ( provider == "0" ):
-				location_name += [ location[count][2] ]
-			elif ( provider == "1" ):
-				location_name += [ location[count][1] ]
-		select = dialog.select("Choose your location", location_name)
-		# print select
-		if ( select != -1 ):
-			self.location = location[ select ]
-			# print int ( provider )
-			__Settings__.setSetting( "location%s_%s" % ( loc, int(provider)+1 ), location_name[ select ] )
-			if ( provider == "0" ):
-				__Settings__.setSetting( "code%s_%s" % ( loc, int(provider)+1 ), self.location[0] + " " + self.location[1] )
-			elif ( provider == "1" ):
-				__Settings__.setSetting( "code%s_%s" % ( loc, int(provider)+1 ), self.location[0] )
-		__Settings__.openSettings()
+				dialog = xbmcgui.Dialog()
+				for count, loca in enumerate(location):
+					if ( provider == "0" ):
+						location_name += [ loca[2] ]
+					elif ( provider == "1" or provider == "2" ):
+						location_name += [ loca[1] ]
+				select = dialog.select(xbmc.getLocalizedString(396), location_name)
+				if ( select != -1 ):
+					self.location = location[ select ]
+					__Settings__.setSetting( "location%s_%s" % ( loc, int(provider)+1 ), location_name[ select ] )
+					if ( provider == "0" ):
+						__Settings__.setSetting( "code%s_%s" % ( loc, int(provider)+1 ), self.location[0] + " " + self.location[1] )
+					elif ( provider == "1" or provider == "2" ):
+						__Settings__.setSetting( "code%s_%s" % ( loc, int(provider)+1 ), self.location[0] )
+				__Settings__.openSettings()
 	
 	def _fetch_location(self, userInput, provider):
 		location = []
@@ -97,8 +87,21 @@ class Main:
 			# print location
 		elif (provider == "1"):
 			pattern_location = "<a href=\"http://forecast.weather.gov/MapClick.php?([^\"]+)\">([^<]+)</a>"
-			htmlSource = _fetch_data ( "http://forecast.weather.gov/zipcity.php?inputstring=" + userInput.replace(" ","+") )
+			htmlSource = _fetch_data ( "http://forecast.weather.gov/zipcity.php?inputstring=%s" % userInput.replace(" ","+") )
 			location = re.findall( pattern_location, htmlSource )
+			if ( re.search("<title>7-Day Forecast", htmlSource ) ):
+				pattern_location = "/MapClick.php(.+?)lg=sp\""
+				location_buffer = re.findall( pattern_location, htmlSource )
+				if ( len(location_buffer) ):
+					city = re.findall( "CityName=(.+?)\&", location_buffer[0] )
+					state = re.findall( "state=(.+?)\&", location_buffer[0] )
+					location = [ ( location_buffer[0], "%s, %s" % ( city[0], state[0] ) ) ]
+				else:
+					location = []							 
+		elif (provider == "2"):
+			pattern_location = "id=\"(.+?)\" type=\"[0-9]\">(.+?)</loc>"
+			xmlSource = _fetch_data ( "http://xoap.weather.com/search/search?where=%s" % userInput.replace(" ","+") )
+			location = re.findall( pattern_location, xmlSource )
 		return location
 
 Main( loc=sys.argv[ 1 ].split( "=" )[ 1 ] )

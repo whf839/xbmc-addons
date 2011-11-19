@@ -1,3 +1,11 @@
+﻿v.2.5.0
+- Fixed : Compatable with pre-eden
+- Fixed : [Accuweather.com] Webpage loading failure issue ( might not be completely fixed )
+- Fixed : Minor bugs
+- Improved : pre-eden's infolabel "WeatherProvider" supported
+- Improved : US zip code search available ( except for Accuweather.com )
+* Note for Dharma Users : Please ignore locations in xbmc's weather settings.
+
 v.2.4.0
 - Added : [Weather.com] Current Weather
 - Forecast Videos Added:

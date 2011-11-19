@@ -17,9 +17,10 @@ try:
 except:
     DEBUG = True
 
+import xbmcgui
 import urllib2
 from urllib import urlencode, unquote, quote
-import httplib, socket
+#import httplib, socket
 
 try:
     import hashlib
@@ -33,6 +34,10 @@ import platform
 
 import resources.lib.video_amf as AMF
 
+WEATHER_WINDOW = xbmcgui.Window( 12600 )
+
+def printlog( msg ):
+    print "[Weather Plus] %s" % msg
 
 # TODO: maybe use xbmc language strings for brief outlook translation
 def _translate_text( text, translate ):
@@ -104,6 +109,7 @@ def _normalize_outlook( outlook ):
         outlook[ count ] = tmp_outlook
     # return normalized text
     return outlook
+
 
 def _localize_unit( value, unit="temp" ):
     # grab the specifier
@@ -181,6 +187,10 @@ def _localize_unit( value, unit="temp" ):
                     value = round( ( value - 32 ) * ( float( 5 ) / 9 ) )
             # return localized temp
             return "%s%d" % ( ( "", "+", )[ value >= 0 and unit == "tempdiff" ], value )
+	# temp conversion ( F -> C )
+	if ( unit == "tempf2c" ):
+	    value = round( ( value - 32 ) * ( float( 5 )/ 9 ) )
+	    return value
         # speed conversion
         elif ( unit == "speed" ):
             # set our default temp unit
@@ -201,6 +211,9 @@ def _localize_unit( value, unit="temp" ):
                 value = round( value * 0.4883 )
             # return localized speed
             return "%d %s" % ( value, id, )
+	elif ( unit == "speedmph2kmh" ):
+	    value = round( value * 1.609344 )
+	    return "%d km/h" % value	
         # depth conversion
         elif ( unit == "depth" ):
             # set our default depth unit
@@ -465,7 +478,7 @@ class WeatherAlert:
             self.alert_rss = ""
 
 class Forecast36HourParser:
-    def __init__( self, htmlSource, htmlSource_5, localtime, translate=None ):
+    def __init__( self, version, htmlSource, htmlSource_5, localtime, translate=None ):
         self.forecast = []
         self.extras = []
         self.alerts = []
@@ -476,6 +489,7 @@ class Forecast36HourParser:
         self.translate = translate
 	self.error = 0
         self.sun = []
+	self.version = version
 
         # only need to parse source if there is source
         if ( htmlSource ):
@@ -513,30 +527,30 @@ class Forecast36HourParser:
 					
         # fetch days
         days = re.findall( pattern_days, htmlSource )
-        # print "Tonight = "+days[0]+" Tomorrow = "+days[1]
+       
         # enumerate thru and combine the day with it's forecast
-	# print htmlSource_5
         if ( len( days ) ):
+	    '''
             try:
                 # fetch state
                 locstate = re.findall( pattern_locstate, htmlSource )[ 0 ].lower()
                
             except:
                 pass
-            
+            '''
 	    # fetch current info
 	    current_icon_brief = re.findall( pattern_current_icon, htmlSource )
 	    try:
-		current_icon = "/".join( [ "special://temp", "weather", "128x128", current_icon_brief[ 0 ][ 0 ] + ".png" ] )
+		current_icon = ( "/".join( [ "special://temp", "weather", "128x128", current_icon_brief[ 0 ][ 0 ] + ".png" ] ), current_icon_brief[ 0 ][ 0 ] + ".png" )[ self.version == 2 ]
 		current_brief = current_icon_brief [ 0 ][ 1 ]
 	    except:
-	        current_icon = "/".join( [ "special://temp", "weather", "128x128", "na" + ".png" ] )
+	        current_icon = ( "/".join( [ "special://temp", "weather", "128x128", "na" + ".png" ] ), "na.png" )[ self.version == 2 ]
 		current_brief = "N/A"
 	    current_temp = re.findall( pattern_current_temp, htmlSource )
 	    current_feels_like = re.findall( pattern_feels_like, htmlSource )
 	    try:
-	        current_temp = _localize_unit( current_temp[ 0 ] )
-		current_feels_like = _localize_unit( current_feels_like [ 0 ] )
+	        current_temp = ( _localize_unit( current_temp[ 0 ] ), str( int( _localize_unit( current_temp[ 0 ], "tempf2c" ) ) ) )[ self.version == 2 ]
+		current_feels_like = ( _localize_unit( current_feels_like [ 0 ] ), str( int( _localize_unit( current_feels_like[ 0 ], "tempf2c" ) ) ) )[ self.version == 2 ]
 	    except:
 		current_temp = "N/A"
 		current_feels_like = "N/A"
@@ -545,16 +559,22 @@ class Forecast36HourParser:
 		current_wind = current_wind[ 0 ].replace("\t","").replace("\n","").strip()
 		current_wind_buffer = re.findall( "From (.+?) at ([0-9]+)", current_wind )
 		try: 
-		   current_wind = "From %s at %s" % ( current_wind_buffer[ 0 ][ 0 ], _localize_unit( current_wind_buffer[ 0 ][ 1 ], "speed" ) )
+		   if ( self.version != 2 ):
+			current_wind = "From %s at %s" % ( current_wind_buffer[ 0 ][ 0 ], _localize_unit( current_wind_buffer[ 0 ][ 1 ], "speed" ) )
+			current_winddirection = ""
+		   else:
+			current_wind = current_wind_buffer[ 0 ][ 1 ]
+			current_winddirection = _localize_unit( current_wind_buffer[ 0 ][ 0 ], "speedmph2kmh" )
 		except:
 		   pass
 	    except:
 		current_wind = "N/A"
+		current_winddirection = "N/A"
 	    current_humidity = re.findall( pattern_current_humidity, htmlSource )
 	    current_dewpoint = re.findall( pattern_current_dewpoint, htmlSource )
 	    try:
-	        current_humidity = current_humidity[ 0 ] + "%"
-		current_dewpoint = _localize_unit( current_dewpoint[ 0 ] )
+	        current_humidity = current_humidity[ 0 ] + ("%", "")[ self.version == 2 ]
+		current_dewpoint = ( _localize_unit( current_dewpoint[ 0 ] ), str( int( _localize_unit( current_dewpoint[ 0 ], "tempf2c" ) ) ) )[ self.version == 2 ]
 	    except:
 	        current_humidity = "N/A"
 		current_dewpoint = "N/A"
@@ -565,10 +585,10 @@ class Forecast36HourParser:
 	        current_UVIndex = "N/A"
 	    
             # fetch video location
-            # print htmlSource
+
             vl = re.findall( pattern_video_location, htmlSource )
             vl2 = re.findall( pattern_video_local_location, htmlSource )
-            # print "UHAAA", vl, vl2
+
             try :
                 if (vl2 is not None) : 
                    self.video_local_location = vl2[0][0]
@@ -690,17 +710,6 @@ class Forecast36HourParser:
                   print "[Weather Plus] Icon is not available"
                   iconpath = "/".join( [ "special://temp", "weather", "128x128", "0.png" ] ) 
                 # add result to our class variable
-                # self.forecast += [ ( days, iconpath, brief[ count ], temperature[ count ][ 0 ], _localize_unit( temperature[ count ][ 1 ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), outlook[ count ].strip(), daylight[ count ].split( ": " )[ 0 ], _localize_unit( daylight[ count ].split( ": " )[ 1 ], "time" ), ) ]
-                # print days[count]
-                # print iconpath
-                # print brief[ count+1 ]
-                # print temperature_info[ count ]
-                # print _localize_unit( temperature[ count ] )
-                # print precip_title[ count ]
-                # print precip_amount[ count ].replace( "%", "" )
-                # print brief[ count+4 ]
-                # print daylight[ count ][ 0 ]
-                # print "[Weather Plus] " + _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  )
                 try :
                   print "[Weather Plus] " + days[count]
                 except :
@@ -749,14 +758,13 @@ class Forecast36HourParser:
                 except :
                   print "[Weather Plus] daylight["+str(count)+"][1] is not available"
                   self.forecast += [ ( days[count], iconpath, brief[ count ], temperature_info[ count ], _localize_unit( temperature[ count ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), outlook[ count ], daylight[ count ][ 0 ], "N/A", ) ]
-
-                # self.forecast += [ ( days[count], iconpath, brief[ count ], temperature_info[ count ], _localize_unit( temperature[ count ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), outlook[ count ], daylight[ count ][ 0 ], _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  ), ) ]
+            
         else:
 	    print "[Weather Plus] No data fetched! Weather.com pages may have been changed."
 	    self.error = 1
 
 class ACCU_Forecast36HourParser:
-    def __init__( self, htmlSource, htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4, translate=None ):
+    def __init__( self, version, htmlSource, htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4, translate=None ):
         self.forecast = []
         self.extras = []
         self.alerts = []
@@ -764,6 +772,8 @@ class ACCU_Forecast36HourParser:
         self.video_location = []
         self.translate = translate
         self.sun = []
+	self.version = version
+	self.error = 0
 
         # only need to parse source if there is source
         if ( htmlSource ):
@@ -779,7 +789,7 @@ class ACCU_Forecast36HourParser:
 	pattern_current_feel_like = "<span id=\"ctl00_cphContent_lblRealFeelValue\" class=\"fltRight\" style=\"width: 80px; display: block;\">(.+?)\&deg"
 	pattern_current_time = "<span id=\"ctl00_cphContent_lblCurrentTime\" style=\"display: block; font-size: 11px;line-height: 17px;\">(.+?)</span>"
 	pattern_current_wind = "<span id=\"ctl00_cphContent_lblWindsValue\" class=\"fltRight\" style=\"width: 80px; display: block;\">(.+?)</span>"
-	pattern_current_humidity = "<span id=\"ctl00_cphContent_lblHumidityValue\" class=\"fltRight\" style=\"width: 80px; display: block;\">(.+?)</span>"
+	pattern_current_humidity = "<span id=\"ctl00_cphContent_lblHumidityValue\" class=\"fltRight\" style=\"width: 80px; display: block;\">(.+?)%</span>"
 	pattern_current_dew = "<span id=\"ctl00_cphContent_lblDewPointValue\" class=\"fltRight\" style=\"width: 80px; display: block;\">(.+?)\&deg"
         pattern_pressure = "<span id=\"ctl00_cphContent_lblPressureValue\" class=\"fltRight\" style=\"width: 80px; display: block;\">(.+?)</span>"	                     
         pattern_visibility = "<span id=\"ctl00_cphContent_lblVisibilityValue\" class=\"fltRight\" style=\"width: 80px; display: block;\">(.+?)</span>"	        
@@ -788,161 +798,178 @@ class ACCU_Forecast36HourParser:
 	pattern_sunrise = "Sunrise: (.+?)</span>"
 	pattern_sunset = "Sunset: (.+?)</span>"
 				
-        # fetch icons
-	icon = []
-	icondir = {"1":"32", "2":"30", "3":"28", "4":"30", "5":"34", "6":"28", "7":"26", "8":"26", "11":"19", "12":"11", "13":"39", "14":"39", "15":"3", "16":"37", "17":"37", "18":"12", "19":"14", "20":"14", "21":"14", "22":"16", "23":"16", "24":"25", "25":"25", "26":"25", "29":"5", "30":"36", "31":"32", "32":"23", "33":"31", "34":"29", "35":"27", "36":"27", "38":"27", "37":"33", "39":"45", "40":"45", "41":"47", "42":"47", "43":"46", "44":"46" }
-	current_icon = "/".join( [ "special://temp", "weather", "128x128", icondir.get( re.findall( pattern_icon, htmlSource )[0] ) + ".png" ] )
-	icon_day1 = re.findall( pattern_icon, htmlSource_1 )
-	icon_day2 = re.findall( pattern_icon, htmlSource_2 )
-	print icon_day1, icon_day2
-	icon = [ icondir.get(icon_day1[0]), icondir.get(icon_day1[1]), icondir.get(icon_day2[0]), icondir.get(icon_day2[1]) ]
-	        
-        # enumerate thru and combine the day with it's forecast
-        if ( len( icon ) ):           
-            # fetch brief description
-            current_brief = re.findall( pattern_current_brief, htmlSource )[0]
-	    day1_brief = re.findall( pattern_forecast_brief, htmlSource_1 )
-	    day2_brief = re.findall( pattern_forecast_brief, htmlSource_2 )
-	    if ( day1_brief is not None and day2_brief is not None):
-		brief = [ day1_brief[0][1], day1_brief[1][1], day2_brief[0][1], day2_brief[1][1] ]
-	    else:
-		brief = [ "", "", "", "" ]
-            # fetch temperature
-            current_temp = _english_localize_unit( re.findall( pattern_current_temp, htmlSource )[0] )
-	    current_feel_like = _english_localize_unit( re.findall( pattern_current_feel_like, htmlSource )[0] )
-            day1_temp = re.findall( pattern_temp, htmlSource_1 )
-	    day2_temp = re.findall( pattern_temp, htmlSource_2 )
-	    temperature_info = ["High", "Low", "High", "Low"]
-	    temperature = [ day1_temp[0][1], day1_temp[2][1], day2_temp[0][1], day2_temp[2][1] ]
-	    # fecth current infos
-	    current_humidity = re.findall( pattern_current_humidity, htmlSource )[0]
-	    current_dew = _english_localize_unit( re.findall( pattern_current_dew, htmlSource )[0] )
-	    current_wind = re.findall( pattern_current_wind, htmlSource )[0]
-	    if ( current_wind.split(" ")[-1] == "km/h" ):
-		current_wind = current_wind.split(" ")[0]+" "+_english_localize_unit( current_wind.split(" ")[1], "speed" )
+	try:
+		# fetch icons
+		icon = []
+		icondir = {"1":"32", "2":"30", "3":"28", "4":"30", "5":"34", "6":"28", "7":"26", "8":"26", "11":"19", "12":"11", "13":"39", "14":"39", "15":"3", "16":"37", "17":"37", "18":"12", "19":"14", "20":"14", "21":"14", "22":"16", "23":"16", "24":"25", "25":"25", "26":"25", "29":"5", "30":"36", "31":"32", "32":"23", "33":"31", "34":"29", "35":"27", "36":"27", "38":"27", "37":"33", "39":"45", "40":"45", "41":"47", "42":"47", "43":"46", "44":"46" }
+		current_icon = icondir.get( re.findall( pattern_icon, htmlSource )[0] ) 
+		if ( self.version != 2 ): # for new pre-eden, it should contain only "number.png"
+			current_icon = "/".join( [ "special://temp", "weather", "128x128", icondir.get( re.findall( pattern_icon, htmlSource )[0] ) + ".png" ] )
+		else:
+			current_icon = current_icon + ".png"
+		icon_day1 = re.findall( pattern_icon, htmlSource_1 )
+		icon_day2 = re.findall( pattern_icon, htmlSource_2 )
+		icon = [ icondir.get(icon_day1[0]), icondir.get(icon_day1[1]), icondir.get(icon_day2[0]), icondir.get(icon_day2[1]) ]
+		printlog( "icons... Done!" )
+		# enumerate thru and combine the day with it's forecast
+		if ( len( icon ) ):           
+		    # fetch brief description
+		    current_brief = re.findall( pattern_current_brief, htmlSource )[0].title()
+		    day1_brief = re.findall( pattern_forecast_brief, htmlSource_1 )
+		    day2_brief = re.findall( pattern_forecast_brief, htmlSource_2 )
+		    if ( day1_brief is not None and day2_brief is not None):
+			brief = [ day1_brief[0][1], day1_brief[1][1], day2_brief[0][1], day2_brief[1][1] ]
+		    else:
+			brief = [ "", "", "", "" ]
+		    printlog( "briefs... Done!" )
+		    # fetch temperature        
+		    current_temp = re.findall( pattern_current_temp, htmlSource )[0]
+		    current_feel_like = re.findall( pattern_current_feel_like, htmlSource )[0]
+		    current_dew = re.findall( pattern_current_dew, htmlSource )[0]
+		    if ( self.version != 2 ):
+			current_temp = _english_localize_unit( current_temp )
+			current_feel_like = _english_localize_unit( current_feel_like )
+			current_dew = _english_localize_unit( current_dew )
+		    day1_temp = re.findall( pattern_temp, htmlSource_1 )
+		    day2_temp = re.findall( pattern_temp, htmlSource_2 )
+		    temperature_info = ["High", "Low", "High", "Low"]
+		    temperature = [ day1_temp[0][1], day1_temp[2][1], day2_temp[0][1], day2_temp[2][1] ]
+                    printlog ( "temperatures... Done!" )
+		    # fecth current infos
+		    current_humidity = re.findall( pattern_current_humidity, htmlSource )[0]  
+		    printlog ( "humidity... Done!" )
+		    current_wind = re.findall( pattern_current_wind, htmlSource )[0]
+		    printlog ( "wind... Done! (%s)" % current_wind )
+		    current_winddirection = ""
+		    try:
+		        if ( self.version !=2 ):
+				current_wind = current_wind.split(" ")[0]+" "+_english_localize_unit( current_wind.split(" ")[1], "speed" )
+			else:
+				current_winddirection = current_wind.split(" ")[0]
+				current_wind = current_wind.split(" ")[1]
+		    except:    # Calm or variable direction
+		        current_wind = [ current_wind, "0" ][ self.version == 2 ]     # new pre-eden can't show "Calm", must fit the form "From XXX at XX km/h"
+			current_winddirection = [ "", "VAR" ][ self.version == 2 ]		  
+		    printlog ( "wind direction/speed split... Done!" )
+		    """
+		    # fetch precip title
+		    precip_title = re.findall( pattern_precip_title, htmlSource )
+		    # fetch precip title
+		    precip_amount = re.findall( pattern_precip_amount, htmlSource )
+		    # fetch forecasts
+		    #outlook = re.findall( pattern_outlook, htmlSource )
+		    """
 
-	    """
-	    # fetch precip title
-            precip_title = re.findall( pattern_precip_title, htmlSource )
-            # fetch precip title
-            precip_amount = re.findall( pattern_precip_amount, htmlSource )
-            # fetch forecasts
-            #outlook = re.findall( pattern_outlook, htmlSource )
-	    """
+		    precip_title = []
+		    precip_amount = []
 
-	    precip_title = []
-	    precip_amount = []
+		    # fetch sunrise and sunset
+		    try:
+			current_sunrise = _localize_unit( re.findall( pattern_current_sunrise, htmlSource_3 )[0], "time" )
+		    except:
+			current_sunrise = "N/A"
+		    try:
+			current_sunset = _localize_unit( re.findall( pattern_current_sunset, htmlSource_3 )[0], "time" )                      
+		    except:
+			current_sunset = "N/A"
+		    try:
+			sunrise = re.findall( pattern_sunrise, htmlSource_4 )[0]
+		    except:
+			sunrise = "N/A"
+		    try:
+			sunset = re.findall( pattern_sunset, htmlSource_4 )[0]
+		    except:
+			sunset = "N/A"
+		    daylight = [ ("Sunrise", current_sunrise), ("Sunset", current_sunset), ("Sunrise", sunrise), ("Sunset", sunset) ]
+		    # fetch extra info
+		    try:
+			pressure = _english_localize_unit( re.findall( pattern_pressure, htmlSource, re.DOTALL )[0], "pressure" )
+		    except:
+			pressure = "N/A"
+		    try:
+			visibility = _english_localize_unit( re.findall( pattern_visibility, htmlSource, re.DOTALL )[0], "distance" )
+		    except:
+			visibility = "N/A"
+		    # print "[Weather Plus] pressure : " + pressure
+		    self.extras += [( pressure, visibility, current_sunrise, current_sunset, current_temp, current_feel_like, current_brief, current_wind, current_humidity, current_dew, current_icon, current_winddirection )]
+		    # am or pm now?
+		    try: 
+			current_time = re.findall( pattern_current_time, htmlSource_3 )[0]
+		    except:
+			current_time = xbmc.getInfoLabel("System.Time")
+		    ampm = 0
+		    try:
+			if ( current_time.split(" ")[1] == "PM" ):
+				ampm = 1	    
+		    except:
+			if ( int(current_time.split(":")[0]) > 11 ):
+				ampm = 1
+		    # print "[Weather Plus] Current Time : " + current_time
+		    days = ["Today", "Tonight", "Tomorrow", "Tomorrow Night"]
+		    printlog( "Checking fetched information... See below..." )
+		    for count in range(0, 3):
+			# make icon path
+			try :
+			  iconpath = "/".join( [ "special://temp", "weather", "128x128", icon[ count+ampm ] + ".png" ] )
+			except :
+			  printlog( "Icon%s is not available" % icon[ count+ampm ] )
+			  iconpath = "/".join( [ "special://temp", "weather", "128x128", "na.png" ] ) 
+			printlog( days[count+ampm] )
+			printlog( iconpath )
+			try :
+			  print "[Weather Plus] " + brief[ count+1 ]
+			except :
+			  print "[Weather Plus] iconpath is not available"
+			  brief += [ ("N/A", ) ]
+			try :
+			  print "[Weather Plus] " + temperature_info[ count ]
+			except :
+			  print "[Weather Plus] temperature_info["+str(count)+"] is not available"
+			  temperature_info += [ ("N/A", ) ]
+			try :
+			  print "[Weather Plus] " + _localize_unit( temperature[ count ] )
+			except :
+			  print "[Weather Plus] temperature["+str(count)+"] is not available"
+			  temperature += [ ("N/A", ) ]
+			try :
+			  print "[Weather Plus] " + precip_title[ count ]
+			except :
+			  print "[Weather Plus] precip_title["+str(count)+"] is not available"
+			  precip_title += [ ("N/A", ) ]
+			try :
+			  print "[Weather Plus] " + precip_amount[ count ].replace( "%", "" )
+			except :
+			  print "[Weather Plus] precip_amount["+str(count)+"] is not available"
+			  precip_amount += [ "N/A" ]
+			try :
+			  print "[Weather Plus] " + brief[ count+ampm ]
+			except :
+			  print "[Weather Plus] brief["+str(count+ampm)+"] is not available"
+			  brief += [ ("N/A", "N/A", "N/A", "N/A", ) ]
+			try :
+			  print "[Weather Plus] " + daylight[ count+ampm ][ 0 ]
+			except :
+			  print "[Weather Plus] daylight["+str(count+ampm)+"] is not available"
+			  daylight += [ ("N/A", ) ]
+			try :
+			  print "[Weather Plus] " + _localize_unit( daylight[ count+ampm ][ 1 ], "time"  )
+			except :
+			  print "[Weather Plus] daylight["+str(count+ampm)+"] is not available"
+			  daylight += [ ("00:00", ) ]
 
-            # fetch sunrise and sunset
-	    try:
-	        current_sunrise = _localize_unit( re.findall( pattern_current_sunrise, htmlSource_3 )[0], "time" )
-	    except:
-		current_sunrise = "N/A"
-	    try:
-		current_sunset = _localize_unit( re.findall( pattern_current_sunset, htmlSource_3 )[0], "time" )                      
-	    except:
-		current_sunset = "N/A"
-	    try:
-		sunrise = re.findall( pattern_sunrise, htmlSource_4 )[0]
-	    except:
-		sunrise = "N/A"
-	    try:
-	        sunset = re.findall( pattern_sunset, htmlSource_4 )[0]
-	    except:
-	        sunset = "N/A"
-	    daylight = [ ("Sunrise", current_sunrise), ("Sunset", current_sunset), ("Sunrise", sunrise), ("Sunset", sunset) ]
-            # fetch extra info
-	    try:
-		pressure = _english_localize_unit( re.findall( pattern_pressure, htmlSource, re.DOTALL )[0], "pressure" )
-	    except:
-		pressure = "N/A"
-	    try:
-		visibility = _english_localize_unit( re.findall( pattern_visibility, htmlSource, re.DOTALL )[0], "distance" )
-	    except:
-		visibility = "N/A"
-            # print "[Weather Plus] pressure : " + pressure
-	    self.extras += [( pressure, visibility, current_sunrise, current_sunset, current_temp, current_feel_like, current_brief, current_wind, current_humidity, current_dew, current_icon )]
-	    # am or pm now?
-            try: 
-	        current_time = re.findall( pattern_current_time, htmlSource_3 )[0]
-	    except:
-	        current_time = xbmc.getInfoLabel("System.Time")
-	    ampm = 0
-	    try:
-		if ( current_time.split(" ")[1] == "PM" ):
-			ampm = 1	    
-	    except:
-		if ( int(current_time.split(":")[0]) > 11 ):
-			ampm = 1
-	    # print "[Weather Plus] Current Time : " + current_time
-	    days = ["Today", "Tonight", "Tomorrow", "Tomorrow Night"]
-            for count in range(0, 3):
-                # make icon path
-                try :
-                  iconpath = "/".join( [ "special://temp", "weather", "128x128", icon[ count+ampm ] + ".png" ] )
-                except :
-                  print "[Weather Plus] Icon is not available"
-                  iconpath = "/".join( [ "special://temp", "weather", "128x128", "na.png" ] ) 
-                # add result to our class variable
-                # self.forecast += [ ( days, iconpath, brief[ count ], temperature[ count ][ 0 ], _localize_unit( temperature[ count ][ 1 ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), outlook[ count ].strip(), daylight[ count ].split( ": " )[ 0 ], _localize_unit( daylight[ count ].split( ": " )[ 1 ], "time" ), ) ]
-                # print days[count]
-                # print iconpath
-                # print brief[ count+1 ]
-                # print temperature_info[ count ]
-                # print _localize_unit( temperature[ count ] )
-                # print precip_title[ count ]
-                # print precip_amount[ count ].replace( "%", "" )
-                # print brief[ count+4 ]
-                # print daylight[ count ][ 0 ]
-                # print "[Weather Plus] " + _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  )
-                print "[Weather Plus] " + days[count+ampm]          
-                print "[Weather Plus] " + iconpath
-		# print daylight
-                try :
-                  print "[Weather Plus] " + brief[ count+1 ]
-                except :
-                  print "[Weather Plus] iconpath is not available"
-                  brief += [ ("N/A", ) ]
-                try :
-                  print "[Weather Plus] " + temperature_info[ count ]
-                except :
-                  print "[Weather Plus] temperature_info["+str(count)+"] is not available"
-                  temperature_info += [ ("N/A", ) ]
-                try :
-                  print "[Weather Plus] " + _localize_unit( temperature[ count ] )
-                except :
-                  print "[Weather Plus] temperature["+str(count)+"] is not available"
-                  temperature += [ ("N/A", ) ]
-                try :
-                  print "[Weather Plus] " + precip_title[ count ]
-                except :
-                  print "[Weather Plus] precip_title["+str(count)+"] is not available"
-                  precip_title += [ ("N/A", ) ]
-                try :
-                  print "[Weather Plus] " + precip_amount[ count ].replace( "%", "" )
-                except :
-                  print "[Weather Plus] precip_amount["+str(count)+"] is not available"
-                  precip_amount += [ "N/A" ]
-                try :
-                  print "[Weather Plus] " + brief[ count+ampm ]
-                except :
-                  print "[Weather Plus] brief["+str(count+ampm)+"] is not available"
-                  brief += [ ("N/A", "N/A", "N/A", "N/A", ) ]
-                try :
-                  print "[Weather Plus] " + daylight[ count+ampm ][ 0 ]
-                except :
-                  print "[Weather Plus] daylight["+str(count+ampm)+"] is not available"
-                  daylight += [ ("N/A", ) ]
-                try :
-                  print "[Weather Plus] " + _localize_unit( daylight[ count+ampm ][ 1 ], "time"  )
-                except :
-                  print "[Weather Plus] daylight["+str(count+ampm)+"] is not available"
-                  daylight += [ ("00:00", ) ]
-
-                self.forecast += [ ( days[count+ampm], iconpath, "", temperature_info[ count+ampm ], _english_localize_unit( temperature[ count+ampm ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), brief[ count+ampm ], daylight[ count+ampm ][ 0 ], _localize_unit( daylight[ count+ampm ][ 1 ], "time"  ), ) ]
+			self.forecast += [ ( days[count+ampm], iconpath, "", temperature_info[ count+ampm ], _english_localize_unit( temperature[ count+ampm ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), brief[ count+ampm ], daylight[ count+ampm ][ 0 ], _localize_unit( daylight[ count+ampm ][ 1 ], "time"  ), ) ]
+		    printlog("ACCU_Forecast36HourParser : Done")
+		    self.error = 0
+		else:
+		    printlog("ACCU_Forecast36HourParser : Stopped")
+		    self.error = self.error + 1
+		    return
+	except:
+	    self.error = self.error + 1
+	    return
 
 class NOAA_Forecast36HourParser:
-    def __init__( self, htmlSource, htmlSource_2, xmlSource, observSource, translate=None ):
+    def __init__( self, version, htmlSource, htmlSource_2, xmlSource, observSource, translate=None ):
         self.forecast = []
         self.extras = []
         self.alerts = []
@@ -950,13 +977,14 @@ class NOAA_Forecast36HourParser:
         self.video_location = []
         self.translate = translate
         self.sun = []
+	self.version = version
 
         # only need to parse source if there is source
         if ( htmlSource ):
             self._get_forecast( htmlSource, htmlSource_2, xmlSource, observSource )
 
     def _get_forecast( self, htmlSource, htmlSource_2, xmlSource, observSource ):
-	print "[Weather Plus] Fetching Forecast from Noaa.gov..."
+	printlog("Fetching Forecast from Noaa.gov...")
         # regex patterns
         # pattern_video_location = ""
         # pattern_video_local_location = ""
@@ -1000,7 +1028,7 @@ class NOAA_Forecast36HourParser:
         # fetch day title
         # days_10day = re.findall( pattern_days, htmlSource )
 	days_10day = re.findall( pattern_xml_days, xmlSource )
-        print "[Weather Plus] days_10day : " , days_10day
+        printlog("days_10day : " + ",".join(days_10day))
 
  	# am or pm now?
 	cor = 0
@@ -1012,7 +1040,7 @@ class NOAA_Forecast36HourParser:
 			# days_10day += [ daysbuffer[ count+ 1 ] ]
 	ampm = 0
 	if (days_10day[0] == "Tonight" or days_10day[0] == "Overnight"): ampm = 1
-        print "[Weather Plus] ampm : " + str(ampm)
+        printlog("ampm : " + str(ampm))
 
 	# current info.
 	pattern_current_icon = "<icon_url_name>(.+?).jpg"
@@ -1021,27 +1049,27 @@ class NOAA_Forecast36HourParser:
 		current_icon = re.findall( "([^\d\s]+)", re.findall( pattern_current_icon, observSource )[0] )[0]
 	except:
 		current_icon = "na"
-	print "[Weather Plus] Current Icon : " + current_icon
+	print current_icon
 
 	# fetch icons
 	icon = []
 	icons = re.findall( pattern_icon, xmlSource )
-	print icons
+	# print icons
 	icondir = { "na":"na", "skc":"32", "nskc":"31", "few":"34", "nfew":"33", "sct":"30", "nsct":"29", "bkn":"28", "nbkn":"27", "ovc":"26", "novc":"26", "scttsra":"37", "nscttsra":"47", "tsra":"35", "ntsra":"35", "ra":"10", "nra":"10", "sn":"14", "nsn":"14", "shra":"39", "nshra":"45", "wind":"24", "nwind":"24", "fg":"20", "nfg":"20", "sctfg":"20", "nsctfg":"20", "hi_tsra":"37", "hi_ntsra":"47", "rasn":"5", "nrasn":"5" }
-	current_icon = icondir.get( current_icon )
+	current_icon = icondir.get( current_icon ) + ".png"
+	if ( self.version != 2) : current_icon = "/".join( [ "special://temp", "weather", "128x128", "%s" % current_icon ] )  # new pre-eden : don't make path.
+	print current_icon
 	for count in range(0, 13-ampm):
 		icon += [ icondir.get ( re.findall( "([^\d\s]+)", icons[count].split("/")[-1] )[0] ) ]
-	print "[Weather Plus] NOAA icons : "
-	print icon
-	
+	printlog("NOAA icons : " + ",".join(icon))
 
         # enumerate thru and combine the day with it's forecast
         if ( len( icon ) ):
-	    print "[Weather Plus] Reforming data.."
+	    printlog("Reforming data..")
 	    # fetch today's date
 	    today = re.findall( pattern_date, htmlSource )[0]
 	    today = today.split(" ")[2] + " " + today.split(" ")[3].replace(",", " ")
-	    print today
+	    printlog( "Today is %s" % today )
           
             # fetch brief description
 	    current_info = re.findall( pattern_current_info, htmlSource_2 )
@@ -1095,7 +1123,6 @@ class NOAA_Forecast36HourParser:
 	    xmltemp = re.findall( pattern_xml_high_temp, xmlSource )
 	    if (ampm == 1):
 		temp += [ xmltemp[ 12 ], xmltemp[ 6 ] ]
-		print temp
 	    else:
 		temp += [ xmltemp[ 6+cor ] ]
 	    # last_temp = re.findall( pattern_xml_high_temp, xmlSource )[ [6, 12+cor][ampm] ]
@@ -1104,31 +1131,32 @@ class NOAA_Forecast36HourParser:
 
 	    # fecth current infos
 	    current_humidity = re.findall( pattern_current_humidity, htmlSource )[0]
+	    current_winddirection = ""
 	    try:
 		current_dew = re.findall( pattern_current_dew, htmlSource )[0].split(" ")[0]
 	    except:
 		current_dew = re.findall( pattern_current_dew_2, htmlSource )[0].split(" ")[0].replace("&deg;F","")
-		# print current_dew
             try:
 		current_wind = re.findall( pattern_current_wind, htmlSource )[0]
 	    except:
 		current_wind = re.findall( pattern_current_wind_2, htmlSource )[0]
 	    if ( current_wind.lower() != "calm"  ):
 	        if ( current_wind.split(" ")[1] != "M" ):
-		    try:
-			current_wind = current_wind.split(" ")[0]+" "+_localize_unit( current_wind.split(" ")[1], "speed" ).replace(" mph","").replace(" km/h","") +" Gust "+_localize_unit( current_wind.split(" ")[3], "speed" )
-		    except:	
-			current_wind = current_wind.split(" ")[0]+" "+_localize_unit( current_wind.split(" ")[1], "speed" )
-
+		    if ( self.version == 2 ):
+			current_winddirection = current_wind.split(" ")[0] # for new pre-eden, winddirection should be assigned
+			current_wind = _localize_unit( current_wind.split(" ")[1], "speedmph2kmh" ) # for new pre-eden, wind must have straight number of km/h		
+		    else:
+		        try:
+			    current_wind = current_wind.split(" ")[0]+" "+_localize_unit( current_wind.split(" ")[1], "speed" ).replace(" mph","").replace(" km/h","") +" Gust "+_localize_unit( current_wind.split(" ")[3], "speed" )
+			except:	
+			    current_wind = current_wind.split(" ")[0]+" "+_localize_unit( current_wind.split(" ")[1], "speed" )
 	
             # fetch precip
 	    precip_title = []
             precip_amount = re.findall( pattern_precip_amount, htmlSource_2 )
-	    print precip_amount
 
             # fetch forecasts
             outlook = re.findall( pattern_outlook, htmlSource )
-	    print outlook
 
             # fetch extra info
 	    try:
@@ -1148,7 +1176,7 @@ class NOAA_Forecast36HourParser:
 		     visibility = _localize_unit( re.findall( pattern_visibility_2, htmlSource, re.DOTALL )[0].replace("Miles","miles").replace("mi.","miles"), "distance" )
 		except:
 		     visibility = "N/A"
-            print "[Weather Plus] pressure, visibility : " + pressure, visibility
+            printlog("pressure, visibility : %s, %s" % ( pressure, visibility ))
             sunrise = re.findall( pattern_sunrise, htmlSource_2 ) 
 	    sunset = re.findall( pattern_sunset, htmlSource_2 )
 	    daylight = []
@@ -1162,8 +1190,15 @@ class NOAA_Forecast36HourParser:
 				daylight += [ ("Sunrise", sunrise[count]+" AM"), ("Sunset", sunset[count+1]+" PM") ]
 		except:
 			daylight += [ ("Sunrise", "N/A"), ("Sunset", "N/A"), ]
-	    print "[Weather Plus] Sunrize and Sunset : ", daylight
-	    self.extras += [( pressure, visibility, daylight[0][1], daylight[1][1], current_temp, current_feel_like, current_brief, current_wind, current_humidity, current_dew, "/".join( [ "special://temp", "weather", "128x128", "%s.png" % current_icon ] ) )]
+	    if (self.version == 2): # Current temereatures should be always in C
+		current_temp = str( int(_localize_unit( current_temp, "tempf2c" )) )
+		current_feel_like = str( int(_localize_unit( current_feel_like, "tempf2c" )) )
+		current_dew = str( int(_localize_unit( current_dew, "tempf2c" )) )
+	    else:
+		current_temp = str( int(_localize_unit( current_temp )) )
+		current_feel_like = str( int(_localize_unit( current_feel_like )) )
+		current_dew = str( int(_localize_unit( current_dew )) )
+	    self.extras += [( pressure, visibility, daylight[0][1], daylight[1][1], str(current_temp), current_feel_like, current_brief, current_wind, current_humidity, current_dew, current_icon, current_winddirection )]
 	    days = ["Today", "Tonight", "Tomorrow", "Tomorrow Night", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A"]
             for count in range(0, 13):
 		# print count
@@ -1171,7 +1206,7 @@ class NOAA_Forecast36HourParser:
                 try :
                   iconpath = "/".join( [ "special://temp", "weather", "128x128", icon[ count + cor ] + ".png" ] )
                 except :
-                  print "[Weather Plus] Icon is not available"
+                  printlog("Icon is not available")
                   iconpath = "/".join( [ "special://temp", "weather", "128x128", "na.png" ] ) 
                 # date calculation for 6 day
 		date_day = int(today.split(" ")[ 1 ]) + int( (count+1)/2 )
@@ -1207,69 +1242,68 @@ class NOAA_Forecast36HourParser:
                 # print daylight[ count ][ 0 ]
                 # print "[Weather Plus] " + _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  )
                 if ( count < 3 ):
-		  print "[Weather Plus] " + days[count+ampm]          
+		  printlog(days[count+ampm])        
 		else:
-		  print "[Weather Plus] " + days_10day[count+cor]
-                print "[Weather Plus] " + iconpath
-		# print daylight
+		  printlog(days_10day[count+cor])
+                printlog(iconpath)
                 try :
-                  print "[Weather Plus] " + brief[ count ]
+                  printlog(brief[ count ])
                 except :
-                  print "[Weather Plus] brief["+str(count)+"] is not available"
+                  printlog("brief["+str(count)+"] is not available")
                   brief += [ ("N/A", ) ]
                 try :
-                  print "[Weather Plus] " + temperature_info[ count+ampm ]
+                  printlog(temperature_info[ count+ampm ])
                 except :
-                  print "[Weather Plus] temperature_info["+str(count+ampm)+"] is not available"
+                  printlog("temperature_info["+str(count+ampm)+"] is not available")
                   temperature_info += [ ("High", ) ]
                 try :
-                  print "[Weather Plus] " + _localize_unit( temperature[ count ] )
+                  printlog(_localize_unit( temperature[ count ] ))
                 except :
-                  print "[Weather Plus] temperature["+str(count)+"] is not available"
+                  printlog("temperature["+str(count)+"] is not available")
                   try :
 			temperature += [ temp[ count ] ]
-			print "[Weather Plus] Added : "+ _localize_unit( temperature[ count ] )
+			printlog("Added : "+ _localize_unit( temperature[ count ] ))
 		  except :
 			temperature += [ "N/A" ]
                 try :
-                  print "[Weather Plus] " + precip_title[ count ]
+                  printlog(precip_title[ count ])
                 except :
-                  print "[Weather Plus] precip_title["+str(count)+"] is not available"
+                  printlog("precip_title["+str(count)+"] is not available")
                   precip_title += [ "Rain/Snow" ]
 		try:
-                  print "[Weather Plus] " + precip_amount[ count ].replace( "%", "" )
+                  printlog(precip_amount[ count ].replace( "%", "" ))
                 except :
-                  print "[Weather Plus] precip_amount["+str(count)+"] is not available"
+                  printlog("precip_amount["+str(count)+"] is not available")
                   precip_amount += [ "N/A" ]
                 try :
-                  print "[Weather Plus] " + brief[ count ]
+                  printlog(brief[ count ])
                 except :
-                  print "[Weather Plus] brief["+str(count)+"] is not available"
+                  printlog("brief["+str(count)+"] is not available")
                   brief += [ ("N/A", "N/A", "N/A", "N/A", ) ]
                 try :
-                  print "[Weather Plus] " + daylight[ count+ampm ][ 0 ]
+                  printlog(daylight[ count+ampm ][ 0 ])
                 except :
-                  print "[Weather Plus] daylight["+str(count+ampm)+"][0] is not available"
+                  printlog("daylight["+str(count+ampm)+"][0] is not available")
                   daylight += [ ("N/A", "00:00") ]
                 try :
-                  print "[Weather Plus] " + _localize_unit( daylight[ count+ampm ][ 1 ], "time"  )
+                  printlog(_localize_unit( daylight[ count+ampm ][ 1 ], "time" ))
                 except :
-                  print "[Weather Plus] daylight["+str(count+ampm)+"][1] is not available"
+                  printlog("daylight["+str(count+ampm)+"][1] is not available")
                   daylight += [ ("N/A", "00:00") ]
 		try :
-		  print "[Weather Plus] " + days_10day[count].replace("This Afternoon", "Today")
+		  printlog(days_10day[count].replace("This Afternoon", "Today"))
 		except :
-		  print "[Weather Plus] days_10day["+str(count)+"] is not available"
+		  printlog("days_10day["+str(count)+"] is not available")
 		  days_10day += [ ("N/A", ) ]
 		try:
-		  print "[Weather Plus] " + date
+		  printlog(date)
 		except :
-		  print "[Weather Plus] date is not available"
-		  date += [ ("N/A", ) ]
+		  printlog("date is not available")
+		  date = "N/A"
 		try:
-		  print "[Weather Plus] wind : ", wind[count]
+		  printlog("wind : " + ",".join(wind[count]))
 		except :
-		  print "[Weather Plus] wind["+str(count)+"] is not available"
+		  printlog("wind["+str(count)+"] is not available")
 		  wind += [ ("N/A", "0") ]
 		"""
 		print days_10day[count+cor]
@@ -1286,11 +1320,11 @@ class NOAA_Forecast36HourParser:
 		  self.forecast += [ ( days[count+ampm], iconpath, brief[ count ], temperature_info[ count+ampm ], _localize_unit( temperature[ count ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), outlook[ count ], daylight[ count+ampm ][ 0 ], _localize_unit( daylight[ count+ampm ][ 1 ], "time"  ), days_10day[count+cor].replace("This Afternoon", "Today"), date, windir.get(wind[count][0]), " ".join( [ _localize_unit( wind[count][1].split(" ")[0], "speed" ), wind[count][1].split(" ")[1], _localize_unit( wind[count][1].split(" ")[2], "speed" ) ] )  ) ]	
 		except:
 		  self.forecast += [ ( days[count+ampm], iconpath, brief[ count ], temperature_info[ count+ampm ], _localize_unit( temperature[ count ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), outlook[ count ], daylight[ count+ampm ][ 0 ], _localize_unit( daylight[ count+ampm ][ 1 ], "time"  ), days_10day[count+cor].replace("This Afternoon", "Today"), date, windir.get(wind[count][0]), _localize_unit( wind[count][1].split(" ")[0], "speed" ), ) ]	
-		print self.forecast
+		#print self.forecast
 
 #**********************************************************
 #                                                         *
-#         Wunderground.com 36 Hour Parser                 *
+#         Wunderground.com Parsers                        *
 #                                                         *
 #**********************************************************
 class WUNDER_Forecast36HourParser:
@@ -1929,19 +1963,20 @@ class ACCU_ForecastHourlyParser:
     def __init__( self, htmlSource, translate ):
         self.forecast = []
         self.translate = translate
+	self.error = 0
         # only need to parse source if there is source
         if ( htmlSource ):
             self._get_forecast( htmlSource )
 
     def _get_forecast( self, htmlSource ):
         # regex patterns
-	pattern_date = "([0-9]+)/([0-9]+)/20"
+	pattern_date = [ "([0-9]+)/([0-9]+)/20", "([0-9]+)-([0-9]+)-20" ]
         pattern_info = "<div class=\".+?textBold\">([^<]+)</div>"
 	pattern_brief = "<div class=\".+?hbhWxText\">([^<]+)</div>"
 	pattern_icon = "wxicons/31x24/(.+?).gif"
 	pattern_wind = "winds/24x24/(.+?).gif"
         # fetch info
-	date = re.findall( pattern_date, htmlSource )
+	date = re.findall( pattern_date[0], htmlSource )
         raw_info = re.findall( pattern_info, htmlSource )
 	raw_brief = re.findall( pattern_brief, htmlSource )
 	icon = re.findall( pattern_icon, htmlSource )
@@ -1949,7 +1984,10 @@ class ACCU_ForecastHourlyParser:
 	info_ = []
 	info = []
 	brief = []
-	dates = [ ( date[0][0], date[0][1] ), ( date[3][0], date[3][1] ) ]
+	try: dates = [ ( date[0][0], date[0][1] ), ( date[3][0], date[3][1] ) ]
+	except:
+ 	    date = re.findall( pattern_date[1], htmlSource )
+	    dates = [ ( date[0][0], date[0][1] ), ( date[3][0], date[3][1] ) ]
 	for item in raw_info:
 	    info_ += [ item.replace("\n","").replace("\r","").replace("\t","").replace("&deg", "°") ]
 	for item in raw_brief:
@@ -1977,7 +2015,11 @@ class ACCU_ForecastHourlyParser:
 	for count in range(0, 7):
 	    info += [ ( info_[count], icondir.get( icon[count] ), brief[count], info_[count+7], info_[count+14], info_[count+21], info_[count+28], windir.get( wind[count] ), info_[count+35], info_[count+42] ) ]
 	for count in range(49, 56):
-	    info += [ ( info_[count], icondir.get( icon[count-43] ), brief[count-43], info_[count+7], info_[count+14], info_[count+21], info_[count+28], windir.get( wind[count-43] ), info_[count+35], info_[count+42] ) ]
+	    try:
+	        info += [ ( info_[count], icondir.get( icon[count-43] ), brief[count-43], info_[count+7], info_[count+14], info_[count+21], info_[count+28], windir.get( wind[count-43] ), info_[count+35], info_[count+42] ) ]
+	    except:
+	        self.error = self.error + 1
+	        return
         if ( len( info ) ):
             # counter for date
             date_counter = 0
@@ -2002,7 +2044,11 @@ class ACCU_ForecastHourlyParser:
                 try:
 		   self.forecast += [ ( _localize_unit( item[ 0 ], "time" ), " ".join( dates[ date_counter ] ), iconpath, _english_localize_unit( item[ 3 ].split("°")[0] ), item[ 2 ], _english_localize_unit( item[ 4 ].split("°")[0] ), item[ 9 ].replace( "%", "" ), item[ 6 ].replace( "%", "" ), item[ 7 ], _english_localize_unit( item[ 8 ], "speed" ), item[ 7 ].split( " " )[ -1 ], "", "", ) ]
 		except:
-		   self.forecast += [ ( item[ 0 ], " ".join( dates[ date_counter ] ), iconpath, _english_localize_unit( item[ 3 ].split("°")[0] ), item[ 2 ], _english_localize_unit( item[ 4 ].split("°")[0] ), item[ 9 ].replace( "%", "" ), item[ 6 ].replace( "%", "" ), item[ 7 ], _english_localize_unit( item[ 8 ], "speed" ), item[ 7 ].split( " " )[ -1 ], "", "", ) ]
+		   try:
+		        self.forecast += [ ( item[ 0 ], " ".join( dates[ date_counter ] ), iconpath, _english_localize_unit( item[ 3 ].split("°")[0] ), item[ 2 ], _english_localize_unit( item[ 4 ].split("°")[0] ), item[ 9 ].replace( "%", "" ), item[ 6 ].replace( "%", "" ), item[ 7 ], _english_localize_unit( item[ 8 ], "speed" ), item[ 7 ].split( " " )[ -1 ], "", "", ) ]
+		   except:
+		        self.error = self.error + 1
+			return
 
 
 class NOAA_ForecastHourlyParser:
@@ -2055,10 +2101,6 @@ class NOAA_ForecastHourlyParser:
                             "NW": "From the Northwest",
                             "NNW": "From the North Northwest"
                  }   
-
-	print dates
-	print hours
-	print temperature, humidity, precip, wind
 	
 	for count in range( 0, 24 ):
 		hour = int( hours[ count ].replace("<b>","").replace("</b>","") )
@@ -2232,14 +2274,15 @@ class ForecastWeekendParser:
 
 
 class ACCU_Forecast10DayParser:
-    def __init__( self, htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4, translate ):
+    def __init__( self, htmlSource_1, htmlSource_2, translate ):
         self.forecast = []
         self.translate = translate
+	self.error = 0
         # only need to parse source if there is source
         if ( htmlSource_1 and htmlSource_2 ):
-            self._get_forecast( htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4 )
+            self._get_forecast( htmlSource_1, htmlSource_2 )
 
-    def _get_forecast( self, htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4 ):
+    def _get_forecast( self, htmlSource_1, htmlSource_2 ):
         # regex patterns
         pattern_day = "Day_ctl0[0-9]+_lblDate\">(.+?)</span>"
 	pattern_outlook = "Day_ctl0[0-9]+_lblDesc\">(.+?)</span>"
@@ -2250,20 +2293,25 @@ class ACCU_Forecast10DayParser:
 	icondir = {"1":"32", "2":"30", "3":"28", "4":"30", "5":"34", "6":"28", "7":"26", "8":"26", "11":"19", "12":"11", "13":"39", "14":"39", "15":"3", "16":"37", "17":"37", "18":"12", "19":"14", "20":"14", "21":"14", "22":"16", "23":"16", "24":"25", "25":"25", "26":"25", "29":"5", "30":"36", "31":"32", "32":"23", "33":"31", "34":"29", "35":"27", "36":"27", "38":"27", "37":"33", "39":"45", "40":"45", "41":"47", "42":"47", "43":"46", "44":"46" }
 
         # fetch info
-	htmlSource = htmlSource_1 + htmlSource_2
-	htmlSource_en = htmlSource_3 + htmlSource_4
+	htmlSource = htmlSource_1
+	htmlSource_en = htmlSource_2
         days = re.findall( pattern_day, htmlSource_en )
 	outlook = re.findall( pattern_outlook, htmlSource )
 	hightemp = re.findall( pattern_hightemp, htmlSource )
 	lowtemp = re.findall( pattern_lowtemp, htmlSource )
 	icon = re.findall( pattern_icon, htmlSource )
+	# print htmlSource
 	# enumerate thru and create heading and forecast
-	for count, day in enumerate(days):
-            if (count<7):
-		iconpath = "/".join( [ "special://temp", "weather", "128x128", icondir.get( icon[count] ) + ".png" ] )
-	    else:
-	        iconpath = "/".join( [ "special://temp", "weather", "128x128", icondir.get( icon[count+7] ) + ".png" ] )
-	    self.forecast += [ ( day.split(" ")[0], day.split(" ")[1], iconpath, outlook[count], _english_localize_unit( hightemp[count] ), _english_localize_unit( lowtemp[count] ), "N/A", "N/A", "N/A", "N/A" ) ]
+	try:	
+	    for count, day in enumerate(days):
+	    	if (count<7):
+		    iconpath = "/".join( [ "special://temp", "weather", "128x128", icondir.get( icon[count] ) + ".png" ] )
+		else:
+		    iconpath = "/".join( [ "special://temp", "weather", "128x128", icondir.get( icon[count+7] ) + ".png" ] )
+	        self.forecast += [ ( day.split(" ")[0], day.split(" ")[1], iconpath, outlook[count], _english_localize_unit( hightemp[count] ), _english_localize_unit( lowtemp[count] ), "N/A", "N/A", "N/A", "N/A" ) ]
+	except:
+	    self.error = self.error + 1
+
 
 class Forecast10DayParser:
     def __init__( self, htmlSource, translate ):
@@ -2301,7 +2349,7 @@ class Forecast10DayParser:
 	# print icon
 	# fetch brief
 	brief = re.findall( pattern_brief, htmlSource )
-	print brief
+	# print brief
 	# fetch temperatures
 	high_temp = re.findall( pattern_high_temp, htmlSource )
 	# print high_temp
@@ -2557,7 +2605,6 @@ class WeatherClient:
 	urls = []
 	count = 1
 	for title in video_title:
-		# print title
 		#***************************
 		# criticalmedia
 		#***************************
@@ -3742,14 +3789,14 @@ class WeatherClient:
 	print urls
 	return urls
 
-    def fetch_36_forecast( self, video ):
-        print "[Weather Plus] Area code = " + self.code
-        print "*****************************************************"
-        print "*                                                   *"
-	print "* [Weather Plus] Trying to fetch 36 hour forecast.. *"
-        print "*                                                   *"
-	print "*****************************************************"
-	print "[Weather Plus] Fetching URL : " + self.BASE_FORECAST_URL % ( "local", self.code, "", )
+    def fetch_36_forecast( self, version, video ):
+        printlog( "*****************************************************" )
+        printlog( "*                                                   *" )
+	printlog( "* [Weather Plus] Trying to fetch 36 hour forecast.. *" )
+        printlog( "*                                                   *" )
+	printlog( "*****************************************************" )
+	printlog( "Fetching URL : " + self.BASE_FORECAST_URL % ( "local", self.code, "", ) )
+	printlog( "Fetching URL : " + self.BASE_URL + "/weather/5-day/"+ self.code )
         # fetch source
         htmlSource = self._fetch_data( self.BASE_FORECAST_URL % ( "local", self.code, "", ), 15 )
         htmlSource_5 = self._fetch_data( self.BASE_URL + "/weather/5-day/"+ self.code, 15 )
@@ -3759,9 +3806,8 @@ class WeatherClient:
 	except:
 	     _localtime_ = None
 
-
         # parse source for forecast
-        parser = Forecast36HourParser( htmlSource, htmlSource_5, _localtime_, self.translate )
+        parser = Forecast36HourParser( version, htmlSource, htmlSource_5, _localtime_, self.translate )
 	if ( parser.error == 0 ):
 		# print parser.alertscolor[0]
 	        # fetch any alerts
@@ -3785,33 +3831,62 @@ class WeatherClient:
 	else:
 		print "[Weather Plus] Error Code : " + str( parser.error )
 
-    def accu_36_forecast( self, video ):
+    def accu_36_forecast( self, version, video="" ):
+        printlog( "*****************************************************" )
+        printlog( "*                                                   *" )
+	printlog( "* [Weather Plus] Trying to fetch 36 hour forecast.. *" )
+        printlog( "*                                                   *" )
+	printlog( "*****************************************************" )
         # fetch source
-	code = "en-us" + self.code.split(" ")[0].lstrip( str(self.code.split("/")[0]) )
-        htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "quick-look", self.code.split(" ")[1] ), 15 )
-        htmlSource_1 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "details", self.code.split(" ")[1] ), 0 )
-	htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "details2", self.code.split(" ")[1] ), 0 )
-        htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( code, "quick-look", self.code.split(" ")[1] ), 15 )
-	htmlSource_4 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( code, "details2", self.code.split(" ")[1] ), 15 )
-	htmlSource_5 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( code, "satellite", self.code.split(" ")[1] ), 15 )
-        print "[Weather Plus] Area code = "+self.code
-	print "[Weather Plus] Fetching " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "details", self.code.split(" ")[1])
-	print "[Weather Plus] Fetching " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "details2", self.code.split(" ")[1])
-	# print htmlSource_2
+	addr = self.code.split(" ")[0]
+	addr_en = "en-us" + self.code.split(" ")[0].lstrip( str(self.code.split("/")[0]) )
+	cityID = self.code.split(" ")[1]
+	printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr, "quick-look", cityID ))
+        htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr, "quick-look", cityID ), 15 )
+	printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr, "details", cityID ))	
+        htmlSource_1 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr, "details", cityID ), 15 )
+	printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr, "details2", cityID ))
+	htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr, "details2", cityID ), 15 )
+	printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr_en, "quick-look", cityID ))
+        htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr_en, "quick-look", cityID ), 15 )
+	printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr_en, "details2", cityID ))
+	htmlSource_4 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr_en, "details2", cityID ), 15 )
+	printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr_en, "satellite", cityID ))
+	htmlSource_5 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr_en, "satellite", cityID ), 15 )     
         # parse source for forecast
-        parser = ACCU_Forecast36HourParser( htmlSource, htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4, self.translate )
-        # print parser.alertscolor[0]
+        parser = ACCU_Forecast36HourParser( version, htmlSource, htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4, self.translate )
+	# any errors?
+	while ( parser.error > 0 and parser.error < 5 ):
+		printlog("Failed to load webpages properly. Retrying..")
+		printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr, "quick-look", cityID ))
+	        htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr, "quick-look", cityID ), 0 )
+		printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr, "details", cityID ))	
+	        htmlSource_1 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr, "details", cityID ), 0 )
+		printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr, "details2", cityID ))
+		htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr, "details2", cityID ), 0 )
+		printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr_en, "quick-look", cityID ))
+	        htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr_en, "quick-look", cityID ), 0 )
+		printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr_en, "details2", cityID ))
+		htmlSource_4 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr_en, "details2", cityID ), 0 )
+		# printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr_en, "satellite", cityID ))
+		# htmlSource_5 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr_en, "satellite", cityID ), 0 )
+	        parser._get_forecast( htmlSource, htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4 )
         # fetch any alerts
         alerts, alertsrss, alertsnotify = self._fetch_alerts( parser.alerts )
-        # print alerts, alertsrss, alertsnotify
         # create video url
         if ( self.code.split("/")[1]=="us" ):
 		self.loc = re.findall("zip: '(.[0-9]+)'", htmlSource)[0]
 		video_title = [self.Addon.getSetting("video1"), self.Addon.getSetting("video2"), self.Addon.getSetting("video3")]
 		video = self._solve_video ( video_title )
 	else:
-		self.loc = re.findall("http://sirocco.accuweather.com/sat_mosaic_640x480_public/IR/(.+?).jpg", htmlSource_5)[0]
-		video, video_title = self._create_video( parser.video_location, self.loc, "", video )
+		try:
+			self.loc = re.findall("http://sirocco.accuweather.com/sat_mosaic_640x480_public/IR/(.+?).jpg", htmlSource_5)[0]
+			video, video_title = self._create_video( parser.video_location, self.loc, "", video )
+		except:
+			htmlSource_5 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr_en, "satellite", cityID ), 0 )
+			self.loc = re.findall("http://sirocco.accuweather.com/sat_mosaic_640x480_public/IR/(.+?).jpg", htmlSource_5)[0]
+			video, video_title = self._create_video( parser.video_location, self.loc, "", video )
+
         # print "[Weather Plus] Weather Video = "+video
         # print "[Weather Plus] Local Video = "+video_local
         # return forecast
@@ -3821,43 +3896,44 @@ class WeatherClient:
              except : 
                  return alerts, alertsrss, alertsnotify, parser.alertscolor, len(parser.alerts), parser.forecast, parser.extras, video, video_title
 
-    def noaa_36_forecast( self, video ):
+    def noaa_36_forecast( self, version, video="" ):
         # fetch source
-        print "*****************************************************"
-        print "*                                                   *"
-	print "* [Weather Plus] Trying to fetch 36 hour forecast.. *"
-        print "*                                                   *"
-	print "*****************************************************"
-	print "[Weather Plus] Fetching URL : " + self.BASE_NOAA_FORECAST_URL % ( self.code )
+        printlog( "*****************************************************" )
+        printlog( "*                                                   *" )
+	printlog( "* [Weather Plus] Trying to fetch 36 hour forecast.. *" )
+        printlog( "*                                                   *" )
+	printlog( "*****************************************************" )
+	printlog( "Fetching URL : " + self.BASE_NOAA_FORECAST_URL % ( self.code ) )
         htmlSource = self._fetch_data( self.BASE_NOAA_FORECAST_URL % ( self.code ), 15 )
+	printlog( "Fetching URL : " + self.BASE_NOAA_QUICK_URL % ( self.code ) )
 	htmlSource_2 = self._fetch_data( self.BASE_NOAA_QUICK_URL % ( self.code ), 15 )
+	printlog( "Fetching URL : " + self.BASE_NOAA_FORECAST_URL % ( self.code + "&FcstType=dwml" ) )
 	xmlSource = self._fetch_data( self.BASE_NOAA_FORECAST_URL % ( self.code + "&FcstType=dwml" ), 15 )
-	pattern_observation = "http://www.weather.gov/data/obhistory/(.+?).html"
+	pattern_observation = [ "http://www.weather.gov/data/obhistory/(.+?).html", "sid=(.+?)\&" ]
 	if ( re.search( "Can not connect to Database Server", xmlSource ) ):
-		print "[Weather Plus] Can not connect to NOAA Xml Server!"
+		printlog( "Can not connect to NOAA Xml Server!" )
 		xbmc.executebuiltin( "XBMC.Notification(\"Weather Plus\",\"Failed to load NOAA.gov!\",240, __icon__) ")
 		return
 	try:
-		observ = re.findall( pattern_observation, htmlSource )[0]
-		print "[Weather Plus] Weather Station : " + observ
+		observ = re.findall( pattern_observation[0], htmlSource )[0]
+		printlog( "Weather Station : " + observ )
 		observSource = self._fetch_data( "http://www.weather.gov/xml/current_obs/%s.xml" % observ, 15 )
 	except:
-		observSource = ""
-        print "[Weather Plus] Area code = " + self.code
+		try:
+			observ = re.findall( pattern_observation[1], htmlSource )[0]
+			printlog( "Weather Station : " + observ )
+			observSource = self._fetch_data( "http://www.weather.gov/xml/current_obs/%s.xml" % observ, 15 )
+		except:
+			printlog( "WARNING : Weather Station Not Found!.... No Current Condition Icon can be Fetched!" )
+			observSource = ""
+        #printlog("Area code = " + self.code )
         # parse source for forecast
-        parser = NOAA_Forecast36HourParser( htmlSource, htmlSource_2, xmlSource, observSource, self.translate )
-        # print parser.alertscolor[0]
+        parser = NOAA_Forecast36HourParser( version, htmlSource, htmlSource_2, xmlSource, observSource, self.translate )
         # fetch any alerts
         alerts, alertsrss, alertsnotify = self._fetch_alerts( parser.alerts )
-        # print alerts, alertsrss, alertsnotify
         # create video url
 	video_title = [self.Addon.getSetting("video1"), self.Addon.getSetting("video2"), self.Addon.getSetting("video3")]
 	video = self._solve_video ( video_title )
-        # video, video_local = self._create_video( parser.video_location, parser.video_local_location, parser.video_local_number, video )
-	# video = ["","",""]
-	# video_title = ["","",""]
-        # print "[Weather Plus] Weather Video = "+video
-        # print "[Weather Plus] Local Video = "+video_local
         # return forecast
         if ( parser.alertscolor is not None ) :
              try : 
@@ -4339,12 +4415,12 @@ class WeatherClient:
         return ["","",""], ["","",""]
 
     def fetch_hourly_forecast( self ):
-        print "*****************************************************"
-        print "*                                                   *"
-	print "* [Weather Plus] Trying to fetch hourly forecast..  *"
-        print "*                                                   *"
-	print "*****************************************************"
-	print "[Weather Plus] Fetching URL : " + self.BASE_FORECAST_URL % ( "hourbyhour", self.code, "", )
+        printlog( "*****************************************************" )
+        printlog( "*                                                   *" )
+	printlog( "* [Weather Plus] Trying to fetch hourly forecast..  *" )
+        printlog( "*                                                   *" )
+	printlog( "*****************************************************" )
+	printlog( "Fetching URL : " + self.BASE_FORECAST_URL % ( "hourbyhour", self.code, "", ) )
         # fetch source
         htmlSource = self._fetch_data( self.BASE_FORECAST_URL % ( "hourbyhour", self.code, "", ), 15 )
         # parse source for forecast
@@ -4353,24 +4429,59 @@ class WeatherClient:
         return parser.forecast
 
     def accu_fetch_hourly_forecast( self ):
-        # fetch source
-	htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly", self.code.split(" ")[1] ), 1 )
-	self.code = self.code.replace( "en-us", self.accu_translate )
-        htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly", self.code.split(" ")[1] ), 1 )
-	pattern_date = "<option selected=\"selected\" value=\"([0-9]+)\">"
-	date = re.findall( pattern_date, htmlSource_3 )
-	# print htmlSource_3
-	# print date
-        htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+date[1], self.code.split(" ")[1] ), 1 )
-	htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+ str( int(date[1])+7 ), self.code.split(" ")[1] ), 1 )
+        printlog( "*****************************************************" )
+        printlog( "*                                                   *" )
+	printlog( "* [Weather Plus] Trying to fetch hourly forecast..  *" )
+        printlog( "*                                                   *" )
+	printlog( "*****************************************************" )
+	# fetch source
+	count = 0
+	while (count < 5):
+		try:
+			printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly", self.code.split(" ")[1] ) )
+			htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly", self.code.split(" ")[1] ), 0 )
+			self.code = self.code.replace( "en-us", self.accu_translate )
+			pattern_date = "<option selected=\"selected\" value=\"([0-9]+)\">"
+			date = re.findall( pattern_date, htmlSource_3 )
+			printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+date[1], self.code.split(" ")[1] ) )
+			htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+date[1], self.code.split(" ")[1] ), 0 )
+			printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+ str( int(date[1])+7 ), self.code.split(" ")[1] ) )
+			htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+ str( int(date[1])+7 ), self.code.split(" ")[1] ), 0 )	
+			break
+		except:
+			printlog( "Retrying..." )
+		count = count + 1
         # parse source for forecast
         parser = ACCU_ForecastHourlyParser( htmlSource + htmlSource_2 + htmlSource_3, self.translate )
+	# any error?
+	while (parser.error > 0 and parser.error < 5):
+		try:
+			printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+date[1], self.code.split(" ")[1] ) )
+			htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+date[1], self.code.split(" ")[1] ), 0 )
+		except:
+			printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly", self.code.split(" ")[1] ) )
+			htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly", self.code.split(" ")[1] ), 0 )
+			date = re.findall( pattern_date, htmlSource_3 )
+			printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+date[1], self.code.split(" ")[1] ) )
+			htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+date[1], self.code.split(" ")[1] ), 0 )
+		printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+ str( int(date[1])+7 ), self.code.split(" ")[1] ) )
+		htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+ str( int(date[1])+7 ), self.code.split(" ")[1] ), 0 )
+		parser._get_forecast( htmlSource + htmlSource_2 + htmlSource_3 )
+	
         # return forecast
+	printlog( "Parsing Hourly Forecast.. Done!" )
         return parser.forecast
 
     def noaa_fetch_hourly_forecast( self ):
+        printlog( "*****************************************************" )
+        printlog( "*                                                   *" )
+	printlog( "* [Weather Plus] Trying to fetch hourly forecast..  *" )
+        printlog( "*                                                   *" )
+	printlog( "*****************************************************" )
         # fetch source
+	printlog( "Fetching URL : %s" % self.BASE_NOAA_HOURLY_URL % ( self.code ) )
         htmlSource = self._fetch_data( self.BASE_NOAA_HOURLY_URL % ( self.code ), 15 )
+	printlog( "Fetching URL : %s" % self.BASE_NOAA_QUICK_URL % ( self.code ) )
 	htmlSource_2 = self._fetch_data( self.BASE_NOAA_QUICK_URL % ( self.code ), 15 )
         # parse source for forecast
         parser = NOAA_ForecastHourlyParser( htmlSource, htmlSource_2, self.translate )
@@ -4378,13 +4489,13 @@ class WeatherClient:
         return parser.forecast
 
     def fetch_weekend_forecast( self ):
-        print "*****************************************************"
-        print "*                                                   *"
-	print "* [Weather Plus] Trying to fetch weekend forecast.. *"
-        print "*                                                   *"
-	print "*****************************************************"
-	print "[Weather Plus] Fetching URL : " + self.BASE_FORECAST_URL % ( "weekend", self.code, "", )
+        printlog( "*****************************************************" )
+        printlog( "*                                                   *" )
+	printlog( "* [Weather Plus] Trying to fetch weekend forecast.. *" )
+        printlog( "*                                                   *" )
+	printlog( "*****************************************************" )
         # fetch source
+	printlog( "Fetching URL : " + self.BASE_FORECAST_URL % ( "weekend", self.code, "", ) )
         htmlSource = self._fetch_data( self.BASE_FORECAST_URL % ( "weekend", self.code, "", ), 15 )
         # parse source for forecast
         parser = ForecastWeekendParser( htmlSource, self.translate )
@@ -4392,24 +4503,47 @@ class WeatherClient:
         return parser.forecast
 
     def accu_fetch_10day_forecast( self ):
+        printlog( "*****************************************************" )
+        printlog( "*                                                   *" )
+	printlog( "* [Weather Plus] Trying to fetch 10 day forecast..  *" )
+        printlog( "*                                                   *" )
+        printlog( "*****************************************************" )
         # fetch source
 	code = "en-us" + self.code.split(" ")[0].lstrip( str(self.code.split("/")[0]) )
-        htmlSource_1 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "forecast", self.code.split(" ")[1] ), 15 )
+	printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "forecast", self.code.split(" ")[1] ) )
+	htmlSource_1 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "forecast", self.code.split(" ")[1] ), 15 )
+	printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "forecast2", self.code.split(" ")[1] ) )
 	htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "forecast2", self.code.split(" ")[1] ), 15 )
-        htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( code, "forecast", self.code.split(" ")[1] ), 15 )
+	printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( code, "forecast", self.code.split(" ")[1] ) )
+	htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( code, "forecast", self.code.split(" ")[1] ), 15 )
+	printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( code, "forecast2", self.code.split(" ")[1] ) )
 	htmlSource_4 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( code, "forecast2", self.code.split(" ")[1] ), 15 )
         # parse source for forecast
-        parser = ACCU_Forecast10DayParser( htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4, self.translate )
+        parser = ACCU_Forecast10DayParser( htmlSource_1 + htmlSource_2, htmlSource_3 + htmlSource_4, self.translate )
+	# any error?
+	if (parser.error == 1):
+		printlog( "Retrying to fetch..." )
+		printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "forecast", self.code.split(" ")[1] ) )
+		htmlSource_1 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "forecast", self.code.split(" ")[1] ), 0 )
+		printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "forecast2", self.code.split(" ")[1] ) )
+		htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "forecast2", self.code.split(" ")[1] ), 0 )
+		printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( code, "forecast", self.code.split(" ")[1] ) )
+		htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( code, "forecast", self.code.split(" ")[1] ), 0 )
+		printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( code, "forecast2", self.code.split(" ")[1] ) )
+		htmlSource_4 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( code, "forecast2", self.code.split(" ")[1] ), 0 )
+		# parser._get_forecast( htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4 )	
+		parser._get_forecast( htmlSource_1, htmlSource_2 )
+
         # return forecast
         return parser.forecast
 
     def fetch_10day_forecast( self ):
-        print "*****************************************************"
-        print "*                                                   *"
-	print "* [Weather Plus] Trying to fetch 10 day forecast..  *"
-        print "*                                                   *"
-        print "*****************************************************"
-	print "[Weather Plus] Fetching URL : " + self.BASE_FORECAST_URL % ( "tenday", self.code, "", )
+        printlog( "*****************************************************" )
+        printlog( "*                                                   *" )
+	printlog( "* [Weather Plus] Trying to fetch 10 day forecast..  *" )
+        printlog( "*                                                   *" )
+        printlog( "*****************************************************" )
+	printlog( "Fetching URL : " + self.BASE_FORECAST_URL % ( "tenday", self.code, "", ) )
         # fetch source
         htmlSource = self._fetch_data( self.BASE_FORECAST_URL % ( "tenday", self.code, "", ), 15 )
 	# print self.BASE_FORECAST_URL % ( "tenday", self.code, "", )
@@ -4418,7 +4552,7 @@ class WeatherClient:
         # return forecast
         return parser.forecast
 
-    def fetch_map_list( self, provider="Default", maptype=0, userfile=None, locationindex=None ):
+    def fetch_map_list( self, provider="2", maptype=0, userfile=None, locationindex=None ):
         # set url
         url = self.BASE_URL + self.BASE_MAPS[ maptype ][ 1 ]        
         # we handle None, local and custom map categories differently
@@ -4427,10 +4561,23 @@ class WeatherClient:
             return None, None
         elif ( maptype == 1 ):
             # add locale to local map list if local category
-            if ( provider == "Default" ):
+            if ( provider == "2" ):
 		url = url % ( "map", self.code, "", )
 	    elif ( provider == "0") :
 		print "[Weather Plus] Accuweather Map Location = " + self.loc
+		WEATHER_WINDOW.setProperty( "Map.Location", self.loc )     # leave footprint for 'map only' call
+	        zipdir = { "iseas" : "KSXX0037",
+	               "isasi" : "KSxx0037",
+		       "iseur" : "FRXX0076",
+		       "iscan" : "CAXX0504",
+		       "ismex" : "MXDF0132",
+		       "iscam" : "PMXX0004",
+		       "iscsa" : "CIXX0020",
+		       "isafr" : "UGXX0001",
+		       "ismid" : "IRXX0036" }
+		loc = self.loc[:5]
+		zip = zipdir.get( loc, self.loc )    # if no match, it may be US zip. so appending itself.
+		"""
 		if ( self.loc == "iseasia" or self.loc.startswith( "isasia" ) ):
 			zip = "KSXX0037"
 		elif (self.loc.startswith( "iseur" )):
@@ -4449,6 +4596,7 @@ class WeatherClient:
 			zip = "IRXX0036"
 		else:
 			zip = self.loc
+		"""
 		url = url % ( "map", zip, "", )
 	    elif ( provider == "1") :
 		# print self.code
@@ -4463,7 +4611,7 @@ class WeatherClient:
 			return None, None
         print "[Weather Plus] maptype = " + str(maptype)
         print "[Weather Plus] map_list_url = " + url
-        # handle user definde maps special
+        # handle user defined maps special
         if ( maptype == ( len( self.BASE_MAPS ) - 1 ) ):
             # initialize our map list variable
             map_list = []
@@ -4485,7 +4633,7 @@ class WeatherClient:
             # parse source for map list
             parser = MaplistParser( htmlSource )
             # return map list
-            print parser.map_list
+            # print parser.map_list
             return None, parser.map_list
 
     def _get_user_file( self, userfile, locationindex ):
@@ -4509,7 +4657,7 @@ class WeatherClient:
         # return results
         return location[0], titles, locationindex
 
-    def fetch_map_urls( self, map, userfile=None, locationindex=None, provider="default" ):
+    def fetch_map_urls( self, map, userfile=None, locationindex=None, provider="2" ):
         # handle user defined maps special
         if ( map.isdigit() ):
             # convert map to int() for list index
@@ -4541,10 +4689,26 @@ class WeatherClient:
 	elif ( provider == "0") :
 	    htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "quick-look", self.code.split(" ")[1]), 15 )
             htmlSource_5 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "satellite", self.code.split(" ")[1]), 15 )
-            if ( self.code.split("/")[1]=="us" ):
-		self.loc = re.findall("zip: '(.[0-9]+)'", htmlSource)[0]
-	    else:
-		self.loc = re.findall("http://sirocco.accuweather.com/sat_mosaic_640x480_public/IR/(.+?).jpg", htmlSource_5)[0]
+	    zipdir = { "iseas" : "KSXX0037",
+	               "isasi" : "KSxx0037",
+		       "iseur" : "FRXX0076",
+		       "iscan" : "CAXX0504",
+		       "ismex" : "MXDF0132",
+		       "iscam" : "PMXX0004",
+		       "iscsa" : "CIXX0020",
+		       "isafr" : "UGXX0001",
+		       "ismid" : "IRXX0036" }
+	    if ( self.code.split("/")[1]!="us" ):
+		try:
+		    self.loc = re.findall("http://sirocco.accuweather.com/sat_mosaic_640x480_public/IR/(.+?).jpg", htmlSource_5)[0]
+		except:
+		    htmlSource_5 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "satellite", self.code.split(" ")[1]), )
+ 		    self.loc = re.findall("http://sirocco.accuweather.com/sat_mosaic_640x480_public/IR/(.+?).jpg", htmlSource_5)[0]
+            else:
+	        self.loc = WEATHER_WINDOW.getProperty( "Map.Location" )
+	    loc = self.loc[:5]
+	    zip = zipdir.get( loc, self.loc )    # if no match, it may be US zip. so appending itself.
+	    '''
 	    if ( self.loc == "iseasia" or self.loc.startswith( "isasia" ) ):
 		zip = "KSXX0037"
 	    elif (self.loc.startswith( "iseur" )):
@@ -4563,6 +4727,7 @@ class WeatherClient:
 		zip = "IRXX0036"
 	    else:
 		zip = self.loc
+	    '''
 	    url = self.BASE_FORECAST_URL % ( "map", zip, "&mapdest=%s" % ( map, ), )
         elif ( provider == "1" ):
 	    position = self.code.split("&")
@@ -4638,7 +4803,7 @@ class WeatherClient:
                     base_refresh_path = os.path.join( self.BASE_MAPS_PATH, subfolder, md5.new( path ).hexdigest(), "refresh.txt" )
             # get expiration date
             expires, refresh = self._get_expiration_date( base_path, base_refresh_path, refreshtime )
-	    refresh = 1
+	    if ( refreshtime == 0 ) : refresh = 1
             # only fetch source if it's been longer than refresh time or does not exist
             if ( not os.path.isfile( base_path ) or refresh ):
                 # request base url

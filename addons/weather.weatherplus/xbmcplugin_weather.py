@@ -11,48 +11,44 @@ import os
 import xbmc
 import xbmcgui
 
-"""
-from threading import Thread
-"""
-
 import WeatherClient as WeatherClient
 
 from xbmcaddon import Addon
-
 import re
 
+def printlog( msg ):
+    print "[Weather Plus] %s" % msg
 
 class Main:
     __settings__ = Addon( id="weather.weatherplus" )
     __icon__ = __settings__.getAddonInfo("icon")
     __language__ = __settings__.getLocalizedString
-    # print "Mode AddOn ON"
 
     _ = __language__ 
     Settings = __settings__
 
-    def __init__( self, *args, **kwargs ):
-        # print "Initiation"
+    def __init__( self, __ver__, *args, **kwargs ):
+	# set xbmc build version
+	self.version = __ver__
+	# set location index
+        if ( sys.argv[ 1 ].startswith( "map=" ) or self.version != 2 ): 
+	    self.locationindex = xbmc.getInfoLabel( "Window(Weather).Property(LocationIndex)" )
+	else: 
+	    self.locationindex = sys.argv[ 1 ]
+	printlog("Location : %s" % self.locationindex)
         # get current window
         self._get_weather_window()
-	self.locationindex = xbmc.getInfoLabel( "Window(Weather).Property(LocationIndex)" )
 	# get provider info. ( 0 : Accuweather.com Global, 1 : NOAA, 2 : Weather.com)
-	self.provider = "Default"
-        self.provider = self.Settings.getSetting("provider" + str(self.locationindex))
-        Location = self.Settings.getSetting("location%s_%s" % ( self.locationindex, int(self.provider)+1 ))
+	self.provider = self.Settings.getSetting("provider" + str(self.locationindex))
+	Location = self.Settings.getSetting("location%s_%d" % ( self.locationindex, int(self.provider)+1 ))
 	# 2 -> default : Weather.com ( 2 is reserved for Wunderground.com )
-	if ( self.provider == "2" ): self.provider = "Default"
-	if ( self.provider == "Default" ):
+	if ( self.provider == "" ):
 	    if ( self.Settings.getSetting("alt_location" + str(self.locationindex)) == "True" ):
 		self.provider = self.Settings.getSetting("alt_provider" + str(self.locationindex))
 	    else:
-		self.provider = "Default"  
+		self.provider = "2"
         # get our new WeatherClient
-        self._get_client()
-	self.WEATHER_WINDOW.setProperty( "Location", Location.split(" (")[0] )
-	# print self.WEATHER_WINDOW.getProperty( "Location" )
-	# print xbmc.getInfoLabel( "Window(Weather).Property(Location)" )
-	# print self.WEATHER_WINDOW.getProperty( "Location" )
+	self._get_client()
         # if user selected a new map, only need to fetch it
         if ( sys.argv[ 1 ].startswith( "map=" ) ):
             # parse sys.argv for params
@@ -60,85 +56,57 @@ class Main:
             # fetch map (map=%s&title=%s&location=
             self._fetch_map( params[ "map" ], params[ "title" ], params[ "location" ] )
         else:
+	    if ( self.version == 2 ) : # new pre-eden passes indexnumber as argv[1]
+	        self.locationindex = sys.argv[ 1 ]
+	    # how many location provided? Answer is "3"
+	    self.WEATHER_WINDOW.setProperty( "Locations", "3")
+	    # set name of weather provider
+	    self.WEATHER_WINDOW.setProperty( "Location", Location)
+	    self.WEATHER_WINDOW.setProperty( "Location%s" % self.locationindex, Location )
+	    # For calling only maps next time, preserve locationindex ( for new pre-eden )
+	    if ( self.version == 2 ) : self.WEATHER_WINDOW.setProperty( "LocationIndex", self.locationindex )
+    	    self.WEATHER_WINDOW.setProperty( "WeatherProvider", ("Accuweather.com Global", "NOAA", "Weather.com")[ int(self.provider) ] )
+	    # verify areacode
+	    if ( not self._verify_areacode() ): return
+	    printlog("Verifying areacode... OK")
             # set plugin name property
             self._set_plugin_name()
             # clear key properties if new location
-            if ( self.new_location ):
-                self._clear_properties()
+            # if ( self.new_location ):
+            self._clear_properties()
             # initialize our thread list
-	    """
-	    # Read guisetting.xml
-	    fh = open( "special://masterprofile/guisettings.xml" )
-   	    content = fh.read()
-	    fh.close()
-	    areacodes = re.findall( "<areacode[0-9]+>(.+?)</areacode[0-9]+>", content )
-	    # Which area?
-	    self.area_num = 0
-	    for count, area in enumerate( areacodes ):
-	         code = area.split("-")[0].replace(" ","")
-		 if ( self.areacode == code ):
-		      self.area_num = count+1
-	    print "[Weather Plus] self.area_num = " + str(self.area_num)
-	    """	     
-	    if ( self.provider == "0" ):
-		# self.areacode = self.Settings.getSetting("code" + str(self.locationindex))
-		print "[Weather Plus] Provider Selected : Accuweather.com Global (" + self.areacode + ")"
-		# print re.search( "/", self.areacode )
-		if ( re.search( "/", self.areacode ) is None ):
-			xbmc.executebuiltin( "XBMC.Notification(\"Weather Plus\",\"Invalid Area Code!\",240, __icon__) ")
-			print "[Weather Plus] ERROR : Invalid Code ( When you change a provider, you should re-select a location )"
-			return
+	    if ( self.provider == "0" ):        # Accuweather.com Global
+		printlog("Provider Selected : Accuweather.com Global (%s)" % self.areacode)
 		self._accu_hourly_forecast()
-		self._accu_36_forecast()
-		self._accu_10day_forecast()
+		self._accu_10day_forecast()     # also making weekend properties from daily forecast
+		self._accu_36_forecast()    
 		# self._accu_weekend_forecast()
-		for count in range( 1, 4 ):
-		      self._clear_map_list( count )
-		# self.provider = 1
 		self._fetch_map_list()
-	    elif ( self.provider == "1" ):
-		# self.areacode = self.Settings.getSetting("code" + str(self.locationindex) + "_" + str(self.provider))
-		print "[Weather Plus] Provider Selected : NOAA (" + self.areacode +")"
-		if ( re.search( "CityName", self.areacode ) is None ):
-			xbmc.executebuiltin( "XBMC.Notification(\"Weather Plus\",\"Invalid Area Code!\",240, __icon__) ")
-			print "[Weather Plus] ERROR : Invalid Code ( When you change a provider, you should re-select a location )"
-			return
-		self._noaa_36_forecast()
-		print "ASDFASDF"
+	    elif ( self.provider == "1" ):      # NOAA
+		printlog("Provider Selected : NOAA (%s)" % self.areacode)
 		self._noaa_hourly_forecast()
 		# self._noaa_10day_forecast()
-		self._noaa_weekend_forecast()
-		for count in range( 1, 4 ):
-		      self._clear_map_list( count )
-		# self.provider = 1
+		self._noaa_weekend_forecast()   # just clearing propose
+		self._noaa_36_forecast()
 		self._fetch_map_list()
-	    elif ( self.provider == "2" ):
-		# self.areacode = self.Settings.getSetting("code" + str(self.locationindex) + "_" + str(self.provider))
-		print "[Weather Plus] Provider Selected : Wunderground (" + self.areacode +")"
-		if ( re.search( "zmw", self.areacode ) is None ):
-			xbmc.executebuiltin( "XBMC.Notification(\"Weather Plus\",\"Invalid Area Code!\",240, __icon__) ")
-			print "[Weather Plus] ERROR : Invalid Code ( When you change a provider, you should re-select a location )"
-			return
-		self._wunder_36_forecast()
+	    elif ( self.provider == "3" ):      # Wunderground.com (under construction)
+		printlog("Provider Selected : Wunderground (%s)" % self.areacode)
 		self._wunder_10day_forecast()
 		self._wunder_hourly_forecast()
-		# self._noaa_weekend_forecast()
+		self._wunder_36_forecast()
+		# self._wunder_weekend_forecast()
 		for count in range( 1, 4 ):
 		      self._clear_map_list( count )
-		# self.provider = 1
 		# self._fetch_map_list()
-
-            # Default provider (weather.com)
-	    else :
-		print "[Weather Plus] Provider Selected : Weather.com (" + self.areacode +")"
-	        # self.WEATHER_WINDOW.setProperty( "Location", xbmc.getInfoLabel( "Weather.Location" ) )
-		self._fetch_map_list()
-		self._fetch_36_forecast()
+            else :                              # Weather.com
+		printlog("Provider Selected : Weather.com (%s)" % self.areacode)
+		self._fetch_map_list()		
 		self._fetch_hourly_forecast()
 		self._fetch_10day_forecast()
 		self._fetch_weekend_forecast()
+		self._fetch_36_forecast()
         # we're finished, exit
-	print "[Weather Plus] *** Finish! ***"
+	printlog("*** Finish! ***")
         self._exit_script()
 
     def _get_weather_window( self ):
@@ -148,7 +116,31 @@ class Main:
     def _set_plugin_name( self ):
         # set plugin name
         self.WEATHER_WINDOW.setProperty( "Plugin", sys.modules[ "__main__" ].__plugin__ )
-        
+
+    def _verify_areacode ( self ):
+	printlog(self.areacode)
+	if ( self.areacode == "" ):
+	    printlog("ERROR : No Location Selected")
+	    xbmc.executebuiltin( "XBMC.Notification(\"Weather Plus\",\"No Location Selected!\",240, self.__icon__) ")
+	    print self.__icon__
+  	    return False
+	if ( self.provider == "0" ): # Accuweather.com Global
+            if ( re.search( "/", self.areacode ) is None ):
+	    	xbmc.executebuiltin( "XBMC.Notification(\"Weather Plus\",\"Invalid Area Code!\",240, self.__icon__) ")
+	    	printlog("ERROR : Invalid Code ( When you change a provider, you should re-select a location )")
+		return False
+	elif ( self.provider == "1" ): # NOAA
+	    if ( re.search( "CityName", self.areacode ) is None ):
+		xbmc.executebuiltin( "XBMC.Notification(\"Weather Plus\",\"Invalid Area Code!\",240, self.__icon__) ")
+		printlog("ERROR : Invalid Code ( When you change a provider, you should re-select a location )")
+		return False
+	elif ( self.provider == "3" ): # Wunderground.com
+	    if ( re.search( "zmw", self.areacode ) is None ):
+		xbmc.executebuiltin( "XBMC.Notification(\"Weather Plus\",\"Invalid Area Code!\",240, self.__icon__) ")
+		printlog("ERROR : Invalid Code ( When you change a provider, you should re-select a location )")
+		return False
+	return True
+
     def _get_client( self ):	
         self.settings = { "translate": None, "accu_translate": "en-us" }
         if ( self.Settings.getSetting( "translate" ) == "true" ):
@@ -203,24 +195,13 @@ class Main:
 					"20": "ko",
 					"16": "hi",
 					"15": "he"
-                                    }.get( self.Settings.getSetting( "accu_translate" ), "en-us" )
+                                    }.get( self.Settings.getSetting( "accu_translate%s" % self.locationindex ), "en-us" )
         if ( sys.argv[ 1 ].startswith( "map=" ) ):
-	    if ( self.provider != "Default" ):
-		self.areacode = self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ))
-	    else:
-		self.areacode = xbmc.getInfoLabel( "Window(Weather).Property(AreaCode)" )
-        elif ( self.provider != "Default" ):
-	    self.areacode = self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ))
-	else:
-            self.areacode = sys.argv[ 1 ]
+	    self.areacode = self.Settings.getSetting("code%s_%d" % ( self.locationindex, int(self.provider)+1 ))   
+        else:
+	    self.areacode = self.Settings.getSetting("code%s_%d" % ( self.locationindex, int(self.provider)+1 ))
 	# set if new location
-        try:
-	    self.new_location = self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 )) != self.areacode
-	except:
-	    self.new_location = xbmc.getInfoLabel( "Window(Weather).Property(Weather.AreaCode)" ) != self.areacode
-        # if new set it
-        if ( self.new_location ):
-            self.WEATHER_WINDOW.setProperty( "Weather.AreaCode", self.areacode )
+	self.new_location = self.Settings.getSetting("code%s_%d" % ( self.locationindex, int(self.provider)+1 )) != self.areacode
         # setup our radar client
         self.WeatherClient = WeatherClient.WeatherClient( self.areacode, self.settings[ "translate" ], self.settings[ "accu_translate" ] )
 
@@ -248,6 +229,17 @@ class Main:
         self.WEATHER_WINDOW.clearProperty( "Weekend.IsFetched" )
         self.WEATHER_WINDOW.clearProperty( "Daily.IsFetched" )
         self.WEATHER_WINDOW.clearProperty( "Hourly.IsFetched" )
+	self.WEATHER_WINDOW.clearProperty( "Current.Pressure" )
+        self.WEATHER_WINDOW.clearProperty( "Current.Visibility" )
+        self.WEATHER_WINDOW.clearProperty( "Current.Sunrise" )
+        self.WEATHER_WINDOW.clearProperty( "Current.Temperature" )
+        self.WEATHER_WINDOW.clearProperty( "Current.ConditionIcon" )
+        self.WEATHER_WINDOW.clearProperty( "Current.Dewpoint" )
+        self.WEATHER_WINDOW.clearProperty( "Current.Humidity" )
+        self.WEATHER_WINDOW.clearProperty( "Current.Wind" )
+	self.WEATHER_WINDOW.clearProperty( "Current.Condition" )
+	self.WEATHER_WINDOW.clearProperty( "Current.Feelslike" )
+	self.WEATHER_WINDOW.clearProperty( "Current.UVIndex" )
 
     def _clear_map_list( self, list_id ):
         # enumerate thru and clear all map list labels, icons and onclicks
@@ -272,7 +264,7 @@ class Main:
 
     def _fetch_map_list( self ):
         # exit script if user changed locations
-        if ( self.areacode != xbmc.getInfoLabel( "Window(Weather).Property(Weather.AreaCode)" ) and self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ))):
+        if ( self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ))):
             return
         # intialize our download variable, we use this so we don't re-download same info
         map_download = []
@@ -288,7 +280,7 @@ class Main:
         # we set this here in case we do not need to download new lists
         current_map = self.WEATHER_WINDOW.getProperty( "Weather.CurrentMapUrl" )
         current_map_title = self.WEATHER_WINDOW.getProperty( "Weather.CurrentMap" )
-        print "[Weather Plus] Current Map : " + current_map
+        printlog("Current Map : " + current_map)
         # only run if any new map lists
         if ( True ):
             # we set our maps path property to loading images while downloading
@@ -332,17 +324,16 @@ class Main:
                         current_map = map[ 0 ]
                         current_map_title = map[ 1 ]
         # fetch the current map
-        self._fetch_map( current_map, current_map_title, xbmc.getInfoLabel( "Window(Weather).Property(LocationIndex)" ) )
+        self._fetch_map( current_map, current_map_title, self.locationindex )
 
     def _fetch_map( self, map, title, locationindex=None ):
-        print "[Weather Plus] map = " + map
-        print "[Weather Plus] title = " + title
-        print "[Weather Plus] Locationindex = " + locationindex
-        print "[Weather Plus] maplist_user_file = " + self.Settings.getSetting("maplist_user_file")
+        printlog("map = " + map)
+        printlog("title = " + title)
+        printlog("Locationindex = " + locationindex)
+        printlog("maplist_user_file = " + self.Settings.getSetting("maplist_user_file"))
         # exit script if user changed locations
-	# print self.areacode, self.Settings.getSetting("code" + str(self.locationindex) + "_" + int(self.provider)+1)
-        if ( self.areacode != xbmc.getInfoLabel( "Window(Weather).Property(Weather.AreaCode)" ) and self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ))):
-            return
+        #if ( self.areacode != xbmc.getInfoLabel( "Window(Weather).Property(Weather.AreaCode)" ) and self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ))):
+        #    return
         # we set our maps path property to loading images while downloading
         self._set_maps_path()
         # we set Weather.CurrentMap and Weather.CurrentMapUrl, the skin can handle it when the user selects a new map for immediate update
@@ -422,10 +413,9 @@ class Main:
 
     def _fetch_36_forecast( self, showView=True ):
         # exit script if user changed locations
-        if ( self.areacode != xbmc.getInfoLabel( "Window(Weather).Property(AreaCode)" ) ):
-            return
+	if ( self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ) ) ): return    
         # fetch 36 hour forecast
-        alerts, alertsrss, alertsnotify, alertscolor, alertscount, forecasts, extras, video, video_title = self.WeatherClient.fetch_36_forecast( self.WEATHER_WINDOW.getProperty( "Video" ) )
+        alerts, alertsrss, alertsnotify, alertscolor, alertscount, forecasts, extras, video, video_title = self.WeatherClient.fetch_36_forecast( self.version, self.WEATHER_WINDOW.getProperty( "Video" ) )
         # set any alerts
         self._set_alerts( alerts, alertsrss, alertsnotify, alertscolor, alertscount )
         # set video
@@ -434,6 +424,7 @@ class Main:
 	self.WEATHER_WINDOW.setProperty( "Current.Temperature", extras[0][4] )
 	self.WEATHER_WINDOW.setProperty( "Current.FeelsLike", extras[0][5] )
 	self.WEATHER_WINDOW.setProperty( "Current.ConditionIcon", extras[0][6] )
+	self.WEATHER_WINDOW.setProperty( "Current.OutlookIcon", extras[0][6] )   # for new pre-eden compatability (XBMC copies outlookicon to conditionicon)
 	self.WEATHER_WINDOW.setProperty( "Current.Condition", extras[0][7] )
 	self.WEATHER_WINDOW.setProperty( "Current.Humidity", extras[0][8] )
 	self.WEATHER_WINDOW.setProperty( "Current.DewPoint", extras[0][9] )
@@ -460,8 +451,7 @@ class Main:
 
     def _fetch_hourly_forecast( self ):
         # exit script if user changed locations
-        if ( self.areacode != xbmc.getInfoLabel( "Window(Weather).Property(AreaCode)" ) ):
-            return
+	if ( self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ) ) ): return    
         # fetch hourly forecast
         forecasts = self.WeatherClient.fetch_hourly_forecast()
         # localized long and short date dictionary
@@ -494,8 +484,7 @@ class Main:
 
     def _fetch_weekend_forecast( self ):
         # exit script if user changed locations
-        if ( self.areacode != xbmc.getInfoLabel( "Window(Weather).Property(AreaCode)" ) ):
-            return
+	if ( self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ) ) ): return    
         # fetch weekend forecast
         forecasts = self.WeatherClient.fetch_weekend_forecast()
         # enumerate thru and set the info
@@ -529,8 +518,7 @@ class Main:
 
     def _fetch_10day_forecast( self ):
         # exit script if user changed locations
-        if ( self.areacode != xbmc.getInfoLabel( "Window(Weather).Property(AreaCode)" ) ):
-            return
+	if ( self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ) ) ): return    
         # fetch daily forecast
         forecasts = self.WeatherClient.fetch_10day_forecast()
         # localized long and short day dictionary
@@ -563,19 +551,23 @@ class Main:
 	
     def _accu_36_forecast( self ):
         # exit script if user changed locations
-        if ( self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ) ) ):
-            return
+	if ( self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ) ) ): return    
         # fetch 36 hour forecast
-        alerts, alertsrss, alertsnotify, alertscolor, alertscount, forecasts, extras, video, video_local = self.WeatherClient.accu_36_forecast("")
+        try:
+            alerts, alertsrss, alertsnotify, alertscolor, alertscount, forecasts, extras, video, video_local = self.WeatherClient.accu_36_forecast(self.version, "")
+	except:
+	    return
 	# set current info
 	self.WEATHER_WINDOW.setProperty( "Current.Temperature", extras[0][4] )
 	self.WEATHER_WINDOW.setProperty( "Current.FeelsLike", extras[0][5] )
 	self.WEATHER_WINDOW.setProperty( "Current.Condition", extras[0][6] )
 	self.WEATHER_WINDOW.setProperty( "Current.Wind", extras[0][7] )
-	self.WEATHER_WINDOW.setProperty( "Current.Humidity", extras[0][8] )
+	self.WEATHER_WINDOW.setProperty( "Current.WindDirection", extras[0][11] )
+	self.WEATHER_WINDOW.setProperty( "Current.Humidity", extras[0][8] + ("%", "")[ self.version == 2 ] )
 	self.WEATHER_WINDOW.setProperty( "Current.DewPoint", extras[0][9] )
 	self.WEATHER_WINDOW.setProperty( "Current.UVIndex", "N/A" )
-	self.WEATHER_WINDOW.setProperty( "Current.ConditionIcon", extras[0][10] )	
+	self.WEATHER_WINDOW.setProperty( "Current.ConditionIcon", extras[0][10] )
+	self.WEATHER_WINDOW.setProperty( "Current.OutlookIcon", extras[0][10] )   # for new pre-eden compatability (XBMC copies outlookicon to conditionicon)
         # set any alerts
         self._set_alerts( alerts, alertsrss, alertsnotify, alertscolor, alertscount )
         # set video
@@ -597,12 +589,12 @@ class Main:
             self.WEATHER_WINDOW.setProperty( "36Hour.%d.DaylightType" % ( day + 1, ), ( "sunrise", "sunset", )[ forecast[ 8 ] == "Sunset" ] )
             self.WEATHER_WINDOW.setProperty( "36Hour.%d.Heading" % ( day + 1, ), { "Today": xbmc.getLocalizedString( 33006 ), "Tonight": xbmc.getLocalizedString( 33018 ), "Tomorrow": xbmc.getLocalizedString( 33007 ), "Tomorrow Night": xbmc.getLocalizedString( 33019 ) }[ forecast[ 0 ] ] )
         # use this to hide info until fully fetched
+	printlog( "Setting 36 Hour Properties... Done!" )
         self.WEATHER_WINDOW.setProperty( "36Hour.IsFetched", "true" )
 
     def _accu_hourly_forecast( self ):
         # exit script if user changed locations
-        if ( self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ) ) ):
-            return
+	if ( self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ) ) ): return    
         # fetch hourly forecast
         forecasts = self.WeatherClient.accu_fetch_hourly_forecast()
         # localized long and short date dictionary
@@ -631,12 +623,12 @@ class Main:
             # clear any remaining hourly times as some locals do not have all of them
             self.WEATHER_WINDOW.clearProperty( "Hourly.%d.Time" % ( count + 1, ) )
         # use this to hide info until fully fetched
+	printlog( "Setting Hourly Properties... Done!" )
         self.WEATHER_WINDOW.setProperty( "Hourly.IsFetched", "true" )
 
     def _accu_weekend_forecast( self ):
         # exit script if user changed locations
-        if ( self.areacode != xbmc.getInfoLabel( "Window(Weather).Property(AreaCode)" ) ):
-            return
+	if ( self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ) ) ): return    
         # fetch weekend forecast
         forecasts = self.WeatherClient.accu_weekend_forecast()
         # enumerate thru and set the info
@@ -666,15 +658,14 @@ class Main:
             # do this last so skin's visibilty works better
             self.WEATHER_WINDOW.setProperty( "Weekend.%d.Date" % ( day + 1, ), forecast[ 1 ] )
         # use this to hide info until fully fetched
+	printlog( "Setting Weekend Properties... Done!" )
         self.WEATHER_WINDOW.setProperty( "Weekend.IsFetched", "true" )
 
     def _accu_10day_forecast( self ):
         # exit script if user changed locations
-        if ( self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ) ) ):
-            return
+	if ( self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ) ) ): return    
         # fetch daily forecast
         forecasts = self.WeatherClient.accu_fetch_10day_forecast()
-	print forecasts
         # localized long and short day dictionary
         longday_dict = { "Monday": xbmc.getLocalizedString( 11 ), "Tuesday": xbmc.getLocalizedString( 12 ), "Wednesday": xbmc.getLocalizedString( 13 ), "Thursday": xbmc.getLocalizedString( 14 ), "Friday": xbmc.getLocalizedString( 15 ), "Saturday": xbmc.getLocalizedString( 16 ), "Sunday": xbmc.getLocalizedString( 17 ), "Today": xbmc.getLocalizedString( 33006 ), "Tonight": xbmc.getLocalizedString( 33018 ) }
         shortday_dict = { "Monday": xbmc.getLocalizedString( 41 ), "Tuesday": xbmc.getLocalizedString( 42 ), "Wednesday": xbmc.getLocalizedString( 43 ), "Thursday": xbmc.getLocalizedString( 44 ), "Friday": xbmc.getLocalizedString( 45 ), "Saturday": xbmc.getLocalizedString( 46 ), "Sunday": xbmc.getLocalizedString( 47 ), "Today": xbmc.getLocalizedString( 33006 ), "Tonight": xbmc.getLocalizedString( 33018 ) }
@@ -719,10 +710,10 @@ class Main:
             self.WEATHER_WINDOW.setProperty( "Daily.%d.Outlook" % ( count + 1, ), forecast[ 3 ] )
             self.WEATHER_WINDOW.setProperty( "Daily.%d.HighTemperature" % ( count + 1, ), forecast[ 4 ] )
             self.WEATHER_WINDOW.setProperty( "Daily.%d.LowTemperature" % ( count + 1, ), forecast[ 5 ] )
-            self.WEATHER_WINDOW.setProperty( "Daily.%d.Precipitation" % ( count + 1, ), forecast[ 6 ] )
-            self.WEATHER_WINDOW.setProperty( "Daily.%d.WindDirection" % ( count + 1, ), forecast[ 7 ] )
-            self.WEATHER_WINDOW.setProperty( "Daily.%d.WindSpeed" % ( count + 1, ), forecast[ 8 ] )
-            self.WEATHER_WINDOW.setProperty( "Daily.%d.ShortWindDirection" % ( count + 1, ), forecast[ 9 ] )
+            self.WEATHER_WINDOW.setProperty( "Daily.%d.Precipitation" % ( count + 1, ), "" )
+            self.WEATHER_WINDOW.setProperty( "Daily.%d.WindDirection" % ( count + 1, ), "" )
+            self.WEATHER_WINDOW.setProperty( "Daily.%d.WindSpeed" % ( count + 1, ), "" )
+            self.WEATHER_WINDOW.setProperty( "Daily.%d.ShortWindDirection" % ( count + 1, ), "" )
 	    # weekend info
 	    if ( forecast[ 0 ] == "Friday" and weekend_count == 0 ):
 		weekend = 1
@@ -762,31 +753,43 @@ class Main:
 	    weekend = 0
         # just in case day 10 is missing
         for count in range( len( forecasts ), 10 ):
+            self.WEATHER_WINDOW.clearProperty( "Daily.%d.LongDate" % ( count + 1, ) )
+            self.WEATHER_WINDOW.clearProperty( "Daily.%d.ShortDate" % ( count + 1, ) )
+            self.WEATHER_WINDOW.clearProperty( "Daily.%d.OutlookIcon" % ( count + 1, ) )
+            self.WEATHER_WINDOW.clearProperty( "Daily.%d.Outlook" % ( count + 1, ) )
+            self.WEATHER_WINDOW.clearProperty( "Daily.%d.HighTemperature" % ( count + 1, ) )
+            self.WEATHER_WINDOW.clearProperty( "Daily.%d.LowTemperature" % ( count + 1, ) )
+            self.WEATHER_WINDOW.clearProperty( "Daily.%d.Precipitation" % ( count + 1, ) )
+            self.WEATHER_WINDOW.clearProperty( "Daily.%d.WindSpeed" % ( count + 1, ) )
+            self.WEATHER_WINDOW.clearProperty( "Daily.%d.WindDirection" % ( count + 1, ) )
             self.WEATHER_WINDOW.clearProperty( "Daily.%d.ShortDay" % ( count + 1, ) )
             self.WEATHER_WINDOW.clearProperty( "Daily.%d.LongDay" % ( count + 1, ) )
         # use this to hide info until fully fetched
+	printlog( "Setting 10 day & Weekend Properties... Done!" )
         self.WEATHER_WINDOW.setProperty( "Daily.IsFetched", "true" )
 	self.WEATHER_WINDOW.setProperty( "Weekend.IsFetched", "true" )
 
     def _noaa_36_forecast( self ):
         # exit script if user changed locations
-        if ( self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 )) ):
-            return
+	if ( self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ) ) ): return    
         # fetch 36 hour forecast
         try:
-		alerts, alertsrss, alertsnotify, alertscolor, alertscount, forecasts, extras, video, video_local = self.WeatherClient.noaa_36_forecast("")
+		alerts, alertsrss, alertsnotify, alertscolor, alertscount, forecasts, extras, video, video_local = self.WeatherClient.noaa_36_forecast(self.version)
 	except:
 		return
 	# set current info
+	print extras
 	self.WEATHER_WINDOW.setProperty( "Current.Temperature", extras[0][4] )
 	self.WEATHER_WINDOW.setProperty( "Current.FeelsLike", extras[0][5] )
 	self.WEATHER_WINDOW.setProperty( "Current.Condition", extras[0][6] )
 	self.WEATHER_WINDOW.setProperty( "Current.FanartCode", os.path.splitext( os.path.basename( extras[0][10] ) )[ 0 ] )
 	self.WEATHER_WINDOW.setProperty( "Current.Wind", extras[0][7] )
-	self.WEATHER_WINDOW.setProperty( "Current.Humidity", extras[0][8]+"%" )
+	self.WEATHER_WINDOW.setProperty( "Current.WindDirection", extras[0][11])
+	self.WEATHER_WINDOW.setProperty( "Current.Humidity", extras[0][8] + ("%", "")[ self.version == 2 ] )
 	self.WEATHER_WINDOW.setProperty( "Current.DewPoint", extras[0][9] )
 	self.WEATHER_WINDOW.setProperty( "Current.UVIndex", "N/A" )
-	self.WEATHER_WINDOW.setProperty( "Current.ConditionIcon", extras[0][10] )	
+	self.WEATHER_WINDOW.setProperty( "Current.ConditionIcon", extras[0][10] )
+	self.WEATHER_WINDOW.setProperty( "Current.OutlookIcon", extras[0][10] )   # for new pre-eden compatability (XBMC copies outlookicon to conditionicon)
         # set any alerts
         self._set_alerts( alerts, alertsrss, alertsnotify, alertscolor, alertscount )
         # set video
@@ -835,14 +838,10 @@ class Main:
 
 	ampm = 0
         for count, forecast in enumerate( forecasts ):
-	    print re.findall( "Night", forecast[ 10 ] )
+	    # print re.findall( "Night", forecast[ 10 ] )
 	    if ( forecast[ 0 ] == "Tonight" and count == 0 ):
-	 	try:
-		   self.WEATHER_WINDOW.setProperty( "Daily.%d.LongDay" % ( int( ( count + 1 + ampm )/2 ) + 1, ), longday_dict[ forecast[ 10 ] ] )
-		   self.WEATHER_WINDOW.setProperty( "Daily.%d.ShortDay" % ( int( ( count + 1 + ampm )/2 ) + 1, ), shortday_dict[ forecast[ 10 ] ] )
-		except:
-		   self.WEATHER_WINDOW.setProperty( "Daily.%d.LongDay" % ( int( ( count + 1 + ampm )/2 ) + 1, ), forecast[ 10 ][:5]+"." )
-		   self.WEATHER_WINDOW.setProperty( "Daily.%d.ShortDay" % ( int( ( count + 1 + ampm )/2 ) + 1, ), forecast[ 10 ][:5]+"." )
+	 	self.WEATHER_WINDOW.setProperty( "Daily.%d.LongDay" % ( int( ( count + 1 + ampm )/2 ) + 1, ), longday_dict.get( forecast[ 10 ], forecast[ 10 ] ) )
+		self.WEATHER_WINDOW.setProperty( "Daily.%d.ShortDay" % ( int( ( count + 1 + ampm )/2 ) + 1, ), shortday_dict.get( forecast[ 10 ], forecast[ 10 ][:5]+"." ) )		
 		self.WEATHER_WINDOW.setProperty( "Daily.%d.LongDate" % ( int( ( count + 1 + ampm )/2 ) + 1, ), "%s %s" % ( longdate_dict[ forecast[ 11 ].split( " " )[ 1 ] ], forecast[ 11 ].split( " " )[ 0 ], ) )
 		self.WEATHER_WINDOW.setProperty( "Daily.%d.ShortDate" % ( int( ( count + 1 + ampm )/2 ) + 1, ), "%s %s" % ( shortdate_dict[ forecast[ 11 ].split( " " )[ 1 ] ], forecast[ 11 ].split( " " )[ 0 ], ) )
 		self.WEATHER_WINDOW.setProperty( "Daily.%d.OutlookIcon" % ( int( ( count + 1 + ampm )/2 ) + 1, ), forecast[ 1 ] )
@@ -856,14 +855,10 @@ class Main:
 		self.WEATHER_WINDOW.setProperty( "Daily.%d.LowTemperature" % ( 1 ), forecast[ 4 ] )
 		ampm = 1
 	    elif ( re.findall( "Night", forecast[ 10 ] ) == [] and forecast[ 10 ] != "Tonight" ):
-		print int( ( count + 1 + ampm )/2 ) + 1
-		print forecast
-		try:
-		   self.WEATHER_WINDOW.setProperty( "Daily.%d.LongDay" % ( int( ( count + 1 + ampm )/2 ) + 1, ), longday_dict[ forecast[ 10 ] ] )
-		   self.WEATHER_WINDOW.setProperty( "Daily.%d.ShortDay" % ( int( ( count + 1 + ampm )/2 ) + 1, ), shortday_dict[ forecast[ 10 ] ] )
-		except:
-		   self.WEATHER_WINDOW.setProperty( "Daily.%d.LongDay" % ( int( ( count + 1 + ampm )/2 ) + 1, ), forecast[ 10 ][:5]+"." )
-		   self.WEATHER_WINDOW.setProperty( "Daily.%d.ShortDay" % ( int( ( count + 1 + ampm )/2 ) + 1, ), forecast[ 10 ][:5]+"." )
+		# print int( ( count + 1 + ampm )/2 ) + 1
+		# print forecast
+	 	self.WEATHER_WINDOW.setProperty( "Daily.%d.LongDay" % ( int( ( count + 1 + ampm )/2 ) + 1, ), longday_dict.get( forecast[ 10 ], forecast[ 10 ] ) )
+		self.WEATHER_WINDOW.setProperty( "Daily.%d.ShortDay" % ( int( ( count + 1 + ampm )/2 ) + 1, ), shortday_dict.get( forecast[ 10 ], forecast[ 10 ][:5]+"." ) )		
 		self.WEATHER_WINDOW.setProperty( "Daily.%d.LongDate" % ( int( ( count + 1 + ampm )/2 ) + 1, ), "%s %s" % ( longdate_dict[ forecast[ 11 ].split( " " )[ 1 ] ], forecast[ 11 ].split( " " )[ 0 ], ) )
 		self.WEATHER_WINDOW.setProperty( "Daily.%d.ShortDate" % ( int( ( count + 1 + ampm )/2 ) + 1, ), "%s %s" % ( shortdate_dict[ forecast[ 11 ].split( " " )[ 1 ] ], forecast[ 11 ].split( " " )[ 0 ], ) )
 		self.WEATHER_WINDOW.setProperty( "Daily.%d.OutlookIcon" % ( int( ( count + 1 + ampm )/2 ) + 1, ), forecast[ 1 ] )
@@ -885,8 +880,7 @@ class Main:
 
     def _noaa_hourly_forecast( self ):
         # exit script if user changed locations
-        if ( self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ) ) ):
-            return
+	if ( self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ) ) ): return    
         # fetch hourly forecast
         forecasts = self.WeatherClient.noaa_fetch_hourly_forecast()
         # localized long and short date dictionary
@@ -915,8 +909,7 @@ class Main:
 
     def _noaa_weekend_forecast( self ):
         # exit script if user changed locations
-        if (self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ) ) ):
-            return
+	if ( self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ) ) ): return    
         # fetch weekend forecast
         # forecasts = self.WeatherClient.accu_weekend_forecast()
         # clear the info
@@ -951,8 +944,7 @@ class Main:
 
     def _noaa_10day_forecast( self ):
         # exit script if user changed locations
-        if ( self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ) ) ):
-            return
+	if ( self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ) ) ): return    
         # fetch daily forecast
         forecasts = self.WeatherClient.accu_fetch_10day_forecast()
 	print forecasts
@@ -1050,8 +1042,7 @@ class Main:
 
     def _wunder_36_forecast( self ):
         # exit script if user changed locations
-        if ( self.areacode != self.Settings.getSetting("code" + str(self.locationindex)) ):
-            return
+	if ( self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ) ) ): return    
         # fetch 36 hour forecast
 	try:
 		alerts, alertsrss, alertsnotify, alertscolor, alertscount, forecasts, extras, video, video_local = self.WeatherClient.wunder_36_forecast("")
@@ -1063,10 +1054,11 @@ class Main:
 	self.WEATHER_WINDOW.setProperty( "Current.Condition", extras[0][6] )
 	self.WEATHER_WINDOW.setProperty( "Current.FanartCode", os.path.splitext( os.path.basename( extras[0][10] ) )[ 0 ] )
 	self.WEATHER_WINDOW.setProperty( "Current.Wind", extras[0][7] )
-	self.WEATHER_WINDOW.setProperty( "Current.Humidity", extras[0][8]+"%" )
+	self.WEATHER_WINDOW.setProperty( "Current.Humidity", extras[0][8] + ("%", "")[ self.version == 2 ] )
 	self.WEATHER_WINDOW.setProperty( "Current.DewPoint", extras[0][9] )
 	self.WEATHER_WINDOW.setProperty( "Current.UVIndex", extras[0][11] )
 	self.WEATHER_WINDOW.setProperty( "Current.ConditionIcon", extras[0][10] )	
+	self.WEATHER_WINDOW.setProperty( "Current.OutlookIcon", extras[0][10] )   # for new pre-eden compatability (XBMC copies outlookicon to conditionicon)
         # set any alerts
         self._set_alerts( alerts, alertsrss, alertsnotify, alertscolor, alertscount )
         # set video
@@ -1119,8 +1111,7 @@ class Main:
 
     def _wunder_10day_forecast( self ):
         # exit script if user changed locations
-        if ( self.areacode != self.Settings.getSetting("code" + str(self.locationindex)) ):
-            return
+	if ( self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ) ) ): return    
         # fetch daily forecast
 	forecasts = self.WeatherClient.wunder_10day_forecast()
 	try:
@@ -1168,8 +1159,7 @@ class Main:
 
     def _wunder_hourly_forecast( self ):
         # exit script if user changed locations
-        if ( self.areacode != self.Settings.getSetting("code" + str(self.locationindex)) ):
-            return
+	if ( self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ) ) ): return    
         # fetch hourly forecast
         forecasts = self.WeatherClient.wunder_hourly_forecast()
         # localized long and short date dictionary
