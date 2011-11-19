@@ -206,8 +206,11 @@
 
 <addon id="weather.weatherplus"
        name="Weather Plus"
-       version="2.4.0"
+       version="2.5.0"
        provider-name="Brightsr">
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+  </requires>
   <extension point="xbmc.python.weather" library="default.py"/>
   <extension point="xbmc.addon.metadata">
     <summary lang="en">Current weather conditions and colorful forecasts.</summary>
