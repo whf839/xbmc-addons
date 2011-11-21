@@ -1,7 +1,17 @@
-﻿v.2.5.1
+v.2.7.2
+- Version changed for eden-pre repo
+
+v.2.5.2
+- Fixed : [NOAA.gov] Daily.%d.ShortWindDirection
+- Fixed : [NOAA.gov] Daily forecast icon bug
+- Fixed : [Accuweather.com] Fanart and Current animated icon
+- Fixed : [Accuweather.com] European forecast video
+
+v.2.5.1
 - Changed : Compatibilty Check Method ( Checking Version -> Checking Arguments passed to addon )
 - Changed : [Builds Before Weather API Change] Using Area Codes Set at Global Weather Settings for Weather.com
 - Fixed : [Accuweather.com] Loop Bug
+- Improved : [Accuweather.com] Outlooks in title case
 
 v.2.5.0
 - Fixed : Compatible with pre-eden
@@ -9,7 +19,7 @@ v.2.5.0
 - Fixed : Minor bugs
 - Improved : pre-eden's infolabel "WeatherProvider" supported
 - Improved : US zip code search available ( except for Accuweather.com )
-* Note for Dharma Users : Please ignore locations in xbmc's weather settings.
+* Note for Dharma Users : Please ignore locations in xbmc's weather settings. ( changed at v.2.5.1 again )
 
 v.2.4.0
 - Added : [Weather.com] Current Weather
