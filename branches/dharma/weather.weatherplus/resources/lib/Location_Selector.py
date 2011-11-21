@@ -74,7 +74,7 @@ class Main:
 					__Settings__.setSetting( "location%s_%s" % ( loc, int(provider)+1 ), location_name[ select ] )
 					if ( provider == "0" ):
 						__Settings__.setSetting( "code%s_%s" % ( loc, int(provider)+1 ), self.location[0] + " " + self.location[1] )
-					elif ( provider == "1" or provider == "2" ):
+					elif ( provider == "1" ):
 						__Settings__.setSetting( "code%s_%s" % ( loc, int(provider)+1 ), self.location[0] )
 				__Settings__.openSettings()
 	
@@ -97,11 +97,7 @@ class Main:
 					state = re.findall( "state=(.+?)\&", location_buffer[0] )
 					location = [ ( location_buffer[0], "%s, %s" % ( city[0], state[0] ) ) ]
 				else:
-					location = []							 
-		elif (provider == "2"):
-			pattern_location = "id=\"(.+?)\" type=\"[0-9]\">(.+?)</loc>"
-			xmlSource = _fetch_data ( "http://xoap.weather.com/search/search?where=%s" % userInput.replace(" ","+") )
-			location = re.findall( pattern_location, xmlSource )
+					location = []							 		
 		return location
 
 Main( loc=sys.argv[ 1 ].split( "=" )[ 1 ] )
