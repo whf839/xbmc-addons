@@ -1,5 +1,0 @@
-<settings>
-   <setting id="Search Options:" type="text" label="20000" default=""/>
-   <setting id="Clear Previous Searches" type="bool" label="30004" default="false"/>
-      
-</settings>

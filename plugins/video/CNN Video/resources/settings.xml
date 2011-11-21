@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<settings>
-    <setting id="use_large_thumb" type="bool" label="30000" default="false" />
-    <!--setting type="sep" />
-    <setting id="download_path" type="folder" source="video" option="writeable" label="30110" default="" />
-    <setting id="use_title" type="bool" enable="!eq(-1,)" label="30120" default="true" />
-    <setting type="sep" />
-    <setting id="fanart_image" type="pictures" label="30130" default="" /-->
-</settings>
