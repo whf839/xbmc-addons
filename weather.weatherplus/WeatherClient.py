@@ -478,7 +478,7 @@ class WeatherAlert:
             self.alert_rss = ""
 
 class Forecast36HourParser:
-    def __init__( self, version, htmlSource, htmlSource_5, localtime, translate=None ):
+    def __init__( self, htmlSource, htmlSource_5, localtime, translate=None ):
         self.forecast = []
         self.extras = []
         self.alerts = []
@@ -489,7 +489,7 @@ class Forecast36HourParser:
         self.translate = translate
 	self.error = 0
         self.sun = []
-	self.newbuild = version
+
 
         # only need to parse source if there is source
         if ( htmlSource ):
@@ -541,16 +541,16 @@ class Forecast36HourParser:
 	    # fetch current info
 	    current_icon_brief = re.findall( pattern_current_icon, htmlSource )
 	    try:
-		current_icon = ( "/".join( [ "special://temp", "weather", "128x128", current_icon_brief[ 0 ][ 0 ] + ".png" ] ), current_icon_brief[ 0 ][ 0 ] + ".png" )[ self.newbuild ]
+		current_icon = "/".join( [ "special://temp", "weather", "128x128", current_icon_brief[ 0 ][ 0 ] + ".png" ] )
 		current_brief = current_icon_brief [ 0 ][ 1 ]
 	    except:
-	        current_icon = ( "/".join( [ "special://temp", "weather", "128x128", "na" + ".png" ] ), "na.png" )[ self.newbuild ]
+	        current_icon = "/".join( [ "special://temp", "weather", "128x128", "na" + ".png" ] )
 		current_brief = "N/A"
 	    current_temp = re.findall( pattern_current_temp, htmlSource )
 	    current_feels_like = re.findall( pattern_feels_like, htmlSource )
 	    try:
-	        current_temp = ( _localize_unit( current_temp[ 0 ] ), str( int( _localize_unit( current_temp[ 0 ], "tempf2c" ) ) ) )[ self.newbuild ]
-		current_feels_like = ( _localize_unit( current_feels_like [ 0 ] ), str( int( _localize_unit( current_feels_like[ 0 ], "tempf2c" ) ) ) )[ self.newbuild ]
+	        current_temp =  _localize_unit( current_temp[ 0 ] )
+		current_feels_like = _localize_unit( current_feels_like [ 0 ] )
 	    except:
 		current_temp = "N/A"
 		current_feels_like = "N/A"
@@ -559,12 +559,8 @@ class Forecast36HourParser:
 		current_wind = current_wind[ 0 ].replace("\t","").replace("\n","").strip()
 		current_wind_buffer = re.findall( "From (.+?) at ([0-9]+)", current_wind )
 		try: 
-		   if ( not self.newbuild ):
-			current_wind = "From %s at %s" % ( current_wind_buffer[ 0 ][ 0 ], _localize_unit( current_wind_buffer[ 0 ][ 1 ], "speed" ) )
-			current_winddirection = ""
-		   else:
-			current_wind = current_wind_buffer[ 0 ][ 1 ]
-			current_winddirection = _localize_unit( current_wind_buffer[ 0 ][ 0 ], "speedmph2kmh" )
+		   current_wind = "From %s at %s" % ( current_wind_buffer[ 0 ][ 0 ], _localize_unit( current_wind_buffer[ 0 ][ 1 ], "speed" ) )
+		   current_winddirection = ""	   
 		except:
 		   pass
 	    except:
@@ -573,8 +569,8 @@ class Forecast36HourParser:
 	    current_humidity = re.findall( pattern_current_humidity, htmlSource )
 	    current_dewpoint = re.findall( pattern_current_dewpoint, htmlSource )
 	    try:
-	        current_humidity = current_humidity[ 0 ] + ("%", "")[ self.newbuild ]
-		current_dewpoint = ( _localize_unit( current_dewpoint[ 0 ] ), str( int( _localize_unit( current_dewpoint[ 0 ], "tempf2c" ) ) ) )[ self.newbuild ]
+	        current_humidity = current_humidity[ 0 ] + "%"
+		current_dewpoint = _localize_unit( current_dewpoint[ 0 ] )
 	    except:
 	        current_humidity = "N/A"
 		current_dewpoint = "N/A"
@@ -606,11 +602,10 @@ class Forecast36HourParser:
                    self.video_location = "Non US"
             except :
                 self.video_location = "Non US"
-            print "[Weather Plus] video_location : "+self.video_location + " Local_location : " + self.video_local_location
+            printlog( "video_location : "+ self.video_location + " Local_location : " + self.video_local_location )
             # fetch alerts
             self.alertscolor = re.findall(pattern_alert_color, htmlSource)
-            self.alerts = re.findall( pattern_alerts, htmlSource )
-            
+            self.alerts = re.findall( pattern_alerts, htmlSource )           
             # fetch icon
             icon = re.findall( pattern_icon, htmlSource )
             # fetch brief description
@@ -764,7 +759,7 @@ class Forecast36HourParser:
 	    self.error = 1
 
 class ACCU_Forecast36HourParser:
-    def __init__( self, version, htmlSource, htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4, translate=None ):
+    def __init__( self, htmlSource, htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4, translate=None ):
         self.forecast = []
         self.extras = []
         self.alerts = []
@@ -772,7 +767,6 @@ class ACCU_Forecast36HourParser:
         self.video_location = []
         self.translate = translate
         self.sun = []
-	self.newbuild = version
 	self.error = 0
 
         # only need to parse source if there is source
@@ -803,10 +797,7 @@ class ACCU_Forecast36HourParser:
 		icon = []
 		icondir = {"1":"32", "2":"30", "3":"28", "4":"30", "5":"34", "6":"28", "7":"26", "8":"26", "11":"19", "12":"11", "13":"39", "14":"39", "15":"3", "16":"37", "17":"37", "18":"12", "19":"14", "20":"14", "21":"14", "22":"16", "23":"16", "24":"25", "25":"25", "26":"25", "29":"5", "30":"36", "31":"32", "32":"23", "33":"31", "34":"29", "35":"27", "36":"27", "38":"27", "37":"33", "39":"45", "40":"45", "41":"47", "42":"47", "43":"46", "44":"46" }
 		current_icon = icondir.get( re.findall( pattern_icon, htmlSource )[0] ) 
-		if ( not self.newbuild ): # for new pre-eden, it should contain only "number.png"
-			current_icon = "/".join( [ "special://temp", "weather", "128x128", icondir.get( re.findall( pattern_icon, htmlSource )[0] ) + ".png" ] )
-		else:
-			current_icon = current_icon + ".png"
+		current_icon = "/".join( [ "special://temp", "weather", "128x128", icondir.get( re.findall( pattern_icon, htmlSource )[0] ) + ".png" ] )
 		icon_day1 = re.findall( pattern_icon, htmlSource_1 )
 		icon_day2 = re.findall( pattern_icon, htmlSource_2 )
 		icon = [ icondir.get(icon_day1[0]), icondir.get(icon_day1[1]), icondir.get(icon_day2[0]), icondir.get(icon_day2[1]) ]
@@ -827,10 +818,9 @@ class ACCU_Forecast36HourParser:
 		    current_temp = re.findall( pattern_current_temp, htmlSource )[0]
 		    current_feel_like = re.findall( pattern_current_feel_like, htmlSource )[0]
 		    current_dew = re.findall( pattern_current_dew, htmlSource )[0]
-		    if ( not self.newbuild ):
-			current_temp = _english_localize_unit( current_temp )
-			current_feel_like = _english_localize_unit( current_feel_like )
-			current_dew = _english_localize_unit( current_dew )
+		    current_temp = _english_localize_unit( current_temp )
+		    current_feel_like = _english_localize_unit( current_feel_like )
+		    current_dew = _english_localize_unit( current_dew )
 		    day1_temp = re.findall( pattern_temp, htmlSource_1 )
 		    day2_temp = re.findall( pattern_temp, htmlSource_2 )
 		    temperature_info = ["High", "Low", "High", "Low"]
@@ -843,23 +833,11 @@ class ACCU_Forecast36HourParser:
 		    printlog ( "wind... Done! (%s)" % current_wind )
 		    current_winddirection = ""
 		    try:
-		        if ( self.version !=2 ):
-				current_wind = current_wind.split(" ")[0]+" "+_english_localize_unit( current_wind.split(" ")[1], "speed" )
-			else:
-				current_winddirection = current_wind.split(" ")[0]
-				current_wind = current_wind.split(" ")[1]
+		        current_wind = current_wind.split(" ")[0]+" "+_english_localize_unit( current_wind.split(" ")[1], "speed" )
 		    except:    # Calm or variable direction
-		        current_wind = [ current_wind, "0" ][ self.newbuild ]     # new pre-eden can't show "Calm", must fit the form "From XXX at XX km/h"
-			current_winddirection = [ "", "VAR" ][ self.newbuild ]		  
+		        current_wind = current_wind
+			current_winddirection = ""
 		    printlog ( "wind direction/speed split... Done!" )
-		    """
-		    # fetch precip title
-		    precip_title = re.findall( pattern_precip_title, htmlSource )
-		    # fetch precip title
-		    precip_amount = re.findall( pattern_precip_amount, htmlSource )
-		    # fetch forecasts
-		    #outlook = re.findall( pattern_outlook, htmlSource )
-		    """
 
 		    precip_title = []
 		    precip_amount = []
@@ -970,7 +948,7 @@ class ACCU_Forecast36HourParser:
 	    return
 
 class NOAA_Forecast36HourParser:        # 36 hour and 10 day (actually 7 day) forecast parser
-    def __init__( self, version, htmlSource, htmlSource_2, xmlSource, observSource, translate=None ):
+    def __init__( self, htmlSource, htmlSource_2, xmlSource, observSource, translate=None ):
         self.forecast = []
         self.extras = []
         self.alerts = []
@@ -978,7 +956,6 @@ class NOAA_Forecast36HourParser:        # 36 hour and 10 day (actually 7 day) fo
         self.video_location = []
         self.translate = translate
         self.sun = []
-	self.newbuild = version
 
         # only need to parse source if there is source
         if ( htmlSource ):
@@ -1071,7 +1048,7 @@ class NOAA_Forecast36HourParser:        # 36 hour and 10 day (actually 7 day) fo
 		    "nrasn":"5", 
 		    "hi_shwrs":"39" }
 	current_icon = icondir.get( current_icon, "na" ) + ".png"
-	if ( not self.newbuild ) : current_icon = "/".join( [ "special://temp", "weather", "128x128", "%s" % current_icon ] )  # new pre-eden : don't make path.
+	current_icon = "/".join( [ "special://temp", "weather", "128x128", "%s" % current_icon ] )
 	for count in range(0, 13-ampm):
 		icon += [ icondir.get ( re.findall( "([^\d\s]+)", icons[count].split("/")[-1] )[0], "na" ) ]
 	printlog("NOAA icons : " + ",".join(icon))
@@ -1155,14 +1132,10 @@ class NOAA_Forecast36HourParser:        # 36 hour and 10 day (actually 7 day) fo
 		current_wind = re.findall( pattern_current_wind_2, htmlSource )[0]
 	    if ( current_wind.lower() != "calm"  ):
 	        if ( current_wind.split(" ")[1] != "M" ):
-		    if ( self.newbuild ):
-			current_winddirection = current_wind.split(" ")[0] # for new pre-eden, winddirection should be assigned
-			current_wind = _localize_unit( current_wind.split(" ")[1], "speedmph2kmh" ) # for new pre-eden, wind must have straight number of km/h		
-		    else:
-		        try:
-			    current_wind = current_wind.split(" ")[0]+" "+_localize_unit( current_wind.split(" ")[1], "speed" ).replace(" mph","").replace(" km/h","") +" Gust "+_localize_unit( current_wind.split(" ")[3], "speed" )
-			except:	
-			    current_wind = current_wind.split(" ")[0]+" "+_localize_unit( current_wind.split(" ")[1], "speed" )
+		    try:
+			current_wind = current_wind.split(" ")[0]+" "+_localize_unit( current_wind.split(" ")[1], "speed" ).replace(" mph","").replace(" km/h","") +" Gust "+_localize_unit( current_wind.split(" ")[3], "speed" )
+		    except:	
+			current_wind = current_wind.split(" ")[0]+" "+_localize_unit( current_wind.split(" ")[1], "speed" )
 	
             # fetch precip
 	    precip_title = []
@@ -1203,14 +1176,9 @@ class NOAA_Forecast36HourParser:        # 36 hour and 10 day (actually 7 day) fo
 				daylight += [ ("Sunrise", sunrise[count]+" AM"), ("Sunset", sunset[count+1]+" PM") ]
 		except:
 			daylight += [ ("Sunrise", "N/A"), ("Sunset", "N/A"), ]
-	    if (self.newbuild): # Current temereatures should be always in C
-		current_temp = str( int(_localize_unit( current_temp, "tempf2c" )) )
-		current_feel_like = str( int(_localize_unit( current_feel_like, "tempf2c" )) )
-		current_dew = str( int(_localize_unit( current_dew, "tempf2c" )) )
-	    else:
-		current_temp = str( int(_localize_unit( current_temp )) )
-		current_feel_like = str( int(_localize_unit( current_feel_like )) )
-		current_dew = str( int(_localize_unit( current_dew )) )
+	    current_temp = str( int(_localize_unit( current_temp )) )
+	    current_feel_like = str( int(_localize_unit( current_feel_like )) )
+	    current_dew = str( int(_localize_unit( current_dew )) )
 	    self.extras += [( pressure, visibility, daylight[0][1], daylight[1][1], str(current_temp), current_feel_like, current_brief, current_wind, current_humidity, current_dew, current_icon, current_winddirection )]
 	    days = ["Today", "Tonight", "Tomorrow", "Tomorrow Night", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A"]
             for count in range(0, 13):
@@ -3809,7 +3777,7 @@ class WeatherClient:
 	print urls
 	return urls
 
-    def fetch_36_forecast( self, version, video ):
+    def fetch_36_forecast( self, video ):
         printlog( "*****************************************************" )
         printlog( "*                                                   *" )
 	printlog( "* [Weather Plus] Trying to fetch 36 hour forecast.. *" )
@@ -3827,7 +3795,7 @@ class WeatherClient:
 	     _localtime_ = None
 
         # parse source for forecast
-        parser = Forecast36HourParser( version, htmlSource, htmlSource_5, _localtime_, self.translate )
+        parser = Forecast36HourParser( htmlSource, htmlSource_5, _localtime_, self.translate )
 	if ( parser.error == 0 ):
 		# print parser.alertscolor[0]
 	        # fetch any alerts
@@ -3851,7 +3819,7 @@ class WeatherClient:
 	else:
 		print "[Weather Plus] Error Code : " + str( parser.error )
 
-    def accu_36_forecast( self, version, video="" ):
+    def accu_36_forecast( self, video="" ):
         printlog( "*****************************************************" )
         printlog( "*                                                   *" )
 	printlog( "* [Weather Plus] Trying to fetch 36 hour forecast.. *" )
@@ -3874,7 +3842,7 @@ class WeatherClient:
 	printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr_en, "satellite", cityID ))
 	htmlSource_5 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr_en, "satellite", cityID ), 15 )     
         # parse source for forecast
-        parser = ACCU_Forecast36HourParser( version, htmlSource, htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4, self.translate )
+        parser = ACCU_Forecast36HourParser( htmlSource, htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4, self.translate )
 	# any errors?
 	while ( parser.error > 0 and parser.error < 5 ):
 		printlog("Failed to load webpages properly. Retrying..")
@@ -3916,7 +3884,7 @@ class WeatherClient:
              except : 
                  return alerts, alertsrss, alertsnotify, parser.alertscolor, len(parser.alerts), parser.forecast, parser.extras, video, video_title
 
-    def noaa_36_forecast( self, version, video="" ):
+    def noaa_36_forecast( self, video="" ):
         # fetch source
         printlog( "*****************************************************" )
         printlog( "*                                                   *" )
@@ -3948,7 +3916,7 @@ class WeatherClient:
 			observSource = ""
         #printlog("Area code = " + self.code )
         # parse source for forecast
-        parser = NOAA_Forecast36HourParser( version, htmlSource, htmlSource_2, xmlSource, observSource, self.translate )
+        parser = NOAA_Forecast36HourParser( htmlSource, htmlSource_2, xmlSource, observSource, self.translate )
         # fetch any alerts
         alerts, alertsrss, alertsnotify = self._fetch_alerts( parser.alerts )
         # create video url
