@@ -1,5 +1,0 @@
- Version  Date
- v1.2     20-09-09    fix: accommodate new url redirection for streaming and ensure authorisation for a 2nd play happens. (thanks to Piero Bradley) 
-                      updated: New logo.
- v1.1     20-03-09    Updated: Languages.  Logging format.  Uses new special:// paths. Minimum XBMC Build date check.
- v1.0     12-01-09    Created.

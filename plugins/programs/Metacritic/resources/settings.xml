@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<settings>
-    <setting type="action" label="30000" option="close" default="RunPlugin(plugin://Programs/Metacritic/?info=readme.txt)" />
-    <setting type="action" label="30001" option="close" default="RunPlugin(plugin://Programs/Metacritic/?info=changelog.txt)" />
-</settings>
