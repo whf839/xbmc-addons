@@ -397,7 +397,9 @@ class Main:
 	# print "[Weather Plus] Video_type = " + self.Settings.getSetting("video_type")
 	# print "[Weather Plus] Video_url = " + video_url
 	# print "[Weather Plus] Video_local_url = " + video_local_url
-        print "[Weather Plus] Selected Weather Video = "+self.WEATHER_WINDOW.getProperty ("Video")
+        printlog( "Video 1 = "+self.WEATHER_WINDOW.getProperty ("Video") )
+        printlog( "Video 2 = "+self.WEATHER_WINDOW.getProperty ("Video.2") )
+        printlog( "Video 3 = "+self.WEATHER_WINDOW.getProperty ("Video.3") )
 
     def _set_extra_current_info( self, extras ):
         if ( extras ):
@@ -587,6 +589,8 @@ class Main:
 	self.WEATHER_WINDOW.setProperty( "Current.UVIndex", "" )
 	self.WEATHER_WINDOW.setProperty( "Current.ConditionIcon", extras[0][10] )
 	self.WEATHER_WINDOW.setProperty( "Current.OutlookIcon", extras[0][10] )   # for new pre-eden compatability (XBMC copies outlookicon to conditionicon)
+	self.WEATHER_WINDOW.setProperty( "Current.FanartCode", os.path.splitext( os.path.basename( extras[0][10] ) )[ 0 ] )
+
         # set any alerts
         self._set_alerts( alerts, alertsrss, alertsnotify, alertscolor, alertscount )
         # set video
@@ -869,7 +873,7 @@ class Main:
 		self.WEATHER_WINDOW.setProperty( "Daily.%d.Precipitation" % ( int( ( count + 1 + ampm )/2 ) + 1, ), forecast[ 6 ] )
 		self.WEATHER_WINDOW.setProperty( "Daily.%d.WindDirection" % ( int( ( count + 1 + ampm )/2 ) + 1, ), forecast[ 12 ] )
 		self.WEATHER_WINDOW.setProperty( "Daily.%d.WindSpeed" % ( int( ( count + 1 + ampm )/2 ) + 1, ), forecast[ 13 ] )
-		self.WEATHER_WINDOW.setProperty( "Daily.%d.ShortWindDirection" % ( int( ( count + 1 + ampm )/2 ) + 1, ), "" )
+		self.WEATHER_WINDOW.setProperty( "Daily.%d.ShortWindDirection" % ( int( ( count + 1 + ampm )/2 ) + 1, ), forecast [ 14 ] )
 		self.WEATHER_WINDOW.setProperty( "Daily.%d.HighTemperature" % ( 1 ), "N/A" )
 		self.WEATHER_WINDOW.setProperty( "Daily.%d.LowTemperature" % ( 1 ), forecast[ 4 ] )
 		ampm = 1
@@ -890,7 +894,7 @@ class Main:
 			self.WEATHER_WINDOW.setProperty( "Daily.%d.WindSpeed" % ( int( ( count + 1 + ampm )/2 ) + 1, ), forecast[ 13 ] )
 		else:
 			self.WEATHER_WINDOW.setProperty( "Daily.%d.WindSpeed" % ( int( ( count + 1 + ampm )/2 ) + 1, ), "N/A" )
-		self.WEATHER_WINDOW.setProperty( "Daily.%d.ShortWindDirection" % ( int( ( count + 1 + ampm )/2 ) + 1, ), "" )
+		self.WEATHER_WINDOW.setProperty( "Daily.%d.ShortWindDirection" % ( int( ( count + 1 + ampm )/2 ) + 1, ), forecast [ 14 ] )
 	    else:
 		self.WEATHER_WINDOW.setProperty( "Daily.%d.LowTemperature" % ( int( ( count + 1 + ampm )/2 ) ), forecast[ 4 ] )	
         # use this to hide info until fully fetched
