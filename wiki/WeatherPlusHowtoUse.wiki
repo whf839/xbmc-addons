@@ -1,0 +1,9 @@
+#summary Weather Plus : How to Install and Use
+#labels WeatherPlus
+
+= How to Install =
+
+== Requirements ==
+
+ * XBMC since Dharma version
+ * A compatible skin : [WeatherPlusCompatibleSkins list of compatible skin]
