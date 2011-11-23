@@ -1,4 +1,6 @@
+#summary Weather Plus : Introduction
 #labels WeatherPlus
+
 = Introduction =
 
 == What is Weather Plus? ==
