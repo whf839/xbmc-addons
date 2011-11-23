@@ -1,0 +1,23 @@
+#summary Weather Plus : Compatible Skin List
+#labels Weather.Plus
+
+= Why do I need a COMPATIBLE SKIN? =
+
+General weather addons and skins support current weather and four days forecast. Since Weather Plus has a lot of features such as weather videos or extended forecast up to 10 days, this addon needs a compatible skin to display them.
+
+= Compatible Skins (alphabetical order) =
+
+(name of skin) : (forum link)
+
+_If you know another skin, feel free to let me know._
+
+ * *Aeon65* : http://forum.xbmc.org/showthread.php?t=76839, extract and overwrite this zip file into skin folder (http://xbmc-addons.googlecode.com/fi...eatherPlus.zip)
+ * *Aeon MQ2* : http://forum.xbmc.org/showthread.php?t=81601
+ * *Aeon MQ3* : http://forum.xbmc.org/showthread.php?t=107793
+ * *Aeon Nox* : http://forum.xbmc.org/showthread.php?t=89151
+ * *Confluence (dharma)*: extract and overwrite this zip file into skin folder (http://xbmc-addons.googlecode.com/fi...eather_mod.zip)
+ * *Confluence (eden)* : http://forum.xbmc.org/showthread.php?t=102319
+ * *Cirrus Extended v2* : http://forum.xbmc.org/showthread.php?t=102066
+ * *Neon* : http://forum.xbmc.org/showthread.php?t=83337
+ * *Transparency!* : http://forum.xbmc.org/forumdisplay.php?f=115
+ * *xTV-SAF* : http://forum.xbmc.org/showthread.php?t=59576
