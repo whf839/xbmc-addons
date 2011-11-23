@@ -1,4 +1,4 @@
-#labels Featured
+#labels weather.weatherplus
 = Introduction =
 
 == What is Weather Plus? ==
