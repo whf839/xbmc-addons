@@ -1,5 +1,5 @@
 #summary Weather Plus : Compatible Skin List
-#labels Weather.Plus
+#labels WeatherPlus
 
 = Why do I need a COMPATIBLE SKIN? =
 
