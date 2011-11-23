@@ -7,3 +7,27 @@
 
  * XBMC since Dharma version
  * A compatible skin : [WeatherPlusCompatibleSkins list of compatible skin]
+ * _The most important thing : Internet connection_ :)
+
+== Installation ==
+
+===Using official repository (Recommended)===
+
+Install from XBMC.org Repository > Weather > Weather Plus
+
+===Direct Install from ZIP file===
+
+Download this zip file and install it :
+
+ * Dharma : [http://xbmc-addons.googlecode.com/fi...5.2.dharma.zip Weather Plus v.2.5.2]
+ * Eden-pre : [http://xbmc-addons.googlecode.com/fi...2.eden-pre.zip Weather Plus v.2.7.2]
+
+== Getting it Work ==
+
+1) Settings > Weather > Select "Weather Plus."
+
+2) Settings > Weather > Settings > Select a Provider at a Location# Tab > Select "Run Location Selector" & Search a Location You Need.
+
+3) (Optional) Customize Location Name as You Want.
+
+4) OK > Enjoy!
