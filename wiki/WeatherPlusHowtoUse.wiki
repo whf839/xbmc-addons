@@ -22,7 +22,9 @@ Download this zip file and install it :
  * Dharma : [http://xbmc-addons.googlecode.com/fi...5.2.dharma.zip Weather Plus v.2.5.2]
  * Eden-pre : [http://xbmc-addons.googlecode.com/fi...2.eden-pre.zip Weather Plus v.2.7.2]
 
-== Getting it Work ==
+== How to Use ==
+
+=== Getting it Work ===
 
 1) Settings > Weather > Select "Weather Plus."
 
