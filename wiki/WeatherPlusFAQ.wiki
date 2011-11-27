@@ -31,6 +31,10 @@ First of all, you can ask a skinner developing and maintaining your skin by post
 
 If it's revealed that it's not skin's issue, you can post your problem to the [http://forum.xbmc.org/showthread.php?t=95329 Weather Plus thread].
 
+== Unit (Metric vs. English) ==
 
+=== "How can I get temperatures in Fahrenheit or Celsius?" ===
 
+Temperature unit depends on XBMC's international region setting.
 
+Settings > Appearance > International > Region > Set where you live
