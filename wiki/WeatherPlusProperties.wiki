@@ -3,7 +3,7 @@
 
 = Introduction =
 
-All the information processed by Weather Plus can be accessed through Infolabels.
+All the information processed by Weather Plus can be accessed through Infolabels of the weather window.
 
 example) Current temperature = $INFO[[Window(Weather).Property(Current.Temperature)]]
 
