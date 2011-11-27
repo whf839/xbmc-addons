@@ -14,7 +14,7 @@ example) Current temperature = $INFO[[Window(Weather).Property(Current.Temperatu
 || *Property* || *Content (Eden)* || *Content (Dharma)* ||
 ||Locations||number of configured locations||_same_||
 ||Location%d||name of location (%d=1,2,3,...)||_same_||
-||WeatherProvider||name of weather provider||_same_||
+|| WeatherProvider ||name of weather provider||_same_||
 ||Current.Condition||current weather condition in words||_same_||
 ||Current.Temperature||current temperature||_same_||
 ||Current.FeelsLike||current feels like temperature||_same_||
