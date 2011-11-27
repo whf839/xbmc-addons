@@ -1,0 +1,28 @@
+#summary Weather Plus : Properties for Skinners
+#labels WeatherPlus
+
+= Introduction =
+
+All the information processed by Weather Plus can be accessed through Infolabels.
+
+example) Current temperature = $INFO[[Window(Weather).Property(Current.Temperature)]]
+
+= Properties =
+
+== Default Properties ==
+
+|| *Property* || *Content (Eden)* || *Content (Dharma)* ||
+||Locations||number of configured locations||_same_||
+||Location%d||name of location (%d=1,2,3,...)||_same_||
+||WeatherProvider||name of weather provider||_same_||
+||Current.Condition||current weather condition in words||_same_||
+||Current.Temperature||current temperature||_same_||
+||Current.FeelsLike||current feels like temperature||_same_||
+||Current.Wind||current wind speed||current wind (From DIRECTION at SPEED) ||
+||Current.WindDirection||current wind direction||_N/A_||
+||Current.OutlookIcon||path of current condition icon||_same_||
+||Current.FanartCode||number of current condition icon||_same_||
+||Current.Humidity||current humidity||_same_||
+||Current.DewPoint||current dew point||_same_||
+||Current.UVIndex||current UV index||_same_||
+||Day%d.Title||_may be available in the next release_||_same_||
