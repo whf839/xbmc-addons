@@ -26,3 +26,7 @@ example) Current temperature = $INFO[[Window(Weather).Property(Current.Temperatu
 ||Current.DewPoint||current dew point||_same_||
 ||Current.UVIndex||current UV index||_same_||
 ||Day%d.Title||_may be available in the next release_||_same_||
+||Day%d.OutlookIcon||_may be available in the next release_||_same_||
+||Day%d.Outlook||_may be available in the next release_||_same_||
+||Day%d.HighTemp||_may be available in the next release_||_same_||
+||Day%d.LowTemp||_may be available in the next release_||_same_||
