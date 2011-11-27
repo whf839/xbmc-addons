@@ -9,6 +9,8 @@ example) Current temperature = $INFO[[Window(Weather).Property(Current.Temperatu
 
 = Properties =
 
+_FanartCode is usually used for animated icons. (folder name)_
+
 == Default Properties ==
 
 These are standard properties of XBMC.
@@ -49,9 +51,9 @@ _(Another weather addon may have same names of properties.)_
 ||Current.Sunset||today's sunset time||
 ||Current.ConditionIcon||path of current weather icon (same as Current.OutlookIcon, only for skin compatiblilty)||
 
-=== 36 Hour Forecast ==
+=== 36 Hour Forecast ===
 
-%d = [1-3]
+%d = [[1-3]]
 
 || *Property* || *Content* ||
 ||36hour.%d.Heading||title of each forecast (Today, Tonight, Tomorrow or Tomorrow Night)||
@@ -67,3 +69,22 @@ _(Another weather addon may have same names of properties.)_
 ||36Hour.%d.DaylightTime||sunrise or sunset time||
 ||36Hour.%d.DaylightType||"sunrise" or "sunset"||
 ||36Hour.IsFetched||"true" if 36 hour forecast information has been fetched||
+
+=== Extended Forecast (up to 10 days) ===
+
+%d = [[1,2,...,up to 10]]
+
+|| *Property* || *Content* ||
+||Daily.%d.LongDay||long formation of day in localized string (e.g., Monday)||
+||Daily.%d.ShortDay||short formation of day in localized string (e.g., Mon)||
+||Daily.%d.LongDate||long formation of date in localized string (e.g., November 27)||
+||Daily.%d.ShortDate||short formation of date in localized string (e.g., Nov 27)||
+||Daily.%d.OutlookIcon||path of outlook icon||
+||Daily.%d.FanartCode||number of outlook icon||
+||Daily.%d.Outlook||brief outlook||
+||Daily.%d.HighTemperature||predicted highest temperature||
+||Daily.%d.LowTemperature||predicted lowest temperature||
+||Daily.%d.Precipitation||chance(%) of precipitation||
+||Daily.%d.WindDirection||wind direction (e.g., From North or North)||
+||Daily.%d.WindSpeed||wind speed (e.g., 15 mph)||
+||Daily.%d.ShortWindDirection||short formation of wind direction (e.g., NW)||
