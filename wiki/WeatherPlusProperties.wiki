@@ -128,9 +128,14 @@ _(Another weather addon may have same names of properties.)_
 ||Weekend.%d.Sunset||sunset time||
 ||Weekend.%d.Forecast|| detailed forecast in text||
 ||Weekend.%d.ObservedPrecipitation|| observed precipitation amount||
-||Weekend.%d.ObservedAvgHighTemperature|| highest temperature ||
-||Weekend.%d.ObservedAvgLowTemperature|| lowest temperature ||||Weekend.%d.ObservedAvgRecordTemperature|| highest temperature ||
-||Weekend.%d.ObservedAvgRecordTemperature|| lowest temperature ||
+||Weekend.%d.ObservedAvgHighTemperature|| average highest temperature ||
+||Weekend.%d.ObservedAvgLowTemperature|| average lowest temperature||
+||Weekend.%d.ObservedAvgRecordTemperature|| recorded highest temperature ||
+||Weekend.%d.ObservedAvgRecordTemperature|| recorded lowest temperature ||
+||Weekend.%d.DepartureHigh||departure from normal, high||
+||Weekend.%d.DepartureHighColor||"low" or "high"||
+||Weekend.%d.DepartureLow||departure from normal, low||
+||Weekend.%d.DepartureLowColor||"low" or "high"||
 ||Weekend.%d.Observed|| "Observed:" if the information is from observed data, empty otherwise||
 ||Weekend.%d.ObservedPrecipitation||chance(%) of precipitation||
 ||Weekend.IsFetched||"true" if weekend forecast information has been fetched||
