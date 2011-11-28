@@ -31,11 +31,6 @@ These are standard properties of XBMC.
 ||Current.Humidity||current humidity||_same_||
 ||Current.DewPoint||current dew point||_same_||
 ||Current.UVIndex||current UV index||_same_||
-||Day%d.Title||_may be available in the next release_||_same_||
-||Day%d.OutlookIcon||_may be available in the next release_||_same_||
-||Day%d.Outlook||_may be available in the next release_||_same_||
-||Day%d.HighTemp||_may be available in the next release_||_same_||
-||Day%d.LowTemp||_may be available in the next release_||_same_||
 
 == Weather-Plus-Only Properties ==
 
@@ -50,7 +45,7 @@ _(Another weather addon may have same names of properties.)_
 ||Current.Visibility||current visibility (distance)||
 ||Current.Sunrise||today's sunrise time||
 ||Current.Sunset||today's sunset time||
-||Current.ConditionIcon||path of current weather icon (same as Current.OutlookIcon, only for skin compatiblilty)||
+||Current.ConditionIcon||path of current weather icon (same as Current.OutlookIcon)||
 
 === 36 Hour Forecast ===
 
@@ -89,3 +84,53 @@ _(Another weather addon may have same names of properties.)_
 ||Daily.%d.WindDirection||wind direction (e.g., From North or North)||
 ||Daily.%d.WindSpeed||wind speed (e.g., 15 mph)||
 ||Daily.%d.ShortWindDirection||short formation of wind direction (e.g., NW)||
+||Daily.IsFetched||"true" if extended forecast information has been fetched||
+
+=== Hourly Forecast ===
+
+%d = (1,2,...,up to 12)
+
+|| *Property* || *Content* ||
+||Hourly.%d.Time|| time ||
+||Hourly.%d.LongDate|| long formation of date in localized string||
+||Hourly%d.ShortDate|| short formation of date in localized string||
+||Hourly.%d.OutlookIcon|| path of outlook icon||
+||Hourly.%d.FanartCode|| number of outlook icon||
+||Hourly.%d.FeelsLike|| feels like temperature||
+||Hourly.%d.Temperature|| temperature ||
+||Hourly.%d.Outlook|| brief outlook||
+||Hourly.%d.Precipitation||chance(%) of precipitation||
+||Hourly.%d.Humidity||humidity||
+||Hourly.%d.WindDirection||wind direction||
+||Hourly.%d.WindSpeed||wind speed||
+||Hourly.%d.ShortWindDirection||short formation of wind direction||
+||Hourly.%d.Sunrise||sunrise time (Weather.com only)||
+||Hourly.%d.Sunset||sunset time (Weather.com only)||
+||Hourly.IsFetched||"true" if hourly forecast information has been fetched||
+
+=== Weekend Forecast ===
+
+%d = (1=Friday, 2=Saturday, 3=Sunday)
+
+|| *Property* || *Content* ||
+||Weekend.%d.Date|| short formation of date ||
+||Weekend.%d.OutlookIcon|| path of outlook icon||
+||Weekend.%d.FanartCode|| number of outlook icon||
+||Weekend.%d.HighTemperature|| highest temperature ||
+||Weekend.%d.LowTemperature|| lowest temperature ||
+||Weekend.%d.Outlook|| brief outlook||
+||Weekend.%d.Precipitation||chance(%) of precipitation||
+||Weekend.%d.Humidity||humidity||
+||Weekend.%d.UV||UV index||
+||Weekend.%d.Wind||current wind (From DIRECTION at SPEED) ||
+||Weekend.%d.ShortWindDirection||short formation of wind direction||
+||Weekend.%d.Sunrise||sunrise time||
+||Weekend.%d.Sunset||sunset time||
+||Weekend.%d.Forecast|| detailed forecast in text||
+||Weekend.%d.ObservedPrecipitation|| observed precipitation amount||
+||Weekend.%d.ObservedAvgHighTemperature|| highest temperature ||
+||Weekend.%d.ObservedAvgLowTemperature|| lowest temperature ||||Weekend.%d.ObservedAvgRecordTemperature|| highest temperature ||
+||Weekend.%d.ObservedAvgRecordTemperature|| lowest temperature ||
+||Weekend.%d.Observed|| "Observed:" if the information is from observed data, empty otherwise||
+||Weekend.%d.ObservedPrecipitation||chance(%) of precipitation||
+||Weekend.IsFetched||"true" if weekend forecast information has been fetched||
