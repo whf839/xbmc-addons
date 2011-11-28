@@ -24,7 +24,7 @@ These are standard properties of XBMC.
 ||Current.Condition||current weather condition in words||_same_||
 ||Current.Temperature||current temperature||_same_||
 ||Current.FeelsLike||current feels like temperature||_same_||
-||Current.Wind||current wind (From DIRECTION at SPEED)||_same_||
+||Current.Wind||current wind converted by XBMC (From DIRECTION at SPEED)||_same (converted by addon)_||
 ||Current.WindDirection||current wind direction||_N/A_||
 ||Current.OutlookIcon||path of current condition icon||_same_||
 ||Current.FanartCode||number of current condition icon||_same_||
