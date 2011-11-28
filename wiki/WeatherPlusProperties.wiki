@@ -139,3 +139,37 @@ _(Another weather addon may have same names of properties.)_
 ||Weekend.%d.Observed|| "Observed:" if the information is from observed data, empty otherwise||
 ||Weekend.%d.ObservedPrecipitation||chance(%) of precipitation||
 ||Weekend.IsFetched||"true" if weekend forecast information has been fetched||
+
+=== Map ===
+
+%c = (1-3), %d = (1-30)
+
+|| *Property* || *Content* ||
+||Weather.CurrentMapUrl||url of current selected map||
+||Weather.CurrentMap||label of current selected map||
+||MapList.%c.MapLabel.%d||label of map||
+||MapList.%c.MapIcon.%d||name of map pack icon||
+||MapList.%c.MapOnClick.%d||<onclick> for when selected||
+||MapList.%c.LongTitle||long name of map category in localized string||
+||MapList.%c.ShortTitle||short name of map category in localized string||
+||MapStatus||"loading", "error" or "loaded"||
+||MapPath||path of map images||
+||LegendPath||"weather.com plus/loading", "weather.com/error" or actual downloaded map images||
+
+=== Video ===
+
+%d = (1-3)
+
+|| *Property* || *Content* ||
+||Video||url of video #1||
+||Video.%d||url of video #%d||
+||Video.%d.Title||title of video #%d, empty if none||
+
+=== Alerts ===
+
+|| *Property* || *Content* ||
+||Alerts||detailed alert in text, empty if none||
+||Alerts.RSS||brief alert message, use with a fade label. must have a colors/defaults.xml with this name (rss_headline)||
+||Alerts.Color||color you may use. must have a colors/defaults.xml with these names(red, orange, yellow, green, default)||
+||Alerts.Count||number of alerts if more than one alert, otherwise empty||
+||Alerts.Label||script localized string (Alert or Alerts)||
