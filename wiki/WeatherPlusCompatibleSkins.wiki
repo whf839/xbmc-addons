@@ -19,6 +19,7 @@ _If you know another skin, feel free to let me know._
  * *Aeon Nox* : http://forum.xbmc.org/showthread.php?t=89151
  * *Confluence (dharma)*: extract and overwrite this zip file into skin folder (http://xbmc-addons.googlecode.com/fi...eather_mod.zip)
  * *Confluence (eden)* : http://forum.xbmc.org/showthread.php?t=102319
+ * *Convergence (Confluence for Eden Vertical Mod)* : http://forum.xbmc.org/showthread.php?t=99839
  * *Cirrus Extended v2* : http://forum.xbmc.org/showthread.php?t=102066
  * *Neon* : http://forum.xbmc.org/showthread.php?t=83337
  * *Transparency!* : http://forum.xbmc.org/forumdisplay.php?f=115
