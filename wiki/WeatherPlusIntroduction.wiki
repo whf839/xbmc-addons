@@ -25,7 +25,7 @@ _Some information (such as UV index or precipitation chance) or some features (s
 
 2) Weather Maps and Radar info. _(from only Weather.com regardless of a selected provider)_
 
-3) Weather Videos
+3) Weather Videos ( Bulgaria - Belgium : will be available in the next release )
  * U.S : All forecast videos from Weather.com, ABC, CBS, FOX, NBC
  * Korea : KBS, OBS, Kweather
  * Japan : NHK
@@ -34,6 +34,12 @@ _Some information (such as UV index or precipitation chance) or some features (s
  * U.K : Short and Long range forecast (SKY News), BBC
  * Italy : Today and Tomorrow forecast (iL Meteo), Europe forecast (SKY News)
  * France : TF1, France 2, Europe forecast (SKY News)
+ * Bulgaria : Meteotv.bg, Europe forecast (Accuweather.com, Sky News)
+ * Poland : TVN, Europe forecast (Accuweather.com, Sky News)
+ * Ireland : TV3, Europe forecast (Accuweather.com, Sky News)
+ * Germany : ZDF.de, Europe forecast (Accuweather.com, Sky News)
+ * Spain : tve, Europe forecast (Accuweather.com, Sky News)
+ * Belgium : RTL.be, Europe forecast (Accuweather.com, Sky News)
  * Other Europe : Europe forecast (Accuweather.com, Sky News)
  * Austrailia : ABC News 24
 
