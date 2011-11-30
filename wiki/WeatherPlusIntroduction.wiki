@@ -32,7 +32,7 @@ _Some information (such as UV index or precipitation chance) or some features (s
  * China : CCTV
  * Canada : Accuweather.com, The Weather Network
  * U.K : BBC, Short and Long range forecast (SKY News)
- * Italy : Today and Tomorrow forecast (iL Meteo), Europe forecast (SKY News)
+ * Italy : iL Meteo (Today and Tomorrow forecast), Europe forecast (SKY News)
  * France : TF1, France 2, Europe forecast (SKY News)
  * Bulgaria : Meteotv.bg, Europe forecast (Accuweather.com, Sky News)
  * Poland : TVN, Europe forecast (Accuweather.com, Sky News)
