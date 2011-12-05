@@ -27,9 +27,12 @@ There are two possibilities.
  * Your skin's issue
  * Addon's bug
 
-First of all, you can ask a skinner developing and maintaining your skin by posting a question to the [http://forum.xbmc.org XBMC forum]. 
+First of all, you can ask a skinner developing and maintaining your skin by posting a question to the [http://forum.xbmc.org XBMC forum].
 
 If it's revealed that it's not skin's issue, you can post your problem to the [http://forum.xbmc.org/showthread.php?t=95329 Weather Plus thread].
+
+(In case of Dharma) : If you'd like to explore xml files of your skin and you're willing to modify something in those, try to find and remove "Weather.IsFetched". And give one more try to find "$INFO[Window(weather).Property(Current.Temperature)]" and add  "$INFO[System.TemperatureUnits]" in the end.
+
 
 == Unit (Metric vs. English) ==
 
