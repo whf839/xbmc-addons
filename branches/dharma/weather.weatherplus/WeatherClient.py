@@ -1,9 +1,9 @@
 # coding: utf-8
 
 """
-    weather.com api client module
+    Weather Client Module
 
-    by Nuka1195, brightsr
+    by brightsr (previous devleoper : Nuka1195)
 
 """
 

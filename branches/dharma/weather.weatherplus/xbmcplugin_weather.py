@@ -1,7 +1,7 @@
 """
-    GUI for displaying maps and forecasts from weather.com
+    Weather Plus Main Body
     
-    Nuka1195, Brightsr
+    by Brightsr (previous developer : Nuka1195)
 """
 
 # main imports
