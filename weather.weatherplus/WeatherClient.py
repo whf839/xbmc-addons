@@ -34,36 +34,107 @@ import platform
 
 import resources.lib.video_amf as AMF
 
+import Queue
+import threading
+
+queue = Queue.Queue()
+
+TSource = {}
+          
+class ThreadUrl(threading.Thread):
+	"""Threaded Url Grab"""
+	def __init__(self, queue):
+		threading.Thread.__init__(self)
+		self.queue = queue
+
+	def run(self):
+		global TSource
+		base_url = self.queue.get()
+		printlog( "_fetch_data : Fetching %s" % base_url )
+		try:
+			# request base url
+			request = urllib2.Request( base_url )
+			# add a faked header
+			request.add_header( "User-Agent", "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727)" )
+			# open requested url
+			usock = urllib2.urlopen( request )
+			# read source
+			data = usock.read()
+			# close socket
+			usock.close()
+			# return results
+			TSource[ base_url ] = data
+		except:
+		    # oops print error message
+		    print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
+		    # some unknown error, return ""
+
+		self.queue.task_done()
+
+
 WEATHER_WINDOW = xbmcgui.Window( 12600 )
+Addon = xbmcaddon.Addon( id="weather.weatherplus" )
+translator = Addon.getSetting( "translator" )
 
 def printlog( msg ):
     print "[Weather Plus] %s" % msg
 
 # TODO: maybe use xbmc language strings for brief outlook translation
-def _translate_text( text, translate ):
-    # base babelfish url
-    url = "http://babelfish.yahoo.com/translate_txt"
-    try:
-        # trick for translating T-Storms, TODO: verify if this is necessary
-        text = text.replace( "T-Storms", "Thunderstorms" )
-        # data dictionary
-        data = { "ei": "UTF-8", "doit": "done", "fr": "bf-home", "intl": "1", "tt": "urltext", "trtext": text, "lp": translate, "btnTrTxt": "Translate" }
-        # request url
-        request = urllib2.Request( url, urlencode( data ) )
-        # add a faked header, we use ie 8.0. it gives correct results for regex
-        request.add_header( "User-Agent", "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727)" )
-	# request.add_header( "User-Agent", "XBMC/10.0 r35647 (Windows; Windows 7, 64-bit (WoW) build 7600; http://www.xbmc.org)" )
-        # open requested url
-        usock = urllib2.urlopen( request )
-        # read htmlSource
-        htmlSource = usock.read()
-        # close socket
-        usock.close()
-        # find translated text
-        text = re.findall( "<div id=\"result\"><div style=\"[^\"]+\">([^<]+)", htmlSource )[ 0 ]
-    except Exception, e:
-        # TODO: add error checking?
-        pass
+def _translate_text( text, translate, accu="", target="en" ): 
+    if( accu != "" ):
+	translate = accu.split(" ")[0].replace("es-ar", "es").replace("es-mx", "es").replace("fr-ca", "fr").replace("pt-br", "pt").replace("zh-cn", "zh-CN").replace("zh-tw", "zh-TW")
+	if( translate == "en-us" ): return text
+    if( translator == "0" and accu == "" ):
+	    # base babelfish url
+	    url = "http://babelfish.yahoo.com/translate_txt"
+	    try:
+		# trick for translating T-Storms
+		text = text.replace( "T-Storms", "Thunderstorms" )
+		# data dictionary
+		data = { "ei": "UTF-8", "doit": "done", "fr": "bf-home", "intl": "1", "tt": "urltext", "trtext": text, "lp": translate, "btnTrTxt": "Translate" }
+		# request url
+		request = urllib2.Request( url, urlencode( data ) )
+		# add a faked header, we use ie 8.0. it gives correct results for regex
+		request.add_header( "User-Agent", "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727)" )
+		# open requested url
+		usock = urllib2.urlopen( request )
+		# read htmlSource
+		htmlSource = usock.read()
+		# close socket
+		usock.close()
+		# find translated text
+		text = re.findall( "<div id=\"result\"><div style=\"[^\"]+\">([^<]+)", htmlSource )[ 0 ]
+		print text
+	    except Exception, e:
+		# TODO: add error checking?
+		pass
+    if( translator == "1" or accu != "" ):
+	    # base babelfish url
+	    url = "http://translate.google.com/translate_a/t"
+	    try:
+		# trick for translating T-Storms, titlecase
+		text = text.replace( "T-Storms", "Thunderstorms" ).replace("|", " | ")
+		# data dictionary
+		data = { "client": "t", "text": text, "hl": target, "auto": "auto", "tl": translate, "sc": "1" }
+		# request url
+		request = urllib2.Request( url, urlencode( data ) )
+		# add a faked header, we use ie 8.0. it gives correct results for regex
+		request.add_header( "User-Agent", "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727)" )
+		# open requested url
+		usock = urllib2.urlopen( request )
+		# read htmlSource
+		htmlSource = usock.read()
+		# close socket
+		usock.close()
+		# find translated text
+		text_raw = re.findall( "\"([^\"]+)\",\"([^\"]+)\"", htmlSource )
+		text = ""
+		for count in range(0, len(text_raw)):
+		    text += text_raw[count][0]
+		text = text.replace(" | ", "|").replace("\\n","").replace("\\t","")		
+	    except Exception, e:
+		# TODO: add error checking?
+		pass
     # return translated text
     return text
 
@@ -190,7 +261,7 @@ def _localize_unit( value, unit="temp" ):
 	# temp conversion ( F -> C )
 	if ( unit == "tempf2c" ):
 	    value = round( ( value - 32 ) * ( float( 5 )/ 9 ) )
-	    return value
+	    return "%d" % value
         # speed conversion
         elif ( unit == "speed" ):
             # set our default temp unit
@@ -387,6 +458,26 @@ def _english_localize_unit( value, unit="temp" ):
             # return localized distance
             return "%.1f %s" % ( value, id, )
 
+#### below thanks to FrostBox @ http://forum.xbmc.org/showthread.php?p=937168#post937168  
+
+def _getFeelsLike( T=10, V=25 ): 
+    """ The formula to calculate the equivalent temperature related to the wind chill is: 
+        T(REF) = 13.12 + 0.6215 * T - 11.37 * V**0.16 + 0.3965 * T * V**0.16 
+        Or: 
+        T(REF): is the equivalent temperature in degrees Celsius 
+        V: is the wind speed in km/h measured at 10m height 
+        T: is the temperature of the air in degrees Celsius 
+        source: http://zpag.tripod.com/Meteo/eolien.htm
+        
+        getFeelsLike( tCelsius, windspeed )
+    """ 
+    FeelsLike = T 
+    #Wind speeds of 4 mph or less, the wind chill temperature is the same as the actual air temperature. 
+    if round( ( V + .0 ) / 1.609344 ) > 4: 
+        FeelsLike = ( 13.12 + ( 0.6215 * T ) - ( 11.37 * V**0.16 ) + ( 0.3965 * T * V**0.16 ) ) 
+    # 
+    return str( int(round( FeelsLike )) ) 
+
 class WeatherAlert:
     def __init__( self, htmlSource ):
         self.alert = ""
@@ -501,7 +592,7 @@ class Forecast36HourParser:
         pattern_video_location = "US_Current_Weather:([^\"]+)\""
         pattern_video_local_location = "/outlook/videos/(.+?)-60-second-forecast-(.+?)\""
         pattern_alert_color = "<div id=\"wx-alert-bar\" class=\"wx-alert-(.+?)\">"
-        pattern_alerts = "href=\"/weather/alerts/(.+?)\""
+        pattern_alerts = "href=\"/weather/alerts/([^\"]+)\" from=\"local_alert_list_overview\">"
         pattern_days = "<td class=\"twc-col-[0-9]+ twc-forecast-when\">(.+?)</td>"
         pattern_icon = "<img src=\"http://s\.imwx\.com/v\.20100719\.135915/img/wxicon/[0-9]+/([0-9]+)\.png\" width=\"72\""
         pattern_forecast_brief = "<td class=\"twc-col-[0-9]+ \">(.+?)</td>"
@@ -580,29 +671,6 @@ class Forecast36HourParser:
 	    except:
 	        current_UVIndex = "N/A"
 	    
-            # fetch video location
-
-            vl = re.findall( pattern_video_location, htmlSource )
-            vl2 = re.findall( pattern_video_local_location, htmlSource )
-
-            try :
-                if (vl2 is not None) : 
-                   self.video_local_location = vl2[0][0]
-                   self.video_local_number = vl2[0][1]
-                else :
-                   self.video_local_location = "Not Available"
-                   self.video_local_number = ""
-            except :
-                   self.video_local_location = "Not Available"
-                   self.video_local_number = ""
-            try :
-                if (vl is not None) :
-                   self.video_location = vl [0]
-                else :
-                   self.video_location = "Non US"
-            except :
-                self.video_location = "Non US"
-            printlog( "video_location : "+ self.video_location + " Local_location : " + self.video_local_location )
             # fetch alerts
             self.alertscolor = re.findall(pattern_alert_color, htmlSource)
             self.alerts = re.findall( pattern_alerts, htmlSource )           
@@ -617,11 +685,8 @@ class Forecast36HourParser:
             temperature_info = re.findall( pattern_temp_info, htmlSource)
 	    # fetch precip title
             precip_title = re.findall( pattern_precip_title, htmlSource )
-            # print precip_title
             # fetch precip title
             precip_amount = re.findall( pattern_precip_amount, htmlSource )
-            # fetch forecasts
-            #outlook = re.findall( pattern_outlook, htmlSource )
             # fetch daylight
             daylight = re.findall( pattern_daylight, htmlSource )
             sunrise_ = re.findall( pattern_sunrise_now, htmlSource_5)
@@ -630,14 +695,11 @@ class Forecast36HourParser:
                time_diff = int(sunrise_[ 0 ].split( " " )[ 3 ][:2])-localtime
             except :
                time_diff = 0
-            # print str(int(sunrise_[ 0 ].split( " " )[ 3 ][:2]))+" asdasd "+ str(localtime)
-            print "[Weather Plus] Timezone : " + str(localtime) + " " + str(time_diff)
+            printlog( "Timezone : " + str(localtime) + " " + str(time_diff) )
             
-            # fetch extra info
+            # fetch current extra info
             pressure_ = re.findall( pattern_pressure, htmlSource, re.DOTALL )
             visibility_ = re.findall( pattern_visibility, htmlSource, re.DOTALL )
-            # sun_ = re.findall( pattern_sun, htmlSource, re.DOTALL )
-            # sun = []
             pressure = "N/A"
             visibility = "N/A"
             sunrise = "N/A"
@@ -647,20 +709,21 @@ class Forecast36HourParser:
                     pressure = "".join(pressure_[0][0].split("\n"))
                     pressure = "".join(pressure.split("\t"))
                     pressure = pressure.replace("in", "")
-                    # pressure = pressure + { "pressure-up": u"\u2191", "pressure-down": u"\u2193", "pressure-steady": u"\u2192" }[ pressure_[0][1] ]
-                    try : 
-                       print "[Weather Plus] pressure : " + pressure_[0][1]
-                    except :
-                       print "[Weather Plus] there's no info about pressure-up or down"                     
+		    try:
+			pressure = _localize_unit(pressure, "pressure")
+		    except:
+			pass
+                    try:
+			pressure = pressure + { "pressure-up": u"\u2191", "pressure-down": u"\u2193", "pressure-steady": u"\u2192" }[ pressure_[0][1] ]
+		    except:
+			pass
             if ( visibility_ ) :
                    visibility = "".join(visibility_[0].split("\n"))
                    visibility = "".join(visibility.split("\t"))
                    visibility = visibility.replace("mi", "")
-                   # print visibility
             if ( sunrise_ ) :
                    sunrise = "".join(sunrise_[0].split("\n"))
                    sunrise = "".join(sunrise.split("\t"))
-                   # print sunrise
                    try : 
                       sunrise = _localize_unit( str(int(sunrise.split(" ")[3].split(":")[0])-time_diff) + ":" + sunrise.split(" ")[3].split(":")[1], "time" )
                    except :
@@ -672,91 +735,90 @@ class Forecast36HourParser:
                       sunset = _localize_unit( str(int(sunset.split(" ")[3].split(":")[0])-time_diff) + ":" + sunset.split(" ")[3].split(":")[1], "time" )
                    except :
                       sunset = "N/A"
-            print "[Weather Plus] pressure : "+pressure
-            if ( pressure == "N/A" ) :
-                   self.extras += [(pressure, _localize_unit(visibility, "distance"), sunrise, sunset, current_temp, current_feels_like, current_icon, current_brief, current_humidity, current_dewpoint, current_wind, current_UVIndex )]
+            self.extras += [(pressure, _localize_unit(visibility, "distance"), sunrise, sunset, current_temp, current_feels_like, current_icon, current_brief, current_humidity, current_dewpoint, current_wind, current_UVIndex, current_winddirection )]
+	    '''
             elif ( pressure == pressure.replace("mb", "") ) :
-                   self.extras += [(_localize_unit(pressure, "pressure") + { "pressure-up": u"\u2191", "pressure-down": u"\u2193", "pressure-steady": u"\u2192" }[ pressure_[0][1] ], _localize_unit(visibility, "distance"), sunrise, sunset, current_temp, current_feels_like, current_icon, current_brief, current_humidity, current_dewpoint, current_wind, current_UVIndex)]
+                   self.extras += [(_localize_unit(pressure, "pressure") + { "pressure-up": u"\u2191", "pressure-down": u"\u2193", "pressure-steady": u"\u2192" }[ pressure_[0][1] ], _localize_unit(visibility, "distance"), sunrise, sunset, current_temp, current_feels_like, current_icon, current_brief, current_humidity, current_dewpoint, current_wind, current_UVIndex, current_winddirection)]
             else :  
-                   self.extras += [(pressure + { "pressure-up": u"\u2191", "pressure-down": u"\u2193", "pressure-steady": u"\u2192" }[ pressure_[0][1] ], _localize_unit(visibility, "distance"), sunrise, sunset, current_temp, current_feels_like, current_icon, current_brief, current_humidity, current_dewpoint, current_wind, current_UVIndex)]
+                   self.extras += [(pressure + { "pressure-up": u"\u2191", "pressure-down": u"\u2193", "pressure-steady": u"\u2192" }[ pressure_[0][1] ], _localize_unit(visibility, "distance"), sunrise, sunset, current_temp, current_feels_like, current_icon, current_brief, current_humidity, current_dewpoint, current_wind, current_UVIndex, current_winddirection)]
+	    '''
 
-            # localize our extra info
             # convert outlook wind/temp values
             outlook = _normalize_outlook( outlook )
             # translate brief and outlook if user preference
             if ( self.translate is not None ):
                 # we only need outlook and brief. the rest the skins or xbmc language file can handle
                 # we separate each item with single pipe
-                # text = "|".join( outlook )
+                text = "|".join( brief )
                 # separator for different info
-                # text += "|||||"
+                text += "|||||"
                 # we separate each item with single pipe
-                text = "|".join( outlook )
+                text += "|".join( outlook )
                 # translate text
                 text = _translate_text( text, self.translate )
                 # split text into it's original list
-                # outlook = text.split( "|||||" )[ 0 ].split( "|" )
-                outlook = text.split( "|" )
+                brief = text.split( "|||||" )[ 0 ].split( "|" )
+                outlook = text.split( "|||||" )[ 1 ].split( "|" )
+	    printlog( "Checking parsed data..." )
             for count, day in enumerate( days ):
                 # make icon path
                 try :
                   iconpath = "/".join( [ "special://temp", "weather", "128x128", icon[ count ] + ".png" ] )
                 except :
-                  print "[Weather Plus] Icon is not available"
+                  printlog( "Icon is not available" )
                   iconpath = "/".join( [ "special://temp", "weather", "128x128", "0.png" ] ) 
+                printlog( iconpath )
                 # add result to our class variable
                 try :
-                  print "[Weather Plus] " + days[count]
+                  printlog( days[count] )
                 except :
-                  print "[Weather Plus] days["+str(count)+"] is not available"
+                  printlog( "days["+str(count)+"] is not available" )
                   days += [ ("N/A", ) ]              
-                print "[Weather Plus] " + iconpath
-		print "[Weather Plus] brief = ", brief
+		printlog( "brief = %s" % ",".join(brief) )
                 try :
-                  print "[Weather Plus] " + brief[ count ]
+                  printlog( brief[ count ] )
                 except :
-                  print "[Weather Plus] brief[" +str(count)+ "] is not available"
+                  printlog( "brief[" +str(count)+ "] is not available" )
                   brief += [ ("N/A", ) ]
                 try :
-                  print "[Weather Plus] " + temperature_info[ count ]
+                  printlog( temperature_info[ count ] )
                 except :
-                  print "[Weather Plus] temperature_info["+str(count)+"] is not available"
+                  printlog( "temperature_info["+str(count)+"] is not available" )
                   temperature_info += [ ("N/A", ) ]
                 try :
-                  print "[Weather Plus] " + _localize_unit( temperature[ count ] )
+                  printlog( _localize_unit( temperature[ count ] ) )
                 except :
-                  print "[Weather Plus] temperature["+str(count)+"] is not available"
+                  printlog( "temperature["+str(count)+"] is not available" )
                   temperature += [ ("N/A", ) ]
                 try :
-                  print "[Weather Plus] " + precip_title[ count ]
+                  printlog( precip_title[ count ] )
                 except :
-                  print "[Weather Plus] precip_title["+str(count)+"] is not available"
+                  printlog( "precip_title["+str(count)+"] is not available" )
                   precip_title += [ ("N/A", ) ]
                 try :
-                  print "[Weather Plus] " + precip_amount[ count ].replace( "%", "" )
+                  printlog( precip_amount[ count ].replace( "%", "" ) )
                 except :
-                  print "[Weather Plus] precip_amount["+str(count)+"] is not available"
+                  printlog( "precip_amount["+str(count)+"] is not available" )
                   precip_amount += [ ("N/A", ) ]
                 try :
-                  print "[Weather Plus] " + outlook[ count ]
+                  printlog( outlook[ count ] )
                 except :
-                  print "[Weather Plus] outlook["+str(count)+"] is not available"
+                  printlog( "outlook["+str(count)+"] is not available" )
                   outlook += [ ("N/A", ) ]
                 try :
-                  print "[Weather Plus] " + daylight[ count ][ 0 ]
+                  printlog( daylight[ count ][ 0 ] )
                 except :
-                  print "[Weather Plus] daylight["+str(count)+"][0] is not available"
+                  printlog( "daylight["+str(count)+"][0] is not available" )
                   daylight += [ ("N/A", ) ]
                 try :
-                  print "[Weather Plus] " + _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  )
+                  printlog( _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  ) )
                   self.forecast += [ ( days[count], iconpath, brief[ count ], temperature_info[ count ], _localize_unit( temperature[ count ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), outlook[ count ], daylight[ count ][ 0 ], _localize_unit( str(int(daylight[count][1].split(" ")[3].split(":")[0])-time_diff) + ":" + daylight[count][1].split(" ")[3].split(":")[1], "time"  ), ) ]
                 except :
-                  print "[Weather Plus] daylight["+str(count)+"][1] is not available"
+                  printlog( "daylight["+str(count)+"][1] is not available" )
                   self.forecast += [ ( days[count], iconpath, brief[ count ], temperature_info[ count ], _localize_unit( temperature[ count ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), outlook[ count ], daylight[ count ][ 0 ], "N/A", ) ]
             
         else:
-	    print "[Weather Plus] No data fetched! Weather.com pages may have been changed."
-	    self.error = 1
+	    self.error += 1
 
 class ACCU_Forecast36HourParser:
     def __init__( self, htmlSource, htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4, translate=None ):
@@ -896,58 +958,58 @@ class ACCU_Forecast36HourParser:
 			printlog( days[count+ampm] )
 			printlog( iconpath )
 			try :
-			  print "[Weather Plus] " + brief[ count+1 ]
+			  printlog( brief[ count+1 ] )
 			except :
-			  print "[Weather Plus] iconpath is not available"
+			  printlog( "iconpath is not available" )
 			  brief += [ ("N/A", ) ]
 			try :
-			  print "[Weather Plus] " + temperature_info[ count ]
+			  printlog( temperature_info[ count ] )
 			except :
-			  print "[Weather Plus] temperature_info["+str(count)+"] is not available"
+			  printlog( "temperature_info["+str(count)+"] is not available" )
 			  temperature_info += [ ("N/A", ) ]
 			try :
-			  print "[Weather Plus] " + _localize_unit( temperature[ count ] )
+			  printlog( _localize_unit( temperature[ count ] ) )
 			except :
-			  print "[Weather Plus] temperature["+str(count)+"] is not available"
+			  printlog( "temperature["+str(count)+"] is not available" )
 			  temperature += [ ("N/A", ) ]
 			try :
-			  print "[Weather Plus] " + precip_title[ count ]
+			  printlog( precip_title[ count ] )
 			except :
-			  print "[Weather Plus] precip_title["+str(count)+"] is not available"
+			  printlog( "precip_title["+str(count)+"] is not available" )
 			  precip_title += [ ("N/A", ) ]
 			try :
-			  print "[Weather Plus] " + precip_amount[ count ].replace( "%", "" )
+			  printlog( precip_amount[ count ].replace( "%", "" ) )
 			except :
-			  print "[Weather Plus] precip_amount["+str(count)+"] is not available"
+			  printlog( "precip_amount["+str(count)+"] is not available" )
 			  precip_amount += [ "N/A" ]
 			try :
-			  print "[Weather Plus] " + brief[ count+ampm ]
+			  printlog( brief[ count+ampm ] )
 			except :
-			  print "[Weather Plus] brief["+str(count+ampm)+"] is not available"
+			  printlog( "brief["+str(count+ampm)+"] is not available" )
 			  brief += [ ("N/A", "N/A", "N/A", "N/A", ) ]
 			try :
-			  print "[Weather Plus] " + daylight[ count+ampm ][ 0 ]
+			  printlog( daylight[ count+ampm ][ 0 ] )
 			except :
-			  print "[Weather Plus] daylight["+str(count+ampm)+"] is not available"
+			  printlog( "daylight["+str(count+ampm)+"] is not available" )
 			  daylight += [ ("N/A", ) ]
 			try :
-			  print "[Weather Plus] " + _localize_unit( daylight[ count+ampm ][ 1 ], "time"  )
+			  printlog( _localize_unit( daylight[ count+ampm ][ 1 ], "time"  ) )
 			except :
-			  print "[Weather Plus] daylight["+str(count+ampm)+"] is not available"
+			  printlog( "daylight["+str(count+ampm)+"] is not available" )
 			  daylight += [ ("00:00", ) ]
 
 			self.forecast += [ ( days[count+ampm], iconpath, "", temperature_info[ count+ampm ], _english_localize_unit( temperature[ count+ampm ] ), precip_title[ count ], precip_amount[ count ].replace( "%", "" ), brief[ count+ampm ], daylight[ count+ampm ][ 0 ], _localize_unit( daylight[ count+ampm ][ 1 ], "time"  ), ) ]
-		    printlog("ACCU_Forecast36HourParser : Done")
 		    self.error = 0
 		else:
-		    printlog("ACCU_Forecast36HourParser : Stopped")
 		    self.error = self.error + 1
 		    return
 	except:
 	    self.error = self.error + 1
 	    return
 
-class NOAA_Forecast36HourParser:        # 36 hour and 10 day (actually 7 day) forecast parser
+
+# 36 hour and 10 day (actually 7 day) forecast parser
+class NOAA_Forecast36HourParser:        
     def __init__( self, htmlSource, htmlSource_2, xmlSource, observSource, translate=None ):
         self.forecast = []
         self.extras = []
@@ -956,6 +1018,7 @@ class NOAA_Forecast36HourParser:        # 36 hour and 10 day (actually 7 day) fo
         self.video_location = []
         self.translate = translate
         self.sun = []
+	self.xmlSource = xmlSource.replace("\n","").replace("\t","").replace("<value xsi:nil=\"true\">", "<value>0")
 
         # only need to parse source if there is source
         if ( htmlSource ):
@@ -965,26 +1028,30 @@ class NOAA_Forecast36HourParser:        # 36 hour and 10 day (actually 7 day) fo
 	printlog("Fetching Forecast from Noaa.gov...")
         # regex patterns
         pattern_days = "<b>(.+?): </b>"
-	pattern_date = "<b>Forecast Valid:</b></a> (.+?)-"
-	pattern_temperature = "Temp</font></a><br /><font style=\"font-size:18px\">([0-9]+)\&deg;</font>"
+	# pattern_date = "<b>Forecast Valid:</b></a> ([^-]+)-"
+	pattern_date = "<div class=\"date\">[^,]+, ([^<]+)</div>"
+	# pattern_temperature = "Temp</font></a><br /><font style=\"font-size:18px\">([0-9]+)\&deg;</font>"
+	pattern_high_temp = "<temperature type=\"maximum\"[^>]+>(.+?)</temperature>"
+	pattern_low_temp = "<temperature type=\"minimum\"[^>]+>(.+?)</temperature>"
+	pattern_value = "<value>(.+?)</value>"
         pattern_forecast_brief = "<td class=\"weekly_weather\">(.+?)</td>"
-	pattern_current_info = "<span class=\"obs_wxtmp\"> (.+?)<br />([0-9]+)\&deg;</span>"
-	pattern_current_info_2 = "<span class=\"obs_wxtmp\">(.+?)<br />([0-9]+)\&deg;</span>"
-	pattern_current_info_3 = "<font size=\'3\' color=\'000066\'>([^<]+)<br>[^<]+<br>(.+?)\&deg\;F<br>"
 	pattern_current_windchill = "<td><b>Wind Chill</b>:</td>[^<]+<td align=\"right\">(.+?)\&deg\;F"
 	pattern_current_heatindex = "<td><b>Heat Index</b>:</td>[^<]+<td align=[^>]+>(.+?)\&deg\;F"
+
+	pattern_current_block = "<data type=\"current observations\">"
+	pattern_current_temp = "<temperature type=\"apparent\"[^>]+>(.+?)</temperature>"
+	pattern_current_dew = "<temperature type=\"dew point\"[^>]+>(.+?)</temperature>"
+	pattern_current_humidity = "<humidity[^>]+>(.+?)</humidity>"
+	pattern_current_visibility = "<visibility units=\"statute miles\">(.+?)</visibility>"
 	pattern_current_time = "Last Update:</b></a> (.+?)</span>"
+	# pattern_current_wind_block = "<direction type=\"wind\"[^>]+>(.+?)</direction>"
+	pattern_current_pressure = "<pressure type=\"barometer\"[^>]+>(.+?)</pressure>"
+	pattern_current_brief = "<weather-conditions weather-summary=\"([^\"]+)\"/>"
+
 	pattern_current_wind = "<td><b>Wind Speed</b>:</td>[^<]+<td align=[^>]+>(.+?)</td>"
 	pattern_current_wind_2 = "<td><b>Wind Speed</b>:</td><td align=[^>]+>(.+?)<br>"
-	pattern_current_humidity = "<td><b>Humidity</b>:</td>[^<]+<td align=[^>]+>(.+?) \%</td>"
-	pattern_current_dew = "<td><b>Dewpoint</b>:</td>[^<]+<td align=[^>]+>(.+?)</td>"
-	pattern_current_dew_2 = "<td><b>Dewpoint</b>:</td><td align=[^>]+>(.+?)</td>"
         pattern_precip_amount = "no-repeat;\">([0-9]+)\%</td><td class=\"weekly_wind\">"
         pattern_outlook = ": </b>(.+?)<br><br>"
-        pattern_pressure = "<td><b>Barometer</b>:</td>[^<]+<td align=[^<]+ nowrap>(.+?)</td>"	
-        pattern_pressure_2 = "<td><b>Barometer</b>:</td><td align=[^<]+ nowrap>(.+?)</td>"	                     
-        pattern_visibility = "<td><b>Visibility</b>:</td>[^<]+<td align=\"right\">(.+?)</td>"	
-	pattern_visibility_2 = "<td><b>Visibility</b>:</td><td align=[^<]+>(.+?)</td>"	
 	pattern_sunrise = "sunrise will occur around (.+?)am"
 	pattern_sunset = "sunset will occur around (.+?)pm"
 	pattern_wind = "<td class=\"weekly_wind\"><img class=\"wind\" src=\"image/(.+?).png\" width=\"50\" height=\"22\" alt=\"[^\"]+\" /><br />(.+?)</td>"
@@ -995,22 +1062,23 @@ class NOAA_Forecast36HourParser:        # 36 hour and 10 day (actually 7 day) fo
 
         # fetch day title
 	days_10day = re.findall( pattern_xml_days, xmlSource )
-        printlog("days_10day : " + ",".join(days_10day))
+        # printlog("days_10day : " + ",".join(days_10day))
 
  	# am or pm now?
 	cor = 0
 	if (days_10day[0] == "Late Afternoon" ): cor = 1
 	ampm = 0
 	if (days_10day[0] == "Tonight" or days_10day[0] == "Overnight"): ampm = 1
-        printlog("ampm : " + str(ampm))
+        # printlog("ampm : " + str(ampm))
 
 	# current info.
+	current = self.xmlSource.split( pattern_current_block )[1]
 	pattern_current_icon = "<icon_url_name>(.+?).jpg"
 	try:
 		current_icon = re.findall( "([^\d\s]+)", re.findall( pattern_current_icon, observSource )[0] )[0]
 	except:
 		current_icon = "na"
-	printlog( "Current Icon : %s" % current_icon )
+	# printlog( "Current Icon : %s" % current_icon )
 
 	# fetch icons
 	icon = []
@@ -1051,17 +1119,18 @@ class NOAA_Forecast36HourParser:        # 36 hour and 10 day (actually 7 day) fo
 	current_icon = "/".join( [ "special://temp", "weather", "128x128", "%s" % current_icon ] )
 	for count in range(0, 13-ampm):
 		icon += [ icondir.get ( re.findall( "([^\d\s]+)", icons[count].split("/")[-1] )[0], "na" ) ]
-	printlog("NOAA icons : " + ",".join(icon))
+	# printlog("NOAA icons : " + ",".join(icon))
 
         # enumerate thru and combine the day with it's forecast
         if ( len( icon ) ):
-	    printlog("Reforming data..")
+	    # printlog("Reforming data..")
 	    # fetch today's date
-	    today = re.findall( pattern_date, htmlSource )[0]
-	    today = today.split(" ")[2] + " " + today.split(" ")[3].replace(",", " ")
-	    printlog( "Today is %s" % today )
+	    today = re.findall( pattern_date, htmlSource_2 )[0]
+	    today = today.split(" ")[0] + " " + today.split(" ")[1]
+	    # printlog( "Today is %s" % today )
           
             # fetch brief description
+	    '''
 	    current_info = re.findall( pattern_current_info, htmlSource_2 )
 	    if ( len(current_info) ):
 		current_brief = current_info[0][0]
@@ -1073,8 +1142,8 @@ class NOAA_Forecast36HourParser:        # 36 hour and 10 day (actually 7 day) fo
 			current_info = re.findall ( pattern_current_info_3, htmlSource_2 )
 			current_brief = current_info[0][0]
             current_brief = current_brief.replace("'", "")
-
-	    # brief = re.findall( pattern_forecast_brief, htmlSource_2 )   
+	    '''
+	    current_brief = re.findall( pattern_current_brief, current )[0]
 	    brief = re.findall( pattern_xml_brief, xmlSource )   
 	    # fetch wind
 	    wind = re.findall( pattern_wind, htmlSource_2 )
@@ -1097,10 +1166,10 @@ class NOAA_Forecast36HourParser:        # 36 hour and 10 day (actually 7 day) fo
                             "NNW": "From the North Northwest",
 			    "N/A": "N/A"
                         }   
-            # print wind
 
             # fetch temperature
-            current_temp = current_info[0][1]
+            current_temp = re.findall( pattern_current_temp, current )[0]
+	    current_temp = re.findall( pattern_value, current_temp )[0]
 	    try:
 	        current_feel_like = re.findall( pattern_current_windchill, htmlSource )[0]
 	    except:
@@ -1109,23 +1178,36 @@ class NOAA_Forecast36HourParser:        # 36 hour and 10 day (actually 7 day) fo
 		    current_feel_like = re.findall( pattern_current_heatindex, htmlSource )[0]
 		except:
 		    current_feel_like = current_temp
-	    temp = re.findall( pattern_temperature, htmlSource_2 )
-	    xmltemp = re.findall( pattern_xml_high_temp, xmlSource )
+	    high_temp_block = re.findall( pattern_high_temp, self.xmlSource )[0]
+    	    low_temp_block = re.findall( pattern_low_temp, self.xmlSource )[0]
+	    high_temp = re.findall( pattern_value, high_temp_block )
+	    low_temp = re.findall( pattern_value, low_temp_block )
+	    # temp = re.findall( pattern_temperature, htmlSource_2 )
+	    # xmltemp = re.findall( pattern_xml_high_temp, xmlSource )
+	    '''
 	    if (ampm == 1):
 		temp += [ xmltemp[ 12 ], xmltemp[ 6 ] ]
 	    else:
 		temp += [ xmltemp[ 6+cor ] ]
+	    '''
 	    # last_temp = re.findall( pattern_xml_high_temp, xmlSource )[ [6, 12+cor][ampm] ]
 	    temperature_info = ["High", "Low", "High", "Low"]
-	    temperature = [ temp[0], temp[1], temp[2] ]
+	    temperature = [ ( high_temp[0], low_temp[0], high_temp[1]), ( low_temp[0], high_temp[0], low_temp[1] ) ]
+	    temp = []
+	    if (ampm == 1):
+		for i in range( len(high_temp) ):
+			temp += [ low_temp[i], high_temp[i] ]
+	    else:
+		for i in range( len(low_temp) ):
+			temp += [ high_temp[i], low_temp[i] ]
+		temp += [ high_temp[ len(high_temp) - 1 ] ]
 
 	    # fecth current infos
-	    current_humidity = re.findall( pattern_current_humidity, htmlSource )[0]
+	    current_humidity = re.findall( pattern_current_humidity, current )[0]
+	    current_humidity = re.findall( pattern_value, current_humidity )[0]
 	    current_winddirection = ""
-	    try:
-		current_dew = re.findall( pattern_current_dew, htmlSource )[0].split(" ")[0]
-	    except:
-		current_dew = re.findall( pattern_current_dew_2, htmlSource )[0].split(" ")[0].replace("&deg;F","")
+	    current_dew = re.findall( pattern_current_dew, current )[0]
+	    current_dew = re.findall( pattern_value, current_dew )[0]
             try:
 		current_wind = re.findall( pattern_current_wind, htmlSource )[0]
 	    except:
@@ -1145,24 +1227,10 @@ class NOAA_Forecast36HourParser:        # 36 hour and 10 day (actually 7 day) fo
             outlook = re.findall( pattern_outlook, htmlSource )
 
             # fetch extra info
-	    try:
-		pressure = _localize_unit( re.findall( pattern_pressure, htmlSource, re.DOTALL )[0].replace("&quot;","\"").replace("\"", "in."), "pressure" )
-	    except:
-		try:
-		     pressure = re.findall( pattern_pressure, htmlSource, re.DOTALL )[0].replace("&quot;","\"")
-		except:
-			try:
-				pressure = re.findall( pattern_pressure_2, htmlSource, re.DOTALL )[0].replace("&quot;","\"")
-			except:
-			        pressure = "N/A"
-	    try:
-		visibility = _localize_unit( re.findall( pattern_visibility, htmlSource, re.DOTALL )[0].replace("Miles","miles").replace("mi.","miles"), "distance" )
-	    except:
-		try:
-		     visibility = _localize_unit( re.findall( pattern_visibility_2, htmlSource, re.DOTALL )[0].replace("Miles","miles").replace("mi.","miles"), "distance" )
-		except:
-		     visibility = "N/A"
-            printlog("pressure, visibility : %s, %s" % ( pressure, visibility ))
+	    pressure = re.findall( pattern_current_pressure, current )[0]
+	    pressure = re.findall( pattern_value, pressure )[0]
+	    visibility = re.findall( pattern_current_visibility, current )[0]
+            # printlog("pressure, visibility : %s, %s" % ( pressure, visibility ))
             sunrise = re.findall( pattern_sunrise, htmlSource_2 ) 
 	    sunset = re.findall( pattern_sunset, htmlSource_2 )
 	    daylight = []
@@ -1188,41 +1256,15 @@ class NOAA_Forecast36HourParser:        # 36 hour and 10 day (actually 7 day) fo
                 except :
                   printlog("Icon is not available")
                   iconpath = "/".join( [ "special://temp", "weather", "128x128", "na.png" ] ) 
-		printlog( iconpath )
+		# printlog( iconpath )
                 # date calculation for 6 day
-		date_day = int(today.split(" ")[ 1 ]) + int( (count+1)/2 )
-		date_month = { "Jan":"1", 
-		               "Feb":"2", 
-			       "Mar":"3", 
-			       "Apr":"4", 
-			       "May":"5", 
-			       "Jun":"6", 
-			       "Jul":"7", 
-			       "Aug":"8", 
-			       "Sep":"9", 
-			       "Oct":"10", 
-			       "Nov":"11", 
-			       "Dec":"12" }[ today.split(" ")[ 0 ] ]
-		date_year = today.split(" ")[ 2 ]
-		if ( date_day > 28 and date_month == "2" ):
-			if ( int( date_year ) == int( date_year )/4 ):
-				if ( int( date_year ) == int( date_year )/100 ):
-					date_day = date_day - 28
-				else:
-					date_day = date_day - 29
-			else:
-				date_day = date_day - 28
-		if ( date_day > 30 ):
-			if ( date_month == "4" or date_month == "6" or date_month == "9" or date_month == "11" ):
-				date_day = date_day - 30
-				date_month = str( int(date_month) + 1 )
-			elif ( date_day > 31 ):
-				date_day = date_day - 30
-				date_month = str( int(date_month) + 1 )
-			if ( date_month == "13" ):
-				date_month = "1"
-				date_year = str( int(date_year) + 1 )
-		date = str(date_day) + " " + date_month
+		year = time.strftime( "%Y", time.localtime() )
+		date = time.strptime( today, "%B %d" )
+		yeardate = time.strftime( "%j", date )
+		yeardate = str( int(yeardate) + int( (count+1)/2 ) )
+		date = time.strptime( "%s %s" % ( yeardate, year ), "%j %Y" )
+		date = time.strftime( "%b %d", date )
+		print date
                 if ( count < 3 ): # just for logging
 		  printlog(days[count+ampm])       # days is for 36 hour forecast ( today, tonight, tomorrow, tomorrow night ) 
 		                                   # ampm = 0 : starting with "today", ampm = 1 : starting with "tonight"
@@ -1240,14 +1282,11 @@ class NOAA_Forecast36HourParser:        # 36 hour and 10 day (actually 7 day) fo
                   printlog("temperature_info["+str(count+ampm)+"] is not available")
                   temperature_info += [ ("High", ) ]
                 try :
-                  printlog(_localize_unit( temperature[ count ] ))
+                  printlog(_localize_unit( temperature[ ampm ][ count ] ))
+		  t = _localize_unit( temperature[ ampm ][ count ] )
                 except :
-                  printlog("temperature["+str(count)+"] is not available")
-                  try :
-			temperature += [ temp[ count ] ]
-			printlog("Added : "+ _localize_unit( temperature[ count ] ))
-		  except :
-			temperature += [ "N/A" ]
+                  printlog("temperature["+str(count+ampm)+"] is not available")
+		  t = temp[ count ]
                 try :
                   printlog(precip_title[ count ])
                 except :
@@ -1290,7 +1329,7 @@ class NOAA_Forecast36HourParser:        # 36 hour and 10 day (actually 7 day) fo
 		  wind += [ ("N/A", "0") ]
 		try: # localize wind speed
 		  wind_temp = wind[count][1].split(" ") # NOAA usually gives wind info in the form "XX G XX", XX = speed, G = Gust
-		  windspeed = " ".join( [ _localize_unit( wind_temp[0], "speed" ), wind_temp[1], _localize_unit( wind_temp[1], "speed" ) ] )
+		  windspeed = " ".join( [ _localize_unit( wind_temp[0], "speed" ), wind_temp[1], _localize_unit( wind_temp[2], "speed" ) ] )
 		except: # if no gust
 		  windspeed = _localize_unit( wind[count][1].split(" ")[0], "speed" )
 
@@ -1298,7 +1337,7 @@ class NOAA_Forecast36HourParser:        # 36 hour and 10 day (actually 7 day) fo
 		                     iconpath,							# [1] 36hour.%d.OutlookIcon or Daily.%d.OutlookIcon
 				     brief[ count ],						# [2] 36hour.%d.Outlook or Daily.%d.Outlook
 				     temperature_info[ count+ampm ], 
-				     _localize_unit( temperature[ count ] ), 
+				     t, 
 				     precip_title[ count ], 
 				     precip_amount[ count ].replace( "%", "" ), 
 				     outlook[ count ], 
@@ -1330,21 +1369,21 @@ class WUNDER_Forecast36HourParser:
             self._get_forecast( htmlSource )
 
     def _get_forecast( self, htmlSource ):
-	print "[Weather Plus] Fetching Forecast from Wunderground.com..."
+	printlog( "Fetching Forecast from Wunderground.com..." )
         # regex patterns
         pattern_days = "<div class=\"titleSubtle\">(.+?)</div>"
 	pattern_low_temp = "([0-9]+) \&deg;"
-	pattern_high_temp = "<span class=\"b\">([0-9]+)</span> \&deg;"
+	pattern_high_temp = "<span class=\"b\">([.0-9]+)</span>"
 	pattern_icon = "http://icons-ak.wxug.com/i/c/k/(.+?).gif"
         pattern_brief = "<div class=\"foreCondition\">([^<]+)<[^>]+>([^<]+)<"
 	pattern_current_brief = "alt=\"([^\"]+)\" class=\"condIcon\""
 	pattern_current_date = "<div id=\"infoTime\"><span>(.+?)</span>"
-	pattern_current_temp = "<div id=\"tempActual\"><span class=\"pwsrt\" pwsid=\"[^\"]+\" pwsunit=\"english\" pwsvariable=\"tempf\" english=\"\&deg;F\" metric=\"\&deg;C\" value=\"(.+?)\""
-	pattern_current_feelslike = "<span class=\"nobr\"><span class=\"b\">([^<]+)</span>\&nbsp;\&deg;"
+	pattern_current_temp = "<div id=\"tempActual\"><[^>]+>[^<]+<span class=\"nobr\"><span class=\"b\">([^<]+)</span>\&nbsp;\&deg;"
+	pattern_current_feelslike = "Feels Like[^<]+<span class=\"nobr\"><span class=\"b\">([^<]+)</span>\&nbsp;\&deg;"
 	pattern_current_wind = "metric=\"\" value=\"(.+?)\""
 	pattern_current_windspeed = "pwsvariable=\"windspeedmph\" english=\"\" metric=\"\">(.+?)</span>"
 	pattern_current_humidity = "pwsvariable=\"humidity\" english=\"\" metric=\"\" value=\"(.+?)\""
-	pattern_current_dew = "pwsvariable=\"dewptf\"  english=\"\&deg;F\" metric=\"\&deg;C\" value=\"(.+?)\""
+	pattern_current_dew = "pwsvariable=\"dewptf\" english=\"\&deg;F\" metric=\"\&deg;C\" value=\"(.+?)\""
 	pattern_current_uvindex = "<div class=\"dataCol4\"><span class=\"b\">([^<]+)</span> out of 16</div>"
 	pattern_current_time = "<div id=\"infoTime\"><span>(.+?)</span>"
         pattern_precip_amount = "no-repeat;\">([0-9]+)\%</td><td class=\"weekly_wind\">"
@@ -1357,7 +1396,11 @@ class WUNDER_Forecast36HourParser:
 	pattern_next_sunset = "<div id=\"sSetHr\" style=\"[^\"]+\"><span class=\"b\">(.+?)</span> PM</div>"
 	pattern_date = "<div class=\"fctDayDate\">[^,]+, ([0-9]+)</div>"
 	pattern_wind = "<td class=\"weekly_wind\"><img class=\"wind\" src=\"image/(.+?).png\" width=\"50\" height=\"22\" alt=\"[^\"]+\" /><br />(.+?)</td>"
-	
+	pattern_alert_block = "<div class=\"alertItems\"><span>Active Advisory:</span>(.+?)</div>"
+	# pattern_alert_exclude = "Active Notice:</span>(.+?)"
+	pattern_alert = "<a href=\"([^\"]+)\"[^>]+>([^<]+)</a>"
+	pattern_alert_2 = "<a href=\"([^\"]+)\">([^<]+)</a>"
+
         # fetch info.
 	raw_days = re.findall( pattern_days, htmlSource )
 	high_temp = re.findall( pattern_high_temp, htmlSource )
@@ -1382,27 +1425,33 @@ class WUNDER_Forecast36HourParser:
 	next_sunrise = re.findall( pattern_next_sunrise, htmlSource )
 	next_sunset = re.findall( pattern_next_sunset, htmlSource )
 	dates = re.findall( pattern_date, htmlSource )
+	alerts = re.findall( pattern_alert_block, htmlSource.replace("\n","").replace("\t","") )
+	if ( alerts ):
+		alerts = alerts[0].split("Active Notice:")[0]
+		self.alerts = re.findall ( pattern_alert, alerts )
+		if ( not self.alerts ): self.alerts = re.findall ( pattern_alert_2, alerts )
 
-	print "[Weather Plus] Wunderground.com, Fetched Raw Info :"
+	'''
 	print raw_days, high_temp, low_temp, raw_brief, raw_icons, raw_outlook, current_temp, current_date, dates, current_feelslike, current_wind, current_windspeed
 	print current_pressure, current_visibility, current_dew, current_humidity, current_uvindex, current_sunrise, current_sunset
+	'''
 
 	try:
 		days = [ raw_days[6], raw_days[7], raw_days[8] ]
-		icons = [ raw_icons[3], raw_icons[4], raw_icons[5] ]
+		icons = [ raw_icons[2], raw_icons[3], raw_icons[4] ]
 		brief = [ raw_brief[0][0], raw_brief[1][0], raw_brief[2][0] ]
 		outlook = [ raw_outlook[0].replace("&deg;", ""), raw_outlook[1].replace("&deg;", ""), raw_outlook[2].replace("&deg;", "") ]
 		precips = [ raw_brief[0][1], raw_brief[1][1], raw_brief[2][1] ]
-		print "[Weather Plus] Icons, Briefs, Outlooks, Precips OK!"
+		printlog( "Icons, Briefs, Outlooks, Precips OK!" )
 		current_ampm = current_date[0].split(",")[0].split(" ")[1]
 		current_date = current_date[0].split(",")[0].split(" ")[-1]
-		print "[Weather Plus] Current Date, Time OK!"
-		current_icon = raw_icons[2]
+		printlog( "Current Date, Time OK!" )
+		current_icon = raw_icons[1]
 		current_brief = current_brief[0]
-		print "[Weather Plus] Current Icon, Brief OK!"
-		current_temp = _localize_unit( str( round( float( current_temp[0]) ) ).split(".")[0], "temp" )
-		current_feelslike = _localize_unit( str( round( float( current_feelslike[0]) ) ).split(".")[0], "temp" )
-		print "[Weather Plus] Current Temperature, Feels like OK!"
+		printlog( "Current Icon, Brief OK!" )
+		current_temp = _localize_unit( current_temp[0], "tempf2c" )
+		current_feelslike = _localize_unit( current_feelslike[0], "tempf2c" )
+		printlog( "Current Temperature, Feels like OK!" )
 		try:
 			current_pressure = _localize_unit( current_pressure[0], "pressure" )
 		except:
@@ -1411,20 +1460,20 @@ class WUNDER_Forecast36HourParser:
 			current_visibility = _localize_unit ( current_visibility[0], "distance" )
 		except:
 			current_visibility = "N/A"
-		print "[Weather Plus] Pressure, Visibility OK!"
+		printlog( "Pressure, Visibility OK!" )
 		current_dew = _localize_unit( current_dew[0], "temp" )
 		current_humidity = current_humidity[0]
-		print "[Weather Plus] Dew point, Humidity OK!"
+		printlog( "Dew point, Humidity OK!" )
 		uvindex_dir = {
 			"0": "Low", "1": "Low", "2": "Low", "3": "Minimal", "4": "Minimal", "5": "Moderate", "6": "Moderate",
 			"7": "High", "8": "High", "9": "High", 
 			"10": "Very high", "11": "Very high", "12": "Very high", "13": "Very high", "14": "Very high", "15": "Very high", "16": "Very high"
 			}
 		try:
-			current_uvindex = "%s %s" % ( current_uvindex[0].split(".")[0], uvindex_dir.get( current_uvindex[0].split(".")[0], "" ) )
+			current_uvindex = "%s - %s" % ( current_uvindex[0].split(".")[0], uvindex_dir.get( current_uvindex[0].split(".")[0], "" ) )
 		except:
 			current_uvindex = "N/A"
-		print "[Weather Plus] UV Index OK!"
+		printlog( "UV Index OK!" )
 		# current sunrise, sunset
 		current_sunrise = _localize_unit( current_sunrise[0]+" AM", "time" )
 		current_sunset = _localize_unit( current_sunset[0]+" PM", "time" )
@@ -1442,9 +1491,13 @@ class WUNDER_Forecast36HourParser:
 			else:
 				daylight = [ "N/A", _localize_unit( next_sunrise[0]+" AM", "time" ),  _localize_unit( next_sunset[0]+" PM", "time" ) ]  
 				
-		print "[Weather Plus] sunrise, sunset OK!"
+		printlog( "sunrise, sunset OK!" )
+		# print current_wind[0]
+		# print current_windspeed[0]
 		current_wind = int(current_wind[0])
-		current_windspeed = current_windspeed[0]
+		current_windspeed = str(int(float(current_windspeed[0])))
+		printlog ("wind = %d" % current_wind)
+		printlog ("windspeed = %s" % current_windspeed)
 
 		if ( current_wind < 11.25 ):
 			current_wind = "N"
@@ -1478,29 +1531,31 @@ class WUNDER_Forecast36HourParser:
 			current_wind = "NW"
 		elif ( current_wind < 11.25 + 22.5 * 15 ):
 			current_wind = "NNW"
-
-		if ( current_windspeed == "0.0" ):
-			current_wind = "Calm"
 		else:
-			current_wind = "From %s %s" % (current_wind[0], _localize_unit(current_windspeed, "speed"))
+			current_wind = "N"
+		current_windDirection = current_wind
+			current_wind = "From %s at %s" % (current_wind, _localize_unit(current_windspeed, "speed"))
+		printlog( "Wind OK!" )
 
-		if ( days[0] == "Today" ):
-			temperature = [ high_temp[0], low_temp[4], high_temp[1] ]
+		if ( days[0] == " Today" ):
+			temperature = [ high_temp[4], low_temp[4], high_temp[5] ]
 			temperature_info = [ "High", "Low", "High" ]
 			daylight_title = [ "Sunrise", "Sunset", "Sunrise" ]
 			days = [ "Today", "Tonight", "Tomorrow" ]
 		elif ( current_ampm == "AM" ):
-			temperature = [ low_temp[4], high_temp[0], low_temp[6] ]
+			temperature = [ low_temp[4], high_temp[4], low_temp[6] ]
 			temperature_info = [ "Low", "High", "Low" ]
 			daylight_title = [ "Sunset", "Sunrise", "Sunset" ]
 			days = [ "Tonight", "Tomorrow", "Tomorrow Night" ]
    			outlook = [ "N/A", raw_outlook[0].replace("&deg;", ""), raw_outlook[1].replace("&deg;", "") ]
 		else:
-			temperature = [ low_temp[4], high_temp[0], low_temp[6] ]
+			temperature = [ low_temp[4], high_temp[4], low_temp[6] ]
 			temperature_info = [ "Low", "High", "Low" ]
 			daylight_title = [ "Sunset", "Sunrise", "Sunset" ]
 			days = [ "Tonight", "Tomorrow", "Tomorrow Night" ]
+			outlook = [ raw_outlook[1].replace("&deg;", ""), raw_outlook[2].replace("&deg;", ""), raw_outlook[3].replace("&deg;", "") ]
 
+		printlog( "Day OK!" )
 
 		icondir = { 
 			"chanceflurries": "13",
@@ -1550,18 +1605,18 @@ class WUNDER_Forecast36HourParser:
 		self.forecast = [ "ERROR", ]
 		return
 	
-	print "[Weather Plus] Wunderground.com, Modified Info :"
-	print days, temperature, brief, icons, outlook, current_date, current_icon, current_brief, current_temp, current_feelslike, current_wind, current_windspeed
-	print current_pressure, current_visibility, current_dew, current_humidity, current_uvindex, current_sunrise, current_sunset
+	# print "[Weather Plus] Wunderground.com, Modified Info :"
+	# print days, temperature, brief, icons, outlook, current_date, current_icon, current_brief, current_temp, current_feelslike, current_wind, current_windDirection
+	# print current_pressure, current_visibility, current_dew, current_humidity, current_uvindex, current_sunrise, current_sunset
 
-   	self.extras += [( current_pressure, current_visibility, current_sunrise, current_sunset, current_temp, current_feelslike, current_brief, current_wind, current_humidity, current_dew, "/".join( [ "special://temp", "weather", "128x128", "%s.png" % current_icon ] ), current_uvindex )]
+   	self.extras += [( current_pressure, current_visibility, current_sunrise, current_sunset, current_temp, current_feelslike, current_brief, current_wind, current_humidity, current_dew, "/".join( [ "special://temp", "weather", "128x128", "%s.png" % current_icon ] ), current_uvindex, current_windDirection )]
 
 	normalized_outlook = _normalize_outlook ( outlook )
 
 	for count in range(0,3) :
 		iconpath = "/".join( [ "special://temp", "weather", "128x128", "%s.png" % icondir.get( icons[ count ], "na" ) ] )
 		if ( precips[ count ] == "\n\t\t" ):
-			precip = "N/A"
+			precip = "0"
 		else:
 			precip = precips[ count ].split("%")[0]
 		try:
@@ -1588,22 +1643,21 @@ class WUNDER_Forecast10DayParser:
 	pattern_precip = "<div class=\"popValue\">(.+?)%</div>"
 
 	# fetch info.
-	print "[Weather Plus] Fetching Extended Forecast from Wunderground.com..."
 	local_time = re.findall( pattern_time, htmlSource )
 	dates = re.findall( pattern_date, htmlSource )
 	icon_cond = re.findall( pattern_icon_cond, htmlSource )
 	hi_low = re.findall( pattern_hi_low, htmlSource )
 	precip = re.findall( pattern_precip, htmlSource )
-	print dates, icon_cond, hi_low, precip
+	# print dates, icon_cond, hi_low, precip
 	
 	try:
 		first_heading = re.findall( pattern_first_heading, htmlSource )[6]
 		current_ampm = local_time[0].split(",")[0].split(" ")[1]
-		print first_heading
+		# print first_heading
 		today = local_time[0].split(",")[0].split(" ")[-1]
-		print today
+		# print today
 		month = local_time[0].split(" ")[4]
-		print month
+		# print month
 		month_dir = {
 			"January": "1",
 			"February": "2",
@@ -1666,7 +1720,7 @@ class WUNDER_Forecast10DayParser:
 
 		for count in range( 0, 7 ):
 			iconpath = "/".join( [ "special://temp", "weather", "128x128", "%s.png" % icondir.get( icon_cond[ count ][0], "na" ) ] )
-			print iconpath, dates[count], icon_cond[count], hi_low[count], precip[count]
+			# print iconpath, dates[count], icon_cond[count], hi_low[count], precip[count]
 			if( count == 0 and today == dates[0][1] ):
 				if( first_heading == "Tonight" ):
 					if( current_ampm == "PM" ):				
@@ -1679,7 +1733,7 @@ class WUNDER_Forecast10DayParser:
 				self.forecast += [ ( ["Today", dates[count][0]][ count != 0 ], "%s %s" % ( month_list[int(month)-1], dates[count][1] ), iconpath, icon_cond[count][1], _localize_unit(hi_low[count][0], "temp"), _localize_unit(hi_low[count][1], "temp"), precip[count], "N/A", "N/A", "N/A" ) ]
 			except:
 				self.forecast += [ ( ["Today", dates[count][0]][ count != 0 ], "%s %s" % ( month_list[int(month)-1], dates[count][1] ), iconpath, icon_cond[count][1], _localize_unit(hi_low[count][0], "temp"), "N/A", precip[count], "N/A", "N/A", "N/A" ) ]
-			print self.forecast
+			# print self.forecast
 		
 		print "[Weather Plus] Extended Forecast Done.."
 		return
@@ -1707,7 +1761,7 @@ class WUNDER_ForecastHourlyParser:
 	pattern_time = "<div id=\"infoTime\"><span>(.+?)</span>"
 
 	# fetch info.
-	print "[Weather Plus] Fetching Hourly Forecast from Wunderground.com..."
+	printlog( "Fetching Hourly Forecast from Wunderground.com..." )
 	raw_hour = re.findall( pattern_hour, htmlSource )
 	temp = re.findall( pattern_temp, htmlSource )
 	icon = re.findall( pattern_icon, htmlSource )
@@ -1780,51 +1834,31 @@ class WUNDER_ForecastHourlyParser:
 
 	try:
 		# making hour table
-		print "[Weather Plus] Making Forecast Table.."
+		printlog( "Making Forecast Table.." )
 		current_hour = int( local_time[0].split(":")[0] )
-		if ( local_time[0].split(" ")[1] == "PM" ): current_hour + 12
-		hour_ampm = ""
-		forecast_table = []
-		for count in range(0, len(raw_hour)-1):
-			iconpath_1 = "/".join( [ "special://temp", "weather", "128x128", "%s.png" % icondir.get( icon[ count ], "na" ) ] )
-			iconpath_2 = "/".join( [ "special://temp", "weather", "128x128", "%s.png" % icondir.get( icon[ count+1 ], "na" ) ] )
-			try:
-				windspeed_1 = _localize_unit( wind[count].split(" mph ")[0], "speed" )
-			except:
-				windspeed_1 = wind[count].split(" mph ")[0]
-			try:
-				windspeed_2 = _localize_unit( wind[count+1].split(" mph ")[0], "speed" ) 
-			except:
-				windspeed_2 = wind[count+1].split(" mph ")[0]
-			winddirection_1 = wind[count].split(" mph ")[1]
-			winddirection_2 = wind[count+1].split(" mph ")[1]
+		if ( local_time[0].split(" ")[1] == "PM" and current_hour != 12 ): current_hour += 12
+		elif ( local_time[0].split(" ")[1] == "AM" and current_hour == 12 ): current_hour = 0
+		localdate = " ".join( local_time[0].split(" ")[4:] )
+		year = localdate.split(" ")[-1]
+		date = time.strptime( localdate, "%B %d, %Y" )
+		yeardate = time.strftime( "%j", date )
+		for count in range(0, len(raw_hour)):
+			yeardate_new = str( int(yeardate) + ( count > 7 ) + ( current_hour == 23 ) )
+			date = time.strptime( "%s %s" % ( yeardate_new, year ), "%j %Y" )
+			date = time.strftime( "%b %d", date )
+			iconpath = "/".join( [ "special://temp", "weather", "128x128", "%s.png" % icondir.get( icon[ count + 8 * ( count > 7 ) - 1 ], "na" ) ] )
+			feelslike = _getFeelsLike( int(temp[count]), int(_localize_unit( wind[count].split(" mph ")[0], "speedmph2kmh" ).split(" ")[0]) )
+			windspeed = _localize_unit( wind[count].split(" mph ")[0], "speed" )
+			winddirection = wind[count].split(" mph ")[1]
 			hour = raw_hour[count].replace("&nbsp;"," ")
-			hour_digit = int( hour.split(" ")[0] )
-			if ( hour_ampm == "" ): hour_ampm = hour.split(" ")[1]
-			newhour = []
-			for x in range(0, 2):
-				hour_digit = hour_digit + 1
-				if( hour_digit == 12 ):
-					hour_ampm = [ "AM", "PM" ][ hour_ampm == "AM" ]
-				elif( hour_digit > 12 ):
-					hour_digit = hour_digit - 12
-				newhour += [ "%d %s" % ( hour_digit, hour_ampm ) ]
-		
-			forecast_table += [ 
-				( hour, "", iconpath_1, temp[count], cond[count].replace("\n","").replace("\t",""), "N/A", percent[ [count+8, count+24][count>7] ], percent[ [count, count+16][count>7] ], windir.get( winddirection_1, winddirection_1 ), windspeed_1, winddirection_1 ),
-				( newhour[0], "", iconpath_1, str((int(temp[count])*2 + int(temp[count+1]))/3), cond[count].replace("\n","").replace("\t",""), "N/A", percent[ [count+8, count+24][count>7] ], percent[ [count, count+16][count>7] ], windir.get( winddirection_1, winddirection_1 ), windspeed_1, winddirection_1 ),
-				( newhour[1], "", iconpath_2, str((int(temp[count]) + int(temp[count+1])*2)/3), cond[count+1].replace("\n","").replace("\t",""), "N/A", percent[ [count+8, count+25][count+1>7] ], percent[ [count, count+17][count>7] ], windir.get( winddirection_2, winddirection_2 ), windspeed_2, winddirection_2 )
-			]
-		for count in range(0, 12):
-			self.forecast += [ forecast_table[count + current_hour - 1], ]
-			
-		print "[Weather Plus] Forecast Table : ", self.forecast
+			hour24 = int( hour.split(" ")[0] ) + 12 * ( hour.split(" ")[1] == "PM" ) + 24 * ( count > 7 ) - 12 * ( int( hour.split(" ")[0] ) == 12 )
+			if ( current_hour <= hour24 ):
+				self.forecast += [ ( _localize_unit("%s:00 %s" % ( hour.split(" ")[0], hour.split(" ")[1] ), "time"), date, iconpath, _localize_unit(temp[count]), cond[count].replace("\n","").replace("\t",""), _localize_unit(feelslike), percent[ [count+8, count+24][count>7] ], percent[ [count, count+16][count>7] ], windir.get( winddirection, winddirection ), windspeed, winddirection ) ]
 				
 	except:
-		return
+		return [ "ERROR" ]
 
 
-	
 
 class ForecastHourlyParser:
     def __init__( self, htmlSource, translate ):
@@ -1948,15 +1982,15 @@ class ForecastHourlyParser:
                 self.forecast += [ ( _localize_unit( item[ 0 ], "time" ), dates[ date_counter ].split( ", " )[ -1 ], iconpath, _localize_unit( item[ 3 ] ), brief[ count ], _localize_unit( item[ 5 ] ), item[ 6 ].replace( "%", "" ), item[ 7 ].replace( "%", "" ), wind[ count ], _localize_unit( item[ 10 ], "speed" ), item[ 8 ].split( " " )[ -1 ], sunrise, sunset, ) ]
 
 class ACCU_ForecastHourlyParser:
-    def __init__( self, htmlSource, translate ):
+    def __init__( self, htmlSource, enSource, translate ):
         self.forecast = []
         self.translate = translate
 	self.error = 0
         # only need to parse source if there is source
         if ( htmlSource ):
-            self._get_forecast( htmlSource )
+            self._get_forecast( htmlSource, enSource )
 
-    def _get_forecast( self, htmlSource ):
+    def _get_forecast( self, htmlSource, enSource ):
         # regex patterns
 	pattern_date = [ "([0-9]+)/([0-9]+)/20", "([0-9]+)-([0-9]+)-20" ]
         pattern_info = "<div class=\".+?textBold\">([^<]+)</div>"
@@ -1964,7 +1998,7 @@ class ACCU_ForecastHourlyParser:
 	pattern_icon = "wxicons/31x24/(.+?).gif"
 	pattern_wind = "winds/24x24/(.+?).gif"
         # fetch info
-	date = re.findall( pattern_date[0], htmlSource )
+	date = re.findall( pattern_date[0], enSource )
         raw_info = re.findall( pattern_info, htmlSource )
 	raw_brief = re.findall( pattern_brief, htmlSource )
 	icon = re.findall( pattern_icon, htmlSource )
@@ -1982,23 +2016,28 @@ class ACCU_ForecastHourlyParser:
 	    brief += [ item.replace("\n","").replace("\r","").replace("\t","").replace("&deg", "°") ]
 	icondir = {"1":"32", "2":"30", "3":"28", "4":"30", "5":"34", "6":"28", "7":"26", "8":"26", "11":"19", "12":"11", "13":"39", "14":"39", "15":"3", "16":"37", "17":"37", "18":"12", "19":"14", "20":"14", "21":"14", "22":"16", "23":"16", "24":"25", "25":"25", "26":"25", "29":"25", "30":"36", "31":"32", "32":"23", "33":"31", "34":"29", "35":"27", "36":"27", "38":"27", "37":"33", "39":"45", "40":"45", "41":"47", "42":"47", "43":"46", "44":"46" }       
 	# we convert wind direction to full text
+	windir_en = "From the North|From the North Northeast|From the Northeast|From the East Northeast|From the East|From the East Southeast|From the Southeast|From the South Southeast|From the South|From the South Southwest|From the Southwest|From the West Southwest|From the West|From the West Northwest|From the Northwest|From the North Northwest"
+	if (self.translate == "en-us"):
+	    windir_tr = windir_en.split("|")
+	else:
+	    windir_tr = _translate_text( windir_en, "", self.translate ).split("|")
         windir = {    
-                            "N": "From the North",
-                            "NNE": "From the North Northeast",
-                            "NE": "From the Northeast",
-                            "ENE": "From the East Northeast",
-                            "E": "From the East",
-                            "ESE": "From the East Southeast",
-                            "SE": "From the Southeast",
-                            "SSE": "From the South Southeast",
-                            "S": "From the South",
-                            "SSW": "From the South Southwest",
-                            "SW": "From the Southwest",
-                            "WSW": "From the West Southwest",
-                            "W": "From the West",
-                            "WNW": "From the West Northwest",
-                            "NW": "From the Northwest",
-                            "NNW": "From the North Northwest"
+                            "N": windir_tr[0],
+                            "NNE": windir_tr[1],
+                            "NE": windir_tr[2],
+                            "ENE": windir_tr[3],
+                            "E": windir_tr[4],
+                            "ESE": windir_tr[5],
+                            "SE": windir_tr[6],
+                            "SSE": windir_tr[7],
+                            "S": windir_tr[8],
+                            "SSW": windir_tr[9],
+                            "SW": windir_tr[10],
+                            "WSW": windir_tr[11],
+                            "W": windir_tr[12],
+                            "WNW": windir_tr[13],
+                            "NW": windir_tr[14],
+                            "NNW": windir_tr[15]
 		}
 	for count in range(0, 7):
 	    info += [ ( info_[count], icondir.get( icon[count] ), brief[count], info_[count+7], info_[count+14], info_[count+21], info_[count+28], windir.get( wind[count] ), info_[count+35], info_[count+42] ) ]
@@ -2052,10 +2091,16 @@ class NOAA_ForecastHourlyParser:
 	pattern_date = "<td width=\"3%\" class=\"date\"><font size=\"1\"(.+?)</font></td>"
 	pattern_hour = "<td class=\"date\"><font size=\"1\">(.+?)</font></td>"
 	pattern_temp = "<td align=\"center\" width=\"3%\"><font color=\"#FF0000\" size=\"1\"><b>(.+?)</b></font>"
-	pattern_humid = "<td align=\"center\" width=\"3%\"><font color=\"#009900\" size=\"1\"><b>(.+?)</b></font></td>"
+	pattern_humid = "<td align=\"center\" width=\"3%\"><font color=\"#006600\" size=\"1\"><b>(.+?)</b></font></td>"
 	pattern_precip = "<font color=\"#996633\" size=\"1\"><b>(.+?)</b></font>"
 	pattern_wind = "<font color=\"#990099\" size=\"1\"><b>(.+?)</b></font>"
 	pattern_winddir = "<font color=\"#666666\" size=\"1\"><b>(.+?)</b></font>"
+	pattern_cover = "<font color=\"#0000CC\" size=\"1\"><b>([^<]+)</b></font>"
+	pattern_thunder = "<font color=\"#FF0000\" size=\"1\"><b>(.+?)</b></font>"
+	pattern_rain = "<font color=\"#009900\" size=\"1\"><b>(.+?)</b></font>"
+	pattern_snow = "<font color=\"#0099CC\" size=\"1\"><b>(.+?)</b></font>"
+	pattern_freezing_rain = "<font color=\"#CC99CC\" size=\"1\"><b>(.+?)</b></font>"
+	pattern_sleet = "<font color=\"#F06600\" size=\"1\"><b>(.+?)</b></font>"
 
 	# fetch info
 	date_raw = re.findall( pattern_date, htmlSource )
@@ -2071,6 +2116,59 @@ class NOAA_ForecastHourlyParser:
 	precip = re.findall( pattern_precip, htmlSource )
 	wind = re.findall( pattern_wind, htmlSource )
 	wind_direction = re.findall( pattern_winddir, htmlSource )
+	cover = re.findall( pattern_cover, htmlSource )
+
+	htmlSource_3 = htmlSource.split("Thunder</font>")[1]
+
+	thunder = re.findall( pattern_thunder, htmlSource_3 )
+	rain = re.findall( pattern_rain, htmlSource_3 )
+	snow = re.findall( pattern_snow, htmlSource_3 )
+	freezing_rain = re.findall( pattern_freezing_rain, htmlSource_3 )
+	sleet = re.findall( pattern_sleet, htmlSource_3 )
+
+	icondir = { 
+		"chanceflurries": "13",
+		"chancerain": "11",
+		"chancesleet": "5",
+		"chancesnow": "13",
+		"chancetstorms": "38",	
+		"clear": "32",
+		"cloudy": "26",
+		"flurries": "13",
+		"fog": "22",
+		"hazy": "19",
+		"mostlycloudy": "28",
+		"mostlysunny": "30",	
+		"partlycloudy": "30",
+		"partlysunny": "30",	
+		"sleet": "5",	
+		"rain": "10",
+		"snow": "16",
+		"sunny": "32",
+		"tstorms": "35",
+		"freeze": "25",
+		"windy": "23",
+		"nt_chanceflurries": "13",
+		"nt_chancerain": "11",
+		"nt_chancesleet": "5",
+		"nt_chancesnow": "13",
+		"nt_chancetstorms": "38",	
+		"nt_clear": "31",
+		"nt_cloudy": "26",
+		"nt_flurries": "13",
+		"nt_fog": "22",
+		"nt_hazy": "19",
+		"nt_mostlycloudy": "27",
+		"nt_mostlysunny": "29",	
+		"nt_partlycloudy": "29",
+		"nt_partlysunny": "29",	
+		"nt_sleet": "5",	
+		"nt_rain": "10",
+		"nt_snow": "16",
+		"nt_sunny": "32",
+		"nt_tstorms": "35",
+		"unknown": "na"	
+	}
         windir = {    
                             "N": "From the North",
                             "NNE": "From the North Northeast",
@@ -2089,15 +2187,108 @@ class NOAA_ForecastHourlyParser:
                             "NW": "From the Northwest",
                             "NNW": "From the North Northwest"
                  }   
-	
+	daylight = [ ( WEATHER_WINDOW.getProperty("36Hour.%s.DaylightTitle" % i), _localize_unit( WEATHER_WINDOW.getProperty("36Hour.%s.DaylightTime" % i), "time24" ) ) for i in range(1, 3) ]
+	try:
+		daylight_time = [ int(daylight[0][1].split(":")[0]), int(daylight[0][1].split(":")[0]) ]
+	except:   # sunrise = "N/A" and first heading = "Late Afternoon"
+		daylight_time = [ int(daylight[1][1].split(":")[0]), int(daylight[2][1].split(":")[0]) ]
+		
+	overnight = WEATHER_WINDOW.getProperty("Daily.1.ShortDay") == "Overn."
+	hour_temp = int( hours[ 0 ].replace("<b>","").replace("</b>","") ) + 24 * overnight
+
 	for count in range( 0, 24 ):
 		hour = int( hours[ count ].replace("<b>","").replace("</b>","") )
-		if( hour > 12 ):
+		icon = ""
+		outlook = "N/A"
+		if( hour >= 12 ):
 			hour -= 12
+			if ( hour == 0 ): hour = 12
 			hour = str(hour) + ":00 PM"
 		else:
 			hour = str(hour) + ":00 AM"
-		self.forecast += [ ( _localize_unit( hour, "time" ), dates[ count ], "special://temp/weather/128x128/na.png", temperature[ count ], "N/A", "N/A", precip[ count ], humidity[ count ], windir.get( wind_direction[ count ] ), _localize_unit( wind[ count ]+" mph", "speed" ), "" ) ]		
+		feelslike = _getFeelsLike( int(_localize_unit( temperature[count], "tempf2c" )), int(_localize_unit( wind[count], "speedmph2kmh" ).split(" ")[0]) )
+		if ( hour_temp <= daylight_time[0] ):
+			if ( daylight[0][0] == "Sunrise" ):
+				icon = "nt_"	
+		elif ( hour_temp <= daylight_time[1] + 24 * (daylight[1][0] == "Sunrise") ):
+			if ( daylight[1][0] == "Sunrise" ):
+				icon = "nt_"
+		else:
+			if ( daylight[1][0] == "Sunset" ):
+				icon = "nt_"
+		if ( thunder[count] != "--" ):		
+			if ( thunder[count] == "SChc" ):
+				outlook = "Slight Chace of T-Storms"
+				icon += "chance"
+			elif ( thunder[count] == "Chc" ):
+				outlook = "Chance of T-Storms"
+				icon += "chance"
+			else:
+				outlook = "T-Storms Likely"
+			icon += "tstorms"
+		elif ( rain[count] != "--" ):
+			if ( rain[count] == "SChc" ):
+				outlook = "Slight Chace of Rain"
+				icon += "chance"
+			elif ( rain[count] == "Chc" ):
+				outlook = "Chance of Rain"
+				icon += "chance"
+			else:
+				outlook = "Rain Likely"
+			icon += "rain"
+		elif ( snow[count] != "--" ):
+			if ( rain[count] == "SChc" ):
+				outlook = "Slight Chace of Snow"
+				icon += "chance"
+			elif ( rain[count] == "Chc" ):
+				outlook = "Chance of Snow"
+				icon += "chance"
+			else:
+				outlook = "Snow Likely"
+			icon += "snow"
+		elif ( freezing_rain[count] != "--" ):
+			if ( rain[count] == "SChc" ):
+				outlook = "Slight Chace of Freezing Rain"
+				icon += "chance"
+			elif ( rain[count] == "Chc" ):
+				outlook = "Chance of Freezing Rain"
+				icon += "chance"
+			else:
+				outlook = "Freezing Rain Likely"
+			icon += "freeze"
+		elif ( sleet[count] != "--" ):
+			if ( rain[count] == "SChc" ):
+				outlook = "Slight Chace of Sleet"
+				icon += "chance"
+			elif ( rain[count] == "Chc" ):
+				outlook = "Chance of Sleet"
+				icon += "chance"
+			else:
+				outlook = "Sleet Likely"			
+			icon += "sleet"		
+		elif ( int(wind[count]) > 20 ):
+			icon = "windy"
+			outlook = "Windy"
+		elif ( int(cover[count]) == 0 ): 
+			icon += "clear"
+			outlook = "Clear"
+		elif ( int(cover[count]) < 10 ):
+			icon += "clear"
+			outlook = "Fair"
+		elif ( int(cover[count]) < 40 ):
+			icon += "mostlysunny"
+			outlook = "Mostly Sunny"
+		elif ( int(cover[count]) < 70 ):
+			icon += "partlycloudy"
+			outlook = "Partly Cloudy"
+		elif ( int(cover[count]) < 90 ):
+			icon += "mostlycloudy"
+			outlook = "Mostly Cloudy"
+		else:
+			icon += "cloudy"
+			outlook = "Cloudy"
+		hour_temp += 1
+		self.forecast += [ ( _localize_unit( hour, "time" ), dates[ count ], "special://temp/weather/128x128/%s.png" % icondir.get(icon, "na"), _localize_unit(temperature[ count ]), outlook, _english_localize_unit( feelslike ), precip[ count ], humidity[ count ], windir.get( wind_direction[ count ] ), _localize_unit( wind[ count ]+" mph", "speed" ), "" ) ]		
 
 class ForecastWeekendParser:
     def __init__( self, htmlSource, translate ):
@@ -2262,21 +2453,22 @@ class ForecastWeekendParser:
 
 
 class ACCU_Forecast10DayParser:
-    def __init__( self, htmlSource_1, htmlSource_2, translate ):
+    def __init__( self, htmlSource_1, htmlSource_2, details, translate ):
         self.forecast = []
         self.translate = translate
 	self.error = 0
         # only need to parse source if there is source
         if ( htmlSource_1 and htmlSource_2 ):
-            self._get_forecast( htmlSource_1, htmlSource_2 )
+            self._get_forecast( htmlSource_1, htmlSource_2, details )
 
-    def _get_forecast( self, htmlSource_1, htmlSource_2 ):
+    def _get_forecast( self, htmlSource_1, htmlSource_2, details ):
         # regex patterns
         pattern_day = "Day_ctl0[0-9]+_lblDate\">(.+?)</span>"
 	pattern_outlook = "Day_ctl0[0-9]+_lblDesc\">(.+?)</span>"
         pattern_hightemp = "Day_ctl0[0-9]+_lblHigh\">(.+?)\&deg;"
 	pattern_lowtemp = "Night_ctl0[0-9]+_lblHigh\">(.+?)\&deg;"
         pattern_icon = "/wxicons/87x79_blue/([0-9]+)_int.jpg"
+	pattern_wind = "ctl00_cphContent_lblWindsValue\">([^<]+)<"
 
 	icondir = {"1":"32", "2":"30", "3":"28", "4":"30", "5":"34", "6":"28", "7":"26", "8":"26", "11":"19", "12":"11", "13":"39", "14":"39", "15":"3", "16":"37", "17":"37", "18":"12", "19":"14", "20":"14", "21":"14", "22":"16", "23":"16", "24":"25", "25":"25", "26":"25", "29":"5", "30":"36", "31":"32", "32":"23", "33":"31", "34":"29", "35":"27", "36":"27", "38":"27", "37":"33", "39":"45", "40":"45", "41":"47", "42":"47", "43":"46", "44":"46" }
 
@@ -2288,15 +2480,43 @@ class ACCU_Forecast10DayParser:
 	hightemp = re.findall( pattern_hightemp, htmlSource )
 	lowtemp = re.findall( pattern_lowtemp, htmlSource )
 	icon = re.findall( pattern_icon, htmlSource )
-	# print htmlSource
+	wind = re.findall( pattern_wind, details )
+	windir_en = "From the North|From the North Northeast|From the Northeast|From the East Northeast|From the East|From the East Southeast|From the Southeast|From the South Southeast|From the South|From the South Southwest|From the Southwest|From the West Southwest|From the West|From the West Northwest|From the Northwest|From the North Northwest"
+	if (self.translate == "en-us"):
+	    windir_tr = windir_en.split("|")
+	else:
+	    windir_tr = _translate_text( windir_en, "", self.translate ).split("|")
+        windir = {    
+                            "N": windir_tr[0],
+                            "NNE": windir_tr[1],
+                            "NE": windir_tr[2],
+                            "ENE": windir_tr[3],
+                            "E": windir_tr[4],
+                            "ESE": windir_tr[5],
+                            "SE": windir_tr[6],
+                            "SSE": windir_tr[7],
+                            "S": windir_tr[8],
+                            "SSW": windir_tr[9],
+                            "SW": windir_tr[10],
+                            "WSW": windir_tr[11],
+                            "W": windir_tr[12],
+                            "WNW": windir_tr[13],
+                            "NW": windir_tr[14],
+                            "NNW": windir_tr[15]
+		}
+
 	# enumerate thru and create heading and forecast
 	try:	
 	    for count, day in enumerate(days):
+		if (count>9): break	
 	    	if (count<7):
 		    iconpath = "/".join( [ "special://temp", "weather", "128x128", icondir.get( icon[count] ) + ".png" ] )
 		else:
 		    iconpath = "/".join( [ "special://temp", "weather", "128x128", icondir.get( icon[count+7] ) + ".png" ] )
-	        self.forecast += [ ( day.split(" ")[0], day.split(" ")[1], iconpath, outlook[count].title(), _english_localize_unit( hightemp[count] ), _english_localize_unit( lowtemp[count] ), "N/A", "N/A", "N/A", "N/A" ) ]
+		winddirection = wind[count].split(" ")[0]
+		windspeed = "0 mph"
+		if ( wind[count].split(" ")[0] != wind[count] ): windspeed = wind[count].split(" ")[1]
+	        self.forecast += [ ( day.split(" ")[0], day.split(" ")[1], iconpath, outlook[count].title(), _english_localize_unit( hightemp[count] ), _english_localize_unit( lowtemp[count] ), "N/A", windir.get( winddirection, winddirection ), _english_localize_unit(windspeed, "speed"), winddirection ) ]
 	except:
 	    self.error = self.error + 1
 
@@ -2311,9 +2531,6 @@ class Forecast10DayParser:
 
     def _get_forecast( self, htmlSource ):
         # regex patterns
-        # pattern_headings = "<p id=\"tdHead[A-Za-z]+\">(.*)</p>"
-        # pattern_headings2 = "<OPTION value=\"windsdp\" selected>([^<]+)</OPTION>"
-        # pattern_info = "<p><[^>]+>([^<]+)</a><br>([^<]+)</p>\s.*\s.*\s.*\s.*\s\[^<]+<p><img src=\"http://i.imwx.com/web/common/wxicons/[0-9]+/([0-9]+).gif[^>]+><br>([^<]+)</p>\s.*\s.*\s.*\s.*\s[^<]+<p><strong>([^<]+)</strong><br>([^<]+)</p>\s.*\s.*\s.*\s.*\s.*\s[^<]+<p>([^<]+)</p>\s.*\s.*\s.*\s.*\s.*\s.*\s.*\s[^<]+<td><p>([^<]+)</p></td>\s.*\s.*\s\[^<]+<[^<]+<[^<]+<[^<]+<strong>([^<]+</strong>[^<]+)</p>"
 	pattern_heading = "<th class=\"twc-col-[0-9]+ twc-forecast-when \" id=\"twc-date-col[0-9]+\">(.+?)<span>([^:]+):"
 	pattern_icon = "http://s.imwx.com/v.20100719.135915/img/wxicon/45/([0-9]+).png"
 	pattern_brief = "<span class=\"fc-wx-phrase\">([^<]+)</span>"
@@ -2321,7 +2538,6 @@ class Forecast10DayParser:
 	pattern_low_temp = "id=\"twc-wx-low[0-9]+\">([^<]+)<"
 	pattern_wind = "<div class=\"fc-wind-desc\"><strong>(.+?)<br>at<br>(.+?)</strong>"
 	pattern_precip = "twc-line-precip\">(.+?):<br><strong>(.+?)</strong>"
-	# print htmlSource
         # fetch headings
         heading = re.findall( pattern_heading, htmlSource )
 	# print heading
@@ -2331,24 +2547,17 @@ class Forecast10DayParser:
 			headings += [( heading[count][0].split(" ")[0], heading[count][0].split(" ")[1] + " " + heading[count][0].split(" ")[2] )]
 		except:
 			headings += [( "N/A", "N/A" )]
-	# print headings
 	# fetch icons
 	icon = re.findall( pattern_icon, htmlSource )
-	# print icon
 	# fetch brief
 	brief = re.findall( pattern_brief, htmlSource )
-	# print brief
 	# fetch temperatures
 	high_temp = re.findall( pattern_high_temp, htmlSource )
-	# print high_temp
 	low_temp = re.findall( pattern_low_temp, htmlSource )
-	# print low_temp
 	# fetch wind
 	wind = re.findall( pattern_wind, htmlSource )
-	# print wind
 	# fetch precip
 	precip = re.findall( pattern_precip, htmlSource )
-	# print precip
         # enumerate thru and create heading and forecast
         if ( len( headings ) ):
             # we convert wind direction to abbreviated text for LongWindDirection property
@@ -2375,22 +2584,15 @@ class Forecast10DayParser:
                 # we only need outlook and brief. the rest the skins or xbmc language file can handle
                 # we separate each item with single pipe
 		text = ""
-                # try: 
-		#    text = "|".join( wind )
-		# except:
-		#   print "[Weather Plus] No Info : 10day Wind"
-                # separator for different info
-                text += "|||||"
                 # we separate each item with single pipe
                 try:
 		   text += "|".join( brief )
 		except:
-		   print "[Weather Plus] No Info : 10day Brief"
+		   printlog( "No Info : 10day Brief" )
                 # translate text
                 text = _translate_text( text, self.translate )
                 # split text into it's original list
-                # wind = text.split( "|||||" )[ 0 ].split( "|" )
-                brief = text.split( "|||||" )[ 1 ].split( "|" )
+                brief = text.split( "|" )
             # create our forecast list
             for count in range(0, 10):
                 # make icon path
@@ -2471,7 +2673,8 @@ class MapParser:
 
 
 class WeatherClient:
-    Addon = xbmcaddon.Addon( id="weather.weatherplus" )
+    wunder_country = ""
+    wunder_area = ""
     # base urls
     BASE_URL = "http://www.weather.com"
     BASE_FORECAST_URL = "http://www.weather.com/weather/%s/%s?%s"
@@ -3442,7 +3645,7 @@ class WeatherClient:
 				urls += [("")]
 		elif ( title == "ABC 4 (Hawaii)" ):
 			htmlSource = self._fetch_data( "http://www.kitv.com/weather/17136897/media.html?qs=;longname=Video-Cast;shortname=VideoCast", 15 )
-			pattern_video = "/(.[0-9]+)/(.[0-9]+)/(.[0-9]+)_120X90.jpg\"><div class=\"id\" title=\"(.[0-9]+)\">"
+			pattern_video = "/(.[0-9]+)/(.[0-9]+)/(.[0-9]+)_120X90.jpg[^>]+><div class=\"id\" title=\"(.[0-9]+)\">"
 			video = re.findall( pattern_video, htmlSource )		
 			if ( video ): 
 				code = video[0][3]
@@ -3770,25 +3973,25 @@ class WeatherClient:
 			else:
 				urls += [("")]
 		else:
-			urls += [(self.Addon.getSetting("video" + str(count) + "_url"))]
+			urls += [ (Addon.getSetting("video%d_url" % count)) ]
 		count = count + 1
 
-	
-	print urls
 	return urls
 
+#*******************************************
+#					   *
+#     Weather.com Fetching Functions       *
+#					   *
+#*******************************************
+
     def fetch_36_forecast( self, video ):
-        printlog( "*****************************************************" )
-        printlog( "*                                                   *" )
-	printlog( "* [Weather Plus] Trying to fetch 36 hour forecast.. *" )
-        printlog( "*                                                   *" )
-	printlog( "*****************************************************" )
-	printlog( "Fetching URL : " + self.BASE_FORECAST_URL % ( "local", self.code, "", ) )
-	printlog( "Fetching URL : " + self.BASE_URL + "/weather/5-day/"+ self.code )
+	printlog( "Trying to fetch 36 hour forecast.. " )
         # fetch source
         htmlSource = self._fetch_data( self.BASE_FORECAST_URL % ( "local", self.code, "", ), 15 )
         htmlSource_5 = self._fetch_data( self.BASE_URL + "/weather/5-day/"+ self.code, 15 )
         _localtime_source_ = self._fetch_data( self.BASE_URL + "/outlook/events/weddings/wxdetail/" + self.code, )
+	
+	# setting local time
 	try:
              _localtime_ = int(re.findall ("([0-9]+):([0-9]+) AM", _localtime_source_)[0][0])
 	except:
@@ -3796,106 +3999,213 @@ class WeatherClient:
 
         # parse source for forecast
         parser = Forecast36HourParser( htmlSource, htmlSource_5, _localtime_, self.translate )
-	if ( parser.error == 0 ):
-		# print parser.alertscolor[0]
-	        # fetch any alerts
-	        alerts, alertsrss, alertsnotify = self._fetch_alerts( parser.alerts )
-	        # print alerts, alertsrss, alertsnotify
-	        # create video url
-	        if ( self.code.startswith( "US" ) or len(self.code) == 5 ):
-			# video = [self.Addon.getSetting("video1_url"), self.Addon.getSetting("video2_url"), self.Addon.getSetting("video3_url")]
-			video_title = [self.Addon.getSetting("video1"), self.Addon.getSetting("video2"), self.Addon.getSetting("video3")]
-			video = self._solve_video ( video_title )
-		else:
-			video, video_title = self._create_video( parser.video_location, parser.video_local_location, parser.video_local_number, video )
-	        # print "[Weather Plus] Weather Video = "+video
-	        # print "[Weather Plus] Local Video = "+video_local
-	        # return forecast
-	        if ( parser.alertscolor is not None ) :
-	             try : 
-	                 return alerts, alertsrss, alertsnotify, parser.alertscolor[0], len(parser.alerts), parser.forecast, parser.extras, video, video_title
-	             except : 
-	                 return alerts, alertsrss, alertsnotify, parser.alertscolor, len(parser.alerts), parser.forecast, parser.extras, video, video_title
-	else:
-		print "[Weather Plus] Error Code : " + str( parser.error )
+	while ( parser.error > 0 and parser.error < 5 ):
+		printlog( "Error!" )
+		printlog( "Retrying..." )
+		# fetch source
+		htmlSource = self._fetch_data( self.BASE_FORECAST_URL % ( "local", self.code, "", ), 15 )
+		htmlSource_5 = self._fetch_data( self.BASE_URL + "/weather/5-day/"+ self.code, 15 )
+		parser._get_forecast( htmlSource, htmlSource_5, _localtime_ )
+
+	# fetch any alerts
+	alerts, alertsrss, alertsnotify = self._fetch_alerts( parser.alerts )
+	# create video url
+	if ( self.code.startswith( "US" ) or len(self.code) == 5 ):                     # U.S video
+		video_title = [Addon.getSetting("video1"), Addon.getSetting("video2"), Addon.getSetting("video3")]
+		video = self._solve_video ( video_title )
+	else:										# Non-U.S video
+		video, video_title = self._create_video( parser.video_location, parser.video_local_location, parser.video_local_number, video )
+	if ( parser.alertscolor is not None ) :
+	     try : 
+		 return alerts, alertsrss, alertsnotify, parser.alertscolor[0], len(parser.alerts), parser.forecast, parser.extras, video, video_title
+	     except : 
+		 return alerts, alertsrss, alertsnotify, parser.alertscolor, len(parser.alerts), parser.forecast, parser.extras, video, video_title
+
+    def fetch_10day_forecast( self ):
+	printlog( "Trying to fetch 10 day forecast.." )
+        # fetch source
+        htmlSource = self._fetch_data( self.BASE_FORECAST_URL % ( "tenday", self.code, "", ), 15 )
+        # parse source for forecast
+        parser = Forecast10DayParser( htmlSource, self.translate )
+        # return forecast
+        return parser.forecast
+
+    def fetch_hourly_forecast( self ):
+	printlog( "Trying to fetch hourly forecast.." )
+        # fetch source
+        htmlSource = self._fetch_data( self.BASE_FORECAST_URL % ( "hourbyhour", self.code, "", ), 15 )
+        # parse source for forecast
+        parser = ForecastHourlyParser( htmlSource, self.translate )
+        # return forecast
+        return parser.forecast
+
+    def fetch_weekend_forecast( self ):
+	printlog( "Trying to fetch weekend forecast.." )
+        # fetch source
+        htmlSource = self._fetch_data( self.BASE_FORECAST_URL % ( "weekend", self.code, "", ), 15 )
+        # parse source for forecast
+        parser = ForecastWeekendParser( htmlSource, self.translate )
+        # return forecast
+        return parser.forecast
+
+#*******************************************
+#					   *
+#   Accuweather.com Fetching Functions     *
+#					   *
+#*******************************************
 
     def accu_36_forecast( self, video="" ):
-        printlog( "*****************************************************" )
-        printlog( "*                                                   *" )
-	printlog( "* [Weather Plus] Trying to fetch 36 hour forecast.. *" )
-        printlog( "*                                                   *" )
-	printlog( "*****************************************************" )
+	printlog( "Trying to fetch 36 hour forecast.. " )
         # fetch source
 	addr = self.code.split(" ")[0]
 	addr_en = "en-us" + self.code.split(" ")[0].lstrip( str(self.code.split("/")[0]) )
 	cityID = self.code.split(" ")[1]
-	printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr, "quick-look", cityID ))
-        htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr, "quick-look", cityID ), 15 )
-	printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr, "details", cityID ))	
-        htmlSource_1 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr, "details", cityID ), 15 )
-	printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr, "details2", cityID ))
-	htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr, "details2", cityID ), 15 )
-	printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr_en, "quick-look", cityID ))
-        htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr_en, "quick-look", cityID ), 15 )
-	printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr_en, "details2", cityID ))
-	htmlSource_4 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr_en, "details2", cityID ), 15 )
-	printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr_en, "satellite", cityID ))
-	htmlSource_5 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr_en, "satellite", cityID ), 15 )     
+	urls = [ self.BASE_ACCU_FORECAST_URL % ( addr, "quick-look", cityID ),
+		 self.BASE_ACCU_FORECAST_URL % ( addr, "details", cityID ),
+		 self.BASE_ACCU_FORECAST_URL % ( addr, "details2", cityID ),
+		 self.BASE_ACCU_FORECAST_URL % ( addr_en, "quick-look", cityID ),
+		 self.BASE_ACCU_FORECAST_URL % ( addr_en, "details2", cityID ),
+		 self.BASE_ACCU_FORECAST_URL % ( addr_en, "satellite", cityID ) ]
+	
+	printlog( "Multi-threaded URL Fetching started.." )
+	start = time.clock()
+        for i in range(6):
+		t = ThreadUrl(queue)
+		t.setDaemon(True)
+		t.start()             
+        for count in range(6):
+                queue.put( urls[count] )          
+	queue.join()
+	printlog( "Multi-threaded URL Fetching finished.." )
+	printlog( "Elapsed time : %f sec." % (time.clock() - start) )
         # parse source for forecast
-        parser = ACCU_Forecast36HourParser( htmlSource, htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4, self.translate )
+	parser = ACCU_Forecast36HourParser( TSource[urls[0]], TSource[urls[1]], TSource[urls[2]], TSource[urls[3]], TSource[urls[4]], self.translate )
 	# any errors?
 	while ( parser.error > 0 and parser.error < 5 ):
-		printlog("Failed to load webpages properly. Retrying..")
-		printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr, "quick-look", cityID ))
-	        htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr, "quick-look", cityID ), 0 )
-		printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr, "details", cityID ))	
-	        htmlSource_1 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr, "details", cityID ), 0 )
-		printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr, "details2", cityID ))
-		htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr, "details2", cityID ), 0 )
-		printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr_en, "quick-look", cityID ))
-	        htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr_en, "quick-look", cityID ), 0 )
-		printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr_en, "details2", cityID ))
-		htmlSource_4 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr_en, "details2", cityID ), 0 )
-		# printlog("Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( addr_en, "satellite", cityID ))
-		# htmlSource_5 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr_en, "satellite", cityID ), 0 )
-	        parser._get_forecast( htmlSource, htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4 )
+		printlog( "Error!" )
+		printlog( "Retrying..." )
+		start = time.clock()
+		for i in range(6):
+			t = ThreadUrl(queue)
+			t.setDaemon(True)
+			t.start()             
+		for count in range(6):
+			queue.put( urls[count] )          
+		queue.join()
+		printlog( "Multi-threaded URL Fetching finished.." )
+		printlog( "Elapsed time : %f sec." % (time.clock() - start) )
+		# parse source for forecast
+		parser._get_forecast( TSource[urls[0]], TSource[urls[1]], TSource[urls[2]], TSource[urls[3]], TSource[urls[4]] )
         # fetch any alerts
         alerts, alertsrss, alertsnotify = self._fetch_alerts( parser.alerts )
         # create video url
         if ( self.code.split("/")[1]=="us" ):
-		self.loc = re.findall("zip: '(.[0-9]+)'", htmlSource)[0]
-		video_title = [self.Addon.getSetting("video1"), self.Addon.getSetting("video2"), self.Addon.getSetting("video3")]
+		self.loc = re.findall("zip: '(.[0-9]+)'", TSource[urls[0]])[0]
+		video_title = [Addon.getSetting("video1"), Addon.getSetting("video2"), Addon.getSetting("video3")]
 		video = self._solve_video ( video_title )
 	else:
 		try:
-			self.loc = re.findall("http://sirocco.accuweather.com/sat_mosaic_640x480_public/IR/(.+?).jpg", htmlSource_5)[0]
+			self.loc = re.findall("http://sirocco.accuweather.com/sat_mosaic_640x480_public/IR/(.+?).jpg", TSource[urls[5]])[0]
 			video, video_title = self._create_video( parser.video_location, self.loc, "", video )
 		except:
 			htmlSource_5 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( addr_en, "satellite", cityID ), 0 )
 			self.loc = re.findall("http://sirocco.accuweather.com/sat_mosaic_640x480_public/IR/(.+?).jpg", htmlSource_5)[0]
 			video, video_title = self._create_video( parser.video_location, self.loc, "", video )
-
-        # print "[Weather Plus] Weather Video = "+video
-        # print "[Weather Plus] Local Video = "+video_local
-        # return forecast
         if ( parser.alertscolor is not None ) :
              try : 
                  return alerts, alertsrss, alertsnotify, parser.alertscolor[0], len(parser.alerts), parser.forecast, parser.extras, video, video_title
              except : 
                  return alerts, alertsrss, alertsnotify, parser.alertscolor, len(parser.alerts), parser.forecast, parser.extras, video, video_title
 
+    def accu_fetch_hourly_forecast( self ):
+	printlog( "Trying to fetch hourly forecast.." )
+	# fetch source
+	count = 0
+	try:
+		htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly", self.code.split(" ")[1] ), 0 )
+		self.code = self.code.replace( "en-us", self.accu_translate )
+		pattern_date = "<option selected=\"selected\" value=\"([0-9]+)\">"
+		date = re.findall( pattern_date, htmlSource_3 )
+		htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+date[1], self.code.split(" ")[1] ), 0 )
+		htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+ str( int(date[1])+7 ), self.code.split(" ")[1] ), 0 )	
+	except:
+		printlog( "Retrying..." )
+		htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly", self.code.split(" ")[1] ), 0 )
+		self.code = self.code.replace( "en-us", self.accu_translate )
+		pattern_date = "<option selected=\"selected\" value=\"([0-9]+)\">"
+		date = re.findall( pattern_date, htmlSource_3 )
+		htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+date[1], self.code.split(" ")[1] ), 0 )
+		htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+ str( int(date[1])+7 ), self.code.split(" ")[1] ), 0 )	
+	
+        # parse source for forecast
+        parser = ACCU_ForecastHourlyParser( htmlSource + htmlSource_2, htmlSource_3, self.code.split(" ")[0].split("/")[0] )
+	# any error?
+	while (parser.error > 0 and parser.error < 5):
+		try:
+			htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+date[1], self.code.split(" ")[1] ), 0 )
+		except:
+			htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly", self.code.split(" ")[1] ), 0 )
+			date = re.findall( pattern_date, htmlSource_3 )
+			htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+date[1], self.code.split(" ")[1] ), 0 )
+		htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+ str( int(date[1])+7 ), self.code.split(" ")[1] ), 0 )
+		parser._get_forecast( htmlSource + htmlSource_2, htmlSource_3 )
+	
+        # return forecast
+	printlog( "Parsing Hourly Forecast.. Done!" )
+        return parser.forecast
+
+    def accu_fetch_10day_forecast( self ):
+	printlog( "Trying to fetch 10 day forecast.." )
+        # fetch source
+	code = "en-us" + self.code.split(" ")[0].lstrip( str(self.code.split("/")[0]) )
+	urls = [ self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "forecast", self.code.split(" ")[1] ),
+		 self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "forecast2", self.code.split(" ")[1] ),
+		 self.BASE_ACCU_FORECAST_URL % ( code, "forecast", self.code.split(" ")[1] ),
+		 self.BASE_ACCU_FORECAST_URL % ( code, "forecast2", self.code.split(" ")[1] ) ]
+        for count in range(1, 11):
+		urls += [ self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "details%d" % count, self.code.split(" ")[1] ) ]
+	htmlSource_5 = ""
+	# fetch detail sources for daily wind information
+	printlog( "Multi-threaded URL Fetching started.." )
+	start = time.clock()
+        for i in range( len(urls) ):
+		t = ThreadUrl(queue)
+		t.setDaemon(True)
+		t.start()             
+	for count in range( len(urls) ):
+		queue.put( urls[count] )		
+	queue.join()
+	printlog( "Multi-threaded URL Fetching finished.." )
+	printlog( "Elapsed time : %f sec." % (time.clock() - start) )
+	for count in range(4, 14):
+		htmlSource_5 += TSource [ urls[count] ]
+        # parse source for forecast
+        parser = ACCU_Forecast10DayParser( TSource [ urls[0] ] + TSource [ urls[1] ], TSource [ urls[2] ] + TSource [ urls[3] ], htmlSource_5, self.code.split(" ")[0].split("/")[0] )
+	# any error?
+	if (parser.error == 1):
+		printlog( "Retrying to fetch..." )
+		htmlSource_1 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "forecast", self.code.split(" ")[1] ), 0 )
+		htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "forecast2", self.code.split(" ")[1] ), 0 )
+		htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( code, "forecast", self.code.split(" ")[1] ), 0 )
+		htmlSource_4 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( code, "forecast2", self.code.split(" ")[1] ), 0 )
+		# parser._get_forecast( htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4 )
+		parser.forecast = []
+		parser._get_forecast( htmlSource_1 + htmlSource_2, htmlSource_3 + htmlSource_4, htmlSource_5 )
+
+        # return forecast
+        return parser.forecast
+
+#*******************************************
+#					   *
+#       Noaa.gov Fetching Functions        *
+#					   *
+#*******************************************
+
     def noaa_36_forecast( self, video="" ):
         # fetch source
-        printlog( "*****************************************************" )
-        printlog( "*                                                   *" )
-	printlog( "* [Weather Plus] Trying to fetch 36 hour forecast.. *" )
-        printlog( "*                                                   *" )
-	printlog( "*****************************************************" )
-	printlog( "Fetching URL : " + self.BASE_NOAA_FORECAST_URL % ( self.code ) )
+	printlog( "Trying to fetch 36 hour and extended forecast.." )
         htmlSource = self._fetch_data( self.BASE_NOAA_FORECAST_URL % ( self.code ), 15 )
-	printlog( "Fetching URL : " + self.BASE_NOAA_QUICK_URL % ( self.code ) )
 	htmlSource_2 = self._fetch_data( self.BASE_NOAA_QUICK_URL % ( self.code ), 15 )
-	printlog( "Fetching URL : " + self.BASE_NOAA_FORECAST_URL % ( self.code + "&FcstType=dwml" ) )
 	xmlSource = self._fetch_data( self.BASE_NOAA_FORECAST_URL % ( self.code + "&FcstType=dwml" ), 15 )
 	pattern_observation = [ "http://www.weather.gov/data/obhistory/(.+?).html", "sid=(.+?)\&" ]
 	if ( re.search( "Can not connect to Database Server", xmlSource ) ):
@@ -3920,7 +4230,7 @@ class WeatherClient:
         # fetch any alerts
         alerts, alertsrss, alertsnotify = self._fetch_alerts( parser.alerts )
         # create video url
-	video_title = [self.Addon.getSetting("video1"), self.Addon.getSetting("video2"), self.Addon.getSetting("video3")]
+	video_title = [Addon.getSetting("video1"), Addon.getSetting("video2"), Addon.getSetting("video3")]
 	video = self._solve_video ( video_title )
         # return forecast
         if ( parser.alertscolor is not None ) :
@@ -3928,6 +4238,16 @@ class WeatherClient:
                  return alerts, alertsrss, alertsnotify, parser.alertscolor[0], len(parser.alerts), parser.forecast, parser.extras, video, video_title
              except : 
                  return alerts, alertsrss, alertsnotify, parser.alertscolor, len(parser.alerts), parser.forecast, parser.extras, video, video_title
+
+    def noaa_fetch_hourly_forecast( self ):
+	printlog( "Trying to fetch hourly forecast.." )
+        # fetch source
+        htmlSource = self._fetch_data( self.BASE_NOAA_HOURLY_URL % ( self.code ), 15 )
+	htmlSource_2 = self._fetch_data( self.BASE_NOAA_QUICK_URL % ( self.code ), 15 )
+        # parse source for forecast
+        parser = NOAA_ForecastHourlyParser( htmlSource, htmlSource_2, self.translate )
+        # return forecast
+        return parser.forecast
 
 #*******************************************
 #					   *
@@ -3935,74 +4255,113 @@ class WeatherClient:
 #					   *
 #*******************************************
 
+    def _lookup_area( self, country ):
+	if ( country == "Mexico" ): return country
+	asia = "Bangladesh/Bhutan/Brunei/Burma (Myanmar)/Cambodia/China/Hong Kong/Macau/East Timor/India/Indonesia/Japan/Kazakhstan/Laos/Malaysia/Maldives/Mongolia/Nepal/North Korea/Pakistan/Philippines/Singapore/South Korea/Sri Lanka/Taiwan/Thailand/Turkey/Vietnam"
+	middle_east = "Iran/Iraq/Israel/Jordan/Kuwait/Kyrgyzstan/Lebanon/Oman/Palestine/Qatar/Saudi Arabia/Syria/Tajikistan/Turkmenistan/United Arab Emirate (UAE)/Uzbekistan/Yemen"
+	africa = "Algeria/Angola/Benin/Botswana/Burkina Faso/Burundi/Cameroon/Cape Verde/Central African Republic/Chad/Comoros/Congo/Cote d'Ivoire/Djibouti/Egypt/Equatorial Guinea/Eritrea/Ethiopia/Gabon/Gambia/Ghana/Guinea/Guinea-Bissau/Kenya/Lesotho/Liberia/Libya/Madagascar/Malawi/Mali/Mauritania/Mauritius/Morocco/Mozambique/Namibia/Niger/Nigeria/Rwanda/Sao Tome And Principe/Senegal/Seychelles/Sierra Leone/Somalia/South Africa/South Sudan/Sudan/Swaziland/Tanzania/Togo/Tunisia/Uganda/Western Sahara/Zambia/Zimbabwe"
+	oceania = "Australia/New Zealand/New South Wales/Victoria/Queensland/Northern Territory/Western Australia/South Australia"
+	central_america = "Belize/Guatemala/Honduras/Nicaragua/Costa Rica/El Salvador/Panama/Cayman Islands/Jamica/Cuba/Bahamas/Bermuda/Haiti/Dominican Republic/Trinidad And Tobago"
+	europe = "Iceland/Ireland/United Kingdom/Portugal/Spain/Andorra/France/Luxembourg/Monaco/Switzerland/Slovenia/Liechtenstein/Germany/Denmark/Netherlands/Belgium/Norway/Sweden/Finland/San Marino/Italy/Malta/Austria/Czech Republic/Poland/Slovakia/Hungary/Croatia/Montenegro/Serbia/Albania/Bosnia And Herzegovina/Bulgaria/Macedonia/Greece/Romania/Moldova/Ukraine/Belarus/Lithuania/Latvia/Estonia/Russia/Georgia/Armenia/Azerbaijan/Cyprus"
+	south_america = "Venezuela/Colombia/Guyana/Suriname/French Guiana/Ecuador/Peru/Brazil/Bolivia/Paraguay/Argentina/Uruguay/Chile"
+	canada = "Northwest Territories/British Columbia/Yukon/Alberta/Saskatchewan/Manitoba/Ontario/Nunavut/Quebec/New Brunswick/Nova Scotia/Labarador/Newfoundland/Prince Edward Island"
+	if ( re.search( country, asia ) ): return "asia"
+	elif ( re.search( country, europe ) ): return "europe"
+	elif ( re.search( country, south_america ) ): return "samerica"
+	elif ( re.search( country, central_america ) ): return "camerica"
+	elif ( re.search( country, middle_east ) ): return "middle"
+	elif ( re.search( country, oceania ) ): return "oceania"
+	elif ( re.search( country, africa ) ): return "africa"
+	elif ( re.search( country, canada ) ): 
+		self.wunder_country = "Canada"		
+		return "canada"
+	return "unknown"	
+
     def wunder_36_forecast( self, video ):
+	printlog( "Trying to fetch 36 hour and extended forecast.." )
         # fetch source
-        self.wunderSource = self._fetch_data( self.BASE_WUNDER_FORECAST_URL % ( self.code ), 1 )
-        print "[Weather Plus] Area code = " + self.code
+        wunderSource = self._fetch_data( self.BASE_WUNDER_FORECAST_URL % ( self.code ), 1 )
+        printlog( "Area code = " + self.code )
         # parse source for forecast
-        parser = WUNDER_Forecast36HourParser( self.wunderSource, self.translate )
+        parser = WUNDER_Forecast36HourParser( wunderSource, self.translate )
 	if ( parser.forecast[0] == "ERROR" ):
-		xbmc.executebuiltin( "XBMC.Notification(\"Weather Plus\",\"Failed to load Wunderground.com!\",240, __icon__) ")
-		print "[Weather Plus] ERROR : Failed to load 36 hour forecast from Wunderground.com!"
-		return
-        # print parser.alertscolor[0]
+		printlog( "ERROR : Failed to load 36 hour forecast from Wunderground.com!" )
+	# lookup local area for local map selection
+	self.wunder_country = ""
+	self.wunder_area = ""
+	if ( self.code.startswith("/q/zmw:00000") ):
+		pattern_country = "<h1 id=\"locationName\"[^>]+>[^,]+, ([^<]+)</h1>"
+		country = re.findall( pattern_country, wunderSource )
+		if ( len(country) ):
+			self.wunder_country = country[0]
+			self.wunder_area = self._lookup_area( self.wunder_country )
+	else:
+		self.wunder_country = "US"
+		self.wunder_area = re.findall( "/q/zmw:([0-9]+).", self.code )[0]
+	printlog( "Country = %s" % self.wunder_country )
+	printlog( "Area = %s" % self.wunder_area )
         # fetch any alerts
-        alerts, alertsrss, alertsnotify = self._fetch_alerts( parser.alerts )
-        # print alerts, alertsrss, alertsnotify
+        try:
+		alerts, alertsrss, alertsnotify, alertscolor = self._wunder_fetch_alerts( parser.alerts, parser.alerts[-1][1] == "US Severe Weather" )
+	except:
+		alerts = ""
+		alertsrss = ""
+		alertsnotify = ""
+		alertscolor = ""
         # create video url
-	video_title = [self.Addon.getSetting("video1"), self.Addon.getSetting("video2"), self.Addon.getSetting("video3")]
-	video = self._solve_video ( video_title )
-        # video, video_local = self._create_video( parser.video_location, parser.video_local_location, parser.video_local_number, video )
-	# video = ["","",""]
-	# video_title = ["","",""]
-        # print "[Weather Plus] Weather Video = "+video
-        # print "[Weather Plus] Local Video = "+video_local
+	if ( self.wunder_country == "US" ):
+		video_title = [Addon.getSetting("video1"), Addon.getSetting("video2"), Addon.getSetting("video3")]
+		video = self._solve_video ( video_title )
+	else:
+		video, video_title = self._create_video( "", self.wunder_country, "", video )
         # return forecast
-        if ( parser.alertscolor is not None ) :
-             try : 
-                 return alerts, alertsrss, alertsnotify, parser.alertscolor[0], len(parser.alerts), parser.forecast, parser.extras, video, video_title
-             except : 
-                 return alerts, alertsrss, alertsnotify, parser.alertscolor, len(parser.alerts), parser.forecast, parser.extras, video, video_title
+	printlog( "Fetching 36 hour forecast... Done!" )
+        return alerts, alertsrss, alertsnotify, alertscolor, len(parser.alerts), parser.forecast, parser.extras, video, video_title             
 
     def wunder_10day_forecast( self ):
-        # parse source for forecast
-        parser = WUNDER_Forecast10DayParser( self.wunderSource, self.translate )
+	printlog( "Trying to fetch extended forecast.." )
+	# parse source for forecast
+        wunderSource = self._fetch_data( self.BASE_WUNDER_FORECAST_URL % ( self.code ), 15 )
+        parser = WUNDER_Forecast10DayParser( wunderSource, self.translate )
 	# print parser.forecast
-	print parser.forecast[0]
+	# print parser.forecast[0]
 	if ( parser.forecast[0] == "ERROR" ):
-		xbmc.executebuiltin( "XBMC.Notification(\"Weather Plus\",\"Failed to load Wunderground.com!\",240, __icon__) ")
-		print "[Weather Plus] ERROR : Failed to load extended forecast from Wunderground.com!"
+		printlog( "ERROR : Failed to load extended forecast from Wunderground.com!" )
         # return forecast
         return parser.forecast
 
     def wunder_hourly_forecast( self ):
+	printlog( "Trying to fetch hourly forecast.." )
 	# parse source for forecast
+        wunderSource = self._fetch_data( self.BASE_WUNDER_FORECAST_URL % ( self.code ), 15 )
 	pattern_url = "<a href=\"/(.+?)[&]yday=([0-9]+)[&]weekday=[^\"]+\">Hourly Forecast"
-	url = re.findall( pattern_url, self.wunderSource )
+	url = re.findall( pattern_url, wunderSource )
 	htmlSource = self._fetch_data( "http://www.wunderground.com/%s&yday=%s" % ( url[0][0], url[0][1] ), 15 )
-	htmlSource = htmlSource + self._fetch_data( "http://www.wunderground.com/%s&yday=%d" % ( url[0][0], [ int(url[0][1])+1, 1 ][int(url[0][1])==365] ), 15 )
-        parser = WUNDER_ForecastHourlyParser( htmlSource + self.wunderSource, self.translate )
+	htmlSource = htmlSource.split("Extended Forecast")[0] + self._fetch_data( "http://www.wunderground.com/%s&yday=%d" % ( url[0][0], [ int(url[0][1])+1, 1 ][int(url[0][1])==365] ), 15 )
+	htmlSource = htmlSource.split("Extended Forecast")[0]
+        parser = WUNDER_ForecastHourlyParser( htmlSource + wunderSource, self.translate )
 	if ( parser.forecast[0] == "ERROR" ):
-		xbmc.executebuiltin( "XBMC.Notification(\"Weather Plus\",\"Failed to load Wunderground.com!\",240, __icon__) ")
-		print "[Weather Plus] ERROR : Failed to load hourly forecast from Wunderground.com!"
+		printlog( "ERROR : Failed to load hourly forecast from Wunderground.com!" )
         # return forecast
 	return parser.forecast
 
     def _fetch_alerts( self, urls ):
+	# print urls
         alerts = ""
         # alertscolor = ""
         alertsrss = ""
         alertsnotify = ""
         
         if ( urls ):
-            #alertscolor = urls[ 0 ][ 0 ]
+            # alertscolor = urls[ 0 ][ 0 ]
             titles = []
             # enumerate thru the alert urls and add the alerts to one big string
-	    count = 0
+	    # count = 0
             for url in urls:
-		if (count == 0):
-			count = 1
-			continue	
+		#if (count == 0):
+		#	count = 1
+		#	continue	
+		print url
                 # fetch source refresh every 15 minutes
                 htmlSource = self._fetch_data( self.BASE_URL + "/weather/alerts/"+ url, 15 )
                 # parse source for alerts
@@ -4026,6 +4385,60 @@ class WeatherClient:
         # return alerts.strip(), alertsrss.strip().rstrip( "|" ).strip(), alertsnotify.rstrip( " |" ), alertscolor
         return alerts.strip(), alertsrss.strip().rstrip( "|" ).strip(), alertsnotify.rstrip( " |" )
 
+    def _wunder_fetch_alerts( self, raw_alerts, area ):
+	alerts = ""
+	alertsrss = ""
+	alertsnotify = ""
+	alertscolor = ""
+	if ( raw_alerts ):
+		if ( area ):
+			htmlSource = self._fetch_data( self.BASE_WUNDER_FORECAST_URL % raw_alerts[0][0], 15 ).replace("\n","").replace("\t","")
+			htmlSource = re.sub( "<[!]--[^-]+-->", "", htmlSource )
+			pattern_title = "<br />\.\.\.(.+?)\.\.\."
+			pattern_state = "<div class=\"primeHeader\">(.+?)</div>"
+			pattern_text = "<div class=\"taL\" >(.+?)</div>"
+			titles = re.findall( pattern_title, htmlSource )
+			states = re.findall( pattern_state, htmlSource )
+			texts = re.findall( pattern_text, htmlSource )
+			alertscolor = "2"
+			printlog( "Fetching Alerts... Trying" )
+			for count in range( len(raw_alerts) - 1 ):
+				if ( re.search( "Warning", raw_alerts[count][1] ) ): alertscolor = "1"
+				text = re.sub( "<[^>]+>", "", texts[count].replace("<br /><br /><br />","\n").replace("<br />","\n").strip() )
+				alerts += "[B]%s[/B]\n\n" % raw_alerts[count][1]
+				alerts += "\n[I]%s[/I]\n\n" % re.sub( "<[^>]+>", "", states[count].strip() )
+				alerts += "%s\n\n%s\n\n" % ( text, "-"*100 )
+				try:
+					alertsrss += "%s  |  " % re.sub( "<[^>]+>", " ", titles[count].strip() )
+				except:
+					alertsrss += "%s  |  " % text[:100]
+				alertsnotify += "%s,  " % raw_alerts[count][1]
+			alertsrss = alertsrss.strip().rstrip( "|" ).strip()
+			alertsnotify = alertsnotify.strip().rstrip( "," ).strip()
+			# print alerts, alertsrss, alertsnotify, alertscolor
+			printlog( "Fetching Alerts... Done!" )
+		else:
+			colordir = { "FFFF00" : "2",
+				     "FFC400" : "2",
+				     "FF0000" : "1" }
+			htmlSource = self._fetch_data( self.BASE_WUNDER_FORECAST_URL % raw_alerts[0][0], 15 )
+			pattern_title = "<span class=\"fLeft b med\">(.+?)</span>"
+			pattern_color = "background-color: #(.+?);"
+			colors = re.findall( pattern_color, htmlSource )
+			#titles = re.findall( pattern_title, htmlSource )
+			alertscolor = colordir.get( colors[0] )
+			printlog( "Fetching Alerts... Trying" )
+			for alert in raw_alerts:
+				alerts += "%s\n\n" % alert[1]
+				alertsrss += "%s  |  " % alert[1]
+				titles = _translate_text ( alert[1], "en" )
+				alertsnotify += "%s |  " % titles
+			alertsrss = alertsrss.strip().rstrip( "|" ).strip()
+			alertsnotify = alertsnotify.strip().rstrip( "|" ).strip()
+			printlog( "Fetching Alerts... Done!" )
+	return alerts, alertsrss, alertsnotify, alertscolor
+
+
     def _create_video( self, location, accu_loc, local_number, video ):
         url = ""
         local_url = ""
@@ -4033,10 +4446,10 @@ class WeatherClient:
 		loc = self.code.split("/")[1]
 	except:
 		loc = ""
-        print "[Weather Plus] Video Loc Code : " + loc
+        print "[Weather Plus] Video Loc Code : " + (loc, self.wunder_country)[ loc == "q" ]
 
 	# Korea
-	if (self.code.startswith( "KS" ) or loc == "kr"):
+	if (self.code.startswith( "KS" ) or loc == "kr" or self.wunder_country == "South Korea"):
 		urls=[]
 		titles=[]
 	   	htmlSource = self._fetch_data( "http://news.kbs.co.kr/forecast/", 15 )
@@ -4120,7 +4533,7 @@ class WeatherClient:
 		return urls, titles
 	
 	# Japan
-	if (self.code.startswith( "JA" ) or loc == "jp"):
+	if (self.code.startswith( "JA" ) or loc == "jp" or self.wunder_country == "Japan"):
 		urls=[]
 		titles=[]
 		url = "rtmp://flv.nhk.or.jp/ondemand/flv/news/weather/weather001"
@@ -4138,7 +4551,7 @@ class WeatherClient:
 		return urls, titles
 
 	# China
-	if (self.code.startswith( "CH" ) or loc == "cn"):
+	if (self.code.startswith( "CH" ) or loc == "cn" or self.wunder_country == "China"):
 		urls=[]
 		titles=[]
 		urls += ["http://v.weather.com.cn/v/c/xwlb/xwlb.flv"]
@@ -4149,7 +4562,7 @@ class WeatherClient:
 		return urls, titles
 
 	# UK
-        if (self.code.startswith( "UK" ) or loc == "gb"):
+        if (self.code.startswith( "UK" ) or loc == "gb" or self.wunder_country == "United Kingdom"):
 	    urls = []
 	    titles = []
 	    print "[Weather Plus] Video Location : UK"
@@ -4178,25 +4591,14 @@ class WeatherClient:
 				pageUrl = "http://news.bbc.co.uk/weather/forecast/10209"
 				urls += ["%s app=%s swfUrl=%s tcUrl=%s pageUrl=%s playpath=%s" % (url, app[0], swfUrl, tcUrl, pageUrl, playpath[0]) ]
 				titles += ["BBC"]
-			
-	    '''
-   	    url = "rtmp://cp45414.edgefcs.net:80/ondemand/public/flash/ident/weather"
-	    app = "app=ondemand"
-	    pageUrl = "pageUrl=http://news.bbc.co.uk/weather/forecast/10209"
-	    swfUrl = "swfUrl=http://emp.bbci.co.uk/emp/worldwide/revisions/555290_554055/555290_554055_emp.swf"
-	    tcUrl = "tcUrl=rtmp://cp45414.edgefcs.net:80/ondemand"
-	    playpath = "playpath=public/flash/ident/weather"
-	    urls += [ "%s %s %s %s %s %s" % (url, app, pageUrl, swfUrl, tcUrl, playpath) ]
-	    titles += ["BBC"]
-	    '''
 
-            urls += [ "http://static1.sky.com/feeds/skynews/latest/daily/ukweather.flv", "http://static1.sky.com/feeds/skynews/latest/weather/europeweather.flv", "" ]
+	    urls += [ "http://static1.sky.com/feeds/skynews/latest/daily/ukweather.flv", "http://static1.sky.com/feeds/skynews/latest/weather/europeweather.flv", "" ]
 	    titles += ["SKY News (UK)", "SKY News (Europe)", ""]
             # return [url,"http://static1.sky.com/feeds/skynews/latest/weather/long.flv","http://static1.sky.com/feeds/skynews/latest/weather/europeweather.flv"], ["UK Forecast", "Long Range", "Europe Forecast"]
 	    return urls, titles
 
         # Canada
-        if (self.code.startswith("CA") or loc == "ca"):
+        if (self.code.startswith("CA") or loc == "ca" or self.wunder_area == "canada"):
             print "[Weather Plus] Video Location : Canada"
             accu_canada = "http://www.accuweather.com/video/1681759716/canadian-national-weather-fore.asp?channel=world"
             htmlSource = self._fetch_data( accu_canada, 15 )
@@ -4223,11 +4625,29 @@ class WeatherClient:
             return [url,"http://media.twnmm.com/storage/4902859/22","http://media.twnmm.com/storage/4902671/22"], ["Accuweather.com (Canada) ", "Weather News", "Long Range"]
 
 	# Mexico
-	if (self.code.startswith("MX") or loc == "mx"):
+	'''
+	if (self.code.startswith("MX") or loc == "mx" or self.wunder_country == "Mexico"):
 	    print "[Weather Plus] Video Location : Mexico"
+	'''
+
+	# Brazil
+	'''
+	if (self.code.startswith("BR") or loc == "br" or self.wunder_country == "Brazil"):
+	    printlog( "Video Location : Brazil" )
+	    url = "http://embed.terratv.terra.com.br/bonsai/Info.aspx"
+	    htmlSource = self._fetch_data( url, 15 )
+	    pattern_url = "file=\"(.+?)\""
+	    try:
+		url = re.findall( pattern_url, htmlSource )[0].replace("&amp;","&")
+		urls = [ url, "", "" ]
+		titles = [ "Climatempo", "", "" ]
+	    except:
+		return ["", "", ""], ["", "", ""]
+	    return urls, titles
+	'''
 
 	# France
-	if (self.code.startswith("FR") or loc == "fr"):
+	if (self.code.startswith("FR") or loc == "fr" or self.wunder_country == "France"):
 	    urls = []
 	    titles = []
 	    print "[Weather Plus] Video Location : France"
@@ -4251,7 +4671,6 @@ class WeatherClient:
 	    htmlSource = self._fetch_data( url, 15 )
 	    pattern_id = "http://info.francetelevisions.fr/[?]id-video=(.+?)\""
 	    id = re.findall ( pattern_id, htmlSource )
-	    # print id
 	    if ( id ):
 		url = "http://meteo.france2.fr/appftv/webservices/video/getInfosCatalogueVideo.php?id-video=%s" % id [0]
 		pattern_url = "<url-video>(.[^<]+)</url-video>"
@@ -4275,36 +4694,202 @@ class WeatherClient:
 	    return urls, titles
 	    
 	# Italy
-	if (self.code.startswith("IT") or loc == "it"):
+	if (self.code.startswith("IT") or loc == "it" or self.wunder_country == "Italy"):
 	    print "[Weather Plus] Video Location : Italy"
             return ["http://media.ilmeteo.it/video/oggi-tg.mp4","http://media.ilmeteo.it/video/domani-tg.mp4", "http://static1.sky.com/feeds/skynews/latest/weather/europeweather.flv"], ["iL Meteo (Today)", "iL Meteo (Tomorrow)", "SKY News (Europe)"]
 
 	urls = []
 	titles = []
+	Europe = 0
+
+	# Bulgaria
+	if (self.code.startswith("BU") or loc == "bg" or self.wunder_country == "Bulgaria"):
+	    printlog( "Video Location : Bulgaria" )
+	    urls = [ "http://meteotv.bg/str/HI01.flv" ]
+	    titles = [ "Meteotv.bg"]
+	    Europe = 1
+	
+	# Poland
+	if (self.code.startswith("PO") or loc == "pl" or self.wunder_country == "Poland"):
+	    printlog( "Video Location : Poland" )
+	    url = "http://www.tvnmeteo.pl/wideo/prognoza,45,1.html"
+	    htmlSource = self._fetch_data( url, 15 )
+	    pattern_url = "http://redir.atmcdn.pl/scale/o2/tvn/web-content/m/v/df0aab058ce179e4f7ab135ed4e641a9/([^/]+)/S/"
+	    try:
+		url = re.findall( pattern_url, htmlSource )[0]
+		url = "http://dcs-212-91-8-229.atmcdn.pl/dcs/o2/tvn/web-content/m/v/df0aab058ce179e4f7ab135ed4e641a9/%s-480p.flv" % url
+		urls = [ url ]
+		titles = [ "TVN" ]
+	    except:
+		pass
+	    Europe = 1
+	
+
+	# Ireland
+	if (self.code.startswith("EI") or loc == "ie" or self.wunder_country == "Ireland"):
+	    printlog( "Video Location : Ireland" )
+	    url = "http://www.tv3.ie/weather.php"
+	    htmlSource = self._fetch_data( url, 15 )
+	    pattern_url = "url: \"http://cdn.tv3.ie/([^\"]+)\""
+	    try:
+		url = re.findall( pattern_url, htmlSource )[0]
+		url = "http://cdn.tv3.ie/%s" % url
+		htmlSource = self._fetch_data( url, 15 )
+		pattern_url = "<video src=\"(.+?)\""
+		pattern_base = "<meta base=\"(.+?)\""
+		try:
+			code = re.findall( pattern_url, htmlSource )[0].replace("&amp;","&")
+			base = re.findall( pattern_base, htmlSource )[0]
+			pattern_app = "rtmp://[^/]+/([^/]+)/_(.+?)_"
+			app = re.findall (pattern_app, htmlSource )[0]
+			url = "%s/%s" % (base, code)
+			app = "%s/_%s_" % (app[0], app[1])
+			pageUrl = "http://www.tv3.ie/weather.php"
+			swfUrl = "http://www.tv3.ie/includes/flash/flowplayer.commercial-3.2.6-dev2.swf?0.6006767218014416"
+			tcUrl = "%s" % base
+			playpath = code
+			urls = [ "%s app=%s swfUrl=%s tcUrl=%s pageUrl=%s playpath=%s" % (url, app, swfUrl, tcUrl, pageUrl, playpath) ]
+			titles = [ "TV3" ]
+		except:
+			pass
+	    except:
+		pass
+	    Europe = 1
 
 	# Germany
-	# broken
-	"""
-	if (self.code.startswith("GM") or loc == "de"):
-	    print "[Weather Plus] Video Location : Germany"
-	    url = "http://www.wetter.de/videos/playerlayer/show/format/html/videoid/0,0,108067/playlist/47,123/modul/mediaset_video"
+	if (self.code.startswith("GM") or loc == "de" or self.wunder_country == "Germany"):
+	    printlog( "Video Location : Germany" )
+	    url = "http://wetter.zdf.de/ZDFwetter/inhalt/0/0,5998,1040000,00.html?preview,0"
 	    htmlSource = self._fetch_data( url, 15 )
-	    pattern_url = "<filename>(.+?)</filename>"
-	    url = re.findall( pattern_url, htmlSource )
-	    print url, htmlSource
-	    if ( url ):
-		playpath = url[0].split("vod/")[1]
-		pageUrl = "http://www.wetter.de/cms/wetterbericht-deutschland.html"
-		swfUrl = "http://bilder.static-fra.de/wetter11/flash/rtl_player.swf?cachebuster=1316491200"
-		tcUrl = "rtmp://fms.rtl.de:1935/vod/"
-		app = "vod/"
-		urls += [ "%s app=%s swfUrl=%s tcUrl=%s pageUrl=%s playpath=%s" % (url[0], app, swfUrl, tcUrl, pageUrl, playpath) ]
-		titles += ["Wetter.de"]
-	"""
+	    pattern_code = "'eplayer_1','http://www.zdf.de/ZDFmediathek/content/([0-9]+)'" 
+	    try:
+		code = re.findall( pattern_code, htmlSource )[0]
+		url = "http://www.zdf.de/ZDFmediathek/embedded/%s" % code
+		htmlSource = self._fetch_data( url, 15 )
+		pattern_url = "<dsl2000>(.+?)</dsl2000>"
+		try:
+			url = re.findall( pattern_url, htmlSource )[0]
+			htmlSource = self._fetch_data( url, 15 )
+			pattern_url = "<default-stream-url>(.+?)</default-stream-url>"
+			try:
+				url = re.findall( pattern_url, htmlSource )[0]
+				app = "ondemand"
+				pageUrl = "http://www.zdf.de/ZDFmediathek/beitrag/video/%s" % code
+				swfUrl = "http://www.zdf.de/ZDFmediathek/flash/data/swf/AkamaiBasicStreamingPlugin.swf"
+				tcUrl = "rtmp://cp125301.edgefcs.net:1935/ondemand"
+				playpath = "mp4:%s" % url.split("mp4:")[1]
+				urls = [ "%s app=%s swfUrl=%s tcUrl=%s pageUrl=%s playpath=%s" % (url, app, swfUrl, tcUrl, pageUrl, playpath) ]
+				titles = [ "ZDF.de" ]
+			except:
+				pass
+		except:
+			pass
+	    except:
+		pass		
+	    Europe = 1
+
+	# Spain
+	if (self.code.startswith("SP") or loc == "es" or self.wunder_country == "Spain"):
+	    printlog( "Video Location : Spain" )
+	    url = "http://flash.1.multimedia.cdn.rtve.es/resources/TE_NGVA/mp4/8/9/1322549664098.mp4?type=.smil"
+	    auth_url = "http://flash.1.multimedia.cdn.rtve.es/auth/resources/TE_NGVA/mp4/8/9/1322549664098.mp4?v=2.1.20&fp=WIN%2011,1,102,55&r=EGOER&g=KRJRXYTCXDBM"
+	    htmlSource = self._fetch_data( url, 15 )
+	    authSource = self._fetch_data( auth_url, 15 )
+	    pattern_base = "<meta name=\"httpBase\" content=\"([^\"]+)\"/>"
+	    try:
+	        base = re.findall( pattern_base, htmlSource )[0][:-1]
+		url = "%s%s%s" % (base, authSource, "|User-Agent=Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727)")
+		urls = [ url ]
+		titles = [ "tve" ]
+	    except:
+		pass
+	    Europe = 1
 	
+	# Belgium
+	if (self.code.startswith("BE") or loc == "be" or self.wunder_country == "Belgium"):
+	    printlog( "Video Location : Belgium" )
+	    url = "http://www.rtl.be/meteo/bulletin/"
+	    htmlSource = self._fetch_data( url, 15 )
+	    pattern_code = "src=\"../inc/embhtml5.php[?]id=([0-9]+)\">"
+	    try:
+		code = re.findall( pattern_code, htmlSource )[0]
+		url = "http://videos.rtl.be/GetFlashParams.aspx?id=%s&bEmbed=1&sDummyPath=" % code
+		htmlSource = self._fetch_data( url, 15 )
+		pattern_url = "<URL>(.+?)</URL>"
+		try:
+			url = re.findall( pattern_url, htmlSource )[0]
+			urls = [ url ]
+			titles = [ "RTL.be" ]
+		except:
+			pass
+	    except:
+		pass
+	    
+	    url = "http://www.deredactie.be/cm/vrtnieuws/mediatheek/weer?view=shortcutDepartment&shortcutView=defaultList"
+	    htmlSource = self._fetch_data( url, 15 )
+	    pattern_url = "div class=\"mediaItem\" id=\"([^\"]+)\""
+	    try:
+		url = re.findall( pattern_url, htmlSource )[0]
+		htmlSource = self._fetch_data( url, 15 )
+		pattern_url = "= \'(.+?).flv\'"
+		try:
+			code = re.findall( pattern_url, htmlSource )[0]
+			url = "rtmp://vrt.flash.streampower.be/vrtnieuws/%s" % code
+			app = "vrtnieuws"
+			pageUrl = "http://www.deredactie.be/cm/vrtnieuws/mediatheek/weer/"
+			swfUrl = "http://www.deredactie.be/html/flash/common/player.swf"
+			tcUrl = "rtmp://vrt.flash.streampower.be/vrtnieuws"
+			playpath = code
+			urls += [ "%s app=%s swfUrl=%s tcUrl=%s pageUrl=%s playpath=%s" % (url, app, swfUrl, tcUrl, pageUrl, playpath) ]
+			titles += [ "Deredactie.be" ]
+		except:
+			pass
+	    except:
+		pass
+
+	    Europe = 1
+
+	# Netherlands
+	if (self.code.startswith("NL") or loc == "nl" or self.wunder_country == "Netherlands"):
+	    printlog( "Video Location : Netherlands" )
+	    url = "http://www.weer.nl/weerpresentatie.html"
+	    htmlSource = self._fetch_data( url, 15 )
+	    pattern_url = "http://www.weer.nl/fileadmin/filemounts/nederlands/ftp_upload/video/(.+?).flv"
+	    try:
+		url = re.findall( pattern_url, htmlSource )[0]
+		urls += [ "http://www.weer.nl/fileadmin/filemounts/nederlands/ftp_upload/video/%s.flv" % url ]
+		titles += [ "Weer.nl" ]
+	    except:
+		pass
+
+	    Europe = 1
+
+	# Romania
+	if (self.code.startswith("RO") or loc == "ro" or self.wunder_country == "Romania"):
+	    printlog( "Video Location : Romania" )
+	    url = "http://www.a1.ro/meteo/index.html"
+	    htmlSource = self._fetch_data( url, 15 )
+	    pattern_url = "http://ivm.inin.ro/js/embed.js[?]autoplay=0&width=310&height=244&wide=1&id=(.+?)\""
+	    try:
+		url = re.findall( pattern_url, htmlSource )[0]
+		url = "http://ivm.inin.ro/js/embed.js?autoplay=0&width=310&height=244&wide=1&id=%s" % url
+		htmlSource = self._fetch_data( url, 15 )
+		pattern_url = "real_file: \'(.+?).mp4\'"
+		try:
+			url = re.findall( pattern_url, htmlSource )[0]
+			url = "%s.mp4" % url
+			urls += [ url ]
+			titles += [ "Antenna 1" ]
+		except:
+			pass
+	    except:
+		pass
+
+	    Europe = 1
+
         # Europe
-        if (self.code.startswith("FR") or self.code.startswith("SP") or self.code.startswith("IT") or self.code.startswith("GM") or self.code.startswith("NL") or self.code.startswith("GR") or self.code.startswith("PO") or self.code.startswith("EI") or accu_loc.startswith("iseur")):    
-            print "[Weather Plus] Video Location : Europe"
+        if (Europe or self.code.startswith("GR") or self.code.startswith("RS") or self.code.startswith("PL") or accu_loc.startswith("iseur") or self.wunder_area == "europe"):    
+            printlog( "Video Location : Europe" )
             accu_europe = "http://www.accuweather.com/video/1681759717/europe-weather-forecast.asp?channel=world"
             htmlSource = self._fetch_data( accu_europe, 15 )
             pattern_video = "http://brightcove.vo.llnwd.net/d([0-9]+)/unsecured/media/1612802193/1612802193_([0-9]+)_(.+?)-thumb.jpg"
@@ -4335,7 +4920,7 @@ class WeatherClient:
             return urls, titles
 
 	# Austrailia
-	if (self.code.startswith("AS") or loc == "au"):
+	if (self.code.startswith("AS") or loc == "au" or self.wunder_area == "oceania"):
 		print "[Weather Plus] Video Location : Austrailia"
 		abc = "http://www.abc.net.au/news/abcnews24/weather-in-90-seconds/"
 		htmlSource = self._fetch_data( abc, 15 )
@@ -4348,151 +4933,6 @@ class WeatherClient:
 		return [url, "", ""], ["ABC (Weather in 90 Seconds)", "No Video", "No video"]
         # No available video
         return ["","",""], ["","",""]
-
-    def fetch_hourly_forecast( self ):
-        printlog( "*****************************************************" )
-        printlog( "*                                                   *" )
-	printlog( "* [Weather Plus] Trying to fetch hourly forecast..  *" )
-        printlog( "*                                                   *" )
-	printlog( "*****************************************************" )
-	printlog( "Fetching URL : " + self.BASE_FORECAST_URL % ( "hourbyhour", self.code, "", ) )
-        # fetch source
-        htmlSource = self._fetch_data( self.BASE_FORECAST_URL % ( "hourbyhour", self.code, "", ), 15 )
-        # parse source for forecast
-        parser = ForecastHourlyParser( htmlSource, self.translate )
-        # return forecast
-        return parser.forecast
-
-    def accu_fetch_hourly_forecast( self ):
-        printlog( "*****************************************************" )
-        printlog( "*                                                   *" )
-	printlog( "* [Weather Plus] Trying to fetch hourly forecast..  *" )
-        printlog( "*                                                   *" )
-	printlog( "*****************************************************" )
-	# fetch source
-	count = 0
-	try:
-		printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly", self.code.split(" ")[1] ) )
-		htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly", self.code.split(" ")[1] ), 0 )
-		self.code = self.code.replace( "en-us", self.accu_translate )
-		pattern_date = "<option selected=\"selected\" value=\"([0-9]+)\">"
-		date = re.findall( pattern_date, htmlSource_3 )
-		printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+date[1], self.code.split(" ")[1] ) )
-		htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+date[1], self.code.split(" ")[1] ), 0 )
-		printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+ str( int(date[1])+7 ), self.code.split(" ")[1] ) )
-		htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+ str( int(date[1])+7 ), self.code.split(" ")[1] ), 0 )	
-	except:
-		printlog( "Retrying..." )
-		printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly", self.code.split(" ")[1] ) )
-		htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly", self.code.split(" ")[1] ), 0 )
-		self.code = self.code.replace( "en-us", self.accu_translate )
-		pattern_date = "<option selected=\"selected\" value=\"([0-9]+)\">"
-		date = re.findall( pattern_date, htmlSource_3 )
-		printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+date[1], self.code.split(" ")[1] ) )
-		htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+date[1], self.code.split(" ")[1] ), 0 )
-		printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+ str( int(date[1])+7 ), self.code.split(" ")[1] ) )
-		htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+ str( int(date[1])+7 ), self.code.split(" ")[1] ), 0 )	
-
-        # parse source for forecast
-        parser = ACCU_ForecastHourlyParser( htmlSource + htmlSource_2 + htmlSource_3, self.translate )
-	# any error?
-	while (parser.error > 0 and parser.error < 5):
-		try:
-			printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+date[1], self.code.split(" ")[1] ) )
-			htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+date[1], self.code.split(" ")[1] ), 0 )
-		except:
-			printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly", self.code.split(" ")[1] ) )
-			htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly", self.code.split(" ")[1] ), 0 )
-			date = re.findall( pattern_date, htmlSource_3 )
-			printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+date[1], self.code.split(" ")[1] ) )
-			htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+date[1], self.code.split(" ")[1] ), 0 )
-		printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+ str( int(date[1])+7 ), self.code.split(" ")[1] ) )
-		htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "hourly"+ str( int(date[1])+7 ), self.code.split(" ")[1] ), 0 )
-		parser._get_forecast( htmlSource + htmlSource_2 + htmlSource_3 )
-	
-        # return forecast
-	printlog( "Parsing Hourly Forecast.. Done!" )
-        return parser.forecast
-
-    def noaa_fetch_hourly_forecast( self ):
-        printlog( "*****************************************************" )
-        printlog( "*                                                   *" )
-	printlog( "* [Weather Plus] Trying to fetch hourly forecast..  *" )
-        printlog( "*                                                   *" )
-	printlog( "*****************************************************" )
-        # fetch source
-	printlog( "Fetching URL : %s" % self.BASE_NOAA_HOURLY_URL % ( self.code ) )
-        htmlSource = self._fetch_data( self.BASE_NOAA_HOURLY_URL % ( self.code ), 15 )
-	printlog( "Fetching URL : %s" % self.BASE_NOAA_QUICK_URL % ( self.code ) )
-	htmlSource_2 = self._fetch_data( self.BASE_NOAA_QUICK_URL % ( self.code ), 15 )
-        # parse source for forecast
-        parser = NOAA_ForecastHourlyParser( htmlSource, htmlSource_2, self.translate )
-        # return forecast
-        return parser.forecast
-
-    def fetch_weekend_forecast( self ):
-        printlog( "*****************************************************" )
-        printlog( "*                                                   *" )
-	printlog( "* [Weather Plus] Trying to fetch weekend forecast.. *" )
-        printlog( "*                                                   *" )
-	printlog( "*****************************************************" )
-        # fetch source
-	printlog( "Fetching URL : " + self.BASE_FORECAST_URL % ( "weekend", self.code, "", ) )
-        htmlSource = self._fetch_data( self.BASE_FORECAST_URL % ( "weekend", self.code, "", ), 15 )
-        # parse source for forecast
-        parser = ForecastWeekendParser( htmlSource, self.translate )
-        # return forecast
-        return parser.forecast
-
-    def accu_fetch_10day_forecast( self ):
-        printlog( "*****************************************************" )
-        printlog( "*                                                   *" )
-	printlog( "* [Weather Plus] Trying to fetch 10 day forecast..  *" )
-        printlog( "*                                                   *" )
-        printlog( "*****************************************************" )
-        # fetch source
-	code = "en-us" + self.code.split(" ")[0].lstrip( str(self.code.split("/")[0]) )
-	printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "forecast", self.code.split(" ")[1] ) )
-	htmlSource_1 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "forecast", self.code.split(" ")[1] ), 15 )
-	printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "forecast2", self.code.split(" ")[1] ) )
-	htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "forecast2", self.code.split(" ")[1] ), 15 )
-	printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( code, "forecast", self.code.split(" ")[1] ) )
-	htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( code, "forecast", self.code.split(" ")[1] ), 15 )
-	printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( code, "forecast2", self.code.split(" ")[1] ) )
-	htmlSource_4 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( code, "forecast2", self.code.split(" ")[1] ), 15 )
-        # parse source for forecast
-        parser = ACCU_Forecast10DayParser( htmlSource_1 + htmlSource_2, htmlSource_3 + htmlSource_4, self.translate )
-	# any error?
-	if (parser.error == 1):
-		printlog( "Retrying to fetch..." )
-		printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "forecast", self.code.split(" ")[1] ) )
-		htmlSource_1 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "forecast", self.code.split(" ")[1] ), 0 )
-		printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "forecast2", self.code.split(" ")[1] ) )
-		htmlSource_2 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "forecast2", self.code.split(" ")[1] ), 0 )
-		printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( code, "forecast", self.code.split(" ")[1] ) )
-		htmlSource_3 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( code, "forecast", self.code.split(" ")[1] ), 0 )
-		printlog( "Fetching URL : " + self.BASE_ACCU_FORECAST_URL % ( code, "forecast2", self.code.split(" ")[1] ) )
-		htmlSource_4 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( code, "forecast2", self.code.split(" ")[1] ), 0 )
-		# parser._get_forecast( htmlSource_1, htmlSource_2, htmlSource_3, htmlSource_4 )	
-		parser._get_forecast( htmlSource_1, htmlSource_2 )
-
-        # return forecast
-        return parser.forecast
-
-    def fetch_10day_forecast( self ):
-        printlog( "*****************************************************" )
-        printlog( "*                                                   *" )
-	printlog( "* [Weather Plus] Trying to fetch 10 day forecast..  *" )
-        printlog( "*                                                   *" )
-        printlog( "*****************************************************" )
-	printlog( "Fetching URL : " + self.BASE_FORECAST_URL % ( "tenday", self.code, "", ) )
-        # fetch source
-        htmlSource = self._fetch_data( self.BASE_FORECAST_URL % ( "tenday", self.code, "", ), 15 )
-	# print self.BASE_FORECAST_URL % ( "tenday", self.code, "", )
-        # parse source for forecast
-        parser = Forecast10DayParser( htmlSource, self.translate )
-        # return forecast
-        return parser.forecast
 
     def fetch_map_list( self, provider="2", maptype=0, userfile=None, locationindex=None ):
         # set url
@@ -4515,30 +4955,18 @@ class WeatherClient:
 		       "ismex" : "MXDF0132",
 		       "iscam" : "PMXX0004",
 		       "iscsa" : "CIXX0020",
+		       "isssa" : "CIXX0020",
+		       "isnsa" : "CIXX0020",
+		       "isaus" : "ASXX0112",  # Austrailia
+		       "isnz"  : "NZXX0003",  # New Zealand
+		       "isind" : "INXX0096",  # India
 		       "isafr" : "UGXX0001",
 		       "ismid" : "IRXX0036" }
-		loc = self.loc[:5]
+	    	try: 
+			loc = self.loc[:5]
+   	        except:
+			loc = self.loc
 		zip = zipdir.get( loc, self.loc )    # if no match, it may be US zip. so appending itself.
-		"""
-		if ( self.loc == "iseasia" or self.loc.startswith( "isasia" ) ):
-			zip = "KSXX0037"
-		elif (self.loc.startswith( "iseur" )):
-			zip = "FRXX0076"
-		elif (self.loc.startswith( "iscan" )):
-			zip = "CAXX0504"
-		elif (self.loc.startswith( "ismex" )):
-			zip = "MXDF0132"
-		elif (self.loc.startswith( "iscam" )):
-			zip = "PMXX0004"
-		elif (self.loc.startswith( "iscsam" )):
-			zip = "CIXX0020"
-		elif (self.loc.startswith( "isafr" )):
-			zip = "UGXX0001"
-		elif (self.loc.startswith( "ismide" )):
-			zip = "IRXX0036"
-		else:
-			zip = self.loc
-		"""
 		url = url % ( "map", zip, "", )
 	    elif ( provider == "1") :
 		# print self.code
@@ -4551,6 +4979,22 @@ class WeatherClient:
 		else:
 			print "[Weather Plus] ERROR : Mapquest.com might have been changed"
 			return None, None
+	    elif ( provider == "3" ) :
+		if ( self.wunder_country == "US" ):
+			url = url % ( "map", self.wunder_area, "", )
+		else:
+			zipdir = { "asia" : "KSXX0037",
+				   "europe" : "FRXX0076",
+				   "canada" : "CAXX0504",
+				   "Mexico" : "MXDF0132",
+				   "camerica" : "PMXX0004",
+				   "samerica" : "CIXX0020",
+				   "oceania" : "ASXX0112",
+				   "africa" : "UGXX0001",
+				   "middle" : "IRXX0036" }
+			url = url % ( "map", zipdir.get(self.wunder_area, ""), "", )
+		Addon.setSetting( "wunder_country", self.wunder_country )
+		Addon.setSetting( "wunder_area", self.wunder_area )
         print "[Weather Plus] maptype = " + str(maptype)
         print "[Weather Plus] map_list_url = " + url
         # handle user defined maps special
@@ -4631,15 +5075,20 @@ class WeatherClient:
 	elif ( provider == "0") :
 	    htmlSource = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "quick-look", self.code.split(" ")[1]), 15 )
             htmlSource_5 = self._fetch_data( self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "satellite", self.code.split(" ")[1]), 15 )
-	    zipdir = { "iseas" : "KSXX0037",
+	    zipdir = { "iseas" : "KSXX0037",  # Asia 
 	               "isasi" : "KSxx0037",
-		       "iseur" : "FRXX0076",
-		       "iscan" : "CAXX0504",
-		       "ismex" : "MXDF0132",
-		       "iscam" : "PMXX0004",
-		       "iscsa" : "CIXX0020",
-		       "isafr" : "UGXX0001",
-		       "ismid" : "IRXX0036" }
+		       "iseur" : "FRXX0076",  # Europe
+		       "iscan" : "CAXX0504",  # Canada
+		       "ismex" : "MXDF0132",  # Mexico
+		       "iscam" : "PMXX0004",  # Caribbean
+		       "iscsa" : "CIXX0020",  # South America
+		       "isssa" : "CIXX0020",
+		       "isnsa" : "CIXX0020",
+		       "isaus" : "ASXX0112",  # Austrailia
+		       "isnz"  : "NZXX0003",  # New Zealand
+		       "isind" : "INXX0096",  # India
+		       "isafr" : "UGXX0001",  # Africa
+		       "ismid" : "IRXX0036" } # Middle East
 	    if ( self.code.split("/")[1]!="us" ):
 		try:
 		    self.loc = re.findall("http://sirocco.accuweather.com/sat_mosaic_640x480_public/IR/(.+?).jpg", htmlSource_5)[0]
@@ -4648,28 +5097,11 @@ class WeatherClient:
  		    self.loc = re.findall("http://sirocco.accuweather.com/sat_mosaic_640x480_public/IR/(.+?).jpg", htmlSource_5)[0]
             else:
 	        self.loc = WEATHER_WINDOW.getProperty( "Map.Location" )
-	    loc = self.loc[:5]
+	    try: 
+		loc = self.loc[:5]
+	    except:
+		loc = self.loc
 	    zip = zipdir.get( loc, self.loc )    # if no match, it may be US zip. so appending itself.
-	    '''
-	    if ( self.loc == "iseasia" or self.loc.startswith( "isasia" ) ):
-		zip = "KSXX0037"
-	    elif (self.loc.startswith( "iseur" )):
-		zip = "FRXX0076"
-	    elif (self.loc.startswith( "iscan" )):
-		zip = "CAXX0504"
-	    elif (self.loc.startswith( "ismex" )):
-		zip = "MXDF0132"
-	    elif (self.loc.startswith( "iscam" )):
-		zip = "PMXX0004"
-	    elif (self.loc.startswith( "iscsam" )):
-		zip = "CIXX0020"
-	    elif (self.loc.startswith( "isafr" )):
-		zip = "UGXX0001"
-	    elif (self.loc.startswith( "ismide" )):
-		zip = "IRXX0036"
-	    else:
-		zip = self.loc
-	    '''
 	    url = self.BASE_FORECAST_URL % ( "map", zip, "&mapdest=%s" % ( map, ), )
         elif ( provider == "1" ):
 	    position = self.code.split("&")
@@ -4677,18 +5109,34 @@ class WeatherClient:
 	    pattern_zip = "\"postalCode\":\"(.+?)\""
 	    zip = re.findall( pattern_zip, htmlSource )
 	    url = self.BASE_FORECAST_URL % ( "map", zip[0], "&mapdest=%s" % ( map, ), )
+    	elif ( provider == "3" ) :
+	    wunder_country  = Addon.getSetting( "wunder_country" )
+	    wunder_area = Addon.getSetting( "wunder_area" )
+	    if ( wunder_country == "US" ):
+		url = self.BASE_FORECAST_URL % ( "map", wunder_area, "&mapdest=%s" % ( map, ), )
+	    else:
+		zipdir = { "asia" : "KSXX0037",
+			   "europe" : "FRXX0076",
+			   "canada" : "CAXX0504",
+			   "Mexico" : "MXDF0132",
+			   "camerica" : "PMXX0004",
+			   "samerica" : "CIXX0020",
+			   "oceania" : "ASXX0112",
+			   "africa" : "UGXX0001",
+			   "middle" : "IRXX0036" }
+		url = self.BASE_FORECAST_URL % ( "map", zipdir.get(wunder_area, ""), "&mapdest=%s" % ( map, ), )
 	else:
             url = self.BASE_FORECAST_URL % ( "map", self.code, "&mapdest=%s" % ( map, ), )
         # fetch source
         print "[Weather Plus] map_url = " + url
-        htmlSource = self._fetch_data( url, subfolder="maps" )
+        htmlSource = self._fetch_data( url, 60*60*24*7, subfolder="maps",  )
         # parse source for static map and create animated map list if available
         parser = MapParser( htmlSource )
         # return maps
         return parser.maps
 
     def fetch_images( self, map ):
-        # print "fetch_images map", map
+	if ( map[ 0 ] == ["http://image.weather.com"] and map[ 1 ] == [] ): return "", ""
         # are there multiple images?
         maps = map[ 1 ] or map[ 0 ]
         # initailize our return variables
@@ -4698,7 +5146,7 @@ class WeatherClient:
         for count, url in enumerate( maps ):
             # used for info in progress dialog
             self.image = os.path.basename( url )
-            print "[Weather Plus] Fetch image = " + self.image + " ||| url = "+ url
+            printlog( "Fetch image = " + self.image + " ||| url = "+ url )
             # fetch map
             base_path_maps = self._fetch_data( url, -1 * ( count + 1 ), self.image, len( maps ) > 1, subfolder="" )
             # no need to continue if the first map of multi image map fails
@@ -4711,10 +5159,12 @@ class WeatherClient:
             # we add the image filename back to path since we don't use a multiimage control
             legend_path = os.path.join( legend_path, os.path.basename( map[ 2 ] ) )
         # we return path to images or empty string if an error occured
-        print base_path_maps
+        # print base_path_maps
         return base_path_maps, legend_path
 
     def _fetch_data( self, base_url, refreshtime=0, filename=None, animated=False, subfolder="forecasts", retry=True ):
+	start = time.clock()
+	printlog( "_fetch_data : Fetching %s" % base_url )
         try:
             # set proper base path
             if ( not base_url.startswith( "http://" ) ):
@@ -4752,12 +5202,6 @@ class WeatherClient:
                 request = urllib2.Request( base_url )
                 # add a faked header
                 request.add_header( "User-Agent", "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727)" )
-		# xbmc_version = xbmc.getInfoLabel( "System.BuildVersion" )
-		# kernel_version = xbmc.getInfoLabel( "System.KernelVersion" )
-		# request.add_header( "User-Agent", "XBMC/%s (%s; http://www.xbmc.org)" % (xbmc_version, kernel_version) )
-                #request.add_header( "Connection", "Keep-Alive" )
-                # request.add_header( "Accept-Encoding", "gzip, deflate" )
-		# request.add_header( "Accept-Charset", "UTF-8" )
                 # open requested url
                 usock = urllib2.urlopen( request )
                 # get expiration
@@ -4780,6 +5224,9 @@ class WeatherClient:
                 self._save_data( str( expires ), base_refresh_path )
             if ( base_refresh_path ):
                 data = os.path.dirname( base_path )
+	    # calc elapsed time
+	    elapsed = "%f sec." % ( time.clock() - start )
+	    printlog( "_fetch_data : Finishing %s (Elapsed Time : %s)" % (base_url, elapsed) )
             # return results
             return data
         except urllib2.HTTPError, e:
