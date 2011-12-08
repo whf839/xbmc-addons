@@ -55,7 +55,7 @@ class Main:
             self._fetch_map( params[ "map" ], params[ "title" ], params[ "location" ] )
         else:
 	    # set name of weather provider
-    	    self.WEATHER_WINDOW.setProperty( "WeatherProvider", ("Accuweather.com Global", "NOAA", "Weather.com")[ int(self.provider) ] )
+    	    self.WEATHER_WINDOW.setProperty( "WeatherProvider", ("Accuweather.com Global", "NOAA", "Weather.com", "Wunderground.com")[ int(self.provider) ] )
 	    # if not from weather.com  set name of location from addon's settings
 	    if ( self.provider != "2" ):
 		    # self.WEATHER_WINDOW.setProperty( "Location", Location)
@@ -258,10 +258,44 @@ class Main:
 					"19": "ja",
 					"20": "ko",
 					"16": "hi",
-					"15": "he"
+					"15": "he",
+					"32": "auto"
                                     }.get( self.Settings.getSetting( "accu_translate%s" % self.locationindex ), "en-us" )
-        if ( self.provider == "2" ): 
-	    self.areacode = sys.argv[1]
+	
+	if ( self.settings[ "accu_translate" ] == "auto" ):
+	    self.settings[ "accu_translate" ] = {
+						"Catalan": "ca",
+		                                "Chinese (Simple)": "zh-cn",
+		                                "Chinese (Traditional)": "zh-tw",
+		                                "Czech": "cs",
+		                                "Danish": "da",
+		                                "Dutch": "nl",
+						"Finnish": "fi",
+		                                "French": "fr",
+		                                "German": "de",
+		                                "German (Austria)": "de",
+		                                "Greek": "el",
+		                                "Hebrew": "he",
+		                                "Hindi (Devanagiri)": "hi",
+		                                "Italian": "it",
+		                                "Japanese": "ja",
+		                                "Korean": "ko",
+		                                "Norwegian": "no",
+		                                "Polish": "pl",
+		                                "Portuguese": "pt",
+		                                "Portuguese (Brazil)": "pt-br",
+		                                "Romanian": "ro",
+		                                "Russian": "ru",
+		                                "Slovak": "sk",
+		                                "Spanish": "es-ar",
+		                                "Spanish (Mexico)": "es-mx",
+		                                "Swedish": "sv",
+		                                "Turkish": "tr"
+		                            }.get( xbmc.getLanguage(), "en-us" )
+
+        if ( self.provider == "2" and not self.newbuild ): 
+	    # self.areacode = [ sys.argv[1], self.WEATHER_WINDOW.getProperty( "Areacode" ) ][ self.maponly ]
+	    self.areacode = self.WEATHER_WINDOW.getProperty( "Areacode" )
 	else:
 	    self.areacode = self.Settings.getSetting("code%s_%d" % ( self.locationindex, int(self.provider)+1 ))  
 	# set if new location
@@ -881,9 +915,11 @@ class Main:
 		self.WEATHER_WINDOW.clearProperty( "Daily.%d.LowTemperature" % ( count ))
 
 	ampm = 0
+	flag = 0
         for count, forecast in enumerate( forecasts ):
 	    # print re.findall( "Night", forecast[ 10 ] )
-	    if ( forecast[ 0 ] == "Tonight" and count == 0 ):
+	    if ( forecast[ 0 ] == "Late Afternoon" ): flag = 1
+	    elif ( forecast[ 0 ] == "Tonight" and ( count == 0 or flag == 1 ) ):
 	 	self.WEATHER_WINDOW.setProperty( "Daily.%d.LongDay" % ( int( ( count + 1 + ampm )/2 ) + 1, ), longday_dict.get( forecast[ 10 ], forecast[ 10 ] ) )
 		self.WEATHER_WINDOW.setProperty( "Daily.%d.ShortDay" % ( int( ( count + 1 + ampm )/2 ) + 1, ), shortday_dict.get( forecast[ 10 ], forecast[ 10 ][:5]+"." ) )		
 		self.WEATHER_WINDOW.setProperty( "Daily.%d.LongDate" % ( int( ( count + 1 + ampm )/2 ) + 1, ), "%s %s" % ( longdate_dict[ forecast[ 11 ].split( " " )[ 0 ] ], str(int(forecast[ 11 ].split( " " )[ 1 ])), ) )

@@ -20,7 +20,6 @@ except:
 import xbmcgui
 import urllib2
 from urllib import urlencode, unquote, quote
-#import httplib, socket
 
 try:
     import hashlib
@@ -34,43 +33,15 @@ import platform
 
 import resources.lib.video_amf as AMF
 
-import Queue
-import threading
-
-queue = Queue.Queue()
+from threading import Thread
 
 TSource = {}
           
-class ThreadUrl(threading.Thread):
+def ThreadUrl( url ):
 	"""Threaded Url Grab"""
-	def __init__(self, queue):
-		threading.Thread.__init__(self)
-		self.queue = queue
-
-	def run(self):
-		global TSource
-		base_url = self.queue.get()
-		printlog( "_fetch_data : Fetching %s" % base_url )
-		try:
-			# request base url
-			request = urllib2.Request( base_url )
-			# add a faked header
-			request.add_header( "User-Agent", "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727)" )
-			# open requested url
-			usock = urllib2.urlopen( request )
-			# read source
-			data = usock.read()
-			# close socket
-			usock.close()
-			# return results
-			TSource[ base_url ] = data
-		except:
-		    # oops print error message
-		    print "ERROR: %s::%s (%d) - %s" % ( self.__class__.__name__, sys.exc_info()[ 2 ].tb_frame.f_code.co_name, sys.exc_info()[ 2 ].tb_lineno, sys.exc_info()[ 1 ], )
-		    # some unknown error, return ""
-
-		self.queue.task_done()
-
+	global TSource
+	data = WeatherClient()._fetch_data( url, 15 )
+	TSource[ url ] = data
 
 WEATHER_WINDOW = xbmcgui.Window( 12600 )
 Addon = xbmcaddon.Addon( id="weather.weatherplus" )
@@ -591,7 +562,7 @@ class Forecast36HourParser:
         pattern_locstate = "wx.config.loc.state=\"([^\"]+)\""
         pattern_video_location = "US_Current_Weather:([^\"]+)\""
         pattern_video_local_location = "/outlook/videos/(.+?)-60-second-forecast-(.+?)\""
-        pattern_alert_color = "<div id=\"wx-alert-bar\" class=\"wx-alert-(.+?)\">"
+        pattern_alert_color = "<div id=\"wx-alert-bar\" class=\"wx-alert-([0-9]+)"
         pattern_alerts = "href=\"/weather/alerts/([^\"]+)\" from=\"local_alert_list_overview\">"
         pattern_days = "<td class=\"twc-col-[0-9]+ twc-forecast-when\">(.+?)</td>"
         pattern_icon = "<img src=\"http://s\.imwx\.com/v\.20100719\.135915/img/wxicon/[0-9]+/([0-9]+)\.png\" width=\"72\""
@@ -646,17 +617,25 @@ class Forecast36HourParser:
 		current_temp = "N/A"
 		current_feels_like = "N/A"
 	    current_wind = re.findall( pattern_current_wind, htmlSource )
+	    current_winddirection = ""
 	    try:
 		current_wind = current_wind[ 0 ].replace("\t","").replace("\n","").strip()
 		current_wind_buffer = re.findall( "From (.+?) at ([0-9]+)", current_wind )
 		try: 
-		   current_wind = "From %s at %s" % ( current_wind_buffer[ 0 ][ 0 ], _localize_unit( current_wind_buffer[ 0 ][ 1 ], "speed" ) )
-		   current_winddirection = ""	   
+		   if ( self.translate) :
+			'''
+			speed = _localize_unit( current_wind_buffer[ 0 ][ 1 ], "speed" )
+			unit = speed.split(" ")[-1]
+			current_wind = _translate_text( "%s %s" % ( current_wind_buffer[ 0 ][ 0 ], speed.split(" ")[0] ), self.translate )
+			current_wind += " %s" % unit
+			'''
+			current_wind = "%s %s" % ( current_wind_buffer[ 0 ][ 0 ], _localize_unit( current_wind_buffer[ 0 ][ 1 ], "speed" ) )
+		   else:		
+			current_wind = "From %s at %s" % ( current_wind_buffer[ 0 ][ 0 ], _localize_unit( current_wind_buffer[ 0 ][ 1 ], "speed" ) )
 		except:
 		   pass
 	    except:
 		current_wind = "N/A"
-		current_winddirection = "N/A"
 	    current_humidity = re.findall( pattern_current_humidity, htmlSource )
 	    current_dewpoint = re.findall( pattern_current_dewpoint, htmlSource )
 	    try:
@@ -1218,7 +1197,7 @@ class NOAA_Forecast36HourParser:
 			current_wind = current_wind.split(" ")[0]+" "+_localize_unit( current_wind.split(" ")[1], "speed" ).replace(" mph","").replace(" km/h","") +" Gust "+_localize_unit( current_wind.split(" ")[3], "speed" )
 		    except:	
 			current_wind = current_wind.split(" ")[0]+" "+_localize_unit( current_wind.split(" ")[1], "speed" )
-	
+
             # fetch precip
 	    precip_title = []
             precip_amount = re.findall( pattern_precip_amount, htmlSource_2 )
@@ -1534,7 +1513,7 @@ class WUNDER_Forecast36HourParser:
 		else:
 			current_wind = "N"
 		current_windDirection = current_wind
-			current_wind = "From %s at %s" % (current_wind, _localize_unit(current_windspeed, "speed"))
+		current_wind = "From %s at %s" % (current_wind, _localize_unit(current_windspeed, "speed"))
 		printlog( "Wind OK!" )
 
 		if ( days[0] == " Today" ):
@@ -2187,7 +2166,7 @@ class NOAA_ForecastHourlyParser:
                             "NW": "From the Northwest",
                             "NNW": "From the North Northwest"
                  }   
-	daylight = [ ( WEATHER_WINDOW.getProperty("36Hour.%s.DaylightTitle" % i), _localize_unit( WEATHER_WINDOW.getProperty("36Hour.%s.DaylightTime" % i), "time24" ) ) for i in range(1, 3) ]
+	daylight = [ ( WEATHER_WINDOW.getProperty("36Hour.%s.DaylightTitle" % i), _localize_unit( WEATHER_WINDOW.getProperty("36Hour.%s.DaylightTime" % i), "time24" ) ) for i in range(1, 4) ]
 	try:
 		daylight_time = [ int(daylight[0][1].split(":")[0]), int(daylight[0][1].split(":")[0]) ]
 	except:   # sunrise = "N/A" and first heading = "Late Afternoon"
@@ -2776,6 +2755,7 @@ class WeatherClient:
         # set users translate preference
         self.translate = translate
 	self.accu_translate = accu_translate
+	if ( self.accu_translate != "en-us" ): self.code = self.code.replace( "en-us", self.accu_translate )
 
     def _compatible( self ):
         # check for compatibility
@@ -4068,32 +4048,24 @@ class WeatherClient:
 		 self.BASE_ACCU_FORECAST_URL % ( addr_en, "satellite", cityID ) ]
 	
 	printlog( "Multi-threaded URL Fetching started.." )
-	start = time.clock()
-        for i in range(6):
-		t = ThreadUrl(queue)
-		t.setDaemon(True)
-		t.start()             
-        for count in range(6):
-                queue.put( urls[count] )          
-	queue.join()
+	threads = [Thread(target=ThreadUrl, args=(urls[i],)) for i in range(6)]
+	for t in threads:
+		t.start()
+	for t in threads:
+		t.join()
 	printlog( "Multi-threaded URL Fetching finished.." )
-	printlog( "Elapsed time : %f sec." % (time.clock() - start) )
         # parse source for forecast
 	parser = ACCU_Forecast36HourParser( TSource[urls[0]], TSource[urls[1]], TSource[urls[2]], TSource[urls[3]], TSource[urls[4]], self.translate )
 	# any errors?
 	while ( parser.error > 0 and parser.error < 5 ):
 		printlog( "Error!" )
 		printlog( "Retrying..." )
-		start = time.clock()
-		for i in range(6):
-			t = ThreadUrl(queue)
-			t.setDaemon(True)
-			t.start()             
-		for count in range(6):
-			queue.put( urls[count] )          
-		queue.join()
+		printlog( "Multi-threaded URL Fetching started.." )
+		for t in threads:
+			t.start()
+		for t in threads:
+			t.join()
 		printlog( "Multi-threaded URL Fetching finished.." )
-		printlog( "Elapsed time : %f sec." % (time.clock() - start) )
 		# parse source for forecast
 		parser._get_forecast( TSource[urls[0]], TSource[urls[1]], TSource[urls[2]], TSource[urls[3]], TSource[urls[4]] )
         # fetch any alerts
@@ -4166,17 +4138,13 @@ class WeatherClient:
 		urls += [ self.BASE_ACCU_FORECAST_URL % ( self.code.split(" ")[0], "details%d" % count, self.code.split(" ")[1] ) ]
 	htmlSource_5 = ""
 	# fetch detail sources for daily wind information
-	printlog( "Multi-threaded URL Fetching started.." )
-	start = time.clock()
-        for i in range( len(urls) ):
-		t = ThreadUrl(queue)
-		t.setDaemon(True)
-		t.start()             
-	for count in range( len(urls) ):
-		queue.put( urls[count] )		
-	queue.join()
-	printlog( "Multi-threaded URL Fetching finished.." )
-	printlog( "Elapsed time : %f sec." % (time.clock() - start) )
+	printlog( "10day : Multi-threaded URL Fetching started.." )
+	threads = [Thread(target=ThreadUrl, args=(urls[i],)) for i in range(14)]
+	for t in threads:
+		t.start()
+	for t in threads:
+		t.join()	
+	printlog( "10day : Multi-threaded URL Fetching finished.." )
 	for count in range(4, 14):
 		htmlSource_5 += TSource [ urls[count] ]
         # parse source for forecast
@@ -4886,6 +4854,14 @@ class WeatherClient:
 		pass
 
 	    Europe = 1
+	
+	# Hungary
+	if (self.code.startswith("HU") or loc == "hu" or self.wunder_country == "Hungary"):
+	    printlog( "Video Location : Hungary" )
+	    url = "http://94.199.183.188/rtlhirek/idojaras/meteor.flv"
+	    urls += [ url ]
+	    titles += [ "RTL Klub" ]
+	    Europe = 1
 
         # Europe
         if (Europe or self.code.startswith("GR") or self.code.startswith("RS") or self.code.startswith("PL") or accu_loc.startswith("iseur") or self.wunder_area == "europe"):    
@@ -5163,7 +5139,6 @@ class WeatherClient:
         return base_path_maps, legend_path
 
     def _fetch_data( self, base_url, refreshtime=0, filename=None, animated=False, subfolder="forecasts", retry=True ):
-	start = time.clock()
 	printlog( "_fetch_data : Fetching %s" % base_url )
         try:
             # set proper base path
@@ -5224,9 +5199,6 @@ class WeatherClient:
                 self._save_data( str( expires ), base_refresh_path )
             if ( base_refresh_path ):
                 data = os.path.dirname( base_path )
-	    # calc elapsed time
-	    elapsed = "%f sec." % ( time.clock() - start )
-	    printlog( "_fetch_data : Finishing %s (Elapsed Time : %s)" % (base_url, elapsed) )
             # return results
             return data
         except urllib2.HTTPError, e:
