@@ -43,4 +43,4 @@ _Some information (such as UV index or precipitation chance) or some features (s
  * Other Europe : Europe forecast (Accuweather.com, Sky News)
  * Austrailia : ABC News 24
 
-4) Severe Weather Alerts (Only for U.S)
+4) Severe Weather Alerts (Only for U.S and Europe(Wunderground.com))
