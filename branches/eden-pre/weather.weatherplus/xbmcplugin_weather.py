@@ -1,7 +1,7 @@
 """
-    Weather Plus Main Body
+    GUI for displaying maps and forecasts from weather.com
     
-    by Brightsr (previous developer : Nuka1195)
+    Nuka1195, Brightsr
 """
 
 # main imports
@@ -260,8 +260,40 @@ class Main:
 					"19": "ja",
 					"20": "ko",
 					"16": "hi",
-					"15": "he"
+					"15": "he",
+					"32": "auto"
                                     }.get( self.Settings.getSetting( "accu_translate%s" % self.locationindex ), "en-us" )
+	
+	if ( self.settings[ "accu_translate" ] == "auto" ):
+	    self.settings[ "accu_translate" ] = {
+						"Catalan": "ca",
+		                                "Chinese (Simple)": "zh-cn",
+		                                "Chinese (Traditional)": "zh-tw",
+		                                "Czech": "cs",
+		                                "Danish": "da",
+		                                "Dutch": "nl",
+						"Finnish": "fi",
+		                                "French": "fr",
+		                                "German": "de",
+		                                "German (Austria)": "de",
+		                                "Greek": "el",
+		                                "Hebrew": "he",
+		                                "Hindi (Devanagiri)": "hi",
+		                                "Italian": "it",
+		                                "Japanese": "ja",
+		                                "Korean": "ko",
+		                                "Norwegian": "no",
+		                                "Polish": "pl",
+		                                "Portuguese": "pt",
+		                                "Portuguese (Brazil)": "pt-br",
+		                                "Romanian": "ro",
+		                                "Russian": "ru",
+		                                "Slovak": "sk",
+		                                "Spanish": "es-ar",
+		                                "Spanish (Mexico)": "es-mx",
+		                                "Swedish": "sv",
+		                                "Turkish": "tr"
+		                            }.get( xbmc.getLanguage(), "en-us" )
 
         self.areacode = self.Settings.getSetting("code%s_%d" % ( self.locationindex, int(self.provider)+1 ))  
 	# set if new location
@@ -873,7 +905,7 @@ class Main:
 	            self.WEATHER_WINDOW.setProperty( "36Hour.%d.DaylightTitle" % ( day + 1, ), forecast[ 8 ].replace( "Sunrise", xbmc.getLocalizedString( 33027 ) ).replace( "Sunset", xbmc.getLocalizedString( 33028 ) ) )
 	            self.WEATHER_WINDOW.setProperty( "36Hour.%d.DaylightTime" % ( day + 1, ), forecast[ 9 ] )
 	            self.WEATHER_WINDOW.setProperty( "36Hour.%d.DaylightType" % ( day + 1, ), ( "sunrise", "sunset", )[ forecast[ 8 ] == "Sunset" ] )
-	            self.WEATHER_WINDOW.setProperty( "36Hour.%d.Heading" % ( day + 1, ), { "Today": xbmc.getLocalizedString( 33006 ), "Tonight": xbmc.getLocalizedString( 33018 ), "Tomorrow": xbmc.getLocalizedString( 33007 ), "Tomorrow Night": xbmc.getLocalizedString( 33019 ) }[ forecast[ 0 ] ] )
+	            self.WEATHER_WINDOW.setProperty( "36Hour.%d.Heading" % ( day + 1, ), { "Today": xbmc.getLocalizedString( 33006 ), "Tonight": xbmc.getLocalizedString( 33018 ), "Tomorrow": xbmc.getLocalizedString( 33007 ), "Tomorrow Night": xbmc.getLocalizedString( 33019 ) }[ forecast[ 0 ].replace("Late Afternoon", "Today").replace("This Afternoon", "Today") ] )
         # use this to hide info until fully fetched
         self.WEATHER_WINDOW.setProperty( "36Hour.IsFetched", "true" )
 	
@@ -900,9 +932,11 @@ class Main:
 		self.WEATHER_WINDOW.clearProperty( "Daily.%d.LowTemperature" % ( count ))
 
 	ampm = 0
+	flag = 0
         for count, forecast in enumerate( forecasts ):
 	    # print re.findall( "Night", forecast[ 10 ] )
-	    if ( forecast[ 0 ] == "Tonight" and count == 0 ):
+	    if ( forecast[ 0 ] == "Late Afternoon" ): flag = 1
+	    elif ( forecast[ 0 ] == "Tonight" and ( count == 0 or flag == 1 ) ):
 	 	self.WEATHER_WINDOW.setProperty( "Daily.%d.LongDay" % ( int( ( count + 1 + ampm )/2 ) + 1, ), longday_dict.get( forecast[ 10 ], forecast[ 10 ] ) )
 		self.WEATHER_WINDOW.setProperty( "Daily.%d.ShortDay" % ( int( ( count + 1 + ampm )/2 ) + 1, ), shortday_dict.get( forecast[ 10 ], forecast[ 10 ][:5]+"." ) )		
 		self.WEATHER_WINDOW.setProperty( "Daily.%d.LongDate" % ( int( ( count + 1 + ampm )/2 ) + 1, ), "%s %s" % ( longdate_dict[ forecast[ 11 ].split( " " )[ 0 ] ], str(int(forecast[ 11 ].split( " " )[ 1 ])), ) )
@@ -1009,7 +1043,7 @@ class Main:
 	if ( self.areacode != self.Settings.getSetting("code%s_%s" % ( self.locationindex, int(self.provider)+1 ) ) ): return    
         # fetch daily forecast
         forecasts = self.WeatherClient.accu_fetch_10day_forecast()
-	print forecasts
+	# print forecasts
         # localized long and short day dictionary
         longday_dict = { "Monday": xbmc.getLocalizedString( 11 ), "Tuesday": xbmc.getLocalizedString( 12 ), "Wednesday": xbmc.getLocalizedString( 13 ), "Thursday": xbmc.getLocalizedString( 14 ), "Friday": xbmc.getLocalizedString( 15 ), "Saturday": xbmc.getLocalizedString( 16 ), "Sunday": xbmc.getLocalizedString( 17 ), "Today": xbmc.getLocalizedString( 33006 ), "Tonight": xbmc.getLocalizedString( 33018 ) }
         shortday_dict = { "Monday": xbmc.getLocalizedString( 41 ), "Tuesday": xbmc.getLocalizedString( 42 ), "Wednesday": xbmc.getLocalizedString( 43 ), "Thursday": xbmc.getLocalizedString( 44 ), "Friday": xbmc.getLocalizedString( 45 ), "Saturday": xbmc.getLocalizedString( 46 ), "Sunday": xbmc.getLocalizedString( 47 ), "Today": xbmc.getLocalizedString( 33006 ), "Tonight": xbmc.getLocalizedString( 33018 ) }
@@ -1112,6 +1146,7 @@ class Main:
             self.WEATHER_WINDOW.clearProperty( "Daily.%d.ShortWindDirection" % ( count + 1, ) ) 
         # use this to hide info until fully fetched
         self.WEATHER_WINDOW.setProperty( "Daily.IsFetched", "true" )
+	self.WEATHER_WINDOW.setProperty( "Weekend.IsFetched", "true" )
 
     def _wunder_36_forecast( self ):
         # exit script if user changed locations
@@ -1333,7 +1368,7 @@ class Main:
             self.WEATHER_WINDOW.setProperty( "Hourly.%d.Sunrise" % ( count + 1, ), "" )
             self.WEATHER_WINDOW.setProperty( "Hourly.%d.Sunset" % ( count + 1, ), "" )
         # clear tail
-        for count in range( len( forecasts ), 12 ):
+        for count in range( len( forecasts ), 24 ):
             self.WEATHER_WINDOW.clearProperty( "Hourly.%d.Time" % ( count + 1, ) )
             self.WEATHER_WINDOW.clearProperty( "Hourly.%d.LongDate" % ( count + 1, ) )
             self.WEATHER_WINDOW.clearProperty( "Hourly.%d.ShortDate" % ( count + 1, ) )
