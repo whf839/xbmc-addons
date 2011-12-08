@@ -583,7 +583,7 @@ class Forecast36HourParser:
         pattern_locstate = "wx.config.loc.state=\"([^\"]+)\""
         pattern_video_location = "US_Current_Weather:([^\"]+)\""
         pattern_video_local_location = "/outlook/videos/(.+?)-60-second-forecast-(.+?)\""
-        pattern_alert_color = "<div id=\"wx-alert-bar\" class=\"wx-alert-(.+?)\">"
+        pattern_alert_color = "<div id=\"wx-alert-bar\" class=\"wx-alert-([0-9]+)"
         pattern_alerts = "href=\"/weather/alerts/([^\"]+)\" from=\"local_alert_list_overview\">"
         pattern_days = "<td class=\"twc-col-[0-9]+ twc-forecast-when\">(.+?)</td>"
         pattern_icon = "<img src=\"http://s\.imwx\.com/v\.20100719\.135915/img/wxicon/[0-9]+/([0-9]+)\.png\" width=\"72\""
@@ -1046,8 +1046,8 @@ class NOAA_Forecast36HourParser:
         # printlog("days_10day : " + ",".join(days_10day))
 
  	# am or pm now?
-	cor = 0
-	if (days_10day[0] == "Late Afternoon" ): cor = 1
+	# cor = 0
+	# if (days_10day[0] == "Late Afternoon" ): cor = 1
 	ampm = 0
 	if (days_10day[0] == "Tonight" or days_10day[0] == "Overnight"): ampm = 1
         # printlog("ampm : " + str(ampm))
@@ -1193,11 +1193,9 @@ class NOAA_Forecast36HourParser:
 		current_wind = re.findall( pattern_current_wind_2, htmlSource )[0]
 	    if ( current_wind.lower() != "calm"  ):
 	        if ( current_wind.split(" ")[1] != "M" ):
-		    try:
-			current_wind = current_wind.split(" ")[0]+" "+_localize_unit( current_wind.split(" ")[1], "speed" ).replace(" mph","").replace(" km/h","") +" Gust "+_localize_unit( current_wind.split(" ")[3], "speed" )
-		    except:	
-			current_wind = current_wind.split(" ")[0]+" "+_localize_unit( current_wind.split(" ")[1], "speed" )
-	
+		    current_winddirection = current_wind.split(" ")[0] # for new pre-eden, winddirection should be assigned
+		    current_wind = _localize_unit( current_wind.split(" ")[1], "speedmph2kmh" ) # for new pre-eden, wind must have straight number of km/h	
+		    
             # fetch precip
 	    precip_title = []
             precip_amount = re.findall( pattern_precip_amount, htmlSource_2 )
@@ -1232,7 +1230,7 @@ class NOAA_Forecast36HourParser:
             for count in range(0, 13):
                 # make icon path
                 try :
-                  iconpath = "/".join( [ "special://temp", "weather", "128x128", icon[ count + cor ] + ".png" ] )
+                  iconpath = "/".join( [ "special://temp", "weather", "128x128", icon[ count ] + ".png" ] )
                 except :
                   printlog("Icon is not available")
                   iconpath = "/".join( [ "special://temp", "weather", "128x128", "na.png" ] ) 
@@ -1249,8 +1247,7 @@ class NOAA_Forecast36HourParser:
 		  printlog(days[count+ampm])       # days is for 36 hour forecast ( today, tonight, tomorrow, tomorrow night ) 
 		                                   # ampm = 0 : starting with "today", ampm = 1 : starting with "tonight"
 		else:
-		  printlog(days_10day[count+cor])  # days_10day is a date for 10 day (actually 7 day) forecast
-		                                   # cor = 1 if days_10day starts with "late afternoon", skipping that.
+		  printlog(days_10day[count]) 
                 try :
                   printlog(brief[ count ])
                 except :
@@ -1323,7 +1320,7 @@ class NOAA_Forecast36HourParser:
 				     outlook[ count ], 
 				     daylight[ count+ampm ][ 0 ], 
 				     _localize_unit( daylight[ count+ampm ][ 1 ], "time"  ), 
-				     days_10day[count+cor].replace("This Afternoon", "Today"), 
+				     days_10day[count].replace("This Afternoon", "Today"), 
 				     date, 
 				     windir.get(wind[count][0]),				# [12] Daily.%d.WindDirection
 				     windspeed,							# [13] Daily.%d.WindSpeed
@@ -2168,7 +2165,7 @@ class NOAA_ForecastHourlyParser:
                             "NW": "From the Northwest",
                             "NNW": "From the North Northwest"
                  }   
-	daylight = [ ( WEATHER_WINDOW.getProperty("36Hour.%s.DaylightTitle" % i), _localize_unit( WEATHER_WINDOW.getProperty("36Hour.%s.DaylightTime" % i), "time24" ) ) for i in range(1, 3) ]
+	daylight = [ ( WEATHER_WINDOW.getProperty("36Hour.%s.DaylightTitle" % i), _localize_unit( WEATHER_WINDOW.getProperty("36Hour.%s.DaylightTime" % i), "time24" ) ) for i in range(1, 4) ]
 	try:
 		daylight_time = [ int(daylight[0][1].split(":")[0]), int(daylight[0][1].split(":")[0]) ]
 	except:   # sunrise = "N/A" and first heading = "Late Afternoon"
@@ -2757,6 +2754,7 @@ class WeatherClient:
         # set users translate preference
         self.translate = translate
 	self.accu_translate = accu_translate
+	if ( self.accu_translate != "en-us" ): self.code = self.code.replace( "en-us", self.accu_translate )
 
     def _compatible( self ):
         # check for compatibility
@@ -4866,6 +4864,14 @@ class WeatherClient:
 	    except:
 		pass
 
+	    Europe = 1
+	
+	# Hungary
+	if (self.code.startswith("HU") or loc == "hu" or self.wunder_country == "Hungary"):
+	    printlog( "Video Location : Hungary" )
+	    url = "http://94.199.183.188/rtlhirek/idojaras/meteor.flv"
+	    urls += [ url ]
+	    titles += [ "RTL Klub" ]
 	    Europe = 1
 
         # Europe
