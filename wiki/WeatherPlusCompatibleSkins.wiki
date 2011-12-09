@@ -24,3 +24,16 @@ _If you know another skin, feel free to let me know._
  * *Neon* : http://forum.xbmc.org/showthread.php?t=83337
  * *Transparency!* : http://forum.xbmc.org/forumdisplay.php?f=115
  * *xTV-SAF* : http://forum.xbmc.org/showthread.php?t=59576
+
+||Skin||36hour||Extended||Hourly||Weekend||Map||Video||Alert(detailed text)||
+||Aeon65||O||O||O||O||X||X||O||
+||Aeon MQ2||O||O||O||O||O||only one||O||
+||Aeon MQ3||O||O||O||O||O||only one||O||
+||Aeon Nox||O||O||O||O||O||multiple||X||
+||Confluence (dharma)||O||O||O||O||O||multiple||O||
+||Confluence (eden)||O||O||O||O||O||multiple||X||
+||Convergence||O||O||O||O||O||multiple||?||
+||Cirrus Extended v2||O||O||O||O||?||?||?||
+||Neon||O||O||O||O||O||only one||O||
+||Transparency!||O||O||O||O||O||multiple||O||
+||xTV-SAF||O||O||O||O||?||?||?||
