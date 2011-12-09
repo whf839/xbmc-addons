@@ -33,7 +33,7 @@ _If you know another skin, feel free to let me know._
 ||Confluence (dharma)||O||O||O||O||O||multiple||O||
 ||Confluence (eden)||O||O||O||O||O||multiple||X||
 ||Convergence||O||O||O||O||O||multiple||?||
-||Cirrus Extended v2||O||O||O||O||?||?||?||
+||Cirrus Extended v2||O||O||O||O||O||X||brief rss||
 ||Neon||O||O||O||O||O||only one||O||
 ||Transparency!||O||O||O||O||O||multiple||O||
 ||xTV-SAF||O||O||O||O||?||?||?||
