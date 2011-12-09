@@ -37,7 +37,7 @@ _If you know another skin, feel free to let me know._
 ||Cirrus Extended v2||O||O||O||O||O||X||brief rss||
 ||Neon||O||O||O||O||O||only one||O||
 ||Transparency!||O||O||O||O||O||multiple||O||
-||Xeebo||O||O||O||O|X||X||X||
+||Xeebo||O||O||O||O||X||X||X||
 ||xTV-SAF||O||O||O||O||O||X||brief rss||
 
  * _Brief alert notification is available in all the skins._
