@@ -23,6 +23,7 @@ _If you know another skin, feel free to let me know._
  * *Cirrus Extended v2* : http://forum.xbmc.org/showthread.php?t=102066
  * *Neon* : http://forum.xbmc.org/showthread.php?t=83337
  * *Transparency!* : http://forum.xbmc.org/forumdisplay.php?f=115
+ * *Xeebo* : http://forum.xbmc.org/showthread.php?t=105258
  * *xTV-SAF* : http://forum.xbmc.org/showthread.php?t=59576
 
 ||Skin||36hour||Extended||Hourly||Weekend||Map||Video||Alert*||
@@ -36,6 +37,7 @@ _If you know another skin, feel free to let me know._
 ||Cirrus Extended v2||O||O||O||O||O||X||brief rss||
 ||Neon||O||O||O||O||O||only one||O||
 ||Transparency!||O||O||O||O||O||multiple||O||
+||Xeebo||O||O||O||O|X||X||X||
 ||xTV-SAF||O||O||O||O||O||X||brief rss||
 
  * _Brief alert notification is available in all the skins._
