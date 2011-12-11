@@ -33,7 +33,7 @@ _If you know another skin, feel free to let me know._
 ||Aeon Nox||O||O||O||O||O||multiple||X||
 ||Confluence (dharma)||O||O||O||O||O||multiple||O||
 ||Confluence (eden)||O||O||O||O||O||multiple||X||
-||Convergence||O||O||O||O||O||multiple||?||
+||Convergence||O||O||O||O||O||multiple||brief rss||
 ||Cirrus Extended v2||O||O||O||O||O||X||brief rss||
 ||Neon||O||O||O||O||O||only one||O||
 ||Transparency!||O||O||O||O||O||multiple||O||
