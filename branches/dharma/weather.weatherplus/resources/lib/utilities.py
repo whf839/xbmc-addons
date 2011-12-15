@@ -154,7 +154,7 @@ def _translate_text( text, translate, accu="", target="en" ):
 		text = ""
 		for count in range(0, len(text_raw)):
 		    text += text_raw[count][0]
-		text = text.replace(" | ", "|").replace(" % ", "%").replace(" / ", "/").replace("\\n","").replace("\\t","").replace(" |","|")
+		text = text.replace(" | ", "|").replace(" % ", "%").replace(" / ", "/").replace("\\n","").replace("\\t","").replace(" |","|")	
 	    except Exception, e:
 		# TODO: add error checking?
 		pass

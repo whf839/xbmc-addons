@@ -279,7 +279,7 @@ class NOAA_Forecast36HourParser:
 	# fetch icons
 	icon = []
 	icons = re.findall( pattern_icon, xmlSource )
-	current_icon = "/".join( [ "special://temp", "weather", "128x128", icondir.get( current_icon, "na" ) + ".png" ] )
+	current_icon = icondir.get( current_icon, "na" ) + ".png"
 	for count in range(0, 13-ampm):
 		icon += [ icondir.get ( re.findall( "([^\d\s]+)", icons[count].split("/")[-1] )[0], "na" ) ]
 	# printlog("NOAA icons : " + ",".join(icon))
@@ -340,10 +340,8 @@ class NOAA_Forecast36HourParser:
 		current_wind = re.findall( pattern_current_wind_2, htmlSource )[0]
 	    if ( current_wind.lower() != "calm"  ):
 	        if ( current_wind.split(" ")[1] != "M" ):
-		    try:
-			current_wind = current_wind.split(" ")[0]+" "+_localize_unit( current_wind.split(" ")[1], "speed" ).replace(" mph","").replace(" km/h","") +" Gust "+_localize_unit( current_wind.split(" ")[3], "speed" )
-		    except:	
-			current_wind = current_wind.split(" ")[0]+" "+_localize_unit( current_wind.split(" ")[1], "speed" )
+		    current_winddirection = current_wind.split(" ")[0]
+		    current_wind = _localize_unit( current_wind.split(" ")[1], "speedmph2kmh" )
 		    
             # fetch precip
 	    precip_title = []
@@ -371,9 +369,9 @@ class NOAA_Forecast36HourParser:
 		except:
 			daylight += [ ("Sunrise", "N/A"), ("Sunset", "N/A"), ]
 	    # Current temereatures should be always in C
-	    current_temp = _localize_unit( current_temp, "temp" )
-	    current_feel_like = _localize_unit( current_feel_like, "temp" )
-	    current_dew = _localize_unit( current_dew, "temp" )
+	    current_temp = _localize_unit( current_temp, "tempf2c" )
+	    current_feel_like = _localize_unit( current_feel_like, "tempf2c" )
+	    current_dew = _localize_unit( current_dew, "tempf2c" )
 	    self.extras += [( pressure, visibility, daylight[0][1], daylight[1][1], current_temp, current_feel_like, current_brief, current_wind, current_humidity, current_dew, current_icon, current_winddirection )]
 	    days = ["Today", "Tonight", "Tomorrow", "Tomorrow Night", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A"]
             for count in range(0, 13):
@@ -590,7 +588,7 @@ class NOAA_ForecastHourlyParser:
 		else:
 			hour = str(hour) + ":00 AM"
 		feelslike = _getFeelsLike( int(_localize_unit( temperature[count], "tempf2c" )), int(_localize_unit( wind[count], "speedmph2kmh" ).split(" ")[0]), int(humidity[count]) )
-		print "hour = %s, daylight(1) = %s, daylight(2) = %s" % (hour_temp, daylight_time[0], daylight_time[1] + 24 * ( daylight[1+cor][0] == "Sunrise" ))
+		# print "hour = %s, daylight(1) = %s, daylight(2) = %s" % (hour_temp, daylight_time[0], daylight_time[1] + 24 * ( daylight[1+cor][0] == "Sunrise" ))
 		if ( hour_temp <= daylight_time[0] ):
 			if ( daylight[0+cor][0] == "Sunrise" ):
 				icon = "nt_"	

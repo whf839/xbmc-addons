@@ -286,7 +286,7 @@ class WeatherClient:
 				printlog( "Fetching Alerts... Done!" )
 		return alerts, alertsrss, alertsnotify, alertscolor
 
-	def fetch_map_list( self, maptype=0, locationindex=None ):
+	def fetch_map_list( self, maptype=0, userfile=None, locationindex=None ):
 		# set url
 		url = BASE_URL + BASE_MAPS[ maptype ][ 1 ]        
 		# we handle None, local and custom map categories differently
@@ -299,8 +299,8 @@ class WeatherClient:
 				url = url % ( "map", self.wunder_area, "", )
 			else:
 				url = url % ( "map", areadir.get(self.wunder_area, ""), "", )
-			WEATHER_WINDOW.setProperty( "wunder_country", self.wunder_country )
-			WEATHER_WINDOW.setProperty( "wunder_area", self.wunder_area )
+			Addon.setSetting( "wunder_country", self.wunder_country )
+			Addon.setSetting( "wunder_area", self.wunder_area )
 		printlog( "maptype = " + str(maptype) )
 		printlog( "map_list_url = " + url )
 		# fetch source, only refresh once a week
@@ -312,13 +312,13 @@ class WeatherClient:
 		# print parser.map_list
 		return None, parser.map_list
 
-	def fetch_map_urls( self, map, locationindex=None ):
+	def fetch_map_urls( self, map, userfile=None, locationindex=None ):
 		# set url
 		if ( map.endswith( ".html" ) ):
 			url = BASE_URL + map
 		else:
-			wunder_country = WEATHER_WINDOW.getProperty( "wunder_country" )
-			wunder_area = WEATHER_WINDOW.getProperty( "wunder_area" )
+			wunder_country  = Addon.getSetting( "wunder_country" )
+			wunder_area = Addon.getSetting( "wunder_area" )
 			if ( wunder_country == "US" ):
 				url = self.BASE_WEATHER_COM_URL % ( "map", wunder_area, "&mapdest=%s" % ( map, ), )
 			else:
@@ -425,8 +425,8 @@ class WUNDER_Forecast36HourParser:
 		current_icon = raw_icons[1]
 		current_brief = current_brief[0]
 		printlog( "Current Icon, Brief OK!" )
-		current_temp = _localize_unit( current_temp[0], "temp" )
-		current_feelslike = _localize_unit( current_feelslike[0], "temp" )
+		current_temp = _localize_unit( current_temp[0], "tempf2c" )
+		current_feelslike = _localize_unit( current_feelslike[0], "tempf2c" )
 		printlog( "Current Temperature, Feels like OK!" )
 		try:
 			current_pressure = _localize_unit( current_pressure[0], "pressure" )
@@ -437,7 +437,7 @@ class WUNDER_Forecast36HourParser:
 		except:
 			current_visibility = "N/A"
 		printlog( "Pressure, Visibility OK!" )
-		current_dew = _localize_unit( current_dew[0], "temp" )
+		current_dew = _localize_unit( current_dew[0], "tempf2c" )
 		current_humidity = current_humidity[0]
 		printlog( "Dew point, Humidity OK!" )
 		try:
@@ -506,7 +506,7 @@ class WUNDER_Forecast36HourParser:
 			current_wind = "N"
 
 		current_windDirection = current_wind
-		current_wind = "From %s at %s" % (current_wind, _localize_unit(current_windspeed, "speed"))
+		current_wind = _localize_unit(current_windspeed, "speedmph2kmh")
 		printlog( "Wind OK!" )
 
 		if ( days[0] == " Today" ):
@@ -521,6 +521,7 @@ class WUNDER_Forecast36HourParser:
 			days = [ "Tonight", "Tomorrow", "Tomorrow Night" ]
 
 		printlog( "Day OK!" )
+
 		current_icon = icondir.get( current_icon, "na" ) + ".png"	
 
 	except:
@@ -547,7 +548,8 @@ class WUNDER_Forecast36HourParser:
 		brief = text.split("|||||")[1].split( "|" )
 		normalized_outlook = text.split("|||||")[2].split( "|" )
 
-	self.extras += [( current_pressure, current_visibility, current_sunrise, current_sunset, current_temp, current_feelslike, current_brief, current_wind, current_humidity, current_dew, "/".join( [ "special://temp", "weather", "128x128", current_icon ] ), current_uvindex, current_windDirection )]
+
+   	self.extras += [( current_pressure, current_visibility, current_sunrise, current_sunset, current_temp, current_feelslike, current_brief, current_wind, current_humidity, current_dew, current_icon, current_uvindex, current_windDirection )]
 
 	for count in range(0,3) :
 		iconpath = "/".join( [ "special://temp", "weather", "128x128", "%s.png" % icondir.get( icons[ count ], "na" ) ] )
@@ -613,7 +615,9 @@ class WUNDER_Forecast10DayParser:
 			except:
 			   printlog( "No Info : 10day Brief" )
 			# translate text
+			print text, self.translate
 			text = _translate_text( text, self.translate )
+			print text
 			# split text into it's original list
 			brief = text.split( "|" )
 
@@ -691,9 +695,7 @@ class WUNDER_ForecastHourlyParser:
 			except:
 			   printlog( "No Info : 10day Brief" )
 			# translate text
-			print text, self.translate
 			text = _translate_text( text, self.translate )
-			print text
 			# split text into it's original list
 			cond = text.split( "|" )
 		current_hour = int( local_time[0].split(":")[0] )

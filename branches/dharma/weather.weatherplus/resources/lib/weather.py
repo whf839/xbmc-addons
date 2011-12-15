@@ -237,16 +237,16 @@ class Forecast36HourParser:
 	    # fetch current info
 	    current_icon_brief = re.findall( pattern_current_icon, htmlSource )
 	    try:
-		current_icon = "/".join( [ "special://temp", "weather", "128x128", current_icon_brief[ 0 ][ 0 ] + ".png" ] )
+		current_icon = current_icon_brief[ 0 ][ 0 ] + ".png"
 		current_brief = current_icon_brief [ 0 ][ 1 ]
 	    except:
-	        current_icon = "/".join( [ "special://temp", "weather", "128x128", "na" + ".png" ] )
+	        current_icon = "na.png"
 		current_brief = "N/A"
 	    current_temp = re.findall( pattern_current_temp, htmlSource )
 	    current_feels_like = re.findall( pattern_feels_like, htmlSource )
 	    try:
-	        current_temp =  _localize_unit( current_temp[ 0 ] )
-		current_feels_like = _localize_unit( current_feels_like [ 0 ] )
+	        current_temp = _localize_unit( current_temp[ 0 ], "tempf2c" )
+		current_feels_like = _localize_unit( current_feels_like[ 0 ], "tempf2c" )
 	    except:
 		current_temp = "N/A"
 		current_feels_like = "N/A"
@@ -255,24 +255,17 @@ class Forecast36HourParser:
 		current_wind = current_wind[ 0 ].replace("\t","").replace("\n","").strip()
 		current_wind_buffer = re.findall( "From (.+?) at ([0-9]+)", current_wind )
 		try: 
-		   if ( self.translate) :
-			'''
-			speed = _localize_unit( current_wind_buffer[ 0 ][ 1 ], "speed" )
-			unit = speed.split(" ")[-1]
-			current_wind = _translate_text( "%s %s" % ( current_wind_buffer[ 0 ][ 0 ], speed.split(" ")[0] ), self.translate )
-			current_wind += " %s" % unit
-			'''
-			current_wind = "%s %s" % ( current_wind_buffer[ 0 ][ 0 ], _localize_unit( current_wind_buffer[ 0 ][ 1 ], "speed" ) )
-		   else:		
-			current_wind = "From %s at %s" % ( current_wind_buffer[ 0 ][ 0 ], _localize_unit( current_wind_buffer[ 0 ][ 1 ], "speed" ) )
+		   current_wind = current_wind_buffer[ 0 ][ 1 ]
+		   current_winddirection = _localize_unit( current_wind_buffer[ 0 ][ 0 ], "speedmph2kmh" )
 		except:
-		   pass
+		   current_winddirection = ""
 	    except:
 		current_wind = "N/A"
+		current_winddirection = "N/A"
 	    current_humidity = re.findall( pattern_current_humidity, htmlSource )
 	    current_dewpoint = re.findall( pattern_current_dewpoint, htmlSource )
 	    try:
-	        current_humidity = current_humidity[ 0 ] + "%"
+	        current_humidity = current_humidity[ 0 ]
 		current_dewpoint = _localize_unit( current_dewpoint[ 0 ], "tempf2c" )
 	    except:
 	        current_humidity = "N/A"
@@ -347,8 +340,8 @@ class Forecast36HourParser:
                    try : 
                       sunset = _localize_unit( str(int(sunset.split(" ")[3].split(":")[0])-time_diff) + ":" + sunset.split(" ")[3].split(":")[1], "time" )
                    except :
-                      sunset = "N/A"    
-
+                      sunset = "N/A"
+	    
             # convert outlook wind/temp values
             outlook = _normalize_outlook( outlook )
             # translate brief and outlook if user preference
@@ -366,7 +359,7 @@ class Forecast36HourParser:
 		brief = text.split("|||||")[1].split( "|" )
                 outlook = text.split( "|||||" )[2].split( "|" )
 
-	    self.extras += [(pressure, _localize_unit(visibility, "distance"), sunrise, sunset, current_temp, current_feels_like, current_icon, current_brief, current_humidity, current_dewpoint, current_wind, current_UVIndex )]
+	    self.extras += [(pressure, _localize_unit(visibility, "distance"), sunrise, sunset, current_temp, current_feels_like, current_icon, current_brief, current_humidity, current_dewpoint, current_wind, current_UVIndex, current_winddirection )]
 
 	    printlog( "Checking parsed data..." )
             for count, day in enumerate( days ):
