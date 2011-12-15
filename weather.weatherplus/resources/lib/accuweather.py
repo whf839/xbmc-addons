@@ -70,7 +70,7 @@ class WeatherClient:
 		# set users translate preference
 		self.translate = translate
 		self.accu_translate = accu_translate
-		if ( self.accu_translate != "en-us" ): self.code = self.code.replace( "en-us", self.accu_translate )	
+		if ( self.accu_translate != "en-us" ): self.code = self.code.replace( "en-us", self.accu_translate )
 		# set wind directory and translate pharses if needed
 		self._set_windir()
 		# set urls to be fetched
@@ -313,8 +313,8 @@ class ACCU_Forecast36HourParser:
 		try:
 			# fetch icons
 			icon = []
-			current_icon = icondir.get( re.findall( pattern_icon, htmlSource )[0], "na" ) 
-			current_icon = "/".join( [ "special://temp", "weather", "128x128", current_icon + ".png" ] )
+			current_icon = icondir.get( re.findall( pattern_icon, htmlSource )[0] ) 
+			current_icon = current_icon + ".png"
 			icon_day1 = re.findall( pattern_icon, htmlSource_1 )
 			icon_day2 = re.findall( pattern_icon, htmlSource_2 )
 			icon = [ icondir.get(icon_day1[0]), icondir.get(icon_day1[1]), icondir.get(icon_day2[0]), icondir.get(icon_day2[1]) ]
@@ -347,10 +347,11 @@ class ACCU_Forecast36HourParser:
 				    printlog ( "wind... Done! (%s)" % current_wind )
 				    current_winddirection = ""
 				    try:
-					current_wind = current_wind.split(" ")[0]+" "+_english_localize_unit( current_wind.split(" ")[1], "speed" )
+					current_winddirection = current_wind.split(" ")[0]
+					current_wind = current_wind.split(" ")[1]
 				    except:    # Calm or variable direction
-					current_wind = current_wind
-					current_winddirection = ""
+					current_wind = "0"     # new pre-eden can't show "Calm", must fit the form "From XXX at XX km/h"
+					current_winddirection = "VAR"
 				    printlog ( "wind direction/speed split... Done!" )
 
 				    precip_title = []
