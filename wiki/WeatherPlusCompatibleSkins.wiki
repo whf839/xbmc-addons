@@ -13,7 +13,7 @@ General weather addons and skins support current weather and four days forecast.
 
 _If you know another skin, feel free to let me know._
 
- * *Aeon65* : http://forum.xbmc.org/showthread.php?t=76839, extract and overwrite this zip file into skin folder (http://xbmc-addons.googlecode.com/fi...eatherPlus.zip)
+ * *Aeon65* : http://forum.xbmc.org/showthread.php?t=76839, extract and overwrite this zip file into skin folder (http://xbmc-addons.googlecode.com/files/Aeon65%20Mod%20for%20WeatherPlus.zip)
  * *Aeon MQ2* : http://forum.xbmc.org/showthread.php?t=81601
  * *Aeon MQ3* : http://forum.xbmc.org/showthread.php?t=107793
  * *Aeon Nox* : http://forum.xbmc.org/showthread.php?t=89151
