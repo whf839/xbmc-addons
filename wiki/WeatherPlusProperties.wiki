@@ -21,7 +21,7 @@ These are standard properties of XBMC.
 ||Locations||number of configured locations||_same_||
 ||Location%d||name of location (%d=1,2,3,...)||_same_||
 ||Location||name of current location||_same_||
-||Updated||last update time||_may be available in the next release_||
+||Updated||last update time||_same_||
 || WeatherProvider ||name of weather provider||_same_||
 ||Current.Condition||current weather condition in words||_same_||
 ||Current.Temperature||current temperature||_same_||
