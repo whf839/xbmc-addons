@@ -296,6 +296,7 @@ class Main:
 	elif ( self.provider == "3" ):	
 		# import resources.lib.wunderground as WeatherClient
 		# self.WeatherClient = WeatherClient.WeatherClient( self.areacode, self.settings[ "translate" ] )
+		pass
 	else:	
 		import resources.lib.noaa as WeatherClient
 		self.WeatherClient = WeatherClient.WeatherClient( self.areacode, self.settings[ "translate" ] )
