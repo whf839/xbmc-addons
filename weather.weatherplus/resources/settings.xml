@@ -23,7 +23,7 @@
     <setting id="install_mappack" type="action" label="32570"  action="RunScript($CWD/resources/lib/addon_manager.py,package=mappack)" default="" />
   </category>
   <category label="32901">
-	<setting id="provider1" type="enum" label="32902" lvalues="32951|32952|32953|32954" default="2" />
+	<setting id="provider1" type="enum" label="32902" lvalues="32951|32952|32953" default="2" />
 	<setting id="accu_translate1" type="enum" label="32981" default="32"  lvalues="32701|32702|32703|32704|32705|32706|32707|32708|32709|32799|32710|32711|32712|32713|32714|32715|32716|32717|32718|32719|32720|32721|32722|32723|32724|32725|32726|32727|32728|32729|32730|32731|32732" subsetting="true" visible="eq(-1,0)" />
 	<setting id="change_location1_1" type="action" subsetting="true"  label="32904" visible="eq(-2,0)" action="RunScript($CWD/resources/lib/Location_Selector.py,loc=1|0)"/>
 	<setting id="change_location1_2" type="action" subsetting="true"  label="32904" visible="eq(-3,1)" action="RunScript($CWD/resources/lib/Location_Selector.py,loc=1|1)"/>
@@ -39,7 +39,7 @@
 	<setting id="code1_4" type="text" visible="false" default="" enable="false" />
   </category>
   <category label="32905">
-	<setting id="provider2" type="enum" label="32902" lvalues="32951|32952|32953|32954" default="2" />
+	<setting id="provider2" type="enum" label="32902" lvalues="32951|32952|32953" default="2" />
 	<setting id="accu_translate2" type="enum" label="32981" default="32"  lvalues="32701|32702|32703|32704|32705|32706|32707|32708|32709|32799|32710|32711|32712|32713|32714|32715|32716|32717|32718|32719|32720|32721|32722|32723|32724|32725|32726|32727|32728|32729|32730|32731|32732" subsetting="true" visible="eq(-1,0)" />
 	<setting id="change_location2_1" type="action" subsetting="true"  label="32904" visible="eq(-2,0)" action="RunScript($CWD/resources/lib/Location_Selector.py,loc=2|0)"/>
 	<setting id="change_location2_2" type="action" subsetting="true"  label="32904" visible="eq(-3,1)" action="RunScript($CWD/resources/lib/Location_Selector.py,loc=2|1)"/>
@@ -55,7 +55,7 @@
 	<setting id="code2_4" type="text" visible="false" default="" enable="false" />
   </category>
   <category label="32906">
-	<setting id="provider3" type="enum" label="32902" lvalues="32951|32952|32953|32954" default="2" />
+	<setting id="provider3" type="enum" label="32902" lvalues="32951|32952|32953" default="2" />
 	<setting id="accu_translate3" type="enum" label="32981" default="32"  lvalues="32701|32702|32703|32704|32705|32706|32707|32708|32709|32799|32710|32711|32712|32713|32714|32715|32716|32717|32718|32719|32720|32721|32722|32723|32724|32725|32726|32727|32728|32729|32730|32731|32732" subsetting="true" visible="eq(-1,0)" />
 	<setting id="change_location3_1" type="action" subsetting="true"  label="32904" visible="eq(-2,0)" action="RunScript($CWD/resources/lib/Location_Selector.py,loc=3|0)"/>
 	<setting id="change_location3_2" type="action" subsetting="true"  label="32904" visible="eq(-3,1)" action="RunScript($CWD/resources/lib/Location_Selector.py,loc=3|1)"/>
