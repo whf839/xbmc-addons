@@ -154,7 +154,7 @@ def _translate_text( text, translate, accu="", target="en" ):
 		text = ""
 		for count in range(0, len(text_raw)):
 		    text += text_raw[count][0]
-		text = text.replace(" | ", "|").replace(" % ", "%").replace(" / ", "/").replace("\\n","").replace("\\t","").replace(" |","|")	
+		text = text.replace(" | ", "|").replace(" % ", "%").replace(" / ", "/").replace("\\n","").replace("\\t","").replace(" |","|")
 	    except Exception, e:
 		# TODO: add error checking?
 		pass
@@ -612,7 +612,7 @@ class MapParser:
             pattern_maps = "<img name=\"mapImg\" src=\"([^\"]+)\""
             # fetch static map
             static_map_ = re.findall( pattern_maps, htmlSource, re.IGNORECASE )
-            static_map_ = str(static_map_).replace("http://i.imwx.com/", "http://image.weather.com").replace("[", "").replace("]","").replace("\'","")
+            static_map_ = str(static_map_).replace("http://i.imwx.com/", "http://image.weather.com/").replace("[", "").replace("]","").replace("\'","")
             static_map = []
             static_map += [static_map_]
             # print "stat : ", static_map            
