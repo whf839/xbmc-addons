@@ -112,7 +112,8 @@ class Main:
 	    self.WEATHER_WINDOW.setProperty( "PreviousAreacode", self.areacode )
 	# we're finished, exit
 	printlog( "*** Finish! (Elapsed time : %f sec.) ***" % (time.clock() - start) )
-        self._exit_script()
+	self.WEATHER_WINDOW.setProperty( "Updated", time.strftime( "%m/%d/%Y %H:%M", time.localtime() ) )
+	self._exit_script()
 
     def _get_weather_window( self ):
         # grab the weather window
@@ -295,6 +296,7 @@ class Main:
 	elif ( self.provider == "3" ):	
 		# import resources.lib.wunderground as WeatherClient
 		# self.WeatherClient = WeatherClient.WeatherClient( self.areacode, self.settings[ "translate" ] )
+		pass
 	else:	
 		import resources.lib.noaa as WeatherClient
 		self.WeatherClient = WeatherClient.WeatherClient( self.areacode, self.settings[ "translate" ] )

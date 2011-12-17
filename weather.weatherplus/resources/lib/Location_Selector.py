@@ -80,7 +80,8 @@ class Main:
 						__Settings__.setSetting( "code%s_%s" % ( loc, int(provider)+1 ), self.location[0] )
 					elif ( provider == "3" ):
 						__Settings__.setSetting( "code%s_%s" % ( loc, int(provider)+1 ), self.location[1] )
-				# __Settings__.openSettings()
+				
+		__Settings__.openSettings()
 	
 	def _fetch_location(self, userInput, provider):
 		location = []
