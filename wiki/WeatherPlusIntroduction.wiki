@@ -13,7 +13,6 @@ Supported providers are below:
  * Weather.com
  * Accuweather.com Global
  * NOAA (Weather.gov of United States of America)
- * Wunderground.com
 
 _Some information (such as UV index or precipitation chance) or some features (such as weekend forecast) may be not available from a certain provider._
 
