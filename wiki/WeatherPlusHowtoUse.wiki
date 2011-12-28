@@ -19,8 +19,8 @@ Install from XBMC.org Repository > Weather > Weather Plus
 
 Download this zip file and install it :
 
- * Dharma : [http://xbmc-addons.googlecode.com/files/weather.weatherplus.v.2.8.0.dharma.zip Weather Plus v.2.8.0]
- * Eden-pre : [http://xbmc-addons.googlecode.com/files/weather.weatherplus.v.3.0.0.eden-pre.zip Weather Plus v.3.0.0]
+ * Dharma : [http://xbmc-addons.googlecode.com/files/weather.weatherplus.v.2.8.1.dharma.zip Weather Plus v.2.8.1]
+ * Eden-pre : [http://xbmc-addons.googlecode.com/files/weather.weatherplus.v.3.0.1.eden-pre.zip Weather Plus v.3.0.1]
 
 = How to Use =
 
