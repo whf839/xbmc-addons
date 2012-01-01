@@ -17,7 +17,7 @@
     <string id="32209">Small map pack app 10mb (256x173)</string>
     <string id="32210">Large</string>
     <string id="32211">Small</string>
-    
+	
     <string id="32220">'%s' successfully installed to:</string>
     <string id="32221">An error occurred extracting '%s' to:</string>
     <string id="32222">An error occurred downloading '%s' to:</string>
@@ -32,20 +32,20 @@
     <string id="32302">Kilometer</string>
     <string id="32303">Kilometers</string>
 
+	<!-- Forecast strings -->
+
     <!-- Settings category strings -->
     <string id="32400">Addons/Packages</string>
     <string id="32410">Misc Options</string>
     <string id="32420">Map/Radar categories</string>
     <string id="32430">Forecast options</string>
-	<string id="32440">Alternative Providers</string>
-	<string id="32450">Video</string>
 
     <!-- Settings strings -->
     <string id="32500">Translation</string>
     <string id="32501">Translator</string>		
     <string id="32502">Babelfish</string>
     <string id="32503">Google</string>
-	<string id="32510">Map List #1 category</string>
+    <string id="32510">Map List #1 category</string>
     <string id="32520">Map List #2 category</string>
     <string id="32530">Map List #3 category</string>
     <string id="32540">User defined maps/radars file</string>
@@ -65,9 +65,17 @@
     <string id="32586">2 minutes</string>
     <string id="32587">5 minutes</string>
     <string id="32588">10 minutes</string>
-	<string id="32590">Video</string>
-	<string id="32591">Regional</string>
-	<string id="32592">Local (Only US)</string>
+
+    <!-- Location Selector Strings -->
+    <string id="32511">Browse by Country &amp; City</string>
+    <string id="32512">Enter City or U.S Zip Code</string>
+    <string id="32513">Choose a Langauge</string>
+    <string id="32514">Choose a Region</string>
+    <string id="32515">Choose a Country</string>
+    <string id="32516">Choose a City or Town</string>
+    <string id="32517">Choose a Administrative District</string>
+    <string id="32518">Do you want to select this location?</string>
+    <string id="32519">Choose a Searching Method</string>
 
     <!-- map lists long -->
     <string id="32600">None</string>
@@ -203,62 +211,61 @@
     <string id="32863">Fitness</string>
     <string id="32864">User Defined</string>
 
-    	<!-- Alternative Provider strings -->
-	<string id="32901">Location 1</string>
-	<string id="32902">Provider</string>
-	<string id="32903">Location Name</string>
-	<string id="32904">Run Location Selector</string>
-	<string id="32905">Location 2</string>
-	<string id="32906">Location 3</string>
+    <!-- Location Tap strings -->
+    <string id="32901">Location 1</string>
+    <string id="32902">Provider</string>
+    <string id="32903">Customize Location Name</string>
+    <string id="32904">Run Location Selector</string>
+    <string id="32905">Location 2</string>
+    <string id="32906">Location 3</string>
 
-	<!-- Alternative Provider Lists -->
-	<string id="32951">Accuweather.com Global</string>
-	<string id="32952">NOAA (US Only)</string>
-	<string id="32953">Weather.com</string>
-	<string id="32954">Wunderground.com</string>
+    <!-- Provider Lists -->
+    <string id="32951">Accuweather.com Global</string>
+    <string id="32952">NOAA (US Only)</string>
+    <string id="32953">Weather.com</string>
 
-	<!-- Video Option -->
-	<string id="32961">Run Video Selector (Only for US)</string>
-	<string id="32962">Video #1</string>
-	<string id="32963">Video #2</string>
-	<string id="32964">Video #3</string>
+    <!-- Video Option -->
+    <string id="32961">Run Video Selector (Only for US)</string>
+    <string id="32962">Video #1</string>
+    <string id="32963">Video #2</string>
+    <string id="32964">Video #3</string>
 
-	<!-- Misc. -->
-	<string id="32981">Accuweather.com Language</string>
+    <!-- Misc. -->
+    <string id="32981">Accuweather.com Language</string>
 
-	<!-- Languages -->
-	<string id="32701">Arabic</string>
-	<string id="32702">Castellano</string>
-	<string id="32703">Catalan</string>
-	<string id="32704">Chinese(SIM)</string>
-	<string id="32705">Chinese(Taiwan)</string>
-	<string id="32706">Chinese(HK)</string>
-	<string id="32707">Czech</string>
-	<string id="32708">Danish</string>
-	<string id="32709">Dutch</string>
-	<string id="32799">English</string>
-	<string id="32710">Finnish</string>
-	<string id="32711">French(Canada)</string>
-	<string id="32712">Frehch</string>
-	<string id="32713">German</string>
-	<string id="32714">Greek</string>
-	<string id="32715">Hebrew</string>                                
-	<string id="32716">Hindi</string>
-	<string id="32717">Hungarian</string>
-	<string id="32718">Italian</string>
-	<string id="32719">Japanese</string>
-	<string id="32720">Korean</string>
-	<string id="32721">Norwegian</string>
-	<string id="32722">Polish</string>
-	<string id="32723">Portuguese(Brazil)</string>
-	<string id="32724">Portuguese</string>
-	<string id="32725">Romanian</string>
-	<string id="32726">Russian</string>
-	<string id="32727">Slovenian</string>
-	<string id="32728">Spanish</string>
-	<string id="32729">Spanish(Latin)</string>
-	<string id="32730">Swedish</string>
-	<string id="32731">Turkish</string>
-	<string id="32732">Auto</string>
-				
+    <!-- Languages -->
+    <string id="32701">Arabic</string>
+    <string id="32702">Castellano</string>
+    <string id="32703">Catalan</string>
+    <string id="32704">Chinese(SIM)</string>
+    <string id="32705">Chinese(Taiwan)</string>
+    <string id="32706">Chinese(HK)</string>
+    <string id="32707">Czech</string>
+    <string id="32708">Danish</string>
+    <string id="32709">Dutch</string>
+    <string id="32799">English</string>
+    <string id="32710">Finnish</string>
+    <string id="32711">French(Canada)</string>
+    <string id="32712">Frehch</string>
+    <string id="32713">German</string>
+    <string id="32714">Greek</string>
+    <string id="32715">Hebrew</string>                                
+    <string id="32716">Hindi</string>
+    <string id="32717">Hungarian</string>
+    <string id="32718">Italian</string>
+    <string id="32719">Japanese</string>
+    <string id="32720">Korean</string>
+    <string id="32721">Norwegian</string>
+    <string id="32722">Polish</string>
+    <string id="32723">Portuguese(Brazil)</string>
+    <string id="32724">Portuguese</string>
+    <string id="32725">Romanian</string>
+    <string id="32726">Russian</string>
+    <string id="32727">Slovenian</string>
+    <string id="32728">Spanish</string>
+    <string id="32729">Spanish(Latin)</string>
+    <string id="32730">Swedish</string>
+    <string id="32731">Turkish</string>
+    <string id="32732">Auto</string>
+			    
 </strings>
