@@ -5,7 +5,7 @@
 
 == Requirements ==
 
- * XBMC since Dharma version
+ * XBMC Dharma or newer
  * A compatible skin : [WeatherPlusCompatibleSkins list of compatible skin]
  * _The most important thing : Internet connection_ :)
 
