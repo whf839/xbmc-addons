@@ -47,7 +47,7 @@ class Generator:
                 # check for a properly formatted xml file
                 parseString( addon_xml.encode( "UTF-8" ) )
             except Exception as e:
-                # missing or malformed formatted addon.xml
+                # missing or malformed addon.xml
                 print "* Excluding {path} for {error}".format( path=_path, error=e )
             else:
                 # we succeeded so add to our final addons.xml text
