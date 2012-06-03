@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.pydocs" name="PyDocs Printer" version="2.0.5" provider-name="nuka1195">
+<addon id="script.pydocs" name="PyDocs &amp; PyPredefs Printer" version="2.1.0" provider-name="nuka1195 &amp; jfcarroll">
     <requires>
-        <import addon="xbmc.python" version="1.0"/>
-        <import addon="script.module.pysvn" version="2.4.0"/>
-        <import addon="script.module.xbmcaddon" version="1.0.3"/>
+        <import addon="xbmc.python" version="2.0"/>
     </requires>
     <extension point="xbmc.python.script" library="addon.py">
         <provides>executable</provides>
@@ -11,8 +9,9 @@
     <extension point="xbmc.addon.metadata">
         <platform>all</platform>
         <nochangelog>true</nochangelog>
-        <summary lang="en">Creates html python help docs.</summary>
-        <disclaimer lang="en">Only accurate for the version of xbmc this addon was run in.</disclaimer>
-        <description lang="en">Creates html python help docs for xbmc, xbmcgui, xbmcplugin and xbmcaddon modules.</description>
+        <nofanart>false</nofanart>
+        <summary lang="en">Creates Python html help docs and PyDev Predefined Completions.</summary>
+        <description lang="en">Creates Python html help docs and PyDev Predefined Completions for xbmc, xbmcgui, xbmcplugin, xbmcaddon and xbmcvfs modules.</description>
+        <disclaimer lang="en">Only accurate for the version of XBMC this addon was run in.</disclaimer>
     </extension>
 </addon>
