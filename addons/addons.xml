@@ -29,7 +29,7 @@
     </extension>
 </addon>
 
-<addon id="lyrics.xbmc.lyrics" name="XBMC Lyrics" version="2.1.7" provider-name="nuka1195">
+<addon id="lyrics.xbmc.lyrics" name="XBMC Lyrics" version="2.2.0" provider-name="nuka1195">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
     </requires>
@@ -176,10 +176,7 @@
 
 <addon id="plugin.video.movie.trailers" name="Movie Trailers" version="1.0.0" provider-name="nuka1195">
     <requires>
-        <import addon="xbmc.python" version="1.0"/>
-        <import addon="script.module.pysvn" version="2.4.0"/>
-        <import addon="script.module.pysqlite" version="2.5.6"/>
-        <import addon="script.module.xbmcaddon" version="1.0.1"/>
+        <import addon="xbmc.python" version="2.0"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="addon.py">
         <provides>video</provides>
@@ -187,9 +184,9 @@
     <extension point="xbmc.addon.metadata">
         <platform>all</platform>
         <nochangelog>true</nochangelog>
-        <summary>Watch movie trailers.</summary>
+        <summary>Watch movie trailers and check showtimes.</summary>
+        <description>Watch movie trailers from http://trailers.apple.com/ and other sites using python based scrapers. Check movie showtimes for theaters in your area.[CR][CR]Includes the optional ability to search for trailers for movies in your library. [I](see readme)[/I][CR][CR]*Can also be used in conjunction with the "Home Theater Experience" add-on. Requires skin support for all features.</description>
         <disclaimer>This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License *see license.txt</disclaimer>
-        <description>Watch movie trailers from http://trailers.apple.com/ and other sites using python based scrapers. Check movie showtimes for theaters in your area.[CR][CR]Includes the optional ability to search for trailers for movies in your library. [I](see readme)[/I][CR][CR]*Can also be used in conjuction with the "Home Theater Experience" addon. Requires skin support for all features.</description>
     </extension>
 </addon>
 
@@ -372,7 +369,7 @@
     </extension>
 </addon>
 
-<addon id="script.pydocs" name="PyDocs &amp; PyPredefs Printer" version="2.1.0" provider-name="nuka1195 &amp; jfcarroll">
+<addon id="script.pydocs" name="PyDocs &amp; PyPredefs Printer" version="2.1.1" provider-name="nuka1195 &amp; jfcarroll">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
     </requires>
@@ -383,9 +380,10 @@
         <platform>all</platform>
         <nochangelog>true</nochangelog>
         <nofanart>false</nofanart>
-        <summary lang="en">Creates Python html help docs and PyDev Predefined Completions.</summary>
-        <description lang="en">Creates Python html help docs and PyDev Predefined Completions for xbmc, xbmcgui, xbmcplugin, xbmcaddon and xbmcvfs modules.</description>
-        <disclaimer lang="en">Only accurate for the version of XBMC this addon was run in.</disclaimer>
+        <noicon>false</noicon>
+        <summary lang="en">Creates Python html help docs and PyDev Predefined Completions for XBMC Python modules.</summary>
+        <description lang="en">Creates Python html help docs and PyDev Predefined Completions for XBMC Python modules. (xbmc, xbmcaddon, xbmcgui, xbmcplugin and xbmcvfs)</description>
+        <disclaimer lang="en">Only accurate for the version of XBMC this add-on was run in.</disclaimer>
     </extension>
 </addon>
 
