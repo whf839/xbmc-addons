@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.pydocs" name="PyDocs &amp; PyPredefs Printer" version="2.1.0" provider-name="nuka1195 &amp; jfcarroll">
+<addon id="script.pydocs" name="PyDocs &amp; PyPredefs Printer" version="2.1.1" provider-name="nuka1195 &amp; jfcarroll">
     <requires>
         <import addon="xbmc.python" version="2.0"/>
     </requires>
@@ -10,8 +10,9 @@
         <platform>all</platform>
         <nochangelog>true</nochangelog>
         <nofanart>false</nofanart>
-        <summary lang="en">Creates Python html help docs and PyDev Predefined Completions.</summary>
-        <description lang="en">Creates Python html help docs and PyDev Predefined Completions for xbmc, xbmcgui, xbmcplugin, xbmcaddon and xbmcvfs modules.</description>
-        <disclaimer lang="en">Only accurate for the version of XBMC this addon was run in.</disclaimer>
+        <noicon>false</noicon>
+        <summary lang="en">Creates Python html help docs and PyDev Predefined Completions for XBMC Python modules.</summary>
+        <description lang="en">Creates Python html help docs and PyDev Predefined Completions for XBMC Python modules. (xbmc, xbmcaddon, xbmcgui, xbmcplugin and xbmcvfs)</description>
+        <disclaimer lang="en">Only accurate for the version of XBMC this add-on was run in.</disclaimer>
     </extension>
 </addon>

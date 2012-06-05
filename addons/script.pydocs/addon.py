@@ -1,7 +1,7 @@
 ## PyDocs & PyPredefs Printer
 
 import os
-import resources.lib.pydoc as pydoc
+import pydoc
 import resources.lib.pypredefcom as pypredefcomp
 import xbmc
 import xbmcaddon
@@ -9,12 +9,14 @@ import xbmcgui
 import xbmcplugin
 import xbmcvfs
 
+ADDON_ID = "script.pydocs"
+
 
 class DocsPrinter:
 
     def __init__(self):
         # get Addon object
-        self.Addon = xbmcaddon.Addon(id="script.pydocs")
+        self.Addon = xbmcaddon.Addon(id=ADDON_ID)
         # get user preferences
         self.doc_path = self.Addon.getSetting("doc_path")
         self.include_pydocs = (self.Addon.getSetting("include_pydocs") == "true")
@@ -32,7 +34,7 @@ class DocsPrinter:
             # set the doc_path setting in case the browse dialog was used
             self.Addon.setSetting("doc_path", self.doc_path)
             # modules
-            modules = [ "xbmc", "xbmcgui", "xbmcplugin", "xbmcaddon", "xbmcvfs" ]
+            modules = ["xbmc", "xbmcaddon", "xbmcgui", "xbmcplugin", "xbmcvfs"]
             # enumerate thru and print our help docs
             for count, module in enumerate(modules):
                 # include PyDocs
@@ -44,13 +46,18 @@ class DocsPrinter:
                         # update dialog
                         pDialog.update(count * (100 / len(modules)), self.Addon.getLocalizedString(30711).format(msg="{module}.html PyDoc".format(module=module)), self.Addon.getLocalizedString(30712).format(msg=_path))
                         try:
+                            # get our file object
+                            pydoc_file = open(_path, "w")
+                        except IOError as error:
+                            # oops
+                            xbmc.log("An error occurred saving {module}.html PyDoc! ({error})".format(module=module, error=error), xbmc.LOGERROR)
+                        else:
                             # get our document object
                             doc = pydoc.HTMLDoc()
                             # print document
-                            open(_path, "w").write(doc.document(eval(module)))
-                        except Exception as error:
-                            # oops
-                            xbmc.log("An error occurred saving {module}.html PyDoc! ({error})".format(module=module, error=error), xbmc.LOGERROR)
+                            pydoc_file.write(doc.document(eval(module)))
+                            # close file
+                            pydoc_file.close()
 
                 # include PyPredefs
                 if (self.include_pypredefs):
@@ -63,13 +70,14 @@ class DocsPrinter:
                         try:
                             # get our file object
                             predefcomf = open(_path, "w")
+                        except IOError as error:
+                            # oops
+                            xbmc.log("An error occurred saving {module}.pypredef PyPredef! ({error})".format(module=module, error=error), xbmc.LOGERROR)
+                        else:
                             # print document
                             pypredefcomp.pypredefmodule(predefcomf, eval(module))
                             # close file
-                            predefcomf.close();
-                        except Exception as error:
-                            # oops
-                            xbmc.log("An error occurred saving {module}.pypredef PyPredef! ({error})".format(module=module, error=error), xbmc.LOGERROR)
+                            predefcomf.close()
 
             #close dialog
             pDialog.update(100)
@@ -81,7 +89,7 @@ class DocsPrinter:
         try:
             # make dir if it doesn't exist
             if (not xbmcvfs.exists(_path)):
-                xbmcvfs.mkdir(_path)
+                xbmcvfs.mkdirs(_path)
         except:
             # oops
             xbmc.log("An error occurred making dir for {path}! ({error})".format(module=module, error=error), xbmc.LOGERROR)
@@ -100,6 +108,7 @@ class DocsPrinter:
         """
         dialog = xbmcgui.Dialog()
         value = dialog.browse(dlg_type, heading, shares, mask, use_thumbs, treat_as_folder, default)
+
         return value
 
 
