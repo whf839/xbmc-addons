@@ -50,7 +50,7 @@ class DocsPrinter:
                             pydoc_file = open(_path, "w")
                         except IOError as error:
                             # oops
-                            xbmc.log("An error occurred saving {module}.html PyDoc! ({error})".format(module=module, error=error), xbmc.LOGERROR)
+                            xbmc.log("An error occurred saving {module}.html PyDoc! ({error})".format(module=module, error=error.strerror), xbmc.LOGERROR)
                         else:
                             # get our document object
                             doc = pydoc.HTMLDoc()
@@ -72,7 +72,7 @@ class DocsPrinter:
                             predefcomf = open(_path, "w")
                         except IOError as error:
                             # oops
-                            xbmc.log("An error occurred saving {module}.pypredef PyPredef! ({error})".format(module=module, error=error), xbmc.LOGERROR)
+                            xbmc.log("An error occurred saving {module}.pypredef PyPredef! ({error})".format(module=module, error=error.strerror), xbmc.LOGERROR)
                         else:
                             # print document
                             pypredefcomp.pypredefmodule(predefcomf, eval(module))
@@ -90,9 +90,9 @@ class DocsPrinter:
             # make dir if it doesn't exist
             if (not xbmcvfs.exists(_path)):
                 xbmcvfs.mkdirs(_path)
-        except:
+        except IOError as error:
             # oops
-            xbmc.log("An error occurred making dir for {path}! ({error})".format(module=module, error=error), xbmc.LOGERROR)
+            xbmc.log("An error occurred making dir for {path}! ({error})".format(module=module, error=error.strerror), xbmc.LOGERROR)
             return None
         else:
             # return full filepath

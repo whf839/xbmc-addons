@@ -6,7 +6,7 @@
 	<!-- do NOT localize {addon} -->
 	<string id="30001">{addon} Package Manager</string>
 	<!-- language author (translators put your name here) -->
-	<string id="30002">nuka1195</string>
+	<string id="30010">nuka1195</string>
 
 	<!-- category separators -->
 	<string id="30051">General</string>
@@ -44,20 +44,18 @@
 	<string id="30710">Downloading: {msg}</string>
 	<string id="30711">Saving: {msg}</string>
 	<string id="30712">To: {msg}</string>
-	<string id="30713">Extracting: {msg}</string>
-	<string id="30714">B</string>
-	<string id="30715">KB</string>
-	<string id="30716">MB</string>
-	<string id="30717">of</string>
-	<string id="30718">at</string>
-	<string id="30719">ETA</string>
-	<string id="30720">{addon} successfully installed.</string>
-	<string id="30721">An error occurred extracting &apos;{file}&apos;</string>
-	<string id="30722">An error occurred downloading &apos;{file}&apos;</string>
-	<string id="30723">An error occurred saving &apos;{file}&apos;</string>
-	<string id="30724">Installing &apos;{addon}&apos; cancelled!</string>
-	<string id="30728">Failed install</string>
-	<string id="30729">Installed</string>
+	<string id="30713">Copying: {msg}</string>
+	<string id="30714">Extracting: {msg}</string>
+	<string id="30715">B</string>
+	<string id="30716">KB</string>
+	<string id="30717">MB</string>
+	<string id="30718">of</string>
+	<string id="30719">at</string>
+	<string id="30720">ETA</string>
+	<string id="30721">min</string>
+	<string id="30722">B/s</string>
+	<string id="30723">KB/s</string>
+	<string id="30724">MB/s</string>
 	<!-- search terms -->
 	<string id="30730">Search</string>
 	<string id="30731">Enter keywords/phrase to search for...</string>
@@ -91,5 +89,13 @@
 	<string id="30769">Properties</string>
 	<string id="30770">An error occurred checking for updates!</string>
 	<string id="30771">An error occurred fetching {function}!</string>
+    <!-- package manager messages -->
+	<string id="30780">{package} successfully installed.</string>
+	<string id="30781">An error occurred extracting &apos;{file}&apos;</string>
+	<string id="30782">An error occurred downloading &apos;{file}&apos;</string>
+	<string id="30783">An error occurred saving &apos;{file}&apos;</string>
+	<string id="30784">Installing &apos;{addon}&apos; cancelled!</string>
+	<string id="30788">Failed install</string>
+	<string id="30789">Installed</string>
 
 </strings>
